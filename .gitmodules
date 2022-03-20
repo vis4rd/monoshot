@@ -1,0 +1,6 @@
+[submodule "GLFW"]
+	path = lib/glfw
+	url = https://github.com/glfw/glfw
+[submodule "GLAD"]
+	path = lib/glad
+	url = https://github.com/Dav1dde/glad
