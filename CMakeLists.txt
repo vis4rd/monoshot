@@ -16,28 +16,33 @@ find_package(OpenGL 4 REQUIRED)
 
 # GLAD
 add_subdirectory("${PROJECT_SOURCE_DIR}/lib/glad")
-# set(GLAD_INCLUDE_PATH "${PROJECT_SOURCE_DIR}/lib/glad/include")
-# set(GLAD_SOURCE "${PROJECT_SOURCE_DIR}/lib/glad/src/glad.c")
 
+# Other sources
+file(GLOB_RECURSE SOURCES "src/*.cpp")
+
+
+# App
 add_executable(${EXECUTABLE_NAME})
 
 target_sources(${EXECUTABLE_NAME}
-    PRIVATE main.cpp)
-
-target_include_directories(${EXECUTABLE_NAME}
-    PRIVATE "${PROJECT_SOURCE_DIR}/include")
+    PRIVATE ${SOURCES}
+            "${PROJECT_SOURCE_DIR}/main.cpp")
 
 target_link_libraries(${EXECUTABLE_NAME}
     PRIVATE glfw
-            glad)
+            glad
+)
 
 if(CMAKE_HOST_WIN32)
+
     target_link_libraries(${EXECUTABLE_NAME}
     PRIVATE opengl32
             comdlg32
             ole32)
     message(STATUS "WIN32 system detected.")
+
 elseif(CMAKE_HOST_UNIX)
+
     target_link_libraries(${EXECUTABLE_NAME}
     PRIVATE GL
             X11
@@ -46,6 +51,9 @@ elseif(CMAKE_HOST_UNIX)
             Xi
             dl)
     message(STATUS "UNIX system detected.")
+
 else()
+
     message(STATUS "Unknown system detected.")
+
 endif()
