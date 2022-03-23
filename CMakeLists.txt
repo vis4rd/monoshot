@@ -17,6 +17,9 @@ find_package(OpenGL 4 REQUIRED)
 # GLAD
 add_subdirectory("${PROJECT_SOURCE_DIR}/lib/glad")
 
+# GLM
+add_subdirectory("${PROJECT_SOURCE_DIR}/lib/glm")
+
 # Other sources
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 
@@ -31,6 +34,7 @@ target_sources(${EXECUTABLE_NAME}
 target_link_libraries(${EXECUTABLE_NAME}
     PRIVATE glfw
             glad
+            glm
 )
 
 if(CMAKE_HOST_WIN32)
