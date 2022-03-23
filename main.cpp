@@ -4,47 +4,14 @@
 #include <iostream>
 
 #include "include/shader/ShaderManager.hpp"
+#include "include/App.hpp"
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
 
 int main()
 {
-    GLFWwindow* window;
-
-    /* Initialize the GLFW library */
-    if (!glfwInit())
-        return -1;
-
-    /* Require OpenGL 3.3 capable driver on core profile */
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-    /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
-    if (!window)
-    {
-        std::cout << "Failed to create GLFW window." << std::endl;
-        glfwTerminate();
-        return -1;
-    }
-
-    /* Make the window's context on the current thread */
-    glfwMakeContextCurrent(window);
-
-    /* Initialize the GLAD library */
-    if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        std::cout << "Failed to initialize GLAD." << std::endl;
-        return -1;
-    }
-
-    /* Tell OpenGL the size of the rendering window */
-    glViewport(0, 0, 640, 480);
-
-    /* Update the viewport on resize event */
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    App app("Hello there!", 1280, 720);
 
     /* Create set of verticies of the triangle */
     float verticies[] = {
@@ -79,10 +46,10 @@ int main()
     shader_manager.useShader("triangle");
 
     /* Loop until the user closes the window */
-    while (!glfwWindowShouldClose(window))
+    while (!glfwWindowShouldClose(app.getWindow()))
     {
         /* Process all user input */
-        processInput(window);
+        processInput(app.getWindow());
 
         /* Clearing the window of previous frame */
         glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
@@ -94,19 +61,13 @@ int main()
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
         /* Swap front and back buffers */
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(app.getWindow());
 
         /* Poll for process events */
         glfwPollEvents();
     }
 
-    glfwTerminate();
     return 0;
-}
-
-void framebuffer_size_callback(GLFWwindow *window, int width, int height)
-{
-    glViewport(0, 0, width, height);
 }
 
 void processInput(GLFWwindow *window)
