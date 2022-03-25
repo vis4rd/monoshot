@@ -5,6 +5,7 @@
 
 #include "include/shader/ShaderManager.hpp"
 #include "include/App.hpp"
+#include "include/input/Input.hpp"
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -12,6 +13,15 @@ void processInput(GLFWwindow *window);
 int main()
 {
     App app("Hello there!", 1280, 720);
+    Input input;
+
+    auto key_group = input.addGroup("main");
+    input.addKeybind("main", GLFW_KEY_ESCAPE, GLFW_PRESS, [](GLFWwindow* window)
+    {
+        glfwSetWindowShouldClose(window, true);
+    }, app.getWindow());
+
+    input.addKeybind("main", GLFW_KEY_ENTER, GLFW_PRESS, [](){ std::cout << "Hooray!\n"; });
 
     /* Create set of verticies of the triangle */
     float verticies[] = {
@@ -49,7 +59,8 @@ int main()
     while (!glfwWindowShouldClose(app.getWindow()))
     {
         /* Process all user input */
-        processInput(app.getWindow());
+        // processInput(app.getWindow());
+        input.processGroup(app.getWindow(), "main");
 
         /* Clearing the window of previous frame */
         glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
@@ -70,10 +81,10 @@ int main()
     return 0;
 }
 
-void processInput(GLFWwindow *window)
-{
-    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-    {
-        glfwSetWindowShouldClose(window, true);
-    }
-}
+// void processInput(GLFWwindow *window)
+// {
+//     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+//     {
+//         glfwSetWindowShouldClose(window, true);
+//     }
+// }

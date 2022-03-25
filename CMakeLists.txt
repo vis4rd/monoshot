@@ -27,6 +27,9 @@ file(GLOB_RECURSE SOURCES "src/*.cpp")
 # App
 add_executable(${EXECUTABLE_NAME})
 
+target_compile_features(${EXECUTABLE_NAME}
+    PRIVATE "cxx_std_20")
+
 target_sources(${EXECUTABLE_NAME}
     PRIVATE ${SOURCES}
             "${PROJECT_SOURCE_DIR}/main.cpp")
