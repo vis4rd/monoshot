@@ -2,6 +2,8 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "Shader.hpp"
 
@@ -13,12 +15,26 @@ class ShaderProgram
     ShaderProgram(const ShaderProgram& copy);
     ShaderProgram(ShaderProgram&& move);
 
-    // Shader& getFragmentShader();
-    // Shader& getVertexShader();
     const std::uint32_t getID() const;
 
     void use() const;
 
+    void uploadVec2(const std::string& varName, const glm::vec2& var);
+    void uploadVec3(const std::string& varName, const glm::vec3& var);
+    void uploadVec4(const std::string& varName, const glm::vec4& var);
+    void uploadIVec2(const std::string& varName, const glm::ivec2& var);
+    void uploadIVec3(const std::string& varName, const glm::ivec3& var);
+    void uploadIVec4(const std::string& varName, const glm::ivec4& var);
+    void uploadFloat(const std::string& varName, const float& var);
+    void uploadInt(const std::string& varName, const int& var);
+    void uploadUInt(const std::string& varName, const uint32_t& var);
+    void uploadBool(const std::string& varName, const bool& var);
+    void uploadMat3(const std::string& varName, const glm::mat3& var);
+    void uploadMat4(const std::string& varName, const glm::mat4& var);
+    void uploadArrayInt(const std::string& varName, const std::size_t& size, const int* array);
+
     private:
     uint32_t m_id;
+    uint32_t m_maxUniformLocation;
+    std::unordered_map<std::string, int> m_varLocations;
 };
