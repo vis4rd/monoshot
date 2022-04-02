@@ -43,7 +43,8 @@ ShaderProgram::ShaderProgram(ShaderProgram&& move)
 :
 m_id(move.m_id),
 m_maxUniformLocation(std::move(move.m_maxUniformLocation)),
-m_varLocations(std::move(m_varLocations))
+m_varLocations(m_varLocations) // copying instead of moving to prevent
+                               // segfault by std::unordered_map bug
 {
 
 }

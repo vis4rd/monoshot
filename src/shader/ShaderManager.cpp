@@ -9,8 +9,7 @@ void ShaderManager::addShaderProgram(const fs::path& location, const std::string
     auto vert = loc.string() + "/" + vert_name;
     auto frag_sh = Shader(frag, frag_name, Shader::Type::FRAGMENT);
     auto vert_sh = Shader(vert, vert_name, Shader::Type::VERTEX);
-    ShaderProgram program(std::move(frag_sh), std::move(vert_sh));
-    m_shaders.try_emplace(name, std::move(program));
+    m_shaders.try_emplace(name, std::move(frag_sh), std::move(vert_sh));
 }
 
 void ShaderManager::useShader(const std::string& name)
