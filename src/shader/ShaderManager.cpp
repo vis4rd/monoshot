@@ -16,3 +16,13 @@ void ShaderManager::useShader(const std::string& name)
 {
     m_shaders[name].use();
 }
+
+const ShaderProgram& ShaderManager::getShader(const std::string& name) const
+{
+    return m_shaders.at(name);
+}
+
+ShaderProgram& ShaderManager::getShader(const std::string& name)
+{
+    return m_shaders[name];
+}

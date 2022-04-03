@@ -16,6 +16,8 @@ class ShaderManager
 
     void addShaderProgram(const fs::path& location, const std::string& name);
     void useShader(const std::string& name);
+    const ShaderProgram& getShader(const std::string& name) const;
+    ShaderProgram& getShader(const std::string& name);
 
     private:
     std::map<std::string, ShaderProgram> m_shaders;

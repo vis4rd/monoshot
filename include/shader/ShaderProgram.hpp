@@ -34,7 +34,9 @@ class ShaderProgram
     void uploadArrayInt(const std::string& varName, const std::size_t& size, const int* array);
 
     private:
+    void trySetVariableLocation(const std::string& varName);
+
+    private:
     uint32_t m_id;
-    uint32_t m_maxUniformLocation;
     std::unordered_map<std::string, int> m_varLocations;
 };
