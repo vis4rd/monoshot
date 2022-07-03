@@ -20,6 +20,9 @@ add_subdirectory("${PROJECT_SOURCE_DIR}/lib/glad")
 # GLM
 add_subdirectory("${PROJECT_SOURCE_DIR}/lib/glm")
 
+# ImGUI
+add_subdirectory("${PROJECT_SOURCE_DIR}/lib/imgui")
+
 # Other sources
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 
@@ -38,6 +41,8 @@ target_link_libraries(${EXECUTABLE_NAME}
     PRIVATE glfw
             glad
             glm
+            imgui
+            imgui_backend
 )
 
 if(CMAKE_HOST_WIN32)

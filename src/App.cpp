@@ -7,6 +7,7 @@ App::App(const std::string& window_title, uint32_t width, uint32_t height)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
     m_window = glfwCreateWindow(width, height, window_title.c_str(), nullptr, nullptr);
     if (!m_window)
@@ -16,6 +17,36 @@ App::App(const std::string& window_title, uint32_t width, uint32_t height)
     }
 
     glfwMakeContextCurrent(m_window);
+    // glfwSwapInterval(1); // Enable vsync
+
+    //
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    m_io = ImGui::GetIO(); (void)m_io;
+    m_io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
+    //m_io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+    m_io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
+    m_io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
+    //m_io.ConfigViewportsNoAutoMerge = true;
+    m_io.ConfigViewportsNoTaskBarIcon = true;
+
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+
+    // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
+    ImGuiStyle& style = ImGui::GetStyle();
+    if (m_io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        style.WindowRounding = 0.0f;
+        style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+    }
+
+    // Setup Platform/Renderer backends
+    const char* glsl_version = "#version 450";
+    ImGui_ImplGlfw_InitForOpenGL(m_window, true);
+    ImGui_ImplOpenGL3_Init(glsl_version);
+    ///
 
     if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
@@ -23,7 +54,7 @@ App::App(const std::string& window_title, uint32_t width, uint32_t height)
         this->terminate(EXIT_FAILURE);
     }
 
-    glViewport(0, 0, width, height);
+    glViewport(0, 0, width/2, height/2);
     glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow* window, int width, int height) -> void
     {
         glViewport(0, 0, width, height);
@@ -65,6 +96,11 @@ GLFWwindow* App::getWindow()
     return m_window;
 }
 
+const ImGuiIO& App::getImGuiIo() const
+{
+    return m_io;
+}
+
 void App::setWindowTitle(const std::string& title)
 {
     glfwSetWindowTitle(m_window, title.c_str());
@@ -100,6 +136,12 @@ void App::setFullscreen(const bool fullscreen)
 
 void App::terminate(int code) noexcept
 {
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+
+    glfwDestroyWindow(m_window);
     glfwTerminate();
+
     std::exit(code);
 }
