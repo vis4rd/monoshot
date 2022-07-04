@@ -38,19 +38,19 @@ target_sources(${EXECUTABLE_NAME}
             "${PROJECT_SOURCE_DIR}/main.cpp")
 
 target_link_libraries(${EXECUTABLE_NAME}
-    PRIVATE glfw
-            glad
-            glm
-            imgui
-            imgui_backend
+    PUBLIC glfw
+           glad
+           glm::glm
+           imgui
+           imgui_backend
 )
 
 if(CMAKE_HOST_WIN32)
 
     target_link_libraries(${EXECUTABLE_NAME}
-    PRIVATE opengl32
-            comdlg32
-            ole32)
+    PUBLIC opengl32
+           comdlg32
+           ole32)
     message(STATUS "WIN32 system detected.")
 
 elseif(CMAKE_HOST_UNIX)

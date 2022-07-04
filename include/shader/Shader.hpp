@@ -23,7 +23,7 @@ class Shader
     enum Type
     {
         FRAGMENT = 1 << 0,
-        VERTEX   = 1 << 1
+        VERTEX = 1 << 1
     };
 
     private:

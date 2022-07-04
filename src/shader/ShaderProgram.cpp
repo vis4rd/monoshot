@@ -1,17 +1,8 @@
 #include "../../include/shader/ShaderProgram.hpp"
 
-ShaderProgram::ShaderProgram()
-:
-m_id(),
-m_varLocations{}
-{
+ShaderProgram::ShaderProgram() : m_id(), m_varLocations{} { }
 
-}
-
-ShaderProgram::ShaderProgram(Shader&& frag, Shader&& vert)
-:
-m_id(glCreateProgram()),
-m_varLocations{}
+ShaderProgram::ShaderProgram(Shader&& frag, Shader&& vert) : m_id(glCreateProgram()), m_varLocations{}
 {
     glAttachShader(m_id, vert.getID());
     glAttachShader(m_id, frag.getID());
@@ -28,21 +19,12 @@ m_varLocations{}
     }
 }
 
-ShaderProgram::ShaderProgram(const ShaderProgram& copy)
-:
-m_id(copy.m_id),
-m_varLocations(copy.m_varLocations)
-{
-
-}
+ShaderProgram::ShaderProgram(const ShaderProgram& copy) : m_id(copy.m_id), m_varLocations(copy.m_varLocations) { }
 
 ShaderProgram::ShaderProgram(ShaderProgram&& move)
-:
-m_id(move.m_id),
-m_varLocations(m_varLocations) // copying instead of moving to prevent
-                               // segfault by std::unordered_map bug
+    : m_id(move.m_id), m_varLocations(move.m_varLocations)  // copying instead of moving to prevent
+                                                            // segfault by std::unordered_map bug
 {
-
 }
 
 const std::uint32_t ShaderProgram::getID() const

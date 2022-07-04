@@ -21,16 +21,18 @@ class Input
         std::string name;
         std::unordered_map<int32_t, Keybind> keybinds;
     };
+
     public:
     Input() = default;
 
     const std::size_t addGroup(const std::string& name = {});
-    template<typename FUNC, typename... Args> constexpr void addKeybind(
-        const std::string& group,
+
+    template<typename FUNC, typename... Args>
+    constexpr void addKeybind(const std::string& group,
         int32_t key,
         int32_t action,
         FUNC&& callback,
-        Args&& ...cb_args);
+        Args&&... cb_args);
     void processGroup(GLFWwindow* window, const std::string& group);
     void removeGroup(const std::string& group);
     void removeKeybind(const std::string& group, int32_t glfw_key);
@@ -40,17 +42,18 @@ class Input
 };
 
 template<typename FUNC, typename... Args>
-constexpr void Input::addKeybind(
-    const std::string& group,
+constexpr void Input::addKeybind(const std::string& group,
     int32_t key,
     int32_t action,
     FUNC&& callback,
-    Args&& ...cb_args)
+    Args&&... cb_args)
 {
-    auto iter = std::find_if(m_keybinds.begin(), m_keybinds.end(), [&group](const Group& g)
-    {
-        return (g.name == group);
-    });
+    auto iter = std::find_if(m_keybinds.begin(),
+        m_keybinds.end(),
+        [&group](const Group& g)
+        {
+            return (g.name == group);
+        });
     if(iter == m_keybinds.end())
     {
         throw std::runtime_error("Given keybind group does not exist.");

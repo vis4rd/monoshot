@@ -1,14 +1,10 @@
 #pragma once
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include <imgui/imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
-
+#include <iostream>
 #include <memory>
 #include <stdexcept>
-#include <iostream>
+
+#include "window/Window.hpp"
 
 class App
 {
@@ -16,16 +12,12 @@ class App
     App(const std::string& window_title, uint32_t width, uint32_t height);
     virtual ~App() noexcept;
 
-    GLFWwindow* getWindow();
-    const ImGuiIO& getImGuiIo() const;
-
-    void setWindowTitle(const std::string& title);
-    void setFullscreen(const bool fullscreen = true);
+    Window& getWindow();
+    const Window& getWindow() const;
 
     private:
     void terminate(int code = 0) noexcept;
 
     private:
-    GLFWwindow* m_window;
-    ImGuiIO m_io;
+    Window m_window;
 };

@@ -18,10 +18,12 @@ const std::size_t Input::addGroup(const std::string& name)
 
 void Input::processGroup(GLFWwindow* window, const std::string& group)
 {
-    auto iter = std::find_if(m_keybinds.begin(), m_keybinds.end(), [&group](const Group& g)
-    {
-        return (g.name == group);
-    });
+    auto iter = std::find_if(m_keybinds.begin(),
+        m_keybinds.end(),
+        [&group](const Group& g)
+        {
+            return (g.name == group);
+        });
     if(iter != m_keybinds.end())
     {
         for(auto& [glfw_key, keybind] : iter->keybinds)
@@ -37,10 +39,12 @@ void Input::processGroup(GLFWwindow* window, const std::string& group)
 
 void Input::removeGroup(const std::string& group)
 {
-    auto iter = std::find_if(m_keybinds.begin(), m_keybinds.end(), [&group](const Group& g)
-    {
-        return (g.name == group);
-    });
+    auto iter = std::find_if(m_keybinds.begin(),
+        m_keybinds.end(),
+        [&group](const Group& g)
+        {
+            return (g.name == group);
+        });
     if(iter != m_keybinds.end())
     {
         iter->keybinds.clear();
@@ -51,10 +55,12 @@ void Input::removeGroup(const std::string& group)
 
 void Input::removeKeybind(const std::string& group, int32_t glfw_key)
 {
-    auto iter = std::find_if(m_keybinds.begin(), m_keybinds.end(), [&group](const Group& g)
-    {
-        return (g.name == group);
-    });
+    auto iter = std::find_if(m_keybinds.begin(),
+        m_keybinds.end(),
+        [&group](const Group& g)
+        {
+            return (g.name == group);
+        });
     if(iter != m_keybinds.end())
     {
         iter->keybinds.erase(glfw_key);

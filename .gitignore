@@ -36,6 +36,7 @@ cmake/*
 build/*
 bin/*
 .vscode/
+.cache/
 
 # Development
 dev/
