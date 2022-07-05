@@ -23,7 +23,7 @@ Window::Window(const std::string &window_title, uint32_t width, uint32_t height)
     }
 
     glfwMakeContextCurrent(m_window);
-    // glfwSwapInterval(1); // Enable vsync
+    glfwSwapInterval(0);  // Disable vsync
 
     //
     // Setup Dear ImGui context
@@ -116,6 +116,12 @@ const std::string &Window::getTitle() const
     return m_title;
 }
 
+// bool Window::isVerticalSyncEnabled() const
+// {
+//     return wglSwapIntervalEXT();
+//     return glXSwapIntervalEXT();
+// }
+
 void Window::setTitle(const std::string &title)
 {
     m_title = title;
@@ -125,6 +131,11 @@ void Window::setTitle(const std::string &title)
 void Window::setFullscreen(bool fullscreen)
 {
     return;
+}
+
+void Window::setVerticalSync(bool vsync)
+{
+    glfwSwapInterval(static_cast<int>(vsync));
 }
 
 void Window::terminate()

@@ -22,8 +22,11 @@ class Window final
     glm::uvec2 getSize() const;
     const std::string &getTitle() const;
 
+    bool isVerticalSyncEnabled() const;
+
     void setTitle(const std::string &title);
     void setFullscreen(bool fullscreen = true);
+    void setVerticalSync(bool vsync = true);
 
     private:
     void terminate();
