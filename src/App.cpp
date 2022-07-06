@@ -1,6 +1,26 @@
 #include "../include/App.hpp"
 
-App::App(const std::string& window_title, uint32_t width, uint32_t height) : m_window(window_title, width, height) { }
+App::App(const std::string& window_title, uint32_t width, uint32_t height) : m_window(window_title, width, height)
+{
+    auto key_group = m_input.addGroup("main");
+    m_input.addKeybind(
+        "main",
+        GLFW_KEY_ESCAPE,
+        GLFW_PRESS,
+        [](GLFWwindow* window)
+        {
+            glfwSetWindowShouldClose(window, true);
+        },
+        m_window.getWindow());
+
+    m_input.addKeybind("main",
+        GLFW_KEY_ENTER,
+        GLFW_PRESS,
+        []()
+        {
+            std::cout << "Hooray!\n";
+        });
+}
 
 App::~App() noexcept
 {
@@ -15,6 +35,15 @@ Window& App::getWindow()
 const Window& App::getWindow() const
 {
     return m_window;
+}
+
+void App::run() noexcept
+{
+    while(m_window.update())
+    {
+        m_input.processGroup(m_window.getWindow(), "main");
+        m_window.render();
+    }
 }
 
 void App::terminate(int code) noexcept

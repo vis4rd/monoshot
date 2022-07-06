@@ -28,6 +28,9 @@ class Window final
     void setFullscreen(bool fullscreen = true);
     void setVerticalSync(bool vsync = true);
 
+    bool update() noexcept;
+    void render() noexcept;
+
     private:
     void terminate();
 

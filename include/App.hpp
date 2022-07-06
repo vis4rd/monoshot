@@ -4,6 +4,7 @@
 #include <memory>
 #include <stdexcept>
 
+#include "input/Input.hpp"
 #include "window/Window.hpp"
 
 class App
@@ -15,9 +16,12 @@ class App
     Window& getWindow();
     const Window& getWindow() const;
 
+    void run() noexcept;
+
     private:
     void terminate(int code = 0) noexcept;
 
     private:
     Window m_window;
+    Input m_input;
 };
