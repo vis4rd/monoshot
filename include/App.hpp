@@ -24,4 +24,5 @@ class App
     private:
     Window m_window;
     Input m_input;
+    MainMenuSection m_mainMenu;
 };

@@ -1,6 +1,7 @@
 #include "../include/App.hpp"
 
-App::App(const std::string& window_title, uint32_t width, uint32_t height) : m_window(window_title, width, height)
+App::App(const std::string& window_title, uint32_t width, uint32_t height)
+    : m_window(window_title, width, height), m_mainMenu()
 {
     auto key_group = m_input.addGroup("main");
     m_input.addKeybind(
@@ -42,7 +43,7 @@ void App::run() noexcept
     while(m_window.update())
     {
         m_input.processGroup(m_window.getWindow(), "main");
-        m_window.render();
+        m_window.render(m_mainMenu);
     }
 }
 
