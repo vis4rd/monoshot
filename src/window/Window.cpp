@@ -1,5 +1,4 @@
 #include "../../include/window/Window.hpp"
-#include "GLFW/glfw3.h"
 
 Window::Window(const std::string &window_title, uint32_t width, uint32_t height) : m_title(window_title)
 {
@@ -29,14 +28,15 @@ Window::Window(const std::string &window_title, uint32_t width, uint32_t height)
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    m_io = ImGui::GetIO();
-    (void)m_io;
-    m_io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
-    // m_io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; // Enable Gamepad Controls
-    m_io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;  // Enable Docking
-    m_io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;  // Enable Multi-Viewport
-    // m_io.ConfigViewportsNoAutoMerge = true;
-    // m_io.ConfigViewportsNoTaskBarIcon = true;
+    auto &io = ImGui::GetIO();
+    (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
+    // io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; // Enable Gamepad Controls
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;  // Enable Docking
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;  // Enable Multi-Viewport
+    // io.ConfigViewportsNoAutoMerge = true;
+    // io.ConfigViewportsNoTaskBarIcon = true;
+    m_io = io;
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
