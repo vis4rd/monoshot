@@ -1,6 +1,7 @@
 #include "../../include/window/Window.hpp"
 
-Window::Window(const std::string &window_title, uint32_t width, uint32_t height) : m_title(window_title)
+Window::Window(const std::string &window_title, uint32_t width, uint32_t height)
+    : m_title(window_title), m_width(width), m_height(height)
 {
     if(!glfwInit())
     {
@@ -12,9 +13,9 @@ Window::Window(const std::string &window_title, uint32_t width, uint32_t height)
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
     glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-    m_window = glfwCreateWindow(width, height, m_title.c_str(), nullptr, nullptr);
+    m_window = glfwCreateWindow(m_width, m_height, m_title.c_str(), nullptr, nullptr);
     if(!m_window)
     {
         std::cout << "Failed to create GLFW window." << std::endl;
@@ -22,15 +23,14 @@ Window::Window(const std::string &window_title, uint32_t width, uint32_t height)
     }
 
     glfwMakeContextCurrent(m_window);
-    glfwSwapInterval(1);  // Enable vsync
+    this->setVerticalSync(true);
 
-    //
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     auto &io = ImGui::GetIO();
     (void)io;
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
+    // io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
     // io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; // Enable Gamepad Controls
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;  // Enable Docking
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;  // Enable Multi-Viewport
@@ -40,15 +40,6 @@ Window::Window(const std::string &window_title, uint32_t width, uint32_t height)
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
-
-    // When viewports are enabled we tweak WindowRounding/WindowBg so platform
-    // windows can look identical to regular ones.
-    ImGuiStyle &style = ImGui::GetStyle();
-    if(m_io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-    {
-        style.WindowRounding = 0.0f;
-        style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-    }
 
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(m_window, true);
@@ -61,37 +52,25 @@ Window::Window(const std::string &window_title, uint32_t width, uint32_t height)
     }
 
     glViewport(0, 0, width, height);
-    glfwSetFramebufferSizeCallback(m_window,
-        [](GLFWwindow *window, int width, int height) -> void
-        {
-            glViewport(0, 0, width, height);
-        });
-    // glfwSetWindowIconifyCallback(m_window, [](GLFWwindow* window, int
-    // iconified) -> void
-    // {
-    //     if(iconified)
+    // glfwSetWindowSizeCallback(m_window,
+    //     [](GLFWwindow *window, int new_width, int new_height) -> void
     //     {
-    //         glfwIconifyWindow(window);
-    //     }
-    //     else
-    //     {
-    //         glfwRestoreWindow(window);
-    //     }
-    // });
-    // glfwSetWindowMaximizeCallback(m_window, [](GLFWwindow* window, int
-    // maximized) -> void
-    // {
-    //     if(maximized)
-    //     {
-    //         glfwMaximizeWindow(window);
-    //     }
-    //     else
-    //     {
-    //         glfwRestoreWindow(window);
-    //     }
-    // });
+    //         std::cout << "New window size = " << new_width << "x" << new_height << " in screen coordinates\n";
+    //         // glViewport(0, 0, new_width, new_height);
+    //     });
 
-    // glfwSetWindowAspectRatio(m_window, 16, 9);
+    glfwSetFramebufferSizeCallback(m_window,
+        [](GLFWwindow *window, int new_width, int new_height) -> void
+        {
+            glViewport(0, 0, new_width, new_height);
+            glfwSetWindowAspectRatio(window, 16, 9);
+        });
+
+    // glfwSetWindowContentScaleCallback(m_window,
+    //     [](GLFWwindow *window, float xscale, float yscale)
+    //     {
+    //         // set_interface_scale(xscale, yscale);
+    //     });
 }
 
 GLFWwindow *Window::getWindow()
@@ -116,6 +95,11 @@ const std::string &Window::getTitle() const
     return m_title;
 }
 
+bool Window::isMaximized() const
+{
+    return static_cast<bool>(glfwGetWindowAttrib(m_window, GLFW_MAXIMIZED));
+}
+
 bool Window::isVerticalSyncEnabled() const
 {
     std::cout << "'bool Window::isVerticalSyncEnabled() const' is not currently implemented." << std::endl;
@@ -137,6 +121,18 @@ void Window::setFullscreen(bool fullscreen)
     else
     {
         glfwSetWindowMonitor(m_window, nullptr, 320, 180, 1280, 720, GLFW_DONT_CARE);
+    }
+}
+
+void Window::setMaximized(bool maximized)
+{
+    if(maximized)
+    {
+        glfwMaximizeWindow(m_window);
+    }
+    else
+    {
+        glfwRestoreWindow(m_window);
     }
 }
 

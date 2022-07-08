@@ -23,10 +23,12 @@ class Window final
     glm::uvec2 getSize() const;
     const std::string &getTitle() const;
 
+    bool isMaximized() const;
     bool isVerticalSyncEnabled() const;
 
     void setTitle(const std::string &title);
     void setFullscreen(bool fullscreen = true);
+    void setMaximized(bool maximized = true);
     void setVerticalSync(bool vsync = true);
 
     bool update() noexcept;
@@ -42,6 +44,8 @@ class Window final
     GLFWwindow *m_window = nullptr;
     ImGuiIO m_io;
     std::string m_title{};
+    uint32_t m_width = 0;
+    uint32_t m_height = 0;
 };
 
 
