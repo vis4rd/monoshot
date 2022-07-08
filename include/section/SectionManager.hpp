@@ -8,8 +8,10 @@
 class SectionManager final : public Renderable
 {
     public:
-    template<CSection SECTION>
-    void addSection(std::unique_ptr<SECTION>&& section);
+    template<CSection SECTION, typename... ARGS>
+    constexpr void emplaceSection(ARGS&&... args);
+
+    std::unique_ptr<Section>&& popSection();
 
     void render() noexcept override;
 
@@ -17,8 +19,9 @@ class SectionManager final : public Renderable
     std::stack<std::unique_ptr<Section>> m_sections{};
 };
 
-template<CSection SECTION>
-void SectionManager::addSection(std::unique_ptr<SECTION>&& section)
+template<CSection SECTION, typename... ARGS>
+constexpr void SectionManager::emplaceSection(ARGS&&... args)
 {
-    m_sections.push(std::move(section));
+    auto section_uptr = std::make_unique<SECTION>(std::forward<ARGS>(args)...);
+    m_sections.push(std::move(section_uptr));
 }

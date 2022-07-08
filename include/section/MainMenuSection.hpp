@@ -1,9 +1,6 @@
 #pragma once
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
-#include "../section/Section.hpp"
+#include "DebugSection.hpp"
 #include "../shader/ShaderManager.hpp"
 
 class MainMenuSection final : public Section
@@ -15,7 +12,4 @@ class MainMenuSection final : public Section
     void render() noexcept override;
 
     private:
-    uint32_t VAO;
-    uint32_t VBO;
-    ShaderManager shaderManager;
 };

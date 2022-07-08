@@ -22,8 +22,7 @@ App::App(const std::string& window_title, uint32_t width, uint32_t height)
             std::cout << "Hooray!\n";
         });
 
-    auto menu = std::make_unique<MainMenuSection>();
-    m_sectionManager.addSection(std::move(menu));
+    m_sectionManager.emplaceSection<DebugSection>();
 }
 
 App::~App() noexcept
