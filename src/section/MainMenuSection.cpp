@@ -1,7 +1,9 @@
 #include "../../include/section/MainMenuSection.hpp"
 
-MainMenuSection::MainMenuSection() : shaderManager()
+MainMenuSection::MainMenuSection() : Section(), shaderManager()
 {
+    std::cout << "name = " << m_name << std::endl;
+
     /* Create set of verticies of the triangle */
     float vertices[] =
         {-0.5f, -0.5f, 0.0f, 1.f, 0.f, 0.f, 0.5f, -0.5f, 0.0f, 0.f, 1.f, 0.f, 0.0f, 0.5f, 0.0f, 0.f, 0.f, 1.f};
@@ -29,9 +31,6 @@ MainMenuSection::MainMenuSection() : shaderManager()
     glVertexArrayAttribBinding(VAO, 1, 1);
     glVertexArrayAttribFormat(VAO, 1, 3, GL_FLOAT, GL_FALSE, 0);
     glVertexArrayVertexBuffer(VAO, 1, VBO, 3 * sizeof(GLfloat), 6 * sizeof(GLfloat));
-
-    // shaderManager.useShader("triangle");
-    ///
 }
 
 void MainMenuSection::update() noexcept { }

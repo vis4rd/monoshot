@@ -3,10 +3,10 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "../renderable/Renderable.hpp"
+#include "../section/Section.hpp"
 #include "../shader/ShaderManager.hpp"
 
-class MainMenuSection final : public Renderable
+class MainMenuSection final : public Section
 {
     public:
     MainMenuSection();

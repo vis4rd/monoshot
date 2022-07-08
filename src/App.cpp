@@ -1,7 +1,7 @@
 #include "../include/App.hpp"
 
 App::App(const std::string& window_title, uint32_t width, uint32_t height)
-    : m_window(window_title, width, height), m_mainMenu()
+    : m_window(window_title, width, height), m_input(), m_sectionManager()
 {
     auto key_group = m_input.addGroup("main");
     m_input.addKeybind(
@@ -21,6 +21,9 @@ App::App(const std::string& window_title, uint32_t width, uint32_t height)
         {
             std::cout << "Hooray!\n";
         });
+
+    auto menu = std::make_unique<MainMenuSection>();
+    m_sectionManager.addSection(std::move(menu));
 }
 
 App::~App() noexcept
@@ -43,7 +46,7 @@ void App::run() noexcept
     while(m_window.update())
     {
         m_input.processGroup(m_window.getWindow(), "main");
-        m_window.render(m_mainMenu);
+        m_window.render(m_sectionManager);
     }
 }
 

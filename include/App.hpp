@@ -6,6 +6,8 @@
 
 #include "input/Input.hpp"
 #include "window/Window.hpp"
+#include "section/SectionManager.hpp"
+#include "section/MainMenuSection.hpp"
 
 class App
 {
@@ -24,5 +26,5 @@ class App
     private:
     Window m_window;
     Input m_input;
-    MainMenuSection m_mainMenu;
+    SectionManager m_sectionManager;
 };
