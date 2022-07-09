@@ -1,10 +1,5 @@
 #pragma once
 
-#include <filesystem>
-#include <iostream>
-#include <map>
-
-#include "Shader.hpp"
 #include "ShaderProgram.hpp"
 
 namespace fs = std::filesystem;

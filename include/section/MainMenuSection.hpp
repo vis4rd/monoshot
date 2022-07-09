@@ -1,7 +1,6 @@
 #pragma once
 
 #include "DebugSection.hpp"
-#include "../shader/ShaderManager.hpp"
 
 class MainMenuSection final : public Section
 {

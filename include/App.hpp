@@ -1,13 +1,8 @@
 #pragma once
 
-#include <iostream>
-#include <memory>
-#include <stdexcept>
-
 #include "input/Input.hpp"
 #include "window/Window.hpp"
 #include "section/SectionManager.hpp"
-#include "section/MainMenuSection.hpp"
 
 class App
 {

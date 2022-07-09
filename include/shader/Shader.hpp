@@ -1,11 +1,6 @@
 #pragma once
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
-#include <filesystem>
-#include <fstream>
-#include <sstream>
+#include "../Root.hpp"
 
 namespace fs = std::filesystem;
 

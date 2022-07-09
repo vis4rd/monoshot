@@ -2,14 +2,6 @@
 
 #include "../section/MainMenuSection.hpp"
 
-#include <glm/glm.hpp>
-#include <imgui/imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
-
-#include <iostream>
-#include <string>
-
 
 class Window final
 {
