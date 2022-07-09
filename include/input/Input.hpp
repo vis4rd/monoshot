@@ -18,7 +18,11 @@ class Input
     };
 
     public:
-    Input() = default;
+    Input(const Input&) = delete;
+    Input(Input&&) = delete;
+    Input& operator=(const Input&) = delete;
+    Input& operator=(Input&&) = delete;
+    static Input& get();
 
     const std::size_t addGroup(const std::string& name = {});
 
@@ -31,6 +35,9 @@ class Input
     void processGroup(GLFWwindow* window, const std::string& group);
     void removeGroup(const std::string& group);
     void removeKeybind(const std::string& group, int32_t glfw_key);
+
+    private:
+    Input() = default;
 
     private:
     std::vector<Group> m_keybinds;

@@ -1,5 +1,11 @@
 #include "../../include/shader/ShaderManager.hpp"
 
+ShaderManager& ShaderManager::get()
+{
+    static ShaderManager instance{};
+    return instance;
+}
+
 void ShaderManager::addShaderProgram(const fs::path& location, const std::string& name)
 {
     auto loc = fs::absolute(location);

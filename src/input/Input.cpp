@@ -1,5 +1,11 @@
 #include "../../include/input/Input.hpp"
 
+Input& Input::get()
+{
+    static Input instance;
+    return instance;
+}
+
 const std::size_t Input::addGroup(const std::string& name)
 {
     Group new_group;

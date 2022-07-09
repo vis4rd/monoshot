@@ -1,5 +1,11 @@
 #include "../../include/section/SectionManager.hpp"
 
+SectionManager& SectionManager::get()
+{
+    static SectionManager instance;
+    return instance;
+}
+
 Section&& SectionManager::popSection()
 {
     auto section = m_sections.top().release();

@@ -1,7 +1,7 @@
 #include "../include/App.hpp"
 
 App::App(const std::string& window_title, uint32_t width, uint32_t height)
-    : m_window(window_title, width, height), m_input(), m_sectionManager()
+    : m_window(window_title, width, height), m_input(Input::get()), m_sectionManager(SectionManager::get())
 {
     auto key_group = m_input.addGroup("main");
     m_input.addKeybind(

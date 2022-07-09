@@ -8,12 +8,21 @@
 class SectionManager final : public Renderable
 {
     public:
+    SectionManager(const SectionManager&) = delete;
+    SectionManager(SectionManager&&) = delete;
+    SectionManager& operator=(const SectionManager&) = delete;
+    SectionManager& operator=(SectionManager&&) = delete;
+    static SectionManager& get();
+
     template<CSection SECTION, typename... ARGS>
     constexpr void emplaceSection(ARGS&&... args);
 
     Section&& popSection();
 
     void render() noexcept override;
+
+    private:
+    SectionManager() = default;
 
     private:
     std::stack<std::unique_ptr<Section>> m_sections{};

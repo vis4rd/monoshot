@@ -16,10 +16,10 @@ class DebugSection final : public Section
     private:
     uint32_t VAO;
     uint32_t VBO;
-    ShaderManager shaderManager;
+    ShaderManager& shaderManager;
 };
 
-DebugSection::DebugSection() : Section(), shaderManager()
+DebugSection::DebugSection() : Section(), shaderManager(ShaderManager::get())
 {
     std::cout << "name = " << m_name << std::endl;
 
