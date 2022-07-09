@@ -11,7 +11,7 @@ class SectionManager final : public Renderable
     template<CSection SECTION, typename... ARGS>
     constexpr void emplaceSection(ARGS&&... args);
 
-    std::unique_ptr<Section>&& popSection();
+    Section&& popSection();
 
     void render() noexcept override;
 

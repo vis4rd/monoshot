@@ -1,10 +1,10 @@
 #include "../../include/section/SectionManager.hpp"
 
-std::unique_ptr<Section>&& SectionManager::popSection()
+Section&& SectionManager::popSection()
 {
-    auto section_uptr = std::move(m_sections.top());
+    auto section = m_sections.top().release();
     m_sections.pop();
-    return std::move(section_uptr);
+    return std::move(*section);
 }
 
 void SectionManager::render() noexcept
