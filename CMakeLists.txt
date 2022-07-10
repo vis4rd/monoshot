@@ -25,6 +25,11 @@ add_subdirectory("${PROJECT_SOURCE_DIR}/lib/glm")
 # ImGUI
 add_subdirectory("${PROJECT_SOURCE_DIR}/lib/imgui")
 
+# spdlog
+set(SPDLOG_BUILD_SHARED OFF CACHE BOOL "" FORCE)
+set(SPDLOG_ENABLE_PCH ON CACHE BOOL "" FORCE)
+add_subdirectory("${PROJECT_SOURCE_DIR}/lib/spdlog")
+
 # Other sources
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 
@@ -45,6 +50,7 @@ target_link_libraries(${EXECUTABLE_NAME}
            glm::glm
            imgui
            imgui_backend
+           spdlog::spdlog
 )
 
 if(CMAKE_HOST_WIN32)

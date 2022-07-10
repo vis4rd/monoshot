@@ -17,6 +17,7 @@ class App
     void run() noexcept;
 
     private:
+    void initLogger() noexcept;
     void terminate(int code = 0) noexcept;
 
     private:
