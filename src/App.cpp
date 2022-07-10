@@ -3,6 +3,8 @@
 App::App(const std::string& window_title, uint32_t width, uint32_t height)
     : m_window(window_title, width, height), m_input(Input::get()), m_sectionManager(SectionManager::get())
 {
+    std::cout << "App version: " << VERSION_MAJOR << "." << VERSION_MINOR << "." << VERSION_PATCH << " (build "
+              << BUILD_NUMBER << ")" << std::endl;
     auto key_group = m_input.addGroup("main");
     m_input.addKeybind(
         "main",

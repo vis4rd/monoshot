@@ -3,6 +3,7 @@
 #include "input/Input.hpp"
 #include "window/Window.hpp"
 #include "section/SectionManager.hpp"
+#include "../meta/Version.hpp"
 
 class App
 {

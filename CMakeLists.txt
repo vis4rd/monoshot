@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 3.19 FATAL_ERROR)
 
-set(EXECUTABLE_NAME "main")
+# Project setup
 project(OPENGL_TEMPLATE)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${$PROJECT_SOURCE_DIR}/build")
+set(EXECUTABLE_NAME "main")
 
 # GLFW
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
@@ -46,15 +48,12 @@ target_link_libraries(${EXECUTABLE_NAME}
 )
 
 if(CMAKE_HOST_WIN32)
-
     target_link_libraries(${EXECUTABLE_NAME}
     PUBLIC opengl32
            comdlg32
            ole32)
     message(STATUS "WIN32 system detected.")
-
 elseif(CMAKE_HOST_UNIX)
-
     target_link_libraries(${EXECUTABLE_NAME}
     PRIVATE GL
             X11
@@ -63,9 +62,12 @@ elseif(CMAKE_HOST_UNIX)
             Xi
             dl)
     message(STATUS "UNIX system detected.")
-
 else()
-
     message(STATUS "Unknown system detected.")
-
 endif()
+
+# Versioning
+add_custom_command(
+    TARGET ${EXECUTABLE_NAME} PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -P "${PROJECT_SOURCE_DIR}/meta/ProjectVersioning.cmake"
+)
