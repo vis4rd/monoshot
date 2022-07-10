@@ -11,3 +11,7 @@
 	path = lib/imgui/imgui
 	url = https://github.com/ocornut/imgui
 	branch = docking
+[submodule "SPDLOG"]
+	path = lib/spdlog
+	url = https://github.com/gabime/spdlog
+	branch = 76fb40d95455f249bd70824ecfcae7a8f0930fa3
