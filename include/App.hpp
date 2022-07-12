@@ -4,6 +4,7 @@
 #include "window/Window.hpp"
 #include "section/SectionManager.hpp"
 #include "../meta/Version.hpp"
+#include "ui/MainMenuStyle.hpp"
 
 class App
 {

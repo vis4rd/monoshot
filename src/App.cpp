@@ -25,6 +25,8 @@ App::App(const std::string& window_title, uint32_t width, uint32_t height)
             std::cout << "Hooray!\n";
         });
 
+    MainMenuStyle();
+
     m_sectionManager.emplaceSection<DebugSection>();
 }
 
