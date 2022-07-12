@@ -1,0 +1,17 @@
+{
+    "C_Cpp.default.cppStandard": "c++20",
+    "C_Cpp.default.cStandard": "c17",
+    "C_Cpp.intelliSenseEngine": "Disabled",
+    "C_Cpp.errorSquiggles": "Disabled",
+    "clangd.arguments": [
+        "--header-insertion",
+        "never"
+    ],
+    "cmake.buildBeforeRun": false,
+    "cmake.configureOnEdit": false,
+    "cmake.configureOnOpen": false,
+    "cmake.statusbar.visibility": "icon",
+    "editor.formatOnSave": true,
+    "editor.inlayHints.enabled": "off",
+    "git.suggestSmartCommit": false,
+}

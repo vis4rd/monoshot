@@ -32,14 +32,14 @@
 *.app
 
 # Build directories
-cmake/*
-build/*
-bin/*
-.vscode/
+cmake/
+build/
+bin/
 .cache/
 
 # Development
 dev/
 
 # Logging
+logs/
 *.log
