@@ -28,6 +28,7 @@ App::App(const std::string& window_title, uint32_t width, uint32_t height)
     MainMenuStyle();
 
     m_sectionManager.emplaceSection<DebugSection>();
+    m_sectionManager.emplaceSection<MainMenuSection>();
 }
 
 App::~App() noexcept
