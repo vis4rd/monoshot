@@ -2,7 +2,7 @@
 
 #include "../Root.hpp"
 
-#include "Section.hpp"
+#include "SectionManager.hpp"
 #include "../shader/ShaderManager.hpp"
 
 class DebugSection final : public Section
