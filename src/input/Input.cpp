@@ -8,17 +8,13 @@ Input& Input::get()
 
 const std::size_t Input::addGroup(const std::string& name)
 {
-    Group new_group;
-    if(name.empty())
+    auto valid_name(name);
+    if(valid_name.empty())
     {
-        new_group.name = "Keybind Group No. " + std::to_string(m_keybinds.size());
+        valid_name = "Keybind Group No. " + std::to_string(m_keybinds.size());
     }
-    else
-    {
-        new_group.name = name;
-    }
-    m_keybinds.push_back(new_group);
-    // std::cout << m_keybinds[0].name << std::endl;
+    m_keybinds.emplace_back(std::move(valid_name));
+    spdlog::info("Creating a new keybind group called '{}'", m_keybinds[m_keybinds.size() - 1].name);
     return m_keybinds.size() - 1;
 }
 

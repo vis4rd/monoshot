@@ -13,8 +13,10 @@ class Input
     };
     struct Group
     {
-        std::string name;
-        std::unordered_map<int32_t, Keybind> keybinds;
+        Group() = default;
+        Group(const std::string& name) : name(name) { }
+        std::string name{};
+        std::unordered_map<int32_t, Keybind> keybinds{};
     };
 
     public:
@@ -61,11 +63,11 @@ constexpr void Input::addKeybind(const std::string& group,
         throw std::runtime_error("Given keybind group does not exist.");
     }
 
-    auto wrapper = [key, action, callback, cb_args...](GLFWwindow* window)
+    auto wrapper = [&key, &action, &callback, &cb_args...](GLFWwindow* window)
     {
         if(glfwGetKey(window, key) == action)
         {
-            std::invoke(callback, cb_args...);
+            std::invoke(std::forward<FUNC>(callback), std::forward<Args>(cb_args)...);
         }
     };
     iter->keybinds[key] = Keybind{key, glfwGetKeyScancode(key), action, std::move(wrapper)};
