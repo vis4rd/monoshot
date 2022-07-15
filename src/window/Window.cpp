@@ -3,6 +3,8 @@
 Window::Window(const std::string &window_title, uint32_t width, uint32_t height)
     : m_title(window_title), m_width(width), m_height(height)
 {
+    spdlog::info("Creating window instance");
+
     this->initGLFW();
     this->initImGui();
     this->initGL();
@@ -10,13 +12,14 @@ Window::Window(const std::string &window_title, uint32_t width, uint32_t height)
     // glfwSetWindowSizeCallback(m_window,
     //     [](GLFWwindow *window, int new_width, int new_height) -> void
     //     {
-    //         std::cout << "New window size = " << new_width << "x" << new_height << " in screen coordinates\n";
-    //         // glViewport(0, 0, new_width, new_height);
+    //         spdlog::debug("New window size = {}x{} in screen coordinates", new_width, new_height);
+    //         glViewport(0, 0, new_width, new_height);
     //     });
 
     glfwSetFramebufferSizeCallback(m_window,
         [](GLFWwindow *window, int new_width, int new_height) -> void
         {
+            spdlog::debug("New framebuffer size = {}x{} in pixels", new_width, new_height);
             glViewport(0, 0, new_width, new_height);
             glfwSetWindowAspectRatio(window, 16, 9);
         });
@@ -57,7 +60,7 @@ bool Window::isMaximized() const
 
 bool Window::isVerticalSyncEnabled() const
 {
-    std::cout << "'bool Window::isVerticalSyncEnabled() const' is not currently implemented." << std::endl;
+    spdlog::warn("'bool Window::isVerticalSyncEnabled() const' is not currently implemented");
     return false;
 }
 
