@@ -17,7 +17,7 @@ class SectionManager final : public Renderable, public Updateable
     template<CSection SECTION, typename... ARGS>
     constexpr void emplaceSection(ARGS&&... args);
     Section&& popSection();
-    size_t size() const noexcept;
+    std::size_t size() const noexcept;
     void clear() noexcept;
 
     void update() noexcept override;

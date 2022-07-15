@@ -13,7 +13,7 @@ Section&& SectionManager::popSection()
     return std::move(*section);
 }
 
-size_t SectionManager::size() const noexcept
+std::size_t SectionManager::size() const noexcept
 {
     return m_sections.size();
 }
