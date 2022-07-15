@@ -10,7 +10,7 @@ class DebugSection final : public Section
     public:
     inline DebugSection();
 
-    inline void update() noexcept;
+    inline void update() noexcept override;
     inline void render() noexcept override;
 
     private:
@@ -21,8 +21,6 @@ class DebugSection final : public Section
 
 DebugSection::DebugSection() : Section(), shaderManager(ShaderManager::get())
 {
-    std::cout << "name = " << m_name << std::endl;
-
     /* Create set of verticies of the triangle */
     float vertices[] =
         {-0.5f, -0.5f, 0.0f, 1.f, 0.f, 0.f, 0.5f, -0.5f, 0.0f, 0.f, 1.f, 0.f, 0.0f, 0.5f, 0.0f, 0.f, 0.f, 1.f};

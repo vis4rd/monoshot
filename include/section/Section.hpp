@@ -2,11 +2,14 @@
 
 #include <string>
 
-#include "../renderable/Renderable.hpp"
+#include "../input/Input.hpp"
+#include "../traits/Renderable.hpp"
+#include "../traits/Updateable.hpp"
 
-class Section : public Renderable
+class Section : public Renderable, public Updateable
 {
     public:
+    void update() noexcept override = 0;
     void render() noexcept override = 0;
 
     protected:

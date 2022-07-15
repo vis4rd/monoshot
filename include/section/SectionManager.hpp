@@ -5,7 +5,7 @@
 
 #include "Section.hpp"
 
-class SectionManager final : public Renderable
+class SectionManager final : public Renderable, public Updateable
 {
     public:
     SectionManager(const SectionManager&) = delete;
@@ -16,9 +16,11 @@ class SectionManager final : public Renderable
 
     template<CSection SECTION, typename... ARGS>
     constexpr void emplaceSection(ARGS&&... args);
-
     Section&& popSection();
+    size_t size() const noexcept;
+    void clear() noexcept;
 
+    void update() noexcept override;
     void render() noexcept override;
 
     private:
