@@ -78,22 +78,16 @@ bool Window::update(UPDATEABLES &&...updateables) noexcept
         (updateables.update(), ...);
     }
 
-    if(glfwWindowShouldClose(m_window))
-    {
-        spdlog::debug("GLFW asks to close the window");
-        m_shouldClose = true;
-    }
-    if(m_sectionManager.size() < 0)
+    if(m_sectionManager.size() == 0)
     {
         spdlog::debug("SectionManager asks to close the window");
         m_shouldClose = true;
     }
-    else
+    if(glfwWindowShouldClose(m_window))
     {
-        if(m_shouldClose == true)
-        {
-            m_sectionManager.clear();
-        }
+        spdlog::debug("GLFW asks to close the window");
+        m_shouldClose = true;
+        m_sectionManager.clear();
     }
 
     if(m_shouldClose)

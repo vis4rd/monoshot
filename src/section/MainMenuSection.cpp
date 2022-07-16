@@ -59,14 +59,22 @@ void MainMenuSection::render() noexcept
     {
         if(ImGui::Button("New game", {button_w, button_h}))
         {
+            spdlog::debug("Clicking 'New game'");
             auto& sm = SectionManager::get();
             sm.emplaceSection<DebugSection>();
             ImGui::End();
             ImGui::PopStyleVar();
             return;
         }
-        if(ImGui::Button("Settings", {button_w, button_h})) { }
-        if(ImGui::Button("Exit", {button_w, button_h})) { }
+        if(ImGui::Button("Settings", {button_w, button_h}))
+        {
+            spdlog::debug("Clicking 'Settings'");
+        }
+        if(ImGui::Button("Exit", {button_w, button_h}))
+        {
+            spdlog::debug("Clicking 'Exit'");
+            SectionManager::get().clear();
+        }
     }
     ImGui::End();
     ImGui::PopStyleVar();
