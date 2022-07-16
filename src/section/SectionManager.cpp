@@ -9,6 +9,7 @@ SectionManager& SectionManager::get()
 Section&& SectionManager::popSection()
 {
     auto section = m_sections.top().release();
+    spdlog::info("Removing {} in SectionManager", section->name());
     m_sections.pop();
     return std::move(*section);
 }
@@ -20,6 +21,7 @@ std::size_t SectionManager::size() const noexcept
 
 void SectionManager::clear() noexcept
 {
+    spdlog::info("Removing all sections");
     while(!m_sections.empty())
     {
         m_sections.pop();

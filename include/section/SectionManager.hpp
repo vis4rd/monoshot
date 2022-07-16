@@ -33,6 +33,6 @@ class SectionManager final : public Renderable, public Updateable
 template<CSection SECTION, typename... ARGS>
 constexpr void SectionManager::emplaceSection(ARGS&&... args)
 {
-    auto section_uptr = std::make_unique<SECTION>(std::forward<ARGS>(args)...);
-    m_sections.push(std::move(section_uptr));
+    auto& sec = m_sections.emplace(std::make_unique<SECTION>(std::forward<ARGS>(args)...));
+    spdlog::info("Emplaced a new {} in SectionManager", sec->name());
 }
