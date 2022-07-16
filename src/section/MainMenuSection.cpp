@@ -1,6 +1,9 @@
 #include "../../include/section/MainMenuSection.hpp"
 
-MainMenuSection::MainMenuSection() : Section() { }
+MainMenuSection::MainMenuSection() : Section()
+{
+    m_name = "MainMenuSection";
+}
 
 void MainMenuSection::update() noexcept { }
 
