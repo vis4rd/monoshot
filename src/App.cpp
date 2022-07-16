@@ -1,14 +1,16 @@
 #include "../include/App.hpp"
 
 App::App(const std::string& window_title, uint32_t width, uint32_t height)
-    : m_window(window_title, width, height), m_input(Input::get()), m_sectionManager(SectionManager::get())
+    : m_window(Window::get()), m_input(Input::get()), m_sectionManager(SectionManager::get())
 {
     this->initLogger();
     spdlog::info("App version: {}.{}.{} (build {})", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, BUILD_NUMBER);
 
+    m_window.setTitle(window_title);
+    m_window.setSize({width, height});
+
     MainMenuStyle();
 
-    m_sectionManager.emplaceSection<DebugSection>();
     m_sectionManager.emplaceSection<MainMenuSection>();
 }
 

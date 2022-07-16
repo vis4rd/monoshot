@@ -21,7 +21,7 @@ class App
     void terminate(int code = 0) noexcept;
 
     private:
-    Window m_window;
+    Window& m_window;
     Input& m_input;
     SectionManager& m_sectionManager;
 };
