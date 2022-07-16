@@ -3,6 +3,15 @@
 MainMenuSection::MainMenuSection() : Section()
 {
     m_name = "MainMenuSection";
+    auto& input_manager = Input::get();
+    auto group_id = input_manager.addGroup(m_name);
+    input_manager.addKeybind(group_id,
+        GLFW_KEY_ESCAPE,
+        GLFW_PRESS,
+        []
+        {
+            SectionManager::get().clear();
+        });
 }
 
 void MainMenuSection::update() noexcept { }

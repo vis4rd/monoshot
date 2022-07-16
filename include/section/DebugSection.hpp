@@ -21,6 +21,17 @@ class DebugSection final : public Section
 
 DebugSection::DebugSection() : Section(), shaderManager(ShaderManager::get())
 {
+    m_name = "DebugSection";
+    auto& input_manager = Input::get();
+    auto group_id = input_manager.addGroup(m_name);
+    input_manager.addKeybind(group_id,
+        GLFW_KEY_ESCAPE,
+        GLFW_PRESS,
+        []
+        {
+            SectionManager::get().popSection();
+        });
+
     /* Create set of verticies of the triangle */
     float vertices[] =
         {-0.5f, -0.5f, 0.0f, 1.f, 0.f, 0.f, 0.5f, -0.5f, 0.0f, 0.f, 1.f, 0.f, 0.0f, 0.5f, 0.0f, 0.f, 0.f, 1.f};

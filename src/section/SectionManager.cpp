@@ -14,6 +14,11 @@ Section&& SectionManager::popSection()
     return std::move(*section);
 }
 
+const Section& SectionManager::topSection() const
+{
+    return *(m_sections.top().get());
+}
+
 std::size_t SectionManager::size() const noexcept
 {
     return m_sections.size();
