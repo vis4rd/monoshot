@@ -20,6 +20,7 @@ const std::size_t Input::addGroup(const std::string& name)
 
 void Input::processGroup(GLFWwindow* window, const std::string& group)
 {
+    spdlog::trace("Processing keybind group '{}'", group);
     auto iter = std::find_if(m_keybinds.begin(),
         m_keybinds.end(),
         [&group](const Group& g)
@@ -30,7 +31,7 @@ void Input::processGroup(GLFWwindow* window, const std::string& group)
     {
         for(auto& [glfw_key, keybind] : iter->keybinds)
         {
-            keybind.callback(window);
+            keybind.callback(window, keybind.key, keybind.action);
         }
     }
     else

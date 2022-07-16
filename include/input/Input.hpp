@@ -9,7 +9,7 @@ class Input
         int32_t key;
         int32_t scancode;
         int32_t action;
-        std::function<void(GLFWwindow*)> callback;
+        std::function<void(GLFWwindow*, int32_t, int32_t)> callback;
     };
     struct Group
     {
@@ -52,6 +52,7 @@ constexpr void Input::addKeybind(const std::string& group,
     FUNC&& callback,
     Args&&... cb_args)
 {
+    spdlog::info("Adding new keybind to group {}", group);
     auto iter = std::find_if(m_keybinds.begin(),
         m_keybinds.end(),
         [&group](const Group& g)
@@ -63,11 +64,11 @@ constexpr void Input::addKeybind(const std::string& group,
         throw std::runtime_error("Given keybind group does not exist.");
     }
 
-    auto wrapper = [&key, &action, &callback, &cb_args...](GLFWwindow* window)
+    auto wrapper = [callback, cb_args...](GLFWwindow* window, int32_t key, int32_t action)
     {
         if(glfwGetKey(window, key) == action)
         {
-            std::invoke(std::forward<FUNC>(callback), std::forward<Args>(cb_args)...);
+            std::invoke(callback, cb_args...);
         }
     };
     iter->keybinds[key] = Keybind{key, glfwGetKeyScancode(key), action, std::move(wrapper)};
