@@ -34,6 +34,12 @@ class Input
         int32_t action,
         FUNC&& callback,
         Args&&... cb_args);
+    template<typename FUNC, typename... Args>
+    constexpr void addKeybind(const std::size_t& group_id,
+        int32_t key,
+        int32_t action,
+        FUNC&& callback,
+        Args&&... cb_args);
     void processGroup(GLFWwindow* window, const std::string& group);
     void removeGroup(const std::string& group);
     void removeKeybind(const std::string& group, int32_t glfw_key);
@@ -52,7 +58,6 @@ constexpr void Input::addKeybind(const std::string& group,
     FUNC&& callback,
     Args&&... cb_args)
 {
-    spdlog::info("Adding new keybind to group {}", group);
     auto iter = std::find_if(m_keybinds.begin(),
         m_keybinds.end(),
         [&group](const Group& g)
@@ -64,6 +69,7 @@ constexpr void Input::addKeybind(const std::string& group,
         throw std::runtime_error("Given keybind group does not exist.");
     }
 
+    spdlog::info("Adding new keybind to group {}", group);
     auto wrapper = [callback, cb_args...](GLFWwindow* window, int32_t key, int32_t action)
     {
         if(glfwGetKey(window, key) == action)
@@ -72,4 +78,31 @@ constexpr void Input::addKeybind(const std::string& group,
         }
     };
     iter->keybinds[key] = Keybind{key, glfwGetKeyScancode(key), action, std::move(wrapper)};
+}
+
+template<typename FUNC, typename... Args>
+constexpr void Input::addKeybind(const std::size_t& group_id,
+    int32_t key,
+    int32_t action,
+    FUNC&& callback,
+    Args&&... cb_args)
+{
+    if((group_id >= m_keybinds.size()) || (group_id < 0))
+    {
+        spdlog::debug("Given group_id = {} is out of bounds in keybinds vector of size {}",
+            group_id,
+            m_keybinds.size());
+        spdlog::critical("Given keybind group does not exist");
+        throw std::runtime_error("Given keybind group does not exist.");
+    }
+
+    spdlog::info("Adding new keybind to group {}", m_keybinds.at(group_id).name);
+    auto wrapper = [callback, cb_args...](GLFWwindow* window, int32_t key, int32_t action)
+    {
+        if(glfwGetKey(window, key) == action)
+        {
+            std::invoke(callback, cb_args...);
+        }
+    };
+    m_keybinds.at(group_id).keybinds[key] = Keybind{key, glfwGetKeyScancode(key), action, std::move(wrapper)};
 }
