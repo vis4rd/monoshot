@@ -9,11 +9,12 @@
 class Section : public Renderable, public Updateable
 {
     public:
+    const std::string& name() const noexcept;
     void update() noexcept override = 0;
     void render() noexcept override = 0;
 
     protected:
-    const std::string m_name = "Section";
+    std::string m_name = "Section";
 };
 
 template<typename T>
