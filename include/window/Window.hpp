@@ -6,17 +6,25 @@
 class Window final
 {
     public:
-    Window() = default;
-    Window(const std::string &window_title, uint32_t width, uint32_t height);
-    ~Window() noexcept = default;
+    Window(const Window &) = delete;
+    Window(Window &&) = delete;
+    Window &operator=(const Window &) = delete;
+    Window &operator=(Window &&) = delete;
+    static Window &get();
+    // Window() = default;
+    // Window(const std::string &window_title, uint32_t width, uint32_t height);
+    // ~Window() noexcept = default;
 
-    GLFWwindow *getWindow();
+    GLFWwindow *getGlfwWindow();
     const ImGuiIO &getImGuiIo() const;
     std::pair<int32_t, int32_t> getSize() const;
     const std::string &getTitle() const;
 
+    bool isFullscreen() const;
     bool isMaximized() const;
     bool isVerticalSyncEnabled() const;
+
+    void toggleFullscreen();
 
     void setSize(const std::pair<int32_t, int32_t> &new_size);
     void setTitle(const std::string &title);
@@ -33,18 +41,22 @@ class Window final
     void render(RENDERABLES &&...renderables) noexcept;
 
     private:
+    Window();
     void initGLFW();
     void initImGui();
     void initGL();
+    void initKeybinds();
     void terminate();
 
     private:
     GLFWwindow *m_window = nullptr;
     ImGuiIO m_io;
-    std::string m_title{};
-    uint32_t m_width = 0;
-    uint32_t m_height = 0;
+    std::string m_title = "Game";
+    uint32_t m_width = 640;
+    uint32_t m_height = 480;
     bool m_shouldClose = false;
+    bool m_isFullscreen = false;
+    bool m_isVSyncEnabled = true;
     SectionManager &m_sectionManager = SectionManager::get();
     Input &m_inputManager = Input::get();
 };
@@ -54,6 +66,9 @@ template<typename... UPDATEABLES>
 requires CUpdateablePack<UPDATEABLES...>
 bool Window::update(UPDATEABLES &&...updateables) noexcept
 {
+    spdlog::trace("Handling inputs");
+    m_inputManager.processGroup(m_window, "window");
+
     spdlog::trace("Polling GLFW events");
     glfwPollEvents();
 
@@ -75,7 +90,10 @@ bool Window::update(UPDATEABLES &&...updateables) noexcept
     }
     else
     {
-        m_sectionManager.clear();
+        if(m_shouldClose == true)
+        {
+            m_sectionManager.clear();
+        }
     }
 
     if(m_shouldClose)
@@ -101,9 +119,7 @@ void Window::render(RENDERABLES &&...renderables) noexcept
     // Debug panel
     if(show_debug_panel)
     {
-        static bool vsync = true;
         static bool show_demo_window = false;
-        static bool fullscreen = false;
         ImGui::Begin("Debug Panel");
 
         ImGui::Checkbox("Demo Window", &show_demo_window);
@@ -112,15 +128,14 @@ void Window::render(RENDERABLES &&...renderables) noexcept
             ImGui::ShowDemoWindow(&show_demo_window);
         }
 
-        if(ImGui::Checkbox("Toggle VSYNC", &vsync))
+        if(ImGui::Checkbox("Toggle VSYNC", &m_isVSyncEnabled))
         {
-            this->setVerticalSync(vsync);
+            this->setVerticalSync(m_isVSyncEnabled);
         }
 
-        if(ImGui::Checkbox("Toggle fullscreen", &fullscreen))
+        if(ImGui::Checkbox("Toggle fullscreen", &m_isFullscreen))
         {
-            this->setFullscreen(fullscreen);
-            this->setVerticalSync(vsync);
+            this->setFullscreen(m_isFullscreen);
         }
 
         if(ImGui::ColorEdit3("clear color", (float *)&clear_color))

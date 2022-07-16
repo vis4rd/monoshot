@@ -1,13 +1,19 @@
 #include "../../include/window/Window.hpp"
 
-Window::Window(const std::string &window_title, uint32_t width, uint32_t height)
-    : m_title(window_title), m_width(width), m_height(height)
+Window &Window::get()
+{
+    static Window instance;
+    return instance;
+}
+
+Window::Window()
 {
     spdlog::info("Creating window instance");
 
     this->initGLFW();
     this->initImGui();
     this->initGL();
+    this->initKeybinds();
 
     // glfwSetWindowSizeCallback(m_window,
     //     [](GLFWwindow *window, int new_width, int new_height) -> void
@@ -31,7 +37,7 @@ Window::Window(const std::string &window_title, uint32_t width, uint32_t height)
     //     });
 }
 
-GLFWwindow *Window::getWindow()
+GLFWwindow *Window::getGlfwWindow()
 {
     return m_window;
 }
@@ -53,6 +59,11 @@ const std::string &Window::getTitle() const
     return m_title;
 }
 
+bool Window::isFullscreen() const
+{
+    return m_isFullscreen;
+}
+
 bool Window::isMaximized() const
 {
     return static_cast<bool>(glfwGetWindowAttrib(m_window, GLFW_MAXIMIZED));
@@ -60,13 +71,19 @@ bool Window::isMaximized() const
 
 bool Window::isVerticalSyncEnabled() const
 {
-    spdlog::warn("'bool Window::isVerticalSyncEnabled() const' is not currently implemented");
-    return false;
+    return m_isVSyncEnabled;
+}
+
+void Window::toggleFullscreen()
+{
+    this->setFullscreen(!m_isFullscreen);
 }
 
 void Window::setSize(const std::pair<int32_t, int32_t> &new_size)
 {
-    glfwSetWindowSize(m_window, new_size.first, new_size.second);
+    m_width = new_size.first;
+    m_height = new_size.second;
+    glfwSetWindowSize(m_window, m_width, m_height);
 }
 
 void Window::setTitle(const std::string &title)
@@ -77,6 +94,7 @@ void Window::setTitle(const std::string &title)
 
 void Window::setFullscreen(bool fullscreen)
 {
+    m_isFullscreen = fullscreen;
     if(fullscreen)
     {
         glfwSetWindowMonitor(m_window, glfwGetPrimaryMonitor(), 0, 0, 1920, 1080, GLFW_DONT_CARE);
@@ -85,6 +103,7 @@ void Window::setFullscreen(bool fullscreen)
     {
         glfwSetWindowMonitor(m_window, nullptr, 320, 180, 1280, 720, GLFW_DONT_CARE);
     }
+    this->setVerticalSync(m_isVSyncEnabled);
 }
 
 void Window::setMaximized(bool maximized)
@@ -101,6 +120,7 @@ void Window::setMaximized(bool maximized)
 
 void Window::setVerticalSync(bool vsync)
 {
+    m_isVSyncEnabled = vsync;
     glfwSwapInterval(static_cast<int>(vsync));
 }
 
@@ -184,4 +204,27 @@ void Window::initGL()
     }
 
     glViewport(0, 0, m_width, m_height);
+}
+
+void Window::initKeybinds()
+{
+    auto id = m_inputManager.addGroup("window");
+    m_inputManager.addKeybind("window",
+        GLFW_KEY_F11,
+        GLFW_PRESS,
+        []
+        {
+            auto &window = Window::get();
+            window.toggleFullscreen();
+        });
+    m_inputManager.addKeybind("window",
+        GLFW_KEY_ESCAPE,
+        GLFW_PRESS,
+        [&should_close = m_shouldClose]
+        {
+            if(SectionManager::get().size() == 1)
+            {
+                should_close = true;
+            }
+        });
 }
