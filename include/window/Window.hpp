@@ -107,6 +107,16 @@ void Window::render(RENDERABLES &&...renderables) noexcept
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
+    // Clear previous frame
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    // Render
+    //// Render my own stuff
+    if constexpr(sizeof...(renderables) > 0)
+    {
+        (renderables.render(), ...);
+    }
+
     static bool show_debug_panel = true;
     static glm::vec4 clear_color = glm::vec4(0.f, 0.f, 0.f, 1.f);
     // Debug panel
@@ -142,16 +152,6 @@ void Window::render(RENDERABLES &&...renderables) noexcept
         ImGui::Text("Performance: %.3f ms,  %.1f fps", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
         ImGui::End();
-    }
-
-    // Clear previous frame
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    // Render
-    //// Render my own stuff
-    if constexpr(sizeof...(renderables) > 0)
-    {
-        (renderables.render(), ...);
     }
 
     //// Render ImGui (UI) on top

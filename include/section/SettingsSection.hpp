@@ -1,11 +1,11 @@
 #pragma once
 
-#include "SettingsSection.hpp"
+#include "DebugSection.hpp"
 
-class MainMenuSection final : public Section
+class SettingsSection final : public Section
 {
     public:
-    MainMenuSection();
+    SettingsSection();
 
     void update() noexcept override;
     void render() noexcept override;
