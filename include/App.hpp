@@ -1,7 +1,6 @@
 #pragma once
 
-#include "window/Window.hpp"
-#include "section/SectionManager.hpp"
+#include "section/MainMenuSection.hpp"
 #include "../meta/Version.hpp"
 #include "ui/MainMenuStyle.hpp"
 

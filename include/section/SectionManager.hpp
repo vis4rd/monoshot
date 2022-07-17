@@ -1,8 +1,5 @@
 #pragma once
 
-#include <stack>
-#include <memory>
-
 #include "Section.hpp"
 
 class SectionManager final : public Renderable, public Updateable

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../section/MainMenuSection.hpp"
+#include "../section/SectionManager.hpp"
 
 
 class Window final

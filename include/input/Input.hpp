@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Root.hpp"
+#include "../shader/ShaderManager.hpp"
 
 class Input
 {

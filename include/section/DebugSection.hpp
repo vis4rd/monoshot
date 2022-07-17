@@ -1,9 +1,6 @@
 #pragma once
 
-#include "../Root.hpp"
-
-#include "SectionManager.hpp"
-#include "../shader/ShaderManager.hpp"
+#include "../window/Window.hpp"
 
 class DebugSection final : public Section
 {
