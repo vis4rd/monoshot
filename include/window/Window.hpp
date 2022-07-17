@@ -11,9 +11,6 @@ class Window final
     Window &operator=(const Window &) = delete;
     Window &operator=(Window &&) = delete;
     static Window &get();
-    // Window() = default;
-    // Window(const std::string &window_title, uint32_t width, uint32_t height);
-    // ~Window() noexcept = default;
 
     GLFWwindow *getGlfwWindow();
     const ImGuiIO &getImGuiIo() const;
@@ -66,19 +63,6 @@ template<typename... UPDATEABLES>
 requires CUpdateablePack<UPDATEABLES...>
 bool Window::update(UPDATEABLES &&...updateables) noexcept
 {
-    spdlog::trace("Handling inputs");
-    m_inputManager.processGroup(m_window, "window");
-    m_inputManager.processGroup(m_window, m_sectionManager.topSection().name());
-
-    spdlog::trace("Polling GLFW events");
-    glfwPollEvents();
-
-    spdlog::trace("Updating updateables passed to Window::update()");
-    if constexpr(sizeof...(updateables) > 0)
-    {
-        (updateables.update(), ...);
-    }
-
     if(m_sectionManager.size() == 0)
     {
         spdlog::debug("SectionManager asks to close the window");
@@ -94,10 +78,24 @@ bool Window::update(UPDATEABLES &&...updateables) noexcept
     if(m_shouldClose)
     {
         this->terminate();
+        spdlog::trace("Window::update() returns false");
+        return false;
     }
 
-    spdlog::trace("Window::update() returns {}", !m_shouldClose);
-    return !m_shouldClose;
+    spdlog::trace("Handling inputs");
+    m_inputManager.processGroup(m_window, "window");
+    m_inputManager.processGroup(m_window, m_sectionManager.topSection().name());
+
+    spdlog::trace("Polling GLFW events");
+    glfwPollEvents();
+
+    spdlog::trace("Updating updateables passed to Window::update()");
+    if constexpr(sizeof...(updateables) > 0)
+    {
+        (updateables.update(), ...);
+    }
+
+    return true;
 }
 
 template<typename... RENDERABLES>
