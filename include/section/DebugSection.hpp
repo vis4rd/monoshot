@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../window/Window.hpp"
+#include "../ui/elements/LowerNavigationBox.hpp"
 
 class DebugSection final : public Section
 {
