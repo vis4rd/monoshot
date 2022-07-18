@@ -2,7 +2,7 @@
 
 #include "section/MainMenuSection.hpp"
 #include "../meta/Version.hpp"
-#include "ui/MainMenuStyle.hpp"
+#include "ui/styles/MainMenuStyle.hpp"
 
 class App
 {
