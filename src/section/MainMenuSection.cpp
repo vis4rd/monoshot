@@ -54,7 +54,7 @@ void MainMenuSection::render() noexcept
     auto button_w_s = base_h_spacing * scale_w;
     auto button_h_s = base_h_spacing * scale_h;
 
-    ImGui::Begin("Main Menu", nullptr, window_flags);
+    ImGui::Begin("MainMenuGameTitle", nullptr, window_flags);
     {
         ImGui::Text("Top-down Shooter Game");
     }
@@ -64,7 +64,7 @@ void MainMenuSection::render() noexcept
     ImGui::SetNextWindowPos({menu_x, menu_y});
     ImGui::SetNextWindowSize({menu_w, menu_h});
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {button_w_s, button_h_s});
-    ImGui::Begin("Main Menu", nullptr, window_flags);
+    ImGui::Begin("MainMenu", nullptr, window_flags);
     {
         if(ImGui::Button("New game", {button_w, button_h}))
         {
