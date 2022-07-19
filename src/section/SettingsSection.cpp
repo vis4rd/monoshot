@@ -67,7 +67,6 @@ void SettingsSection::render() noexcept
     {
         const auto& [window_w, window_h] = Window::get().getSize();
         std::string current_resolution = std::to_string(window_w) + "x" + std::to_string(window_h);
-        ImGui::PushItemWidth(button_w);  // why should need this, check Custom::ImGui::BeginCombo!
         if(Custom::ImGui::BeginCombo("Resolution", current_resolution.c_str(), {button_w, button_h}))
         {
             int32_t mode_count = 0;
@@ -85,7 +84,6 @@ void SettingsSection::render() noexcept
                 }
             }
             ImGui::EndCombo();
-            ImGui::PopItemWidth();
         }
         if(ImGui::Button("Button 1", {button_w, button_h}))
         {

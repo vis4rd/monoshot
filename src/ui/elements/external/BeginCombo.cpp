@@ -1,9 +1,24 @@
 #include "../../../../include/ui/elements/external/BeginCombo.hpp"
+#include "spdlog/spdlog.h"
 
 namespace Custom
 {
 
+namespace helpers
+{
+inline constexpr ImVec2 operator+(const ImVec2& first, const ImVec2& second)
+{
+    return ImVec2(first.x + second.x, first.y + second.y);
+}
+
+inline constexpr ImVec2 operator*(const ImVec2& first, const float multiplier)
+{
+    return ImVec2(first.x * multiplier, first.y * multiplier);
+}
+}  // namespace helpers
+
 using namespace ::ImGui;
+using namespace helpers;
 bool ImGui::BeginCombo(const char* label, const char* preview_value, const ImVec2& size_arg, ImGuiComboFlags flags)
 {
     ImGuiContext& ctx = *GImGui;
@@ -23,17 +38,17 @@ bool ImGui::BeginCombo(const char* label, const char* preview_value, const ImVec
 
     const float arrow_size = (flags & ImGuiComboFlags_NoArrowButton) ? 0.0f : GetFrameHeight();
     const ImVec2 label_size = CalcTextSize(label, NULL, true);
-    ImVec2 size =
-        CalcItemSize(size_arg, label_size.x + style.FramePadding.x * 2.0f, label_size.y + style.FramePadding.y * 2.0f);
+    const ImVec2 label_size_with_padding = label_size + (style.FramePadding * 2.f);
+    const ImVec2 size = CalcItemSize(size_arg, label_size_with_padding.x, label_size_with_padding.y);
 
-    const float w = (flags & ImGuiComboFlags_NoPreview) ? arrow_size : CalcItemWidth();
-    const ImRect bounding_box(window.DC.CursorPos, ImVec2(window.DC.CursorPos.x + w, window.DC.CursorPos.y + size.y));
+    const ImRect bounding_box(window.DC.CursorPos, window.DC.CursorPos + size);
     const ImRect total_bounding_box(bounding_box.Min,
-        ImVec2(bounding_box.Max.x + (label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f),
-            bounding_box.Max.y + 0.0f));
+        ImVec2(bounding_box.Max.x + (label_size.x * style.ItemInnerSpacing.x) + label_size.x, bounding_box.Max.y));
     ItemSize(total_bounding_box, style.FramePadding.y);
     if(!ItemAdd(total_bounding_box, id, &bounding_box))
+    {
         return false;
+    }
 
     // Open on click
     bool hovered, held;
@@ -66,7 +81,7 @@ bool ImGui::BeginCombo(const char* label, const char* preview_value, const ImVec
             bounding_box.Max,
             bg_col,
             style.FrameRounding,
-            (w <= arrow_size) ? ImDrawFlags_RoundCornersAll : ImDrawFlags_RoundCornersRight);
+            (size.x <= arrow_size) ? ImDrawFlags_RoundCornersAll : ImDrawFlags_RoundCornersRight);
         if(value_x2 + arrow_size - style.FramePadding.x <= bounding_box.Max.x)
         {
             RenderArrow(window.DrawList,
