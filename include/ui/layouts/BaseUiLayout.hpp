@@ -7,12 +7,10 @@ namespace UI
 
 struct BaseUiLayout
 {
-    BaseUiLayout(const ImVec2& workpos, const ImVec2& worksize, const ImVec2& menusize)
-        : base_menu_w(menusize.x), base_menu_h(menusize.y), viewport_w(worksize.x), viewport_h(worksize.y),
-          viewport_x(workpos.x), viewport_y(workpos.y)
-    {
-    }
+    inline BaseUiLayout(const ImVec2& workpos, const ImVec2& worksize, const ImVec2& menusize);
+    inline void update(const ImVec2& workpos, const ImVec2& worksize);
 
+    private:
     const float base_viewport_w = 1920.f;
     const float base_viewport_h = 1080.f;
     const float base_menu_w;
@@ -24,14 +22,17 @@ struct BaseUiLayout
     const float base_external_w_spacing = 40.f;
     const float base_external_h_spacing = 40.f;
 
-    const float viewport_w;
-    const float viewport_h;
-    const float viewport_x;
-    const float viewport_y;
+    public:
+    float viewport_w;
+    float viewport_h;
+    float viewport_x;
+    float viewport_y;
 
-    const float scale_w = viewport_w / base_viewport_w;
-    const float scale_h = viewport_h / base_viewport_h;
+    private:
+    float scale_w = viewport_w / base_viewport_w;
+    float scale_h = viewport_h / base_viewport_h;
 
+    public:
     float external_h_spacing = 40.f * scale_h;
     float external_w_spacing = 40.f * scale_w;
     float menu_w = base_menu_w * scale_w;
@@ -50,5 +51,33 @@ struct BaseUiLayout
                                     // | ImGuiWindowFlags_NoBackground  // uncomment when everything setup
                                     | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoDocking;
 };
+
+BaseUiLayout::BaseUiLayout(const ImVec2& workpos, const ImVec2& worksize, const ImVec2& menusize)
+    : base_menu_w(menusize.x), base_menu_h(menusize.y), viewport_w(worksize.x), viewport_h(worksize.y),
+      viewport_x(workpos.x), viewport_y(workpos.y)
+{
+}
+
+void BaseUiLayout::update(const ImVec2& workpos, const ImVec2& worksize)
+{
+    viewport_w = worksize.x;
+    viewport_h = worksize.y;
+    viewport_x = workpos.x;
+    viewport_y = workpos.y;
+
+    scale_w = viewport_w / base_viewport_w;
+    scale_h = viewport_h / base_viewport_h;
+
+    external_h_spacing = 40.f * scale_h;
+    external_w_spacing = 40.f * scale_w;
+    menu_w = base_menu_w * scale_w;
+    menu_h = base_menu_h * scale_h;
+    menu_x = viewport_x + external_w_spacing;
+    menu_y = viewport_y + viewport_h - menu_h - external_h_spacing;
+    button_w = base_button_w * scale_w;
+    button_h = base_button_h * scale_h;
+    button_w_s = base_w_spacing * scale_w;
+    button_h_s = base_h_spacing * scale_h;
+}
 
 }  // namespace UI

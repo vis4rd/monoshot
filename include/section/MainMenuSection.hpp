@@ -11,4 +11,5 @@ class MainMenuSection final : public Section
     void render() noexcept override;
 
     private:
+    UI::BaseUiLayout m_layout;
 };

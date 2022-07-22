@@ -1,6 +1,8 @@
 #include "../../include/section/SettingsSection.hpp"
 
-SettingsSection::SettingsSection() : Section()
+SettingsSection::SettingsSection()
+    : Section(), m_layout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize, {1840.f, 660.f}),
+      m_navLayout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize, {1840.f, 110.f})
 {
     m_name = "SettingsSection";
     auto& input_manager = Input::get();
@@ -12,6 +14,9 @@ SettingsSection::SettingsSection() : Section()
         {
             SectionManager::get().popSection();
         });
+
+    m_layout.menu_y = m_layout.viewport_y + m_layout.external_h_spacing;
+    m_layout.menu_h = m_layout.viewport_h - m_navLayout.menu_h - (3.f * m_layout.external_h_spacing);
 }
 
 void SettingsSection::update() noexcept { }
@@ -19,22 +24,19 @@ void SettingsSection::update() noexcept { }
 void SettingsSection::render() noexcept
 {
     const ImGuiViewport& main_viewport = *ImGui::GetMainViewport();
-    auto main_window_layout = UI::BaseUiLayout(main_viewport.WorkPos, main_viewport.WorkSize, {1840.f, 660.f});
-    auto navigation_window_layout = UI::BaseUiLayout(main_viewport.WorkPos, main_viewport.WorkSize, {1840.f, 110.f});
-    main_window_layout.menu_y = main_window_layout.viewport_y + main_window_layout.external_h_spacing;
-    main_window_layout.menu_h =
-        main_window_layout.viewport_h - navigation_window_layout.menu_h - (3.f * main_window_layout.external_h_spacing);
+    m_layout.update(main_viewport.WorkPos, main_viewport.WorkSize);
+    m_navLayout.update(main_viewport.WorkPos, main_viewport.WorkSize);
+    m_layout.menu_y = m_layout.viewport_y + m_layout.external_h_spacing;
+    m_layout.menu_h = m_layout.viewport_h - m_navLayout.menu_h - (3.f * m_layout.external_h_spacing);
 
-    ImGui::SetNextWindowPos({main_window_layout.menu_x, main_window_layout.menu_y});
-    ImGui::SetNextWindowSize({main_window_layout.menu_w, main_window_layout.menu_h});
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {main_window_layout.button_w_s, main_window_layout.button_h_s});
-    ImGui::Begin("SettingsMenu", nullptr, main_window_layout.window_flags);
+    ImGui::SetNextWindowPos({m_layout.menu_x, m_layout.menu_y});
+    ImGui::SetNextWindowSize({m_layout.menu_w, m_layout.menu_h});
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {m_layout.button_w_s, m_layout.button_h_s});
+    ImGui::Begin("SettingsMenu", nullptr, m_layout.window_flags);
     {
         const auto& [window_w, window_h] = Window::get().getSize();
         std::string current_resolution = std::to_string(window_w) + "x" + std::to_string(window_h);
-        if(Custom::ImGui::BeginCombo("Resolution",
-               current_resolution.c_str(),
-               {main_window_layout.button_w, main_window_layout.button_h}))
+        if(Custom::ImGui::BeginCombo("Resolution", current_resolution.c_str(), {m_layout.button_w, m_layout.button_h}))
         {
             int32_t mode_count = 0;
             const auto* modes = glfwGetVideoModes(glfwGetPrimaryMonitor(), &mode_count);
@@ -52,7 +54,7 @@ void SettingsSection::render() noexcept
             }
             ImGui::EndCombo();
         }
-        else if(ImGui::Button("Button 1", {main_window_layout.button_w, main_window_layout.button_h}))
+        else if(ImGui::Button("Button 1", {m_layout.button_w, m_layout.button_h}))
         {
             spdlog::debug("Clicking Button 1");
         }
@@ -60,5 +62,5 @@ void SettingsSection::render() noexcept
     ImGui::End();
     ImGui::PopStyleVar();
 
-    UI::LowerNavigationBox(navigation_window_layout);
+    UI::LowerNavigationBox(m_navLayout);
 }
