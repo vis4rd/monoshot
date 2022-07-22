@@ -19,7 +19,7 @@ class DebugSection final : public Section
 DebugSection::DebugSection() : Section(), shaderManager(ShaderManager::get())
 {
     m_name = "DebugSection";
-    auto& input_manager = Input::get();
+    auto& input_manager = InputManager::get();
     auto group_id = input_manager.addGroup(m_name);
     input_manager.addKeybind(group_id,
         GLFW_KEY_ESCAPE,

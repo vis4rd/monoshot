@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "../input/Input.hpp"
+#include "../input/InputManager.hpp"
 #include "../traits/Renderable.hpp"
 #include "../traits/Updateable.hpp"
 

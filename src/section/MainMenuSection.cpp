@@ -4,7 +4,7 @@ MainMenuSection::MainMenuSection()
     : Section(), m_layout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize, {512.f, 512.f})
 {
     m_name = "MainMenuSection";
-    auto& input_manager = Input::get();
+    auto& input_manager = InputManager::get();
     auto group_id = input_manager.addGroup(m_name);
     input_manager.addKeybind(group_id,
         GLFW_KEY_ESCAPE,

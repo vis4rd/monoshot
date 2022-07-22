@@ -55,7 +55,7 @@ class Window final
     bool m_isFullscreen = false;
     bool m_isVSyncEnabled = true;
     SectionManager &m_sectionManager = SectionManager::get();
-    Input &m_inputManager = Input::get();
+    InputManager &m_inputManager = InputManager::get();
 };
 
 

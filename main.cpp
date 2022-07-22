@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 #include "include/App.hpp"
-#include "include/input/Input.hpp"
+#include "include/input/InputManager.hpp"
 #include "include/shader/ShaderManager.hpp"
 
 int main(int, char**)

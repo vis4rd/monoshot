@@ -21,6 +21,6 @@ class App
 
     private:
     Window& m_window;
-    Input& m_input;
+    InputManager& m_input;
     SectionManager& m_sectionManager;
 };

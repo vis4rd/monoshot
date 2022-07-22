@@ -5,7 +5,7 @@ SettingsSection::SettingsSection()
       m_navLayout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize, {1840.f, 110.f})
 {
     m_name = "SettingsSection";
-    auto& input_manager = Input::get();
+    auto& input_manager = InputManager::get();
     auto group_id = input_manager.addGroup(m_name);
     input_manager.addKeybind(group_id,
         GLFW_KEY_ESCAPE,
