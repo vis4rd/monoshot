@@ -18,67 +18,36 @@ void MainMenuSection::update() noexcept { }
 
 void MainMenuSection::render() noexcept
 {
-    ImGuiWindowFlags window_flags = 0;
-    window_flags |= ImGuiWindowFlags_NoTitleBar;
-    window_flags |= ImGuiWindowFlags_NoScrollbar;
-    window_flags |= ImGuiWindowFlags_NoMove;
-    window_flags |= ImGuiWindowFlags_NoResize;
-    window_flags |= ImGuiWindowFlags_NoCollapse;
-    window_flags |= ImGuiWindowFlags_NoNav;
-    // window_flags |= ImGuiWindowFlags_NoBackground;  // uncomment when everything setup
-    window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus;
-    window_flags |= ImGuiWindowFlags_NoDocking;
-
     const ImGuiViewport& main_viewport = *ImGui::GetMainViewport();
-    auto& style = ImGui::GetStyle();
+    auto main_window_layout = UI::BaseUiLayout(main_viewport.WorkPos, main_viewport.WorkSize, {512.f, 512.f});
+    main_window_layout.menu_y =
+        main_window_layout.viewport_y + ((main_window_layout.viewport_h - main_window_layout.menu_h) / 2.f);
 
-    auto base_viewport_w = 1920.f;
-    auto base_viewport_h = 1080.f;
-    auto base_menu_w = 512.f;
-    auto base_menu_h = 512.f;
-    auto base_button_w = 256.f;
-    auto base_button_h = 64.f;
-    auto base_h_spacing = 8.f;
-
-    auto& [viewport_w, viewport_h] = main_viewport.WorkSize;
-    auto& [viewport_x, viewport_y] = main_viewport.WorkPos;
-    auto scale_w = viewport_w / base_viewport_w;
-    auto scale_h = viewport_h / base_viewport_h;
-
-    auto menu_w = base_menu_w * scale_w;
-    auto menu_h = base_menu_h * scale_h;
-    auto menu_x = viewport_x + 40.f;
-    auto menu_y = viewport_y + ((viewport_h - menu_h) / 2.f);
-    auto button_w = base_button_w * scale_w;
-    auto button_h = base_button_h * scale_h;
-    auto button_w_s = base_h_spacing * scale_w;
-    auto button_h_s = base_h_spacing * scale_h;
-
-    ImGui::Begin("MainMenuGameTitle", nullptr, window_flags);
+    ImGui::SetNextWindowPos({main_window_layout.menu_x, main_window_layout.menu_y - 100.f});
+    ImGui::Begin("MainMenuGameTitle", nullptr, main_window_layout.window_flags);
     {
         ImGui::Text("Top-down Shooter Game");
     }
     ImGui::End();
 
-
-    ImGui::SetNextWindowPos({menu_x, menu_y});
-    ImGui::SetNextWindowSize({menu_w, menu_h});
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {button_w_s, button_h_s});
-    ImGui::Begin("MainMenu", nullptr, window_flags);
+    ImGui::SetNextWindowPos({main_window_layout.menu_x, main_window_layout.menu_y});
+    ImGui::SetNextWindowSize({main_window_layout.menu_w, main_window_layout.menu_h});
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {main_window_layout.button_w_s, main_window_layout.button_h_s});
+    ImGui::Begin("MainMenu", nullptr, main_window_layout.window_flags);
     {
-        if(ImGui::Button("New game", {button_w, button_h}))
+        if(ImGui::Button("New game", {main_window_layout.button_w, main_window_layout.button_h}))
         {
             spdlog::debug("Clicking 'New game'");
             auto& sm = SectionManager::get();
             sm.emplaceSection<DebugSection>();
         }
-        else if(ImGui::Button("Settings", {button_w, button_h}))
+        else if(ImGui::Button("Settings", {main_window_layout.button_w, main_window_layout.button_h}))
         {
             spdlog::debug("Clicking 'Settings'");
             auto& sm = SectionManager::get();
             sm.emplaceSection<SettingsSection>();
         }
-        else if(ImGui::Button("Exit", {button_w, button_h}))
+        else if(ImGui::Button("Exit", {main_window_layout.button_w, main_window_layout.button_h}))
         {
             spdlog::debug("Clicking 'Exit'");
             SectionManager::get().clear();

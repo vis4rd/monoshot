@@ -18,56 +18,23 @@ void SettingsSection::update() noexcept { }
 
 void SettingsSection::render() noexcept
 {
-    ImGuiWindowFlags window_flags = 0;
-    window_flags |= ImGuiWindowFlags_NoTitleBar;
-    window_flags |= ImGuiWindowFlags_NoScrollbar;
-    window_flags |= ImGuiWindowFlags_NoMove;
-    window_flags |= ImGuiWindowFlags_NoResize;
-    window_flags |= ImGuiWindowFlags_NoCollapse;
-    window_flags |= ImGuiWindowFlags_NoNav;
-    // window_flags |= ImGuiWindowFlags_NoBackground;  // uncomment when everything setup
-    window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus;
-    window_flags |= ImGuiWindowFlags_NoDocking;
-
     const ImGuiViewport& main_viewport = *ImGui::GetMainViewport();
-    auto& style = ImGui::GetStyle();
+    auto main_window_layout = UI::BaseUiLayout(main_viewport.WorkPos, main_viewport.WorkSize, {1840.f, 660.f});
+    auto navigation_window_layout = UI::BaseUiLayout(main_viewport.WorkPos, main_viewport.WorkSize, {1840.f, 110.f});
+    main_window_layout.menu_y = main_window_layout.viewport_y + main_window_layout.external_h_spacing;
+    main_window_layout.menu_h =
+        main_window_layout.viewport_h - navigation_window_layout.menu_h - (3.f * main_window_layout.external_h_spacing);
 
-    auto base_viewport_w = 1920.f;
-    auto base_viewport_h = 1080.f;
-    auto base_menu_w = 1840.f;
-    auto base_menu_h = 660.f;
-    auto base_button_w = 256.f;
-    auto base_button_h = 64.f;
-    auto base_h_spacing = 8.f;
-    auto base_external_w_spacing = 40.f;
-    auto base_external_h_spacing = 40.f;
-
-
-    auto& [viewport_w, viewport_h] = main_viewport.WorkSize;
-    auto& [viewport_x, viewport_y] = main_viewport.WorkPos;
-    auto scale_w = viewport_w / base_viewport_w;
-    auto scale_h = viewport_h / base_viewport_h;
-
-    auto external_h_spacing = 40.f * scale_h;
-    auto external_w_spacing = 40.f * scale_w;
-    auto menu_w = base_menu_w * scale_w;
-    // auto menu_h = base_menu_h * scale_h;
-    auto menu_h = viewport_h - (110.f * scale_h) - (3 * external_h_spacing);
-    auto menu_x = viewport_x + external_w_spacing;
-    auto menu_y = viewport_y + external_h_spacing;
-    auto button_w = base_button_w * scale_w;
-    auto button_h = base_button_h * scale_h;
-    auto button_w_s = base_h_spacing * scale_w;
-    auto button_h_s = base_h_spacing * scale_h;
-
-    ImGui::SetNextWindowPos({menu_x, menu_y});
-    ImGui::SetNextWindowSize({menu_w, menu_h});
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {button_w_s, button_h_s});
-    ImGui::Begin("SettingsMenu", nullptr, window_flags);
+    ImGui::SetNextWindowPos({main_window_layout.menu_x, main_window_layout.menu_y});
+    ImGui::SetNextWindowSize({main_window_layout.menu_w, main_window_layout.menu_h});
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {main_window_layout.button_w_s, main_window_layout.button_h_s});
+    ImGui::Begin("SettingsMenu", nullptr, main_window_layout.window_flags);
     {
         const auto& [window_w, window_h] = Window::get().getSize();
         std::string current_resolution = std::to_string(window_w) + "x" + std::to_string(window_h);
-        if(Custom::ImGui::BeginCombo("Resolution", current_resolution.c_str(), {button_w, button_h}))
+        if(Custom::ImGui::BeginCombo("Resolution",
+               current_resolution.c_str(),
+               {main_window_layout.button_w, main_window_layout.button_h}))
         {
             int32_t mode_count = 0;
             const auto* modes = glfwGetVideoModes(glfwGetPrimaryMonitor(), &mode_count);
@@ -85,21 +52,13 @@ void SettingsSection::render() noexcept
             }
             ImGui::EndCombo();
         }
-        if(ImGui::Button("Button 1", {button_w, button_h}))
+        else if(ImGui::Button("Button 1", {main_window_layout.button_w, main_window_layout.button_h}))
         {
             spdlog::debug("Clicking Button 1");
-        }
-        else if(ImGui::Button("Button 2", {button_w, button_h}))
-        {
-            spdlog::debug("Clicking Button 2");
-        }
-        else if(ImGui::Button("Button 3", {button_w, button_h}))
-        {
-            spdlog::debug("Clicking Button 3");
         }
     }
     ImGui::End();
     ImGui::PopStyleVar();
 
-    UI::LowerNavigationBox();
+    UI::LowerNavigationBox(navigation_window_layout);
 }
