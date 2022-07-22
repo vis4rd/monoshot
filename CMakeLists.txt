@@ -53,6 +53,9 @@ target_link_libraries(${EXECUTABLE_NAME}
            spdlog::spdlog
 )
 
+target_precompile_headers(${EXECUTABLE_NAME}
+    PRIVATE "${PROJECT_SOURCE_DIR}/include/Root.hpp")
+
 if(CMAKE_HOST_WIN32)
     target_link_libraries(${EXECUTABLE_NAME}
     PUBLIC opengl32
