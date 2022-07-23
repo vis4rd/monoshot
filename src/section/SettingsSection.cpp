@@ -31,6 +31,7 @@ void SettingsSection::render() noexcept
     {
         const auto& [window_w, window_h] = Window::get().getSize();
         std::string current_resolution = std::to_string(window_w) + "x" + std::to_string(window_h);
+        ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s, m_layout.menu_y + m_layout.button_h_s});
         if(Custom::ImGui::BeginCombo("Resolution", current_resolution.c_str(), {m_layout.button_w, m_layout.button_h}))
         {
             int32_t mode_count = 0;

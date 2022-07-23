@@ -16,8 +16,7 @@ inline void LowerNavigationBox(const UI::BaseLayout& layout)
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {layout.button_w_s, layout.button_h_s});
     ImGui::Begin("LowerNavigationBox", nullptr, layout.window_flags);
     {
-        // auto menu_button_pos = (menu_h - button_h) / 2.f;
-        // ImGui::SetCursorPosY(menu_button_pos);
+        ImGui::SetCursorScreenPos({layout.menu_x + layout.button_w_s, layout.menu_y + layout.button_h_s});
         if(ImGui::Button("Close", {layout.button_w, layout.button_h}))
         {
             spdlog::debug("Clicking 'Close'");

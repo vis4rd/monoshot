@@ -149,7 +149,8 @@ void Window::render(RENDERABLES &&...renderables) noexcept
                 clear_color.a);
         }
 
-        ImGui::Text("Performance: %.3f ms,  %.1f fps", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+        ImGui::Text("Performance: [%.2fms] [%.0ffps]", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+        ImGui::Text("Mouse Position: Screen[%.2fx, %.2fy]", ImGui::GetMousePos().x, ImGui::GetMousePos().y);
 
         ImGui::End();
     }

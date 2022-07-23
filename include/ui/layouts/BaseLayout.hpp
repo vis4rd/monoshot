@@ -11,16 +11,16 @@ struct BaseLayout
     virtual inline void update(const ImVec2& workpos, const ImVec2& worksize);
 
     protected:
-    const float base_viewport_w = 1920.f;
-    const float base_viewport_h = 1080.f;
+    float base_viewport_w = 1920.f;
+    float base_viewport_h = 1080.f;
     float base_menu_w = 1920.f;
     float base_menu_h = 1080.f;
-    const float base_button_w = 256.f;
-    const float base_button_h = 64.f;
-    const float base_w_spacing = 23.f;
-    const float base_h_spacing = 8.f;
-    const float base_external_w_spacing = 40.f;
-    const float base_external_h_spacing = 40.f;
+    float base_button_w = 256.f;
+    float base_button_h = 64.f;
+    float base_w_spacing = 23.f;
+    float base_h_spacing = 23.f;
+    float base_external_w_spacing = 40.f;
+    float base_external_h_spacing = 40.f;
 
     public:
     float viewport_w;
