@@ -1,12 +1,12 @@
 #pragma once
 
 #include "external/BeginCombo.hpp"
-#include "../layouts/BaseUiLayout.hpp"
+#include "../layouts/MainMenuLayout.hpp"
 
 namespace UI
 {
 
-inline void LowerNavigationBox(const UI::BaseUiLayout& layout)
+inline void LowerNavigationBox(const UI::BaseLayout& layout)
 {
     const ImGuiViewport& main_viewport = *ImGui::GetMainViewport();
 

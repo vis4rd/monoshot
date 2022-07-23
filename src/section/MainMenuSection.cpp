@@ -1,7 +1,7 @@
 #include "../../include/section/MainMenuSection.hpp"
 
 MainMenuSection::MainMenuSection()
-    : Section(), m_layout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize, {512.f, 512.f})
+    : Section(), m_layout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize)
 {
     m_name = "MainMenuSection";
     auto& input_manager = InputManager::get();
@@ -13,8 +13,6 @@ MainMenuSection::MainMenuSection()
         {
             SectionManager::get().clear();
         });
-
-    m_layout.menu_y = m_layout.viewport_y + ((m_layout.viewport_h - m_layout.menu_h) / 2.f);
 }
 
 void MainMenuSection::update() noexcept { }
@@ -22,7 +20,6 @@ void MainMenuSection::update() noexcept { }
 void MainMenuSection::render() noexcept
 {
     m_layout.update(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize);
-    m_layout.menu_y = m_layout.viewport_y + ((m_layout.viewport_h - m_layout.menu_h) / 2.f);
 
     ImGui::SetNextWindowPos({m_layout.menu_x, m_layout.menu_y - 100.f});
     ImGui::Begin("MainMenuGameTitle", nullptr, m_layout.window_flags);

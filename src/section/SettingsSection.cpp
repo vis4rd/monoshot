@@ -1,8 +1,8 @@
 #include "../../include/section/SettingsSection.hpp"
 
 SettingsSection::SettingsSection()
-    : Section(), m_layout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize, {1840.f, 660.f}),
-      m_navLayout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize, {1840.f, 110.f})
+    : Section(), m_layout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize),
+      m_navLayout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize)
 {
     m_name = "SettingsSection";
     auto& input_manager = InputManager::get();
@@ -14,9 +14,6 @@ SettingsSection::SettingsSection()
         {
             SectionManager::get().popSection();
         });
-
-    m_layout.menu_y = m_layout.viewport_y + m_layout.external_h_spacing;
-    m_layout.menu_h = m_layout.viewport_h - m_navLayout.menu_h - (3.f * m_layout.external_h_spacing);
 }
 
 void SettingsSection::update() noexcept { }
@@ -26,8 +23,6 @@ void SettingsSection::render() noexcept
     const ImGuiViewport& main_viewport = *ImGui::GetMainViewport();
     m_layout.update(main_viewport.WorkPos, main_viewport.WorkSize);
     m_navLayout.update(main_viewport.WorkPos, main_viewport.WorkSize);
-    m_layout.menu_y = m_layout.viewport_y + m_layout.external_h_spacing;
-    m_layout.menu_h = m_layout.viewport_h - m_navLayout.menu_h - (3.f * m_layout.external_h_spacing);
 
     ImGui::SetNextWindowPos({m_layout.menu_x, m_layout.menu_y});
     ImGui::SetNextWindowSize({m_layout.menu_w, m_layout.menu_h});

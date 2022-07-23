@@ -5,16 +5,16 @@
 namespace UI
 {
 
-struct BaseUiLayout
+struct BaseLayout
 {
-    inline BaseUiLayout(const ImVec2& workpos, const ImVec2& worksize, const ImVec2& menusize);
-    inline void update(const ImVec2& workpos, const ImVec2& worksize);
+    inline BaseLayout(const ImVec2& workpos, const ImVec2& worksize);
+    virtual inline void update(const ImVec2& workpos, const ImVec2& worksize);
 
-    private:
+    protected:
     const float base_viewport_w = 1920.f;
     const float base_viewport_h = 1080.f;
-    const float base_menu_w;
-    const float base_menu_h;
+    float base_menu_w = 1920.f;
+    float base_menu_h = 1080.f;
     const float base_button_w = 256.f;
     const float base_button_h = 64.f;
     const float base_w_spacing = 23.f;
@@ -28,7 +28,7 @@ struct BaseUiLayout
     float viewport_x;
     float viewport_y;
 
-    private:
+    protected:
     float scale_w = viewport_w / base_viewport_w;
     float scale_h = viewport_h / base_viewport_h;
 
@@ -52,13 +52,12 @@ struct BaseUiLayout
                                     | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoDocking;
 };
 
-BaseUiLayout::BaseUiLayout(const ImVec2& workpos, const ImVec2& worksize, const ImVec2& menusize)
-    : base_menu_w(menusize.x), base_menu_h(menusize.y), viewport_w(worksize.x), viewport_h(worksize.y),
-      viewport_x(workpos.x), viewport_y(workpos.y)
+BaseLayout::BaseLayout(const ImVec2& workpos, const ImVec2& worksize)
+    : viewport_w(worksize.x), viewport_h(worksize.y), viewport_x(workpos.x), viewport_y(workpos.y)
 {
 }
 
-void BaseUiLayout::update(const ImVec2& workpos, const ImVec2& worksize)
+void BaseLayout::update(const ImVec2& workpos, const ImVec2& worksize)
 {
     viewport_w = worksize.x;
     viewport_h = worksize.y;

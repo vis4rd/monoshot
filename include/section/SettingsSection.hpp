@@ -11,6 +11,6 @@ class SettingsSection final : public Section
     void render() noexcept override;
 
     private:
-    UI::BaseUiLayout m_layout;
-    UI::BaseUiLayout m_navLayout;
+    UI::SettingsLayout m_layout;
+    UI::LowerNavigationBoxLayout m_navLayout;
 };
