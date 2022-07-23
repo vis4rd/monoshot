@@ -34,6 +34,8 @@ class InputManager
 
     private:
     std::vector<KeyGroup> m_keybinds;
+    std::array<KeyState, GLFW_KEY_LAST + 1> m_currentKeystates = {KeyState::IDLE};
+    std::array<KeyState, GLFW_KEY_LAST + 1> m_previousKeystates = {KeyState::IDLE};
 };
 
 template<typename FUNC, typename... Args>

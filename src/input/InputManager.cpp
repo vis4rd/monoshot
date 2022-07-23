@@ -29,12 +29,12 @@ void InputManager::processGroup(GLFWwindow* window, const std::string& group)
         });
     if(iter != m_keybinds.end())
     {
-        spdlog::debug("Processing group '{}', keybind states:", group);
+        spdlog::trace("Keybind states:");
         for(auto& [glfw_key, keybind] : iter->keybinds)
         {
-            auto& rs = keybind.required_state;
-            auto& ps = keybind.previous_state;
-            auto& cs = keybind.current_state;
+            auto& rs = keybind.state;  // required state
+            auto& ps = m_previousKeystates.at(glfw_key);
+            auto& cs = m_currentKeystates.at(glfw_key);
             auto glfw_state = glfwGetKey(window, keybind.key);
 
             switch(glfw_state)
@@ -78,9 +78,7 @@ void InputManager::processGroup(GLFWwindow* window, const std::string& group)
                 }
             }
 
-
-            spdlog::debug("Key {}: [{}] -> [{}] (r: [{}])", keybind.key, ps, cs, rs);
-
+            spdlog::trace("Key {}: [{}] -> [{}] (r: [{}])", keybind.key, ps, cs, rs);
             if(cs == rs)
             {
                 keybind.callback();
