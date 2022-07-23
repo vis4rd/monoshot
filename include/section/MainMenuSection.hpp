@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SettingsSection.hpp"
+#include "NewGameSection.hpp"
 
 class MainMenuSection final : public Section
 {
