@@ -23,7 +23,7 @@ DebugSection::DebugSection() : Section(), shaderManager(ShaderManager::get())
     auto group_id = input_manager.addGroup(m_name);
     input_manager.addKeybind(group_id,
         GLFW_KEY_ESCAPE,
-        GLFW_PRESS,
+        KeyState::PRESS_ONCE,
         []
         {
             SectionManager::get().popSection();

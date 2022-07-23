@@ -83,8 +83,8 @@ bool Window::update(UPDATEABLES &&...updateables) noexcept
     }
 
     spdlog::trace("Handling inputs");
-    m_inputManager.processGroup(m_window, "window");
     m_inputManager.processGroup(m_window, m_sectionManager.topSection().name());
+    m_inputManager.processGroup(m_window, "window");
 
     spdlog::trace("Polling GLFW events");
     glfwPollEvents();

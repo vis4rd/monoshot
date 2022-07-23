@@ -211,7 +211,7 @@ void Window::initKeybinds()
     auto id = m_inputManager.addGroup("window");
     m_inputManager.addKeybind("window",
         GLFW_KEY_F11,
-        GLFW_PRESS,
+        KeyState::PRESS_ONCE,
         []
         {
             auto &window = Window::get();
@@ -219,7 +219,7 @@ void Window::initKeybinds()
         });
     m_inputManager.addKeybind("window",
         GLFW_KEY_ESCAPE,
-        GLFW_PRESS,
+        KeyState::PRESS_ONCE,
         [&should_close = m_shouldClose]
         {
             if(SectionManager::get().size() == 1)

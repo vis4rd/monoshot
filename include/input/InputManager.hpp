@@ -1,24 +1,9 @@
 #pragma once
 
-#include "../shader/ShaderManager.hpp"
+#include "KeyGroup.hpp"
 
 class InputManager
 {
-    struct Keybind
-    {
-        int32_t key;
-        int32_t scancode;
-        int32_t action;
-        std::function<void(GLFWwindow*, int32_t, int32_t)> callback;
-    };
-    struct Group
-    {
-        Group() = default;
-        Group(const std::string& name) : name(name) { }
-        std::string name{};
-        std::unordered_map<int32_t, Keybind> keybinds{};
-    };
-
     public:
     InputManager(const InputManager&) = delete;
     InputManager(InputManager&&) = delete;
@@ -31,13 +16,13 @@ class InputManager
     template<typename FUNC, typename... Args>
     constexpr void addKeybind(const std::string& group,
         int32_t key,
-        int32_t action,
+        KeyState state,
         FUNC&& callback,
         Args&&... cb_args);
     template<typename FUNC, typename... Args>
     constexpr void addKeybind(const std::size_t& group_id,
         int32_t key,
-        int32_t action,
+        KeyState state,
         FUNC&& callback,
         Args&&... cb_args);
     void processGroup(GLFWwindow* window, const std::string& group);
@@ -48,19 +33,19 @@ class InputManager
     InputManager() = default;
 
     private:
-    std::vector<Group> m_keybinds;
+    std::vector<KeyGroup> m_keybinds;
 };
 
 template<typename FUNC, typename... Args>
 constexpr void InputManager::addKeybind(const std::string& group,
     int32_t key,
-    int32_t action,
+    KeyState state,
     FUNC&& callback,
     Args&&... cb_args)
 {
     auto iter = std::find_if(m_keybinds.begin(),
         m_keybinds.end(),
-        [&group](const Group& g)
+        [&group](const KeyGroup& g)
         {
             return (g.name == group);
         });
@@ -70,20 +55,18 @@ constexpr void InputManager::addKeybind(const std::string& group,
     }
 
     spdlog::info("Adding new keybind to group {}", group);
-    auto wrapper = [callback, cb_args...](GLFWwindow* window, int32_t key, int32_t action)
+    auto wrapper = [callback, cb_args...]
     {
-        if(glfwGetKey(window, key) == action)
-        {
-            std::invoke(callback, cb_args...);
-        }
+        std::invoke(callback, cb_args...);
     };
-    iter->keybinds[key] = Keybind{key, glfwGetKeyScancode(key), action, std::move(wrapper)};
+
+    iter->keybinds[key] = Keybind{key, glfwGetKeyScancode(key), state, std::move(wrapper)};
 }
 
 template<typename FUNC, typename... Args>
 constexpr void InputManager::addKeybind(const std::size_t& group_id,
     int32_t key,
-    int32_t action,
+    KeyState state,
     FUNC&& callback,
     Args&&... cb_args)
 {
@@ -97,12 +80,19 @@ constexpr void InputManager::addKeybind(const std::size_t& group_id,
     }
 
     spdlog::info("Adding new keybind to group {}", m_keybinds.at(group_id).name);
-    auto wrapper = [callback, cb_args...](GLFWwindow* window, int32_t key, int32_t action)
+    auto wrapper = [callback, cb_args...]
     {
-        if(glfwGetKey(window, key) == action)
-        {
-            std::invoke(callback, cb_args...);
-        }
+        std::invoke(callback, cb_args...);
     };
-    m_keybinds.at(group_id).keybinds[key] = Keybind{key, glfwGetKeyScancode(key), action, std::move(wrapper)};
+
+    m_keybinds.at(group_id).keybinds[key] = Keybind(key, glfwGetKeyScancode(key), state, std::move(wrapper));
+    // auto wrapper = [callback, cb_args...](GLFWwindow* window, int32_t key, int32_t action)
+    // {
+    //     if(glfwGetKey(window, key) == action)
+    //     {
+    //         std::invoke(callback, cb_args...);
+    //     }
+    // };
+    // m_keybinds.at(group_id).keybinds[key] =
+    //     Keybind{key, glfwGetKeyScancode(key), action, State::IDLE, State::IDLE, std::move(wrapper)};
 }
