@@ -4,7 +4,7 @@ BasedOnStyle: Google
 BreakBeforeBraces: Allman
 IndentWidth: '4'
 TabWidth: '4'
-ColumnLimit: '120'
+ColumnLimit: '250'
 UseTab: Never
 Standard: c++20
 AccessModifierOffset: '0'
@@ -82,14 +82,14 @@ KeepEmptyLinesAtTheStartOfBlocks: 'false'
 LambdaBodyIndentation: Signature
 MaxEmptyLinesToKeep: '2'
 NamespaceIndentation: None
-# PackConstructorInitializers: Never
+PackConstructorInitializers: Never
 PointerAlignment: Left
 PPIndentWidth: '-1'
-# QualifierAlignment: Leave
+QualifierAlignment: Leave
 ReferenceAlignment: Left
 ReflowComments: 'true'
 # RequiresClausePosition: OwnLine
-# SeparateDefinitionBlocks: Always
+SeparateDefinitionBlocks: Always
 SortIncludes: 'false'
 SortUsingDeclarations: 'false'
 SpaceAfterCStyleCast: 'false'
