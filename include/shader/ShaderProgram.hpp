@@ -26,10 +26,7 @@ class ShaderProgram
     void uploadBool(const std::string& varName, const bool& var, const int32_t& location = -1);
     void uploadMat3(const std::string& varName, const glm::mat3& var, const int32_t& location = -1);
     void uploadMat4(const std::string& varName, const glm::mat4& var, const int32_t& location = -1);
-    void uploadArrayInt(const std::string& varName,
-        const std::size_t& size,
-        const int* array,
-        const int32_t& location = -1);
+    void uploadArrayInt(const std::string& varName, const std::size_t& size, const int* array, const int32_t& location = -1);
 
     private:
     void trySetVariableLocation(const std::string& varName);

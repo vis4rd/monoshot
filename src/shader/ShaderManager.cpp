@@ -6,7 +6,7 @@ ShaderManager& ShaderManager::get()
     return instance;
 }
 
-void ShaderManager::addShaderProgram(const fs::path& location, const std::string& name)
+bool ShaderManager::addShaderProgram(const fs::path& location, const std::string& name)
 {
     auto loc = fs::absolute(location);
     auto frag_name = name + ".frag";
@@ -15,7 +15,8 @@ void ShaderManager::addShaderProgram(const fs::path& location, const std::string
     auto vert = loc.string() + "/" + vert_name;
     auto frag_sh = Shader(frag, frag_name, Shader::Type::FRAGMENT);
     auto vert_sh = Shader(vert, vert_name, Shader::Type::VERTEX);
-    m_shaders.try_emplace(name, std::move(frag_sh), std::move(vert_sh));
+    auto&& [iter, success] = m_shaders.try_emplace(name, std::move(frag_sh), std::move(vert_sh));
+    return success;
 }
 
 void ShaderManager::useShader(const std::string& name)

@@ -13,7 +13,7 @@ class ShaderManager
     ShaderManager& operator=(ShaderManager&&) = delete;
     static ShaderManager& get();
 
-    void addShaderProgram(const fs::path& location, const std::string& name);
+    bool addShaderProgram(const fs::path& location, const std::string& name);
     void useShader(const std::string& name);
     const ShaderProgram& getShader(const std::string& name) const;
     ShaderProgram& getShader(const std::string& name);
