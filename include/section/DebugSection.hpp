@@ -5,7 +5,7 @@
 // camera stuff
 // glm::vec3 eye = glm::vec3(0.f, 0.f, 20.f);  // position camera at 0(),0,20)
 // glm::vec3 center = glm::vec3(0.f, 0.f, 0.f);  // position where camera is looking at
-// glm::vec3 up = glm::vec3(0.f, 0.f, 1.f);  // how camera is oriented
+// glm::vec3 up = glm::vec3(0.f, 1.f, 0.f);  // how camera is oriented
 // glm::mat4 view_matrix = glm::lookAt(eye, center, up);
 
 class DebugSection final : public Section
@@ -27,8 +27,9 @@ class DebugSection final : public Section
     float rotation = 0.f;
     glm::vec3 position = {0.f, 0.f, 0.f};
     glm::mat4 model_matrix = glm::identity<glm::mat4>();  // object space -> world space, model matrix
-    glm::mat4 view_matrix = glm::lookAt(glm::vec3(0.f, 0.f, 1.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f));  // world space -> camera space
-    glm::mat4 projection_matrix = glm::ortho(-1280.f / 2.f, 1280.f / 2.f, -720.f / 2.f, 720.f / 2.f, -100.f, 100.f);  // camera space -> normalized device coordinates
+    glm::vec3 camera_position = glm::vec3(0.f, 0.f, 1.f);
+    glm::mat4 view_matrix = glm::lookAt(camera_position, glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f));  // world space -> camera space
+    glm::mat4 projection_matrix = glm::ortho(-1280.f / 2.f, 1280.f / 2.f, -720.f / 2.f, 720.f / 2.f, -100.f, 100.f);  // camera space -> clip space (NDC)
 };
 
 DebugSection::DebugSection()
@@ -136,6 +137,7 @@ void DebugSection::update() noexcept
     model_matrix = glm::scale(glm::mat4(1.f), scale);
     model_matrix = glm::rotate(model_matrix, glm::radians(rotation), glm::vec3(0.f, 0.f, 1.f));
     model_matrix = glm::translate(model_matrix, position);
+    view_matrix = glm::lookAt(camera_position, glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f));
 }
 
 void DebugSection::render() noexcept
@@ -152,6 +154,7 @@ void DebugSection::render() noexcept
         ImGui::SliderFloat("rotation", &rotation, -360.f, 360.f, "%.0f degrees");
         ImGui::SliderFloat3("scale", reinterpret_cast<float*>(&scale), 0.f, 500.f);
         ImGui::SliderFloat3("position", reinterpret_cast<float*>(&position), -10.f, 10.f);
+        ImGui::SliderFloat3("camera position", reinterpret_cast<float*>(&camera_position), -10.f, 10.f);
     }
     ImGui::End();
 }

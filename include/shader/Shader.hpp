@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../utility/Printing.hpp"
+#include "../camera/OrthogonalCamera.hpp"
 
 namespace fs = std::filesystem;
 
