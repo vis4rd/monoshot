@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../camera/OrthogonalCamera.hpp"
+#include "../camera/PerspectiveCamera.hpp"
 
 namespace fs = std::filesystem;
 
