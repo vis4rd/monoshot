@@ -22,6 +22,8 @@ class DebugSection final : public Section
     glm::vec3 position = {0.f, 0.f, 0.f};
     glm::mat4 model_matrix = glm::identity<glm::mat4>();
     PerspectiveCamera m_camera;
+
+    float vertices[12] = {-1.f, -1.f, 0.f, -1.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f, -1.f, 0.f};
 };
 
 DebugSection::DebugSection()
@@ -50,7 +52,6 @@ DebugSection::DebugSection()
     glVertexArrayElementBuffer(VAO, EBO);  // Bind EBO to VAO
 
 
-    float vertices[] = {-1.f, -1.f, 0.f, -1.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f, -1.f, 0.f};
     int vbo_slot_pos = 0;
     glCreateBuffers(1, &VBO);  // Create a buffer ID
     glNamedBufferData(VBO, sizeof(vertices), vertices, GL_STATIC_DRAW);  // Pass data to the buffer, specify nature of data
@@ -124,9 +125,9 @@ DebugSection::DebugSection()
 
 void DebugSection::update() noexcept
 {
-    model_matrix = glm::scale(glm::mat4(1.f), scale);
+    model_matrix = glm::translate(glm::mat4(1.f), position);
     model_matrix = glm::rotate(model_matrix, glm::radians(rotation), glm::vec3(0.f, 0.f, 1.f));
-    model_matrix = glm::translate(model_matrix, position);
+    model_matrix = glm::scale(model_matrix, scale);
 }
 
 void DebugSection::render() noexcept
@@ -138,15 +139,30 @@ void DebugSection::render() noexcept
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-    ImGui::Begin("Variable editor");
+    ImGui::Begin("Section options");
     {
         static float zoom = 1.f;
         ImGui::SliderFloat("rotation", &rotation, -360.f, 360.f, "%.0f degrees");
-        ImGui::SliderFloat3("scale", reinterpret_cast<float*>(&scale), 0.01f, 5.f);
-        ImGui::SliderFloat3("position", reinterpret_cast<float*>(&position), -10.f, 10.f);
+        ImGui::SliderFloat2("scale", reinterpret_cast<float*>(&scale), 0.01f, 5.f);
+        ImGui::SliderFloat2("position", reinterpret_cast<float*>(&position), -10.f, 10.f);
         if(ImGui::SliderFloat("camera zoom", &zoom, 0.1f, 40.f, "x%.1f"))
         {
             m_camera.setZoom(zoom);
+        }
+        if(ImGui::Button("Calculate matrices"))
+        {
+            glm::vec3 first = {vertices[0], vertices[1], vertices[2]};
+            glm::vec3 second = {vertices[3], vertices[4], vertices[5]};
+            glm::vec3 third = {vertices[6], vertices[7], vertices[8]};
+            glm::vec3 fourth = {vertices[9], vertices[10], vertices[11]};
+            model_matrix = glm::mat4(1.f);
+            spdlog::debug("Beginning:\n{}", util::mat4str(model_matrix));
+            model_matrix = glm::translate(model_matrix, position);
+            spdlog::debug("After translation:\n{}", util::mat4str(model_matrix));
+            model_matrix = glm::rotate(model_matrix, glm::radians(rotation), glm::vec3(0.f, 0.f, 1.f));
+            spdlog::debug("After rotation:\n{}", util::mat4str(model_matrix));
+            model_matrix = glm::scale(model_matrix, scale);
+            spdlog::debug("After scaling:\n{}", util::mat4str(model_matrix));
         }
     }
     ImGui::End();
