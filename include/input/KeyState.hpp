@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../shader/ShaderManager.hpp"
+#include "../map/Grid.hpp"
 
 enum KeyState
 {

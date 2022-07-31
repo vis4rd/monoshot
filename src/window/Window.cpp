@@ -101,7 +101,7 @@ void Window::setFullscreen(bool fullscreen)
     }
     else
     {
-        glfwSetWindowMonitor(m_window, nullptr, 320, 180, 1280, 720, GLFW_DONT_CARE);
+        glfwSetWindowMonitor(m_window, nullptr, m_width / 4.f, m_height / 4.f, 1280, 720, GLFW_DONT_CARE);
     }
     this->setVerticalSync(m_isVSyncEnabled);
 }
