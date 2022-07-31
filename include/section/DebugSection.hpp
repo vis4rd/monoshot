@@ -23,7 +23,8 @@ class DebugSection final : public Section
     glm::mat4 model_matrix = glm::identity<glm::mat4>();
     PerspectiveCamera m_camera;
 
-    float vertices[12] = {-1.f, -1.f, 0.f, -1.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f, -1.f, 0.f};
+    float vertices[12] = {-0.5f, -0.5f, 0.f, 0.5f, -0.5f, 0.f, 0.5f, 0.5f, 0.f, -0.5f, 0.5f, 0.f};
+    Grid<4, 4> m_mapGrid = {1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1};
 };
 
 DebugSection::DebugSection()
@@ -99,6 +100,9 @@ DebugSection::DebugSection()
 
     shaderManager.addShaderProgram("../shaders", "triangle_zoom");
 
+    m_mapGrid.update();
+    m_mapGrid.prepareForRender();
+
 
     // glm::vec3 first = {vertices[0], vertices[1], vertices[2]};
     // glm::vec3 second = {vertices[3], vertices[4], vertices[5]};
@@ -132,6 +136,10 @@ void DebugSection::update() noexcept
 
 void DebugSection::render() noexcept
 {
+    m_mapGrid.render();
+    shaderManager.getShader("grid").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 1);
+    shaderManager.getShader("grid").uploadMat4("uView", m_camera.getViewMatrix(), 2);
+
     shaderManager.useShader("triangle_zoom");
     shaderManager.getShader("triangle_zoom").uploadMat4("uTransform", model_matrix, 0);
     shaderManager.getShader("triangle_zoom").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 1);
