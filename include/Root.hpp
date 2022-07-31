@@ -16,8 +16,9 @@
 #include <functional>
 #include <map>
 #include <memory>
+#include <numeric>
 #include <sstream>
+#include <stack>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
-#include <stack>
