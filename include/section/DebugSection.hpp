@@ -24,7 +24,8 @@ class DebugSection final : public Section
     PerspectiveCamera m_camera;
 
     float vertices[12] = {-0.5f, -0.5f, 0.f, 0.5f, -0.5f, 0.f, 0.5f, 0.5f, 0.f, -0.5f, 0.5f, 0.f};
-    Grid<4, 4> m_mapGrid = {1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1};
+    // Grid<4, 4> m_mapGrid = {1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1};
+    Map<6, 6> m_mapGrid;
 };
 
 DebugSection::DebugSection()
@@ -100,6 +101,7 @@ DebugSection::DebugSection()
 
     shaderManager.addShaderProgram("../shaders", "triangle_zoom");
 
+    m_mapGrid.loadFromFile("../maps/debug.map", "01");
     m_mapGrid.update();
     m_mapGrid.prepareForRender();
 

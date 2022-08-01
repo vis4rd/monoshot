@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../map/Grid.hpp"
+#include "../map/Map.hpp"
 
 enum KeyState
 {

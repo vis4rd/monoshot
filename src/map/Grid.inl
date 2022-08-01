@@ -52,35 +52,31 @@ Grid<WIDTH, HEIGHT>::Grid(const std::initializer_list<tile_t>& tiles)
 template<std::size_t WIDTH, std::size_t HEIGHT>
 auto Grid<WIDTH, HEIGHT>::data() const -> const tile_t*
 {
-    return m_tiles;
+    return reinterpret_cast<const tile_t*>(m_tiles);
 }
 
 template<std::size_t WIDTH, std::size_t HEIGHT>
 auto Grid<WIDTH, HEIGHT>::operator[](const std::size_t& index) -> tile_t&
 {
-    static_assert(index < WIDTH * HEIGHT);
-    return m_tiles[index];
+    return *(m_tiles[index]);
 }
 
 template<std::size_t WIDTH, std::size_t HEIGHT>
 auto Grid<WIDTH, HEIGHT>::operator[](const std::size_t& index) const -> const tile_t&
 {
-    static_assert(index < WIDTH * HEIGHT);
-    return m_tiles[index];
+    return *(m_tiles[index]);
 }
 
 template<std::size_t WIDTH, std::size_t HEIGHT>
 auto Grid<WIDTH, HEIGHT>::at(const std::size_t& index) -> tile_t&
 {
-    static_assert(index < WIDTH * HEIGHT);
-    return m_tiles[index];
+    return *(m_tiles[index % (WIDTH * HEIGHT)]);
 }
 
 template<std::size_t WIDTH, std::size_t HEIGHT>
 auto Grid<WIDTH, HEIGHT>::at(const std::size_t& index) const -> const tile_t&
 {
-    static_assert(index < WIDTH * HEIGHT);
-    return m_tiles[index];
+    return *(m_tiles[index % (WIDTH * HEIGHT)]);
 }
 
 template<std::size_t WIDTH, std::size_t HEIGHT>
