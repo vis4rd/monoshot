@@ -22,7 +22,7 @@ void Grid<WIDTH, HEIGHT>::prepareForRender()
     glVertexArrayAttribBinding(m_vao, position_attribute_index, vb_binding_index);
     glEnableVertexArrayAttrib(m_vao, position_attribute_index);
 
-    ShaderManager::get().addShaderProgram("../shaders", "grid");
+    ShaderManager::get().addShaderProgram("../res/shaders", "grid");
 }
 
 template<std::size_t WIDTH, std::size_t HEIGHT>

@@ -99,9 +99,9 @@ DebugSection::DebugSection()
     //     vbo_data = [v1x, v1y, v1z, v1r, v1g, v1b, v1a,, v2p, v2c, v3p, v3c,, v4, ..., vn]
 
 
-    shaderManager.addShaderProgram("../shaders", "triangle_zoom");
+    shaderManager.addShaderProgram("../res/shaders", "triangle_zoom");
 
-    m_mapGrid.loadFromFile("../maps/debug.map", "01");
+    m_mapGrid.loadFromFile("../res/maps/debug.map", "01");
     m_mapGrid.update();
     m_mapGrid.prepareForRender();
 
