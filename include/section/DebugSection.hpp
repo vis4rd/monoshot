@@ -1,11 +1,13 @@
 #pragma once
 
 #include "../ui/elements/LowerNavigationBox.hpp"
+#include "../renderer/Renderer.hpp"
 
 class DebugSection final : public Section
 {
     public:
     inline DebugSection();
+    inline ~DebugSection();
 
     inline void update() noexcept override;
     inline void render() noexcept override;
@@ -127,6 +129,13 @@ DebugSection::DebugSection()
     // third = m_camera.getProjectionMatrix() * glm::vec4(third, 1.f);
     // fourth = m_camera.getProjectionMatrix() * glm::vec4(fourth, 1.f);
     // spdlog::debug("Screen space: {}, {}, {}, {}", util::vec3str(first), util::vec3str(second), util::vec3str(third), util::vec3str(fourth));
+
+    Renderer::init();
+}
+
+DebugSection::~DebugSection()
+{
+    Renderer::shutdown();
 }
 
 void DebugSection::update() noexcept
@@ -141,6 +150,14 @@ void DebugSection::render() noexcept
     m_mapGrid.render();
     shaderManager.getShader("grid").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 1);
     shaderManager.getShader("grid").uploadMat4("uView", m_camera.getViewMatrix(), 2);
+
+    Renderer::beginBatch();
+    Renderer::drawQuad({0.f, 10.f}, {1.f, 1.f}, 0.f, {1.f, 0.5f, 0.5f, 1.f});
+    Renderer::drawQuad({0.f, 8.f}, {1.f, 1.f}, 0.f, {1.f, 0.5f, 0.5f, 1.f});
+    Renderer::drawQuad({9.f, 12.f}, {1.f, 1.f}, 45.f, {1.f, 0.5f, 0.5f, 1.f});
+    Renderer::endBatch();
+    shaderManager.getShader("quad").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 0);
+    shaderManager.getShader("quad").uploadMat4("uView", m_camera.getViewMatrix(), 1);
 
     shaderManager.useShader("triangle_zoom");
     shaderManager.getShader("triangle_zoom").uploadMat4("uTransform", model_matrix, 0);

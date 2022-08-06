@@ -173,7 +173,6 @@ void Grid<WIDTH, HEIGHT>::update() noexcept
                     m_vertexBuffer[((next_index - 1) * 3)] = bl_x;
                     m_vertexBuffer[((next_index - 1) * 3) + 1] = bl_y;
                     m_vertexBuffer[((next_index - 1) * 3) + 2] = 0.f;
-                    spdlog::trace("Vertex {} = ({}x, {}y, {}z)", (next_index - 1), m_vertexBuffer[((next_index - 1) * 3)], m_vertexBuffer[((next_index - 1) * 3) + 1], m_vertexBuffer[((next_index - 1) * 3) + 2]);
                 }
                 else if(grid[i][j - 1] == 1)  // if left tile is filled
                 {
@@ -185,8 +184,8 @@ void Grid<WIDTH, HEIGHT>::update() noexcept
                     m_vertexBuffer[((next_index - 1) * 3)] = bl_x;
                     m_vertexBuffer[((next_index - 1) * 3) + 1] = bl_y;
                     m_vertexBuffer[((next_index - 1) * 3) + 2] = 0.f;
-                    spdlog::trace("Vertex {} = ({}x, {}y, {}z)", (next_index - 1), m_vertexBuffer[((next_index - 1) * 3)], m_vertexBuffer[((next_index - 1) * 3) + 1], m_vertexBuffer[((next_index - 1) * 3) + 2]);
                 }
+                spdlog::trace("Vertex {} = ({}x, {}y, {}z)", (next_index - 1), m_vertexBuffer[((next_index - 1) * 3)], m_vertexBuffer[((next_index - 1) * 3) + 1], m_vertexBuffer[((next_index - 1) * 3) + 2]);
 
 
                 // bottom right
@@ -203,7 +202,6 @@ void Grid<WIDTH, HEIGHT>::update() noexcept
                     m_vertexBuffer[((next_index - 1) * 3)] = ur_x;
                     m_vertexBuffer[((next_index - 1) * 3) + 1] = ur_y;
                     m_vertexBuffer[((next_index - 1) * 3) + 2] = 0.f;
-                    spdlog::trace("Vertex {} = ({}x, {}y, {}z)", (next_index - 1), m_vertexBuffer[((next_index - 1) * 3)], m_vertexBuffer[((next_index - 1) * 3) + 1], m_vertexBuffer[((next_index - 1) * 3) + 2]);
                 }
                 else if(grid[i - 1][j] == 1)  // if upper tile is filled
                 {
@@ -215,7 +213,6 @@ void Grid<WIDTH, HEIGHT>::update() noexcept
                     m_vertexBuffer[((next_index - 1) * 3)] = ur_x;
                     m_vertexBuffer[((next_index - 1) * 3) + 1] = ur_y;
                     m_vertexBuffer[((next_index - 1) * 3) + 2] = 0.f;
-                    spdlog::trace("Vertex {} = ({}x, {}y, {}z)", (next_index - 1), m_vertexBuffer[((next_index - 1) * 3)], m_vertexBuffer[((next_index - 1) * 3) + 1], m_vertexBuffer[((next_index - 1) * 3) + 2]);
                 }
                 else if(grid[i - 1][j + 1] == 1)  // if upper-right tile is filled
                 {
@@ -227,8 +224,8 @@ void Grid<WIDTH, HEIGHT>::update() noexcept
                     m_vertexBuffer[((next_index - 1) * 3)] = ur_x;
                     m_vertexBuffer[((next_index - 1) * 3) + 1] = ur_y;
                     m_vertexBuffer[((next_index - 1) * 3) + 2] = 0.f;
-                    spdlog::trace("Vertex {} = ({}x, {}y, {}z)", (next_index - 1), m_vertexBuffer[((next_index - 1) * 3)], m_vertexBuffer[((next_index - 1) * 3) + 1], m_vertexBuffer[((next_index - 1) * 3) + 2]);
                 }
+                spdlog::trace("Vertex {} = ({}x, {}y, {}z)", (next_index - 1), m_vertexBuffer[((next_index - 1) * 3)], m_vertexBuffer[((next_index - 1) * 3) + 1], m_vertexBuffer[((next_index - 1) * 3) + 2]);
 
 
                 // upper left
@@ -240,7 +237,6 @@ void Grid<WIDTH, HEIGHT>::update() noexcept
                         m_vertexBuffer[((next_index - 1) * 3)] = ul_x;
                         m_vertexBuffer[((next_index - 1) * 3) + 1] = ul_y;
                         m_vertexBuffer[((next_index - 1) * 3) + 2] = 0.f;
-                        spdlog::trace("Vertex {} = ({}x, {}y, {}z)", (next_index - 1), m_vertexBuffer[((next_index - 1) * 3)], m_vertexBuffer[((next_index - 1) * 3) + 1], m_vertexBuffer[((next_index - 1) * 3) + 2]);
                     }
                     else if(grid[i][j - 1] == 1)  // if left tile is filled
                     {
@@ -252,7 +248,6 @@ void Grid<WIDTH, HEIGHT>::update() noexcept
                         m_vertexBuffer[((next_index - 1) * 3)] = ul_x;
                         m_vertexBuffer[((next_index - 1) * 3) + 1] = ul_y;
                         m_vertexBuffer[((next_index - 1) * 3) + 2] = 0.f;
-                        spdlog::trace("Vertex {} = ({}x, {}y, {}z)", (next_index - 1), m_vertexBuffer[((next_index - 1) * 3)], m_vertexBuffer[((next_index - 1) * 3) + 1], m_vertexBuffer[((next_index - 1) * 3) + 2]);
                     }
                 }
                 else if(grid[i - 1][j] == 1)  // if upper tile is filled
@@ -265,7 +260,6 @@ void Grid<WIDTH, HEIGHT>::update() noexcept
                     m_vertexBuffer[((next_index - 1) * 3)] = ul_x;
                     m_vertexBuffer[((next_index - 1) * 3) + 1] = ul_y;
                     m_vertexBuffer[((next_index - 1) * 3) + 2] = 0.f;
-                    spdlog::trace("Vertex {} = ({}x, {}y, {}z)", (next_index - 1), m_vertexBuffer[((next_index - 1) * 3)], m_vertexBuffer[((next_index - 1) * 3) + 1], m_vertexBuffer[((next_index - 1) * 3) + 2]);
                 }
                 else if(grid[i - 1][j - 1] == 1)  // if upper-left tile is filled
                 {
@@ -281,8 +275,8 @@ void Grid<WIDTH, HEIGHT>::update() noexcept
                     m_vertexBuffer[((next_index - 1) * 3)] = ul_x;
                     m_vertexBuffer[((next_index - 1) * 3) + 1] = ul_y;
                     m_vertexBuffer[((next_index - 1) * 3) + 2] = 0.f;
-                    spdlog::trace("Vertex {} = ({}x, {}y, {}z)", (next_index - 1), m_vertexBuffer[((next_index - 1) * 3)], m_vertexBuffer[((next_index - 1) * 3) + 1], m_vertexBuffer[((next_index - 1) * 3) + 2]);
                 }
+                spdlog::trace("Vertex {} = ({}x, {}y, {}z)", (next_index - 1), m_vertexBuffer[((next_index - 1) * 3)], m_vertexBuffer[((next_index - 1) * 3) + 1], m_vertexBuffer[((next_index - 1) * 3) + 2]);
 
                 m_elementBuffer[ib_pivot++] = all_index_buffer[current_tile + corner::BL];
                 m_elementBuffer[ib_pivot++] = all_index_buffer[current_tile + corner::BR];

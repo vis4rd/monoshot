@@ -26,9 +26,19 @@ inline auto mat4str(const glm::mat4& mat)
         mat[3][3]);
 }
 
+inline auto vec2str(const glm::vec2& vec)
+{
+    return fmt::format("({}, {})", vec[0], vec[1]);
+}
+
 inline auto vec3str(const glm::vec3& vec)
 {
     return fmt::format("({}, {}, {})", vec[0], vec[1], vec[2]);
+}
+
+inline auto vec4str(const glm::vec4& vec)
+{
+    return fmt::format("({}, {}, {}, {})", vec[0], vec[1], vec[2], vec[3]);
 }
 
 }  // namespace util

@@ -1,7 +1,9 @@
 #include "../include/App.hpp"
 
 App::App(const std::string& window_title, uint32_t width, uint32_t height)
-    : m_window(Window::get()), m_input(InputManager::get()), m_sectionManager(SectionManager::get())
+    : m_window(Window::get()),
+      m_input(InputManager::get()),
+      m_sectionManager(SectionManager::get())
 {
     this->initLogger();
     spdlog::info("App version: {}.{}.{} (build {})", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, BUILD_NUMBER);
@@ -44,7 +46,7 @@ void App::initLogger() noexcept
     fs::create_directory("../logs");
 
     auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-    console_sink->set_level(spdlog::level::debug);  // set this to debug/info depending on build type
+    console_sink->set_level(spdlog::level::debug);  // TODO: set this to debug/info depending on build type
     console_sink->set_pattern("%^%l%$ | %v");
 
     auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("../logs/latest.log", true);
