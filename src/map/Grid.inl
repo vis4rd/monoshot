@@ -22,7 +22,7 @@ void Grid<WIDTH, HEIGHT>::prepareForRender()
     glVertexArrayAttribBinding(m_vao, position_attribute_index, vb_binding_index);
     glEnableVertexArrayAttrib(m_vao, position_attribute_index);
 
-    ShaderManager::get().addShaderProgram("../res/shaders", "grid");
+    ShaderManager::addShaderProgram("../res/shaders", "grid");
 }
 
 template<std::size_t WIDTH, std::size_t HEIGHT>
@@ -83,7 +83,7 @@ template<std::size_t WIDTH, std::size_t HEIGHT>
 void Grid<WIDTH, HEIGHT>::render() noexcept
 {
     spdlog::trace("Vertex count: {}, element count: {}", m_vertexBuffer.size() / 3, m_elementBuffer.size());
-    ShaderManager::get().useShader("grid");
+    ShaderManager::useShader("grid");
     glBindVertexArray(m_vao);
     glDrawElements(GL_TRIANGLES, m_elementBuffer.size(), GL_UNSIGNED_INT, 0);
 }

@@ -7,20 +7,7 @@ namespace fs = std::filesystem;
 class ShaderManager
 {
     public:
-    ShaderManager(const ShaderManager&) = delete;
-    ShaderManager(ShaderManager&&) = delete;
-    ShaderManager& operator=(const ShaderManager&) = delete;
-    ShaderManager& operator=(ShaderManager&&) = delete;
-    static ShaderManager& get();
-
-    bool addShaderProgram(const fs::path& location, const std::string& name);
-    void useShader(const std::string& name);
-    const ShaderProgram& getShader(const std::string& name) const;
-    ShaderProgram& getShader(const std::string& name);
-
-    private:
-    ShaderManager() = default;
-
-    private:
-    std::map<std::string, ShaderProgram> m_shaders;
+    static bool addShaderProgram(const fs::path& location, const std::string& name);
+    static void useShader(const std::string& name);
+    static ShaderProgram& getShader(const std::string& name);
 };

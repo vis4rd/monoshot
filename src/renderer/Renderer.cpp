@@ -71,7 +71,7 @@ void Renderer::init()
     glEnableVertexArrayAttrib(s_data.quadVao, 3);
 
     // shaders
-    ShaderManager::get().addShaderProgram("../res/shaders", "quad");
+    ShaderManager::addShaderProgram("../res/shaders", "quad");
 
     // textures
     // glGenTextures(1, &s_data.whiteTexture);  // this would also work, but...
@@ -122,8 +122,8 @@ void Renderer::endBatch()
             glBindTextureUnit(i, s_data.textureSlots[i]);
         }
 
-        ShaderManager::get().useShader("quad");
-        ShaderManager::get().getShader("quad").uploadArrayInt("uTextures", 32, s_data.textureSamplers.data(), 2);
+        ShaderManager::useShader("quad");
+        ShaderManager::getShader("quad").uploadArrayInt("uTextures", 32, s_data.textureSamplers.data(), 2);
 
         glBindVertexArray(s_data.quadVao);
         glDrawElements(GL_TRIANGLES, s_data.stats.indexCount, GL_UNSIGNED_INT, nullptr);

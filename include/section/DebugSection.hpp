@@ -16,7 +16,6 @@ class DebugSection final : public Section
     uint32_t VAO;
     uint32_t VBO;
     uint32_t EBO;
-    ShaderManager& shaderManager;
 
     // content variables
     glm::vec3 scale = {1.f, 1.f, 1.f};
@@ -32,7 +31,6 @@ class DebugSection final : public Section
 
 DebugSection::DebugSection()
     : Section(),
-      shaderManager(ShaderManager::get()),
       m_camera(glm::vec3(0.f, 0.f, 50.f), {Window::get().getSize().first, Window::get().getSize().second})
 {
     m_name = "DebugSection";
@@ -101,7 +99,7 @@ DebugSection::DebugSection()
     //     vbo_data = [v1x, v1y, v1z, v1r, v1g, v1b, v1a,, v2p, v2c, v3p, v3c,, v4, ..., vn]
 
 
-    shaderManager.addShaderProgram("../res/shaders", "triangle_zoom");
+    ShaderManager::addShaderProgram("../res/shaders", "triangle_zoom");
 
     m_mapGrid.loadFromFile("../res/maps/debug.map", "01");
     m_mapGrid.update();
@@ -148,21 +146,21 @@ void DebugSection::update() noexcept
 void DebugSection::render() noexcept
 {
     m_mapGrid.render();
-    shaderManager.getShader("grid").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 1);
-    shaderManager.getShader("grid").uploadMat4("uView", m_camera.getViewMatrix(), 2);
+    ShaderManager::getShader("grid").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 1);
+    ShaderManager::getShader("grid").uploadMat4("uView", m_camera.getViewMatrix(), 2);
 
     Renderer::beginBatch();
     Renderer::drawQuad({0.f, 10.f}, {1.f, 1.f}, 0.f, {1.f, 0.5f, 0.5f, 1.f});
     Renderer::drawQuad({0.f, 8.f}, {1.f, 1.f}, 0.f, {1.f, 0.5f, 0.5f, 1.f});
     Renderer::drawQuad({9.f, 12.f}, {1.f, 1.f}, 45.f, {1.f, 0.5f, 0.5f, 1.f});
     Renderer::endBatch();
-    shaderManager.getShader("quad").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 0);
-    shaderManager.getShader("quad").uploadMat4("uView", m_camera.getViewMatrix(), 1);
+    ShaderManager::getShader("quad").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 0);
+    ShaderManager::getShader("quad").uploadMat4("uView", m_camera.getViewMatrix(), 1);
 
-    shaderManager.useShader("triangle_zoom");
-    shaderManager.getShader("triangle_zoom").uploadMat4("uTransform", model_matrix, 0);
-    shaderManager.getShader("triangle_zoom").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 1);
-    shaderManager.getShader("triangle_zoom").uploadMat4("uView", m_camera.getViewMatrix(), 2);
+    ShaderManager::useShader("triangle_zoom");
+    ShaderManager::getShader("triangle_zoom").uploadMat4("uTransform", model_matrix, 0);
+    ShaderManager::getShader("triangle_zoom").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 1);
+    ShaderManager::getShader("triangle_zoom").uploadMat4("uView", m_camera.getViewMatrix(), 2);
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
