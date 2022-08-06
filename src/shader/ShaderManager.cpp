@@ -5,7 +5,7 @@ namespace ShaderManagerData
 static std::map<std::string, ShaderProgram> shaderMap;
 }
 
-bool ShaderManager::addShaderProgram(const fs::path& location, const std::string& name)
+ShaderProgram& ShaderManager::addShaderProgram(const fs::path& location, const std::string& name)
 {
     auto loc = fs::absolute(location);
     auto frag_name = name + ".frag";
@@ -15,12 +15,22 @@ bool ShaderManager::addShaderProgram(const fs::path& location, const std::string
     auto frag_sh = Shader(frag, frag_name, Shader::Type::FRAGMENT);
     auto vert_sh = Shader(vert, vert_name, Shader::Type::VERTEX);
     auto&& [iter, success] = ShaderManagerData::shaderMap.try_emplace(name, std::move(frag_sh), std::move(vert_sh));
-    return success;
+    if(success)
+    {
+        return iter->second;
+    }
+    else
+    {
+        spdlog::error("ShaderProgram could not be emplaced");
+        throw std::runtime_error("ShaderProgram could not be emplaced");
+    }
 }
 
-void ShaderManager::useShader(const std::string& name)
+ShaderProgram& ShaderManager::useShader(const std::string& name)
 {
-    ShaderManagerData::shaderMap[name].use();
+    auto& result = ShaderManagerData::shaderMap[name];
+    result.use();
+    return result;
 }
 
 ShaderProgram& ShaderManager::getShader(const std::string& name)

@@ -122,8 +122,8 @@ void Renderer::endBatch()
             glBindTextureUnit(i, s_data.textureSlots[i]);
         }
 
-        ShaderManager::useShader("quad");
-        ShaderManager::getShader("quad").uploadArrayInt("uTextures", 32, s_data.textureSamplers.data(), 2);
+        auto& quad_shader = ShaderManager::useShader("quad");
+        quad_shader.uploadArrayInt("uTextures", 32, s_data.textureSamplers.data(), 2);
 
         glBindVertexArray(s_data.quadVao);
         glDrawElements(GL_TRIANGLES, s_data.stats.indexCount, GL_UNSIGNED_INT, nullptr);

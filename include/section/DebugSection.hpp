@@ -157,10 +157,10 @@ void DebugSection::render() noexcept
     ShaderManager::getShader("quad").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 0);
     ShaderManager::getShader("quad").uploadMat4("uView", m_camera.getViewMatrix(), 1);
 
-    ShaderManager::useShader("triangle_zoom");
-    ShaderManager::getShader("triangle_zoom").uploadMat4("uTransform", model_matrix, 0);
-    ShaderManager::getShader("triangle_zoom").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 1);
-    ShaderManager::getShader("triangle_zoom").uploadMat4("uView", m_camera.getViewMatrix(), 2);
+    auto& triangle_zoom_shader = ShaderManager::useShader("triangle_zoom");
+    triangle_zoom_shader.uploadMat4("uTransform", model_matrix, 0);
+    triangle_zoom_shader.uploadMat4("uProjection", m_camera.getProjectionMatrix(), 1);
+    triangle_zoom_shader.uploadMat4("uView", m_camera.getViewMatrix(), 2);
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
