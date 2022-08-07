@@ -1,26 +1,30 @@
 #pragma once
 
-#include <glad/glad.h>
+#include <memory>
+
+#include "VertexBuffer.hpp"
+#include "ElementBuffer.hpp"
 
 class VertexArray
 {
     public:
     VertexArray();
-    ~VertexArray() = default;
+    ~VertexArray();
 
     void bind() const;
     void unbind() const;
 
-    // void addVertexBuffer(const VertexBuffer& vertex_buffer);
-    // void addElementBuffer(const ElementBuffer& element_buffer);
+    void addVertexBuffer(const VertexBuffer& vertex_buffer);
+    void addElementBuffer(const ElementBuffer& element_buffer);
 
-    // const std::vector<VertexBuffer>& getVertexBuffers() const;
-    // const ElementBuffer& getElementBuffer() const;
+    const std::vector<VertexBuffer>& getVertexBuffers() const;
+    const std::unique_ptr<ElementBuffer>& getElementBuffer() const;
 
-    const operator std::uint32_t() const;
+    operator std::uint32_t();
 
     private:
     std::uint32_t m_id = 0u;
-    // std::vector<VertexBuffer> m_vertexBuffers;
-    // ElementBuffer m_elementBuffer;
+    std::uint32_t m_vertexBufferIndex = 0u;
+    std::vector<VertexBuffer> m_vertexBuffers;
+    std::unique_ptr<ElementBuffer> m_elementBuffer;
 };
