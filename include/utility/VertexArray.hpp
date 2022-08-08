@@ -14,7 +14,7 @@ class VertexArray
     void bind() const;
     void unbind() const;
 
-    void addVertexBuffer(const VertexBuffer& vertex_buffer);
+    void addVertexBuffer(VertexBuffer&& vertex_buffer);
     void addElementBuffer(const ElementBuffer& element_buffer);
 
     const std::vector<VertexBuffer>& getVertexBuffers() const;

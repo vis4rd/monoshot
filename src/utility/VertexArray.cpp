@@ -28,17 +28,20 @@ static GLenum shaderDataTypeToOpenGLBaseType(const ShaderDataType& type)
 
 VertexArray::VertexArray()
 {
+    spdlog::debug("Creating VertexArray instance");
     glCreateVertexArrays(1, &m_id);
 }
 
 VertexArray::~VertexArray()
 {
+    spdlog::debug("Deleting VertexArray instance");
     this->unbind();
     glDeleteVertexArrays(1, &m_id);
 }
 
 void VertexArray::bind() const
 {
+    spdlog::debug("Binding VertexArray with id = {}", m_id);
     glBindVertexArray(m_id);
 }
 
@@ -47,8 +50,9 @@ void VertexArray::unbind() const
     glBindVertexArray(0);
 }
 
-void VertexArray::addVertexBuffer(const VertexBuffer& vertex_buffer)
+void VertexArray::addVertexBuffer(VertexBuffer&& vertex_buffer)
 {
+    spdlog::debug("Adding a VertexBuffer to VertexArray");
     if(vertex_buffer.getLayout().getElements().empty())
     {
         spdlog::error("Given VertexBuffer does not have a specified layout");
@@ -79,6 +83,7 @@ void VertexArray::addVertexBuffer(const VertexBuffer& vertex_buffer)
             case ShaderDataType::float3:
             case ShaderDataType::float4:
             {
+                spdlog::debug("VertexArray: VertexBuffer element's type is a float");
                 glVertexArrayAttribFormat(m_id, m_vertexBufferIndex, element.getSize(), shaderDataTypeToOpenGLBaseType(element.getShaderDataType()), element.isNormalized(), element.getOffset());
                 glVertexArrayAttribBinding(m_id, m_vertexBufferIndex, m_vertexBuffers.size());
                 glEnableVertexArrayAttrib(m_id, m_vertexBufferIndex);
@@ -91,6 +96,7 @@ void VertexArray::addVertexBuffer(const VertexBuffer& vertex_buffer)
             case ShaderDataType::int4:
             case ShaderDataType::bool1:
             {
+                spdlog::debug("VertexArray: VertexBuffer element's type is an integer");
                 glVertexArrayAttribIFormat(m_id, m_vertexBufferIndex, element.getSize(), shaderDataTypeToOpenGLBaseType(element.getShaderDataType()), element.getOffset());
                 glVertexArrayAttribBinding(m_id, m_vertexBufferIndex, m_vertexBuffers.size());
                 glEnableVertexArrayAttrib(m_id, m_vertexBufferIndex);
@@ -100,6 +106,7 @@ void VertexArray::addVertexBuffer(const VertexBuffer& vertex_buffer)
             case ShaderDataType::mat3:
             case ShaderDataType::mat4:
             {
+                spdlog::debug("VertexArray: VertexBuffer element's type is a matrix");
                 std::uint8_t count = element.getComponentCount();
                 for(std::uint8_t i = 0; i < count; i++)
                 {
@@ -175,11 +182,12 @@ void VertexArray::addVertexBuffer(const VertexBuffer& vertex_buffer)
     //         }
     //     }
     // }
-    m_vertexBuffers.push_back(vertex_buffer);
+    m_vertexBuffers.push_back(std::move(vertex_buffer));
 }
 
 void VertexArray::addElementBuffer(const ElementBuffer& element_buffer)
 {
+    spdlog::debug("Adding ElementBuffer to VertexArray");
     // glBindVertexArray(m_id);
     // element_buffer.bind();
     glVertexArrayElementBuffer(m_id, element_buffer);
