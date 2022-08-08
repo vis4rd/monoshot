@@ -41,6 +41,17 @@ void App::run() noexcept
     spdlog::info("Halted main application loop");
 }
 
+static void openGLDebugMessageCallback(unsigned source, unsigned type, unsigned id, unsigned severity, int length, const char* message, const void* userParam)
+{
+    switch(severity)
+    {
+        case GL_DEBUG_SEVERITY_HIGH: spdlog::error(message); return;
+        case GL_DEBUG_SEVERITY_MEDIUM: spdlog::warn(message); return;
+        case GL_DEBUG_SEVERITY_LOW: spdlog::debug(message); return;
+        case GL_DEBUG_SEVERITY_NOTIFICATION: spdlog::info(message); return;
+    }
+}
+
 void App::initLogger() noexcept
 {
     fs::create_directory("../logs");
@@ -56,6 +67,12 @@ void App::initLogger() noexcept
     spdlog::logger multisink_logger("logger", {console_sink, file_sink});
     multisink_logger.set_level(spdlog::level::debug);
     spdlog::set_default_logger(std::make_shared<spdlog::logger>(multisink_logger));
+
+    glEnable(GL_DEBUG_OUTPUT);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    glDebugMessageCallback(openGLDebugMessageCallback, nullptr);
+
+    glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, NULL, GL_FALSE);
 
     spdlog::debug("Logging initialized");
 }
