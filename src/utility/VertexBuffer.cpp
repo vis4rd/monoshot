@@ -55,8 +55,6 @@ VertexBuffer::VertexBuffer(std::uint32_t size)
 {
     spdlog::debug("Creating VertexBuffer instance with size {}", size);
     glCreateBuffers(1, &m_id);
-    // glBindBuffer(GL_ARRAY_BUFFER, m_id);
-    // glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
     glNamedBufferData(m_id, size, nullptr, GL_DYNAMIC_DRAW);
 }
 
@@ -76,8 +74,6 @@ VertexBuffer::VertexBuffer(float* vertices, std::uint32_t size)
 {
     spdlog::debug("Creating VertexBuffer instance with size {} and pre-computed vertices", size);
     glCreateBuffers(1, &m_id);
-    // glBindBuffer(GL_ARRAY_BUFFER, m_id);
-    // glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
     glNamedBufferData(m_id, size, vertices, GL_STATIC_DRAW);
 }
 
@@ -105,7 +101,6 @@ const BufferLayout& VertexBuffer::getLayout() const
 void VertexBuffer::setData(const void* data, const std::uint32_t& size)
 {
     spdlog::debug("Setting drawing data to VertexBuffer");
-    // glBindBuffer(GL_ARRAY_BUFFER, m_id);
     glNamedBufferSubData(m_id, 0, size, data);
 }
 
