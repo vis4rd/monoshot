@@ -6,12 +6,17 @@ SectionManager& SectionManager::get()
     return instance;
 }
 
-Section&& SectionManager::popSection()
+Section&& SectionManager::releaseSection()
 {
     auto section = m_sections.top().release();
-    spdlog::info("Removing {} in SectionManager", section->name());
+    spdlog::info("Releasing {} in SectionManager", section->name());
     m_sections.pop();
     return std::move(*section);
+}
+
+void SectionManager::popSection()
+{
+    m_sections.pop();
 }
 
 const Section& SectionManager::topSection() const
