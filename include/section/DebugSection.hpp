@@ -2,6 +2,7 @@
 
 #include "../ui/elements/LowerNavigationBox.hpp"
 #include "../renderer/Renderer.hpp"
+#include "../utility/VertexArray.hpp"
 
 class DebugSection final : public Section
 {
@@ -13,9 +14,7 @@ class DebugSection final : public Section
     inline void render() noexcept override;
 
     private:
-    uint32_t VAO;
-    uint32_t VBO;
-    uint32_t EBO;
+    VertexArray VAO;
 
     // content variables
     glm::vec3 scale = {1.f, 1.f, 1.f};
@@ -25,12 +24,14 @@ class DebugSection final : public Section
     PerspectiveCamera m_camera;
 
     float vertices[12] = {-0.5f, -0.5f, 0.f, 0.5f, -0.5f, 0.f, 0.5f, 0.5f, 0.f, -0.5f, 0.5f, 0.f};
+    uint32_t indices[6] = {0, 1, 2, 2, 3, 0};
     // Grid<4, 4> m_mapGrid = {1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1};
     Map<6, 6> m_mapGrid;
 };
 
 DebugSection::DebugSection()
     : Section(),
+      VAO(),
       m_camera(glm::vec3(0.f, 0.f, 50.f), {Window::get().getSize().first, Window::get().getSize().second})
 {
     m_name = "DebugSection";
@@ -44,36 +45,23 @@ DebugSection::DebugSection()
             SectionManager::get().popSection();
         });
 
-
-    glCreateVertexArrays(1, &VAO);  // Create vertex array object (VAO) to avoid repeating below steps every frame
-
-
-    uint32_t indices[] = {0, 1, 2, 2, 3, 0};
-    glCreateBuffers(1, &EBO);  // Create ElementBufferObject
-    glNamedBufferData(EBO, sizeof(indices), indices, GL_STATIC_DRAW);
-    glVertexArrayElementBuffer(VAO, EBO);  // Bind EBO to VAO
-
-
-    int vbo_slot_pos = 0;
-    glCreateBuffers(1, &VBO);  // Create a buffer ID
-    glNamedBufferData(VBO, sizeof(vertices), vertices, GL_STATIC_DRAW);  // Pass data to the buffer, specify nature of data
-    glVertexArrayVertexBuffer(VAO, vbo_slot_pos, VBO, 0, 3 * sizeof(float));  // Bind VBO to VAO, describe offset and size of one element
-
-    glVertexArrayAttribFormat(VAO, vbo_slot_pos, 3, GL_FLOAT, GL_FALSE, 0);  // Describe number of array elements in one attribute
-    glVertexArrayAttribBinding(VAO, vbo_slot_pos, vbo_slot_pos);  // Bind this attribute with VAO and VBO
-    glEnableVertexArrayAttrib(VAO, vbo_slot_pos);  // Enable this attribute in VAO
-
-
     float colors[] = {1.f, 0.f, 0.f, 1.f, 0.f, 1.f, 0.f, 1.f, 0.f, 0.f, 1.f, 1.f, 0.5f, 0.5f, 0.5f, 1.f};
-    uint32_t VBO2;
-    int vbo_slot_col = 1;
-    glCreateBuffers(1, &VBO2);
-    glNamedBufferData(VBO2, sizeof(colors), colors, GL_STATIC_DRAW);
-    glVertexArrayVertexBuffer(VAO, vbo_slot_col, VBO2, 0, 4 * sizeof(float));
 
-    glVertexArrayAttribFormat(VAO, vbo_slot_col, 4, GL_FLOAT, GL_FALSE, 0);
-    glVertexArrayAttribBinding(VAO, vbo_slot_col, vbo_slot_col);
-    glEnableVertexArrayAttrib(VAO, vbo_slot_col);
+    ElementBuffer EBO(indices, 6);
+
+    VertexBuffer VBO1(sizeof(vertices));
+    BufferLayout layout({BufferElement(ShaderDataType::float3, "aPos")});
+    VBO1.setLayout(layout);
+    VBO1.setData(vertices, sizeof(vertices));
+
+    VertexBuffer VBO2(sizeof(colors));
+    BufferLayout layout2({BufferElement(ShaderDataType::float4, "aColor")});
+    VBO2.setLayout(layout2);
+    VBO2.setData(colors, sizeof(colors));
+
+    VAO.addVertexBuffer(std::move(VBO1));
+    VAO.addVertexBuffer(std::move(VBO2));
+    VAO.addElementBuffer(EBO);
 
     // So the structure looks more or less like this:
     // VAO
@@ -161,8 +149,8 @@ void DebugSection::render() noexcept
     triangle_zoom_shader.uploadMat4("uTransform", model_matrix, 0);
     triangle_zoom_shader.uploadMat4("uProjection", m_camera.getProjectionMatrix(), 1);
     triangle_zoom_shader.uploadMat4("uView", m_camera.getViewMatrix(), 2);
-    glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    VAO.bind();
+    glDrawElements(GL_TRIANGLES, VAO.getElementBuffer()->getElementCount(), GL_UNSIGNED_INT, 0);
 
     ImGui::Begin("Section options");
     {

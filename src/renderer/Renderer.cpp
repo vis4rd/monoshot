@@ -91,6 +91,7 @@ void Renderer::init()
 
 void Renderer::shutdown()
 {
+    spdlog::debug("Renderer: Deleting VAO, VBOs and textures");
     glDeleteVertexArrays(1, &s_data.quadVao);
     glDeleteBuffers(1, &s_data.quadVbo);
     glDeleteBuffers(1, &s_data.quadEbo);
@@ -113,8 +114,6 @@ void Renderer::endBatch()
         spdlog::trace("Renderer: ending a batch");
 
         GLsizeiptr size = static_cast<std::uint32_t>(reinterpret_cast<std::uint8_t*>(s_data.quadBufferIter) - reinterpret_cast<std::uint8_t*>(s_data.quadBuffer.begin()));
-        // glBindBuffer(GL_ARRAY_BUFFER, s_data.quadVbo);
-        // glBufferSubData(GL_ARRAY_BUFFER, 0, size, reinterpret_cast<const void*>(s_data.quadBuffer.data()));
         glNamedBufferSubData(s_data.quadVbo, 0, size, reinterpret_cast<const void*>(s_data.quadBuffer.data()));
 
         for(std::uint32_t i = 0; i < s_data.textureSlotsTakenCount; i++)
@@ -127,6 +126,7 @@ void Renderer::endBatch()
 
         glBindVertexArray(s_data.quadVao);
         glDrawElements(GL_TRIANGLES, s_data.stats.indexCount, GL_UNSIGNED_INT, nullptr);
+
         s_data.stats.drawCount++;
     }
 }
