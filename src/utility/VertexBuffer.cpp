@@ -53,14 +53,28 @@ void BufferLayout::calculateOffsetAndStride()
 
 VertexBuffer::VertexBuffer(std::uint32_t size)
 {
+    spdlog::debug("Creating VertexBuffer instance with size {}", size);
     glCreateBuffers(1, &m_id);
     // glBindBuffer(GL_ARRAY_BUFFER, m_id);
     // glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
     glNamedBufferData(m_id, size, nullptr, GL_DYNAMIC_DRAW);
 }
 
+VertexBuffer::VertexBuffer(const VertexBuffer& copy)
+    : m_id(copy.m_id),
+      m_layout(copy.m_layout)
+{
+}
+
+VertexBuffer::VertexBuffer(VertexBuffer&& move)
+    : m_id(std::move(move.m_id)),
+      m_layout(std::move(move.m_layout))
+{
+}
+
 VertexBuffer::VertexBuffer(float* vertices, std::uint32_t size)
 {
+    spdlog::debug("Creating VertexBuffer instance with size {} and pre-computed vertices", size);
     glCreateBuffers(1, &m_id);
     // glBindBuffer(GL_ARRAY_BUFFER, m_id);
     // glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
@@ -69,6 +83,7 @@ VertexBuffer::VertexBuffer(float* vertices, std::uint32_t size)
 
 VertexBuffer::~VertexBuffer()
 {
+    spdlog::debug("Deleting VertexBuffer instance");
     glDeleteBuffers(1, &m_id);
 }
 
@@ -89,6 +104,7 @@ const BufferLayout& VertexBuffer::getLayout() const
 
 void VertexBuffer::setData(const void* data, const std::uint32_t& size)
 {
+    spdlog::debug("Setting drawing data to VertexBuffer");
     // glBindBuffer(GL_ARRAY_BUFFER, m_id);
     glNamedBufferSubData(m_id, 0, size, data);
 }
