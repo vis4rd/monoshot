@@ -5,6 +5,7 @@
 class ElementBuffer
 {
     public:
+    ElementBuffer() = default;
     ElementBuffer(std::uint32_t* indices, std::uint32_t count);
     ~ElementBuffer();
 
@@ -12,10 +13,13 @@ class ElementBuffer
     void unbind() const;
 
     std::uint32_t getElementCount() const;
+    void setData(std::uint32_t* indices, std::uint32_t count);
+    bool isInitialized() const;
 
     operator std::uint32_t() const;
 
     private:
     std::uint32_t m_id;
     std::uint32_t m_count;
+    bool m_isInit = false;
 };

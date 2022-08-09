@@ -150,7 +150,7 @@ void DebugSection::render() noexcept
     triangle_zoom_shader.uploadMat4("uProjection", m_camera.getProjectionMatrix(), 1);
     triangle_zoom_shader.uploadMat4("uView", m_camera.getViewMatrix(), 2);
     VAO.bind();
-    glDrawElements(GL_TRIANGLES, VAO.getElementBuffer()->getElementCount(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, VAO.getElementBuffer().getElementCount(), GL_UNSIGNED_INT, 0);
 
     ImGui::Begin("Section options");
     {

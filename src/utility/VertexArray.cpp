@@ -32,6 +32,22 @@ VertexArray::VertexArray()
     glCreateVertexArrays(1, &m_id);
 }
 
+VertexArray::VertexArray(const VertexArray& copy)
+    : m_id(copy.m_id),
+      m_vertexBufferIndex(copy.m_vertexBufferIndex),
+      m_vertexBuffers(copy.m_vertexBuffers),
+      m_elementBuffer(copy.m_elementBuffer)
+{
+}
+
+VertexArray::VertexArray(VertexArray&& move)
+    : m_id(std::move(move.m_id)),
+      m_vertexBufferIndex(std::move(move.m_vertexBufferIndex)),
+      m_vertexBuffers(std::move(move.m_vertexBuffers)),
+      m_elementBuffer(std::move(move.m_elementBuffer))
+{
+}
+
 VertexArray::~VertexArray()
 {
     spdlog::debug("Deleting VertexArray instance");
@@ -41,7 +57,7 @@ VertexArray::~VertexArray()
 
 void VertexArray::bind() const
 {
-    spdlog::debug("Binding VertexArray with id = {}", m_id);
+    spdlog::trace("Binding VertexArray with id = {}", m_id);
     glBindVertexArray(m_id);
 }
 
@@ -125,9 +141,18 @@ void VertexArray::addVertexBuffer(VertexBuffer&& vertex_buffer)
 void VertexArray::addElementBuffer(const ElementBuffer& element_buffer)
 {
     spdlog::debug("Adding ElementBuffer to VertexArray");
+    if(!element_buffer.isInitialized())
+    {
+        spdlog::error("Given ElementBuffer is not initialized! Pass data to it on construction or through setData() method");
+    }
     glVertexArrayElementBuffer(m_id, element_buffer);
 
-    m_elementBuffer = std::make_unique<ElementBuffer>(element_buffer);
+    m_elementBuffer = element_buffer;
+}
+
+std::vector<VertexBuffer>& VertexArray::getVertexBuffers()
+{
+    return m_vertexBuffers;
 }
 
 const std::vector<VertexBuffer>& VertexArray::getVertexBuffers() const
@@ -135,7 +160,7 @@ const std::vector<VertexBuffer>& VertexArray::getVertexBuffers() const
     return m_vertexBuffers;
 }
 
-const std::unique_ptr<ElementBuffer>& VertexArray::getElementBuffer() const
+const ElementBuffer& VertexArray::getElementBuffer() const
 {
     return m_elementBuffer;
 }
