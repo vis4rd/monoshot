@@ -10,13 +10,14 @@ class App
     App(const std::string& window_title, uint32_t width, uint32_t height);
     virtual ~App() noexcept;
 
+    static void initLogger() noexcept;
+
     Window& getWindow();
     const Window& getWindow() const;
 
     void run() noexcept;
 
     private:
-    void initLogger() noexcept;
     void terminate(int code = 0) noexcept;
 
     private:

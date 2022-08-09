@@ -193,6 +193,17 @@ void Window::initImGui()
     ImGui_ImplOpenGL3_Init("#version 450");
 }
 
+static void openGLDebugMessageCallback(unsigned source, unsigned type, unsigned id, unsigned severity, int length, const char *message, const void *userParam)
+{
+    switch(severity)
+    {
+        case GL_DEBUG_SEVERITY_HIGH: spdlog::error(message); return;
+        case GL_DEBUG_SEVERITY_MEDIUM: spdlog::warn(message); return;
+        case GL_DEBUG_SEVERITY_LOW: spdlog::debug(message); return;
+        case GL_DEBUG_SEVERITY_NOTIFICATION: spdlog::info(message); return;
+    }
+}
+
 void Window::initGL()
 {
     spdlog::debug("Initializing GLAD");
@@ -203,6 +214,13 @@ void Window::initGL()
         this->terminate();
     }
 
+    // logging
+    glEnable(GL_DEBUG_OUTPUT);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    glDebugMessageCallback(openGLDebugMessageCallback, nullptr);
+    glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, NULL, GL_FALSE);
+
+    // viewport
     glViewport(0, 0, m_width, m_height);
 }
 
