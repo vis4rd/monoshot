@@ -21,8 +21,16 @@ ShaderProgram& ShaderManager::addShaderProgram(const fs::path& location, const s
     }
     else
     {
-        spdlog::error("ShaderProgram could not be emplaced");
-        throw std::runtime_error("ShaderProgram could not be emplaced");
+        if(!ShaderManagerData::shaderMap.contains(name))
+        {
+            spdlog::error("ShaderProgram could not be emplaced");
+            throw std::runtime_error("ShaderProgram could not be emplaced");
+        }
+        else
+        {
+            spdlog::info("ShaderProgram '{}' already exists, ignoring...", name);
+            return ShaderManagerData::shaderMap.at(name);
+        }
     }
 }
 
