@@ -25,7 +25,6 @@ class DebugSection final : public Section
 
     float vertices[12] = {-0.5f, -0.5f, 0.f, 0.5f, -0.5f, 0.f, 0.5f, 0.5f, 0.f, -0.5f, 0.5f, 0.f};
     uint32_t indices[6] = {0, 1, 2, 2, 3, 0};
-    // Grid<4, 4> m_mapGrid = {1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1};
     Map<6, 6> m_mapGrid;
 };
 
@@ -137,13 +136,13 @@ void DebugSection::render() noexcept
     // ShaderManager::getShader("grid").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 1);
     // ShaderManager::getShader("grid").uploadMat4("uView", m_camera.getViewMatrix(), 2);
 
-    // std::array<glm::vec4, 36> colors;
-    // std::fill(colors.begin(), colors.end(), glm::vec4(1.f, 1.f, 1.f, 1.f));
-    // Renderer::beginBatch();
-    // Renderer::drawGrid(m_mapGrid, colors);
-    // Renderer::endBatch();
-    // ShaderManager::getShader("quad").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 0);
-    // ShaderManager::getShader("quad").uploadMat4("uView", m_camera.getViewMatrix(), 1);
+    std::array<glm::vec4, 36> colors;
+    std::fill(colors.begin(), colors.end(), glm::vec4(1.f, 1.f, 1.f, 1.f));
+    Renderer::beginBatch();
+    Renderer::drawGrid(m_mapGrid, colors);
+    Renderer::endBatch();
+    ShaderManager::getShader("quad").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 0);
+    ShaderManager::getShader("quad").uploadMat4("uView", m_camera.getViewMatrix(), 1);
 
     Renderer::beginBatch();
     Renderer::drawQuad({0.f, 10.f}, {1.f, 1.f}, 0.f, {1.f, 0.5f, 0.5f, 1.f});
