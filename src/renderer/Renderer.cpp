@@ -113,17 +113,22 @@ void Renderer::endBatch()
     {
         spdlog::trace("Renderer: ending a batch");
 
+        spdlog::debug("Renderer: filling up VB, sending data to gpu");
         GLsizeiptr size = static_cast<std::uint32_t>(reinterpret_cast<std::uint8_t*>(s_data.quadBufferIter) - reinterpret_cast<std::uint8_t*>(s_data.quadBuffer.begin()));
         glNamedBufferSubData(s_data.quadVbo, 0, size, reinterpret_cast<const void*>(s_data.quadBuffer.data()));
 
+        spdlog::debug("Renderer: binding texture units");
         for(std::uint32_t i = 0; i < s_data.textureSlotsTakenCount; i++)
         {
             glBindTextureUnit(i, s_data.textureSlots[i]);
         }
 
+        spdlog::debug("Renderer: binding shader 'quad'");
         auto& quad_shader = ShaderManager::useShader("quad");
+        spdlog::debug("Renderer: uploading texture samplers");
         quad_shader.uploadArrayInt("uTextures", 32, s_data.textureSamplers.data(), 2);
 
+        spdlog::debug("Renderer: binding VAO");
         glBindVertexArray(s_data.quadVao);
         glDrawElements(GL_TRIANGLES, s_data.stats.indexCount, GL_UNSIGNED_INT, nullptr);
 
@@ -194,3 +199,8 @@ Renderer::Stats& Renderer::getStats()
 }
 
 constexpr void Renderer::resetStats() { }
+
+Renderer::Data& Renderer::getData()
+{
+    return s_data;
+}

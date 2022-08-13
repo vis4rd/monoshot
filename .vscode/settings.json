@@ -14,4 +14,9 @@
     "editor.formatOnSave": true,
     "editor.inlayHints.enabled": "off",
     "git.suggestSmartCommit": false,
+    "files.eol": "\n",
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true,
+    "editor.renderLineHighlight": "gutter",
+    "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
 }

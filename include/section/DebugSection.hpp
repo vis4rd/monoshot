@@ -90,8 +90,8 @@ DebugSection::DebugSection()
     ShaderManager::addShaderProgram("../res/shaders", "triangle_zoom");
 
     m_mapGrid.loadFromFile("../res/maps/debug.map", "01");
-    m_mapGrid.update();
-    m_mapGrid.prepareForRender();
+    // m_mapGrid.update();
+    // m_mapGrid.prepareForRender();
 
 
     // glm::vec3 first = {vertices[0], vertices[1], vertices[2]};
@@ -133,9 +133,17 @@ void DebugSection::update() noexcept
 
 void DebugSection::render() noexcept
 {
-    m_mapGrid.render();
-    ShaderManager::getShader("grid").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 1);
-    ShaderManager::getShader("grid").uploadMat4("uView", m_camera.getViewMatrix(), 2);
+    // m_mapGrid.render();
+    // ShaderManager::getShader("grid").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 1);
+    // ShaderManager::getShader("grid").uploadMat4("uView", m_camera.getViewMatrix(), 2);
+
+    // std::array<glm::vec4, 36> colors;
+    // std::fill(colors.begin(), colors.end(), glm::vec4(1.f, 1.f, 1.f, 1.f));
+    // Renderer::beginBatch();
+    // Renderer::drawGrid(m_mapGrid, colors);
+    // Renderer::endBatch();
+    // ShaderManager::getShader("quad").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 0);
+    // ShaderManager::getShader("quad").uploadMat4("uView", m_camera.getViewMatrix(), 1);
 
     Renderer::beginBatch();
     Renderer::drawQuad({0.f, 10.f}, {1.f, 1.f}, 0.f, {1.f, 0.5f, 0.5f, 1.f});
