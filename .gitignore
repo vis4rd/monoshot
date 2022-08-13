@@ -43,3 +43,6 @@ dev/
 # Logging
 logs/
 *.log
+
+# Fetched resources and libraries
+lib/stb_image/
