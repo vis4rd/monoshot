@@ -42,6 +42,7 @@ class VertexBuffer
     void bind() const;
     void unbind() const;
 
+    const std::uint32_t& getID() const;
     const BufferLayout& getLayout() const;
 
     void setData(const void* data, const std::uint32_t& size);

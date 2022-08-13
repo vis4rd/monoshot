@@ -80,7 +80,6 @@ VertexBuffer::VertexBuffer(float* vertices, std::uint32_t size)
 VertexBuffer::~VertexBuffer()
 {
     spdlog::debug("Deleting VertexBuffer instance");
-    glDeleteBuffers(1, &m_id);
 }
 
 void VertexBuffer::bind() const
@@ -91,6 +90,11 @@ void VertexBuffer::bind() const
 void VertexBuffer::unbind() const
 {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+const std::uint32_t& VertexBuffer::getID() const
+{
+    return m_id;
 }
 
 const BufferLayout& VertexBuffer::getLayout() const

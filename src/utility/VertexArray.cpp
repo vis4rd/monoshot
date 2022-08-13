@@ -51,6 +51,17 @@ VertexArray::VertexArray(VertexArray&& move)
 VertexArray::~VertexArray()
 {
     spdlog::debug("Deleting VertexArray instance");
+    for(const auto& vb : m_vertexBuffers)
+    {
+        vb.unbind();
+        glDeleteBuffers(1, &vb.getID());
+    }
+    m_vertexBuffers.clear();
+    if(m_elementBuffer.isInitialized())
+    {
+        m_elementBuffer.unbind();
+        glDeleteBuffers(1, &m_elementBuffer.getID());
+    }
     this->unbind();
     glDeleteVertexArrays(1, &m_id);
 }

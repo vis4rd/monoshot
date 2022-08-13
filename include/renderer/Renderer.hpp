@@ -95,16 +95,9 @@ void Renderer::drawGrid(const Grid<WIDTH, HEIGHT>& grid, const std::array<std::u
         auto x_diff = static_cast<float>(x) - center_x;
         auto y_diff = static_cast<float>(y) - center_y;
 
-        // auto bl_x = -0.5f + x_diff;
-        // auto bl_y = -0.5f - y_diff;
-        // auto br_x = 0.5f + x_diff;
-        // auto br_y = -0.5f - y_diff;
-        // auto ur_x = 0.5f + x_diff;
-        // auto ur_y = 0.5f - y_diff;
-        // auto ul_x = -0.5f + x_diff;
-        // auto ul_y = 0.5f - y_diff;
+        glm::vec4 quad_color = {colors[iter].r * grid[y][x], colors[iter].g * grid[y][x], colors[iter].b * grid[y][x], 1.f};
 
-        drawQuad({x_diff, y_diff}, {1.f, 1.f}, 0.f, texture_ids[iter], colors[iter]);
+        drawQuad({x_diff, -y_diff}, {1.f, 1.f}, 0.f, texture_ids[iter], quad_color);
     }
 }
 

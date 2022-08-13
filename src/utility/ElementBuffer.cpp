@@ -14,10 +14,6 @@ ElementBuffer::ElementBuffer(std::uint32_t* indices, std::uint32_t count)
 ElementBuffer::~ElementBuffer()
 {
     spdlog::debug("Deleting ElementBuffer instance");
-    if(m_isInit)
-    {
-        glDeleteBuffers(1, &m_id);
-    }
 }
 
 void ElementBuffer::bind() const
@@ -34,6 +30,11 @@ void ElementBuffer::unbind() const
     {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
+}
+
+const std::uint32_t& ElementBuffer::getID() const
+{
+    return m_id;
 }
 
 std::uint32_t ElementBuffer::getElementCount() const
