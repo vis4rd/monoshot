@@ -56,15 +56,15 @@ auto Grid<WIDTH, HEIGHT>::data() const -> const tile_t*
 }
 
 template<std::size_t WIDTH, std::size_t HEIGHT>
-auto Grid<WIDTH, HEIGHT>::operator[](const std::size_t& index) -> tile_t&
+auto Grid<WIDTH, HEIGHT>::operator[](const std::size_t& index)
 {
-    return *(m_tiles[index]);
+    return m_tiles[index];
 }
 
 template<std::size_t WIDTH, std::size_t HEIGHT>
-auto Grid<WIDTH, HEIGHT>::operator[](const std::size_t& index) const -> const tile_t&
+const auto Grid<WIDTH, HEIGHT>::operator[](const std::size_t& index) const
 {
-    return *(m_tiles[index]);
+    return m_tiles[index];
 }
 
 template<std::size_t WIDTH, std::size_t HEIGHT>

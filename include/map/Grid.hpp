@@ -14,8 +14,8 @@ class Grid
 
     virtual const tile_t* data() const final;
 
-    virtual tile_t& operator[](const std::size_t& index) final;
-    virtual const tile_t& operator[](const std::size_t& index) const final;
+    auto operator[](const std::size_t& index);
+    const auto operator[](const std::size_t& index) const;
     virtual tile_t& at(const std::size_t& index) final;
     virtual const tile_t& at(const std::size_t& index) const final;
 
