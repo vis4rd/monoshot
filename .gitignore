@@ -39,6 +39,7 @@ bin/
 
 # Development
 dev/
+.vs/
 
 # Logging
 logs/
