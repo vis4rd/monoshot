@@ -2,6 +2,7 @@
 
 #include "Texture.hpp"
 
+// TODO: test/implement multisampled textures: glTextureStorage2DMultisample
 class Texture2D : public Texture
 {
     public:
@@ -12,6 +13,4 @@ class Texture2D : public Texture
 
     private:
     void upload() override;
-
-    private:
 };

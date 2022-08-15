@@ -1,7 +1,8 @@
 #pragma once
 
 #include "../section/SectionManager.hpp"
-
+#include "../utility/VertexArray.hpp"
+#include "../utility/FrameBuffer.hpp"
 
 class Window final
 {
@@ -43,6 +44,7 @@ class Window final
     void initImGui();
     void initGL();
     void initKeybinds();
+    void initFramebuffer();
     void terminate();
 
     private:
@@ -56,11 +58,15 @@ class Window final
     bool m_isVSyncEnabled = true;
     SectionManager &m_sectionManager = SectionManager::get();
     InputManager &m_inputManager = InputManager::get();
-};
 
+    std::uint32_t m_fbo = 0u;
+    std::uint32_t m_fbColor = 0u;
+    std::uint32_t m_vao = 0u;
+};
 
 template<typename... UPDATEABLES>
 requires CUpdateablePack<UPDATEABLES...>
+
 bool Window::update(UPDATEABLES &&...updateables) noexcept
 {
     if(m_sectionManager.size() == 0)
@@ -100,6 +106,7 @@ bool Window::update(UPDATEABLES &&...updateables) noexcept
 
 template<typename... RENDERABLES>
 requires CRenderablePack<RENDERABLES...>
+
 void Window::render(RENDERABLES &&...renderables) noexcept
 {
     // Start the Dear ImGui frame
@@ -108,7 +115,11 @@ void Window::render(RENDERABLES &&...renderables) noexcept
     ImGui::NewFrame();
 
     // Clear previous frame
-    glClear(GL_COLOR_BUFFER_BIT);
+    glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+    // m_fbo.bind();
+    glClearColor(0.3f, 0.3f, 0.3f, 1.f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     // Render
     //// Render my own stuff
@@ -143,10 +154,7 @@ void Window::render(RENDERABLES &&...renderables) noexcept
 
         if(ImGui::ColorEdit3("clear color", (float *)&clear_color))
         {
-            glClearColor(clear_color.r * clear_color.a,
-                clear_color.g * clear_color.a,
-                clear_color.b * clear_color.a,
-                clear_color.a);
+            glClearColor(clear_color.r * clear_color.a, clear_color.g * clear_color.a, clear_color.b * clear_color.a, clear_color.a);
         }
 
         ImGui::Text("Performance: [%.2fms] [%.0ffps]", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
@@ -154,6 +162,9 @@ void Window::render(RENDERABLES &&...renderables) noexcept
 
         ImGui::End();
     }
+
+    glViewport(0, 0, m_width, m_height);
+    glScissor(0, 0, m_width, m_height);
 
     //// Render ImGui (UI) on top
     ImGui::Render();
@@ -165,6 +176,18 @@ void Window::render(RENDERABLES &&...renderables) noexcept
         ImGui::RenderPlatformWindowsDefault();
         glfwMakeContextCurrent(backup_current_context);
     }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    // m_fbo.unbind();
+    glClearColor(1.f, 1.f, 1.f, 1.f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    // use screen shader
+    ShaderManager::useShader("screen");
+    glBindVertexArray(m_vao);
+    // glBindTexture(GL_TEXTURE_2D, m_fbo.getColorID());
+    glBindTexture(GL_TEXTURE_2D, m_fbColor);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
     // Replace previous frame with the current one
     glfwSwapBuffers(m_window);
