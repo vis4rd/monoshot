@@ -15,6 +15,8 @@ Window::Window()
     this->initGL();
     this->initKeybinds();
 
+    glEnable(GL_MULTISAMPLE);
+
     // glfwSetWindowSizeCallback(m_window,
     //     [](GLFWwindow *window, int new_width, int new_height) -> void
     //     {
@@ -156,6 +158,7 @@ void Window::initGLFW()
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
     glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+    glfwWindowHint(GLFW_SAMPLES, 16);
 
     m_window = glfwCreateWindow(m_width, m_height, m_title.c_str(), nullptr, nullptr);
     if(!m_window)
