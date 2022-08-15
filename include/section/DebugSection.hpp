@@ -31,13 +31,15 @@ class DebugSection final : public Section
     Map<6, 6> m_mapGrid;
 
     Texture2D firstTexture;
+    Texture2D carTexture;
 };
 
 DebugSection::DebugSection()
     : Section(),
       VAO(),
       m_camera(glm::vec3(0.f, 0.f, 50.f), {Window::get().getSize().first, Window::get().getSize().second}),
-      firstTexture(16, 16)
+      firstTexture(16, 16),
+      carTexture(64, 128)
 {
     m_name = "DebugSection";
     auto& input_manager = InputManager::get();
@@ -99,6 +101,7 @@ DebugSection::DebugSection()
     // m_mapGrid.prepareForRender();
 
     firstTexture.load("../res/textures/first_texture.png");
+    carTexture.load("../res/textures/car.png");
 
     // glm::vec3 first = {vertices[0], vertices[1], vertices[2]};
     // glm::vec3 second = {vertices[3], vertices[4], vertices[5]};
@@ -158,6 +161,7 @@ void DebugSection::render() noexcept
     Renderer::drawQuad({0.f, 8.f}, {1.f, 1.f}, 0.f, {1.f, 0.5f, 0.5f, 1.f});
     Renderer::drawQuad({9.f, 12.f}, {1.f, 1.f}, 45.f, {1.f, 0.5f, 0.5f, 1.f});
     Renderer::drawQuad({1.f, -1.f}, {1.f, 1.f}, 45.f, firstTexture.getID(), {1.f, 1.f, 1.f, 1.f});
+    Renderer::drawQuad({-20.f, 0.f}, {4.f, 8.f}, 0.f, carTexture.getID(), {1.f, 1.f, 1.f, 1.f});
     Renderer::endBatch();
     ShaderManager::getShader("quad").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 0);
     ShaderManager::getShader("quad").uploadMat4("uView", m_camera.getViewMatrix(), 1);
