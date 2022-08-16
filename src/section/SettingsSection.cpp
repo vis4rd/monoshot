@@ -1,7 +1,9 @@
 #include "../../include/section/SettingsSection.hpp"
+#include "../../include/utility/ResourceManager.hpp"
 
 SettingsSection::SettingsSection()
-    : Section(), m_layout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize),
+    : Section(),
+      m_layout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize),
       m_navLayout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize)
 {
     m_name = "SettingsSection";
@@ -29,7 +31,7 @@ void SettingsSection::render() noexcept
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {m_layout.button_w_s, m_layout.button_h_s});
     ImGui::Begin("SettingsMenu", nullptr, m_layout.window_flags);
     {
-        const auto& [window_w, window_h] = Window::get().getSize();
+        const auto& [window_w, window_h] = ResourceManager::window->getSize();
         std::string current_resolution = std::to_string(window_w) + "x" + std::to_string(window_h);
         ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s, m_layout.menu_y + m_layout.button_h_s});
         if(Custom::ImGui::BeginCombo("Resolution", current_resolution.c_str(), {m_layout.button_w, m_layout.button_h}))
@@ -45,7 +47,7 @@ void SettingsSection::render() noexcept
                 if(ImGui::Selectable(temp_resolution.c_str(), states[i]))
                 {
                     current_resolution = temp_resolution;
-                    Window::get().setSize({temp_w, temp_h});
+                    ResourceManager::window->setSize({temp_w, temp_h});
                 }
             }
             ImGui::EndCombo();

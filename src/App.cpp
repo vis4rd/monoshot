@@ -1,14 +1,14 @@
 #include "../include/App.hpp"
+#include "../include/utility/ResourceManager.hpp"
 
 App::App(const std::string& window_title, uint32_t width, uint32_t height)
-    : m_window(Window::get()),
-      m_input(InputManager::get()),
+    : m_input(InputManager::get()),
       m_sectionManager(SectionManager::get())
 {
     spdlog::info("App version: {}.{}.{} (build {})", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, BUILD_NUMBER);
 
-    m_window.setTitle(window_title);
-    m_window.setSize({width, height});
+    m_window = std::make_shared<Window>(window_title, width, height, false, true);
+    ResourceManager::window = m_window;
 
     MainMenuStyle();
 
@@ -41,20 +41,20 @@ void App::initLogger() noexcept
 
 Window& App::getWindow()
 {
-    return m_window;
+    return *m_window;
 }
 
 const Window& App::getWindow() const
 {
-    return m_window;
+    return *m_window;
 }
 
 void App::run() noexcept
 {
     spdlog::info("Starting main application loop");
-    while(m_window.update(m_sectionManager))
+    while(m_window->update(m_sectionManager))
     {
-        m_window.render(m_sectionManager);
+        m_window->render(m_sectionManager);
     }
     spdlog::info("Halted main application loop");
 }

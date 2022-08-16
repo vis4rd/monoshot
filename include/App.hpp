@@ -21,7 +21,7 @@ class App
     void terminate(int code = 0) noexcept;
 
     private:
-    Window& m_window;
+    std::shared_ptr<Window> m_window;
     InputManager& m_input;
     SectionManager& m_sectionManager;
 };
