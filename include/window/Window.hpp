@@ -3,17 +3,15 @@
 #include "../section/SectionManager.hpp"
 #include "../utility/VertexArray.hpp"
 #include "../utility/FrameBuffer.hpp"
+#include "NativeWindow.hpp"
 
-class Window final
+class Window final : public NativeWindow
 {
     public:
-    Window(const Window &) = delete;
-    Window(Window &&) = delete;
-    Window &operator=(const Window &) = delete;
-    Window &operator=(Window &&) = delete;
-    static Window &get();
+    Window();
+    Window(const std::string &title, std::uint32_t width, std::uint32_t height, bool fullscreen = true, bool vsync = true);
+    ~Window();
 
-    GLFWwindow *getGlfwWindow();
     const ImGuiIO &getImGuiIo() const;
     std::pair<int32_t, int32_t> getSize() const;
     const std::string &getTitle() const;
@@ -39,22 +37,14 @@ class Window final
     void render(RENDERABLES &&...renderables) noexcept;
 
     private:
-    Window();
-    void initGLFW();
-    void initImGui();
-    void initGL();
     void initKeybinds();
     void initFramebuffer();
-    void terminate();
+    void initImGui();
 
     private:
-    GLFWwindow *m_window = nullptr;
     ImGuiIO m_io;
-    std::string m_title = "Game";
-    uint32_t m_width = 640;
-    uint32_t m_height = 480;
     bool m_shouldClose = false;
-    bool m_isFullscreen = false;
+    bool m_isFullscreen = true;
     bool m_isVSyncEnabled = true;
     SectionManager &m_sectionManager = SectionManager::get();
     InputManager &m_inputManager = InputManager::get();
@@ -83,7 +73,6 @@ bool Window::update(UPDATEABLES &&...updateables) noexcept
 
     if(m_shouldClose)
     {
-        this->terminate();
         spdlog::trace("Window::update() returns false");
         return false;
     }
@@ -116,7 +105,6 @@ void Window::render(RENDERABLES &&...renderables) noexcept
 
     // Clear previous frame
     glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
-    // m_fbo.bind();
     glClearColor(0.3f, 0.3f, 0.3f, 1.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
