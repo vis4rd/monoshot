@@ -18,7 +18,7 @@ Window::Window(const std::string &title, std::uint32_t width, std::uint32_t heig
     this->setFullscreen(fullscreen);
     this->setVerticalSync(vsync);
 
-    constexpr float screen_vertex_buffer[16] = {-1.f, -1.f, -1.f, -1.f, 1.f, -1.f, 1.f, -1.f, 1.f, 1.f, 1.f, 1.f, -1.f, 1.f, -1.f, 1.f};
+    constexpr float screen_vertex_buffer[16] = {-1.f, -1.f, 0.f, 0.f, 1.f, -1.f, 1.f, 0.f, 1.f, 1.f, 1.f, 1.f, -1.f, 1.f, 0.f, 1.f};
     constexpr std::uint32_t screen_element_buffer[6] = {0, 1, 2, 2, 3, 0};
 
     VertexBuffer screenVB(screen_vertex_buffer, sizeof(screen_vertex_buffer));

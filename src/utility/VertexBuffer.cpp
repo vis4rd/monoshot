@@ -5,6 +5,7 @@
 BufferLayout::BufferLayout(std::initializer_list<BufferElement> elements)
     : m_elements(elements)
 {
+    this->calculateOffsetAndStride();
 }
 
 std::uint32_t BufferLayout::getStride() const
@@ -75,6 +76,10 @@ VertexBuffer::VertexBuffer(const float* vertices, std::uint32_t size)
     spdlog::debug("Creating VertexBuffer instance with size {} and pre-computed vertices", size);
     glCreateBuffers(1, &m_id);
     glNamedBufferData(m_id, size, vertices, GL_STATIC_DRAW);
+    for(int i = 0; i < size / sizeof(float); i++)
+    {
+        spdlog::debug("Vertex {} = {}", i, vertices[i]);
+    }
 }
 
 VertexBuffer::~VertexBuffer()
