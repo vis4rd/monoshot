@@ -2,7 +2,7 @@
 #include "spdlog/spdlog.h"
 #include <glad/glad.h>
 
-ElementBuffer::ElementBuffer(std::uint32_t* indices, std::uint32_t count)
+ElementBuffer::ElementBuffer(const std::uint32_t* indices, std::uint32_t count)
     : m_count(count),
       m_isInit(true)
 {

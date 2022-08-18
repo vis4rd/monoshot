@@ -6,7 +6,7 @@ class ElementBuffer
 {
     public:
     ElementBuffer() = default;
-    ElementBuffer(std::uint32_t* indices, std::uint32_t count);
+    ElementBuffer(const std::uint32_t* indices, std::uint32_t count);
     ~ElementBuffer();
 
     void bind() const;

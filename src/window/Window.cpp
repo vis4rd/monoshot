@@ -6,7 +6,9 @@ Window::Window()
 }
 
 Window::Window(const std::string &title, std::uint32_t width, std::uint32_t height, bool fullscreen, bool vsync)
-    : NativeWindow(title, width, height)
+    : NativeWindow(title, width, height),
+      screenVA(),
+      screenFB(m_width, m_height)
 {
     spdlog::info("Creating window instance");
 
@@ -16,23 +18,21 @@ Window::Window(const std::string &title, std::uint32_t width, std::uint32_t heig
     this->setFullscreen(fullscreen);
     this->setVerticalSync(vsync);
 
-    float screen_vertex_buffer[16] = {-1.f, -1.f, -1.f, -1.f, 1.f, -1.f, 1.f, -1.f, 1.f, 1.f, 1.f, 1.f, -1.f, 1.f, -1.f, 1.f};
-    std::uint32_t screen_element_buffer[6] = {0, 1, 2, 2, 3, 0};
+    constexpr float screen_vertex_buffer[16] = {-1.f, -1.f, -1.f, -1.f, 1.f, -1.f, 1.f, -1.f, 1.f, 1.f, 1.f, 1.f, -1.f, 1.f, -1.f, 1.f};
+    constexpr std::uint32_t screen_element_buffer[6] = {0, 1, 2, 2, 3, 0};
 
-    static VertexArray screenVA;
-    m_vao = static_cast<std::uint32_t>(screenVA);
     VertexBuffer screenVB(screen_vertex_buffer, sizeof(screen_vertex_buffer));
-    BufferLayout layout({BufferElement(ShaderDataType::float2, "aPos"), BufferElement(ShaderDataType::float2, "aTexCoords")});
+    BufferLayout layout({
+        BufferElement(ShaderDataType::float2, "aPos"),
+        BufferElement(ShaderDataType::float2, "aTexCoords"),
+    });
     screenVB.setLayout(layout);
+
     ElementBuffer screenEB(screen_element_buffer, 6);
     screenVA.addVertexBuffer(std::move(screenVB));
     screenVA.addElementBuffer(screenEB);
+
     ShaderManager::addShaderProgram("../res/shaders", "screen");
-
-    static FrameBuffer fbo(m_width, m_height);
-    m_fbo = fbo.getID();
-    m_fbColor = fbo.getColorID();
-
 
     // glfwSetWindowSizeCallback(m_window,
     //     [](GLFWwindow *window, int new_width, int new_height) -> void
@@ -60,9 +60,8 @@ Window::~Window()
 {
     spdlog::info("Terminating window instance");
 
-    m_fbo.unbind();
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glDeleteFramebuffers(1, &m_fbo);
+    screenFB.unbind();
+    screenVA.unbind();
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
@@ -111,7 +110,7 @@ void Window::setSize(const std::pair<int32_t, int32_t> &new_size)
     m_width = new_size.first;
     m_height = new_size.second;
     glfwSetWindowSize(m_window, m_width, m_height);
-    // m_fbo.resize(m_width, m_height);
+    screenFB.resize(m_width, m_height);
 }
 
 void Window::setTitle(const std::string &title)

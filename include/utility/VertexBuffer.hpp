@@ -34,7 +34,7 @@ class VertexBuffer
 {
     public:
     VertexBuffer(std::uint32_t size);
-    VertexBuffer(float* vertices, std::uint32_t size);
+    VertexBuffer(const float* vertices, std::uint32_t size);
     VertexBuffer(const VertexBuffer& copy);
     VertexBuffer(VertexBuffer&& move);
     ~VertexBuffer();

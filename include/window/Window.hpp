@@ -48,10 +48,8 @@ class Window final : public NativeWindow
     bool m_isVSyncEnabled = true;
     SectionManager &m_sectionManager = SectionManager::get();
     InputManager &m_inputManager = InputManager::get();
-
-    std::uint32_t m_fbo = 0u;
-    std::uint32_t m_fbColor = 0u;
-    std::uint32_t m_vao = 0u;
+    VertexArray screenVA;
+    FrameBuffer screenFB;
 };
 
 template<typename... UPDATEABLES>
@@ -104,7 +102,7 @@ void Window::render(RENDERABLES &&...renderables) noexcept
     ImGui::NewFrame();
 
     // Clear previous frame
-    glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+    screenFB.bind();
     glClearColor(0.3f, 0.3f, 0.3f, 1.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -165,16 +163,14 @@ void Window::render(RENDERABLES &&...renderables) noexcept
         glfwMakeContextCurrent(backup_current_context);
     }
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    // m_fbo.unbind();
+    screenFB.unbind();
     glClearColor(1.f, 1.f, 1.f, 1.f);
     glClear(GL_COLOR_BUFFER_BIT);
 
     // use screen shader
     ShaderManager::useShader("screen");
-    glBindVertexArray(m_vao);
-    // glBindTexture(GL_TEXTURE_2D, m_fbo.getColorID());
-    glBindTexture(GL_TEXTURE_2D, m_fbColor);
+    screenVA.bind();
+    glBindTexture(GL_TEXTURE_2D, screenFB.getColorID());
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
     // Replace previous frame with the current one

@@ -70,7 +70,7 @@ VertexBuffer::VertexBuffer(VertexBuffer&& move)
 {
 }
 
-VertexBuffer::VertexBuffer(float* vertices, std::uint32_t size)
+VertexBuffer::VertexBuffer(const float* vertices, std::uint32_t size)
 {
     spdlog::debug("Creating VertexBuffer instance with size {} and pre-computed vertices", size);
     glCreateBuffers(1, &m_id);
