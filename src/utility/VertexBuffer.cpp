@@ -78,7 +78,7 @@ VertexBuffer::VertexBuffer(const float* vertices, std::uint32_t size)
     glNamedBufferData(m_id, size, vertices, GL_STATIC_DRAW);
     for(int i = 0; i < size / sizeof(float); i++)
     {
-        spdlog::debug("Vertex {} = {}", i, vertices[i]);
+        spdlog::trace("Vertex {} = {}", i, vertices[i]);
     }
 }
 
