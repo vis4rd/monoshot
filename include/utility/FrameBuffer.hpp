@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <glm/glm.hpp>
 
 class FrameBuffer
 {
@@ -15,6 +16,7 @@ class FrameBuffer
     const std::uint32_t& getID() const;
     const std::uint32_t& getColorID() const;
     const std::uint32_t& getStencilID() const;
+    glm::ivec2 getSize() const;
 
     private:
     void initTexture();

@@ -91,6 +91,8 @@ void FrameBuffer::resize(const std::int32_t& width, const std::int32_t& height)
     this->initTexture();
     this->initStencil();
     this->bindAttachments();
+
+    glViewport(0, 0, m_width, m_height);
 }
 
 const std::uint32_t& FrameBuffer::getID() const
@@ -106,6 +108,11 @@ const std::uint32_t& FrameBuffer::getColorID() const
 const std::uint32_t& FrameBuffer::getStencilID() const
 {
     return m_stencilAttachment;
+}
+
+glm::ivec2 FrameBuffer::getSize() const
+{
+    return glm::ivec2(m_width, m_height);
 }
 
 void FrameBuffer::initTexture()

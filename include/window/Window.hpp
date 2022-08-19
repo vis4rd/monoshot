@@ -16,6 +16,8 @@ class Window final : public NativeWindow
     std::pair<int32_t, int32_t> getSize() const;
     const std::string &getTitle() const;
 
+    FrameBuffer &getFramebuffer() { return screenFB; }
+
     bool isFullscreen() const;
     bool isMaximized() const;
     bool isVerticalSyncEnabled() const;
@@ -96,6 +98,9 @@ requires CRenderablePack<RENDERABLES...>
 
 void Window::render(RENDERABLES &&...renderables) noexcept
 {
+    static bool show_debug_panel = true;
+    static glm::vec4 clear_color = glm::vec4(0.f, 0.f, 0.f, 1.f);
+
     // Start the Dear ImGui frame
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
@@ -103,9 +108,11 @@ void Window::render(RENDERABLES &&...renderables) noexcept
 
     // Clear previous frame
     screenFB.bind();
-    glClearColor(0.3f, 0.3f, 0.3f, 1.f);
+    glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+    glViewport(0, 0, screenFB.getSize().x, screenFB.getSize().y);  // set framebuffer viewport to its size
 
     // Render
     //// Render my own stuff
@@ -114,8 +121,6 @@ void Window::render(RENDERABLES &&...renderables) noexcept
         (renderables.render(), ...);
     }
 
-    static bool show_debug_panel = true;
-    static glm::vec4 clear_color = glm::vec4(0.f, 0.f, 0.f, 1.f);
     // Debug panel
     if(show_debug_panel)
     {
@@ -149,9 +154,6 @@ void Window::render(RENDERABLES &&...renderables) noexcept
         ImGui::End();
     }
 
-    glViewport(0, 0, m_width, m_height);
-    glScissor(0, 0, m_width, m_height);
-
     //// Render ImGui (UI) on top
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -166,6 +168,8 @@ void Window::render(RENDERABLES &&...renderables) noexcept
     screenFB.unbind();
     glClearColor(1.f, 1.f, 1.f, 1.f);
     glClear(GL_COLOR_BUFFER_BIT);
+
+    glViewport(0, 0, m_width, m_height);  // set the main viewport to window size
 
     // use screen shader
     ShaderManager::useShader("screen");
