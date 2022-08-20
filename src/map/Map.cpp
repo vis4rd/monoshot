@@ -1,13 +1,11 @@
 #pragma once
 
-template<std::size_t WIDTH, std::size_t HEIGHT>
-Map<WIDTH, HEIGHT>::Map()
-    : Grid<WIDTH, HEIGHT>({})
+Map::Map()
+    : Grid({})
 {
 }
 
-template<std::size_t WIDTH, std::size_t HEIGHT>
-void Map<WIDTH, HEIGHT>::loadFromFile(const std::string_view& filename, const std::string_view& allowed_chars)
+void Map::loadFromFile(const std::string_view& filename, const std::string_view& allowed_chars)
 {
     std::ifstream file(reinterpret_cast<const char*>(filename.data()));
     if(!file.is_open() || !file.good())
@@ -47,7 +45,7 @@ void Map<WIDTH, HEIGHT>::loadFromFile(const std::string_view& filename, const st
             continue;
         }
         spdlog::trace("character: '{}', converted to ascii: '{}'", ch, ch - '0');
-        Grid<WIDTH, HEIGHT>::m_tiles[iter / WIDTH][iter % WIDTH] = (ch - '0');  // for some reason m_tiles is not accessible here...
+        Grid::m_tiles[iter / WIDTH][iter % WIDTH] = (ch - '0');  // for some reason m_tiles is not accessible here...
         iter++;
     }
     spdlog::debug("Reading map from file has finished successfully");
@@ -55,7 +53,7 @@ void Map<WIDTH, HEIGHT>::loadFromFile(const std::string_view& filename, const st
     {
         for(int j = 0; j < HEIGHT; j++)
         {
-            spdlog::trace("{} ", Grid<WIDTH, HEIGHT>::m_tiles[i][j]);
+            spdlog::trace("{} ", Grid::m_tiles[i][j]);
         }
         spdlog::trace("");
     }

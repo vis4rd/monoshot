@@ -9,11 +9,12 @@ DebugSection::DebugSection()
     : Section(),
       VAO(),
       m_camera(glm::vec3(0.f, 0.f, 50.f), {ResourceManager::window->getSize().first, ResourceManager::window->getSize().second}),
+      m_mapGrid(100, 100),
       firstTexture(16, 16),
       carTexture(64, 128),
       bigCarTexture(1024, 2048),
       gimpCarTexture(1024, 2048),
-      gimpCar2Texture(1024, 2048)
+      gimpCar2Texture(1024, 2048),
 {
     m_name = "DebugSection";
     auto& input_manager = InputManager::get();
@@ -70,7 +71,7 @@ DebugSection::DebugSection()
 
     ShaderManager::addShaderProgram("../res/shaders", "triangle_zoom");
 
-    m_mapGrid.loadFromFile("../res/maps/debug.map", "01");
+    m_mapGrid.loadFromFile("../res/maps/level_tutorial.map", "01");
 
     firstTexture.load("../res/textures/first_texture.png");
     carTexture.load("../res/textures/car.png");

@@ -1,7 +1,6 @@
-#pragma once
+#include "../../include/map/Grid.hpp"
 
-template<std::size_t WIDTH, std::size_t HEIGHT>
-void Grid<WIDTH, HEIGHT>::prepareForRender()
+void Grid::prepareForRender()
 {
     GLuint position_attribute_index = 0;
     GLuint vb_binding_index = 0;
@@ -25,23 +24,22 @@ void Grid<WIDTH, HEIGHT>::prepareForRender()
     ShaderManager::addShaderProgram("../res/shaders", "grid");
 }
 
-template<std::size_t WIDTH, std::size_t HEIGHT>
-Grid<WIDTH, HEIGHT>::Grid(const std::array<tile_t, WIDTH * HEIGHT>& tiles)
+Grid::Grid(const std::size_t& width, const std::size_t& height)
+    : m_width(width),
+      m_height(height),
+      m_tiles(width, std::vector<std::uint8_t>(height))
 {
-    for(auto i = 0; i < WIDTH * HEIGHT; i++)
-    {
-        m_tiles[i] = tiles[i];
-    }
+    // const auto* pointer = reinterpret_cast<const std::uint8_t*>(m_tiles.data());
+    // spdlog::debug("POINTER = '{}'", pointer[width + 2]);
 }
 
-template<std::size_t WIDTH, std::size_t HEIGHT>
-Grid<WIDTH, HEIGHT>::Grid(const std::initializer_list<tile_t>& tiles)
+Grid::Grid(const std::initializer_list<std::uint8_t>& tiles)
 {
-    if(tiles.size() >= WIDTH * HEIGHT)
+    if(tiles.size() >= m_width * m_height)
     {
-        for(auto i = 0; i < WIDTH; i++)
+        for(auto i = 0; i < m_width; i++)
         {
-            for(auto j = 0; j < HEIGHT; j++)
+            for(auto j = 0; j < m_height; j++)
             {
                 m_tiles[i][j] = std::data(tiles)[(i * 4) + j];
             }
@@ -49,38 +47,42 @@ Grid<WIDTH, HEIGHT>::Grid(const std::initializer_list<tile_t>& tiles)
     }
 }
 
-template<std::size_t WIDTH, std::size_t HEIGHT>
-auto Grid<WIDTH, HEIGHT>::data() const -> const tile_t*
+const std::uint8_t* Grid::data() const
 {
-    return reinterpret_cast<const tile_t*>(m_tiles);
+    return m_tiles.data();
 }
 
-template<std::size_t WIDTH, std::size_t HEIGHT>
-auto Grid<WIDTH, HEIGHT>::operator[](const std::size_t& index)
+std::vector<std::uint8_t>& Grid::operator[](const std::size_t& index)
 {
     return m_tiles[index];
 }
 
-template<std::size_t WIDTH, std::size_t HEIGHT>
-const auto Grid<WIDTH, HEIGHT>::operator[](const std::size_t& index) const
+const std::vector<std::uint8_t>& Grid::operator[](const std::size_t& index) const
 {
     return m_tiles[index];
 }
 
-template<std::size_t WIDTH, std::size_t HEIGHT>
-auto Grid<WIDTH, HEIGHT>::at(const std::size_t& index) -> tile_t&
+std::vector<std::uint8_t>& Grid::at(const std::size_t& index)
 {
-    return *(m_tiles[index % (WIDTH * HEIGHT)]);
+    return m_tiles[index % m_width];
 }
 
-template<std::size_t WIDTH, std::size_t HEIGHT>
-auto Grid<WIDTH, HEIGHT>::at(const std::size_t& index) const -> const tile_t&
+const std::vector<std::uint8_t>& Grid::at(const std::size_t& index) const
 {
-    return *(m_tiles[index % (WIDTH * HEIGHT)]);
+    return m_tiles[index % m_width];
 }
 
-template<std::size_t WIDTH, std::size_t HEIGHT>
-void Grid<WIDTH, HEIGHT>::render() noexcept
+std::uint8_t& Grid::at(const std::size_t& index_x, const std::size_t& index_y)
+{
+    return m_tiles[index_x % m_width][index_y & m_height];
+}
+
+const std::uint8_t& Grid::at(const std::size_t& index_x, const std::size_t& index_y) const
+{
+    return m_tiles[index_x % m_width][index_y & m_height];
+}
+
+void Grid::render() noexcept
 {
     spdlog::trace("Vertex count: {}, element count: {}", m_vertexBuffer.size() / 3, m_elementBuffer.size());
     ShaderManager::useShader("grid");
@@ -88,8 +90,7 @@ void Grid<WIDTH, HEIGHT>::render() noexcept
     glDrawElements(GL_TRIANGLES, m_elementBuffer.size(), GL_UNSIGNED_INT, 0);
 }
 
-template<std::size_t WIDTH, std::size_t HEIGHT>
-void Grid<WIDTH, HEIGHT>::update() noexcept
+void Grid::update() noexcept
 {
     enum corner : std::size_t
     {
@@ -103,23 +104,23 @@ void Grid<WIDTH, HEIGHT>::update() noexcept
     auto& grid = m_tiles;
 
     // pre-calculate center of the grid
-    std::size_t center_x = WIDTH / 2;
-    std::size_t center_y = HEIGHT / 2;
+    std::size_t center_x = m_width / 2;
+    std::size_t center_y = m_height / 2;
 
     // indices of all tiles
-    std::vector<std::uint32_t> all_index_buffer(WIDTH * HEIGHT * 4);
+    std::vector<std::uint32_t> all_index_buffer(m_width * m_height * 4);
 
     // calculate number of filled tiles
     std::size_t temp_count = 0;
-    for(std::size_t i = 0; i < WIDTH; i++)
+    for(std::size_t i = 0; i < m_width; i++)
     {
-        for(std::size_t j = 0; j < HEIGHT; j++)
+        for(std::size_t j = 0; j < m_height; j++)
         {
             temp_count += (grid[i][j] == 1);
         }
     }
     const std::size_t filled_count = temp_count;
-    const std::size_t empty_count = WIDTH * HEIGHT - filled_count;
+    const std::size_t empty_count = m_width * m_height - filled_count;
 
     // calculate maximum number of indices and vertices
     const std::size_t max_index_count = filled_count * 6;
@@ -138,16 +139,16 @@ void Grid<WIDTH, HEIGHT>::update() noexcept
 
 
     // generate element buffer (index buffer)
-    for(std::size_t i = 0; i < WIDTH; i++)
+    for(std::size_t i = 0; i < m_width; i++)
     {
-        for(std::size_t j = 0; j < HEIGHT; j++)
+        for(std::size_t j = 0; j < m_height; j++)
         {
             // pre-calculating tile indices in all_index_buffer
-            auto current_tile = (i * WIDTH * 4) + (j * 4);
-            auto left_tile = (i * WIDTH * 4) + ((j - 1) * 4);
-            auto upper_left_tile = ((i - 1) * WIDTH * 4) + ((j - 1) * 4);
-            auto upper_right_tile = ((i - 1) * WIDTH * 4) + ((j + 1) * 4);
-            auto upper_tile = ((i - 1) * WIDTH * 4) + (j * 4);
+            auto current_tile = (i * m_width * 4) + (j * 4);
+            auto left_tile = (i * m_width * 4) + ((j - 1) * 4);
+            auto upper_left_tile = ((i - 1) * m_width * 4) + ((j - 1) * 4);
+            auto upper_right_tile = ((i - 1) * m_width * 4) + ((j + 1) * 4);
+            auto upper_tile = ((i - 1) * m_width * 4) + (j * 4);
 
             // calculate distance of current tile from the center of the grid
             auto x_diff = static_cast<float>(j) - center_x;
@@ -207,7 +208,7 @@ void Grid<WIDTH, HEIGHT>::update() noexcept
                 {
                     all_index_buffer[current_tile + corner::UR] = all_index_buffer[upper_tile + corner::BR];
                 }
-                else if(j == (WIDTH - 1))  // if it is right-most tile
+                else if(j == (m_width - 1))  // if it is right-most tile
                 {
                     all_index_buffer[current_tile + corner::UR] = next_index++;
                     m_vertexBuffer[((next_index - 1) * 3)] = ur_x;
@@ -293,7 +294,7 @@ void Grid<WIDTH, HEIGHT>::update() noexcept
     spdlog::debug("Vertex count: {}", m_vertexBuffer.size() / 3);
     spdlog::debug("Unique vertex positions: {}", next_index);
     spdlog::debug("Vertices of filled tiles: {}", max_vertex_count / 3);
-    spdlog::debug("All vertices in the grid: {}", WIDTH * HEIGHT * 6);
+    spdlog::debug("All vertices in the grid: {}", m_width * m_height * 6);
 
     std::string output = "Element buffer of the grid:\n";
     for(std::size_t i = 0; i < m_elementBuffer.size(); i++)
@@ -306,7 +307,7 @@ void Grid<WIDTH, HEIGHT>::update() noexcept
 // Grid<4, 4> = {1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1};
 // EB: 0, 1, 2, 3, 1, 4, 5, 2, 4, 6, 7, 5, 8, 9, 4, 1, 9, 10, 6, 4, 10, 11, 12, 6, 13, 14, 10, 9, 15, 16, 17, 18, 16, 19, 13, 17, 19, 20, 14, 13, 20, 21, 22, 14,
 
-// for(std::size_t i = 0; i < WIDTH; i++)
+// for(std::size_t i = 0; i < m_width; i++)
 // {
 //     if(grid[0][i] == 1)
 //     {

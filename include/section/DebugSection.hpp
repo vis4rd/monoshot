@@ -25,7 +25,7 @@ class DebugSection final : public Section
 
     float vertices[12] = {-0.5f, -0.5f, 0.f, 0.5f, -0.5f, 0.f, 0.5f, 0.5f, 0.f, -0.5f, 0.5f, 0.f};
     uint32_t indices[6] = {0, 1, 2, 2, 3, 0};
-    Map<6, 6> m_mapGrid;
+    Map m_mapGrid;
 
     Texture2D firstTexture;
     Texture2D carTexture;

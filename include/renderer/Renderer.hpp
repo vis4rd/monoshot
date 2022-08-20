@@ -19,12 +19,9 @@ class Renderer
     static void drawQuad(const glm::vec2& position, const glm::vec2& size, const float& rotation, const glm::vec4& color);
     static void drawQuad(const glm::vec2& position, const glm::vec2& size, const float& rotation, const std::uint32_t& texture_id, const glm::vec4& color = {1.f, 1.f, 1.f, 1.f});
 
-    template<std::size_t WIDTH, std::size_t HEIGHT>
-    static void drawGrid(const Grid<WIDTH, HEIGHT>& grid, const std::array<glm::vec4, WIDTH * HEIGHT>& colors);
-    template<std::size_t WIDTH, std::size_t HEIGHT>
-    static void drawGrid(const Grid<WIDTH, HEIGHT>& grid, const std::array<std::uint32_t, WIDTH * HEIGHT>& texture_ids, const std::array<glm::vec4, WIDTH * HEIGHT>& colors = {glm::vec4{}});
-    template<std::size_t WIDTH, std::size_t HEIGHT>
-    static void drawGrid(const std::initializer_list<typename Grid<WIDTH, HEIGHT>::tile_t>& tiles, const std::array<std::uint32_t, WIDTH * HEIGHT>& texture_ids, const std::array<glm::vec4, WIDTH * HEIGHT>& colors = {glm::vec4{}});
+    static void drawGrid(const Grid& grid, const std::array<glm::vec4, 6 * 9>& colors);
+    static void drawGrid(const Grid& grid, const std::array<std::uint32_t, 6 * 9>& texture_ids, const std::array<glm::vec4, 6 * 9>& colors = {glm::vec4{}});
+    static void drawGrid(const std::initializer_list<std::uint8_t>& tiles, const std::array<std::uint32_t, 6 * 9>& texture_ids, const std::array<glm::vec4, 6 * 9>& colors = {glm::vec4{}});
 
     struct Stats
     {
@@ -72,25 +69,23 @@ class Renderer
     static Data& getData();
 };
 
-template<std::size_t WIDTH, std::size_t HEIGHT>
-void Renderer::drawGrid(const Grid<WIDTH, HEIGHT>& grid, const std::array<glm::vec4, WIDTH * HEIGHT>& colors)
+void Renderer::drawGrid(const Grid& grid, const std::array<glm::vec4, 6 * 9>& colors)
 {
-    std::array<std::uint32_t, WIDTH * HEIGHT> texture_ids;
+    std::array<std::uint32_t, 6 * 9> texture_ids;
     std::fill(texture_ids.begin(), texture_ids.end(), Renderer::getData().whiteTexture);
     drawGrid(grid, texture_ids, colors);
 }
 
-template<std::size_t WIDTH, std::size_t HEIGHT>
-void Renderer::drawGrid(const Grid<WIDTH, HEIGHT>& grid, const std::array<std::uint32_t, WIDTH * HEIGHT>& texture_ids, const std::array<glm::vec4, WIDTH * HEIGHT>& colors)
+void Renderer::drawGrid(const Grid& grid, const std::array<std::uint32_t, 6 * 9>& texture_ids, const std::array<glm::vec4, 6 * 9>& colors)
 {
     // pre-calculate center of the grid
-    std::size_t center_x = WIDTH / 2;
-    std::size_t center_y = HEIGHT / 2;
+    std::size_t center_x = 6 / 2;
+    std::size_t center_y = 9 / 2;
 
-    for(std::size_t iter = 0; iter < WIDTH * HEIGHT; iter++)
+    for(std::size_t iter = 0; iter < 6 * 9; iter++)
     {
-        auto x = iter % WIDTH;
-        auto y = iter / WIDTH;
+        auto x = iter % 6;
+        auto y = iter / 6;
 
         auto x_diff = static_cast<float>(x) - center_x;
         auto y_diff = static_cast<float>(y) - center_y;
@@ -101,9 +96,8 @@ void Renderer::drawGrid(const Grid<WIDTH, HEIGHT>& grid, const std::array<std::u
     }
 }
 
-template<std::size_t WIDTH, std::size_t HEIGHT>
-void Renderer::drawGrid(const std::initializer_list<typename Grid<WIDTH, HEIGHT>::tile_t>& tiles, const std::array<std::uint32_t, WIDTH * HEIGHT>& texture_ids, const std::array<glm::vec4, WIDTH * HEIGHT>& colors)
+void Renderer::drawGrid(const std::initializer_list<std::uint8_t>& tiles, const std::array<std::uint32_t, 6 * 9>& texture_ids, const std::array<glm::vec4, 6 * 9>& colors)
 {
-    Grid<WIDTH, HEIGHT> grid(tiles);
+    Grid grid(tiles);
     drawGrid(grid, texture_ids, colors);
 }
