@@ -9,12 +9,13 @@ DebugSection::DebugSection()
     : Section(),
       VAO(),
       m_camera(glm::vec3(0.f, 0.f, 50.f), {ResourceManager::window->getSize().first, ResourceManager::window->getSize().second}),
-      m_mapGrid(100, 100),
+      m_mapGrid(5, 5),
+      // m_colors(100 * 100, glm::vec4(1.f, 1.f, 1.f, 1.f)),
       firstTexture(16, 16),
       carTexture(64, 128),
       bigCarTexture(1024, 2048),
       gimpCarTexture(1024, 2048),
-      gimpCar2Texture(1024, 2048),
+      gimpCar2Texture(1024, 2048)
 {
     m_name = "DebugSection";
     auto& input_manager = InputManager::get();
@@ -71,13 +72,17 @@ DebugSection::DebugSection()
 
     ShaderManager::addShaderProgram("../res/shaders", "triangle_zoom");
 
-    m_mapGrid.loadFromFile("../res/maps/level_tutorial.map", "01");
+    m_mapGrid.loadFromFile("../res/maps/new_debug_map.map");
+    // m_mapGrid.update();
+    // m_mapGrid.prepareForRender();
 
     firstTexture.load("../res/textures/first_texture.png");
     carTexture.load("../res/textures/car.png");
     bigCarTexture.load("../res/textures/car-big.png");
     gimpCarTexture.load("../res/textures/car-gimp.png");
     gimpCar2Texture.load("../res/textures/car-gimp2.png");
+
+    m_mapGrid.emplaceTexture(16, 16, "../res/textures/grass.png");
 
     // glm::vec3 first = {vertices[0], vertices[1], vertices[2]};
     // glm::vec3 second = {vertices[3], vertices[4], vertices[5]};
@@ -123,13 +128,15 @@ void DebugSection::render() noexcept
     // ShaderManager::getShader("grid").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 1);
     // ShaderManager::getShader("grid").uploadMat4("uView", m_camera.getViewMatrix(), 2);
 
-    std::array<glm::vec4, 36> colors;
-    std::fill(colors.begin(), colors.end(), glm::vec4(1.f, 1.f, 1.f, 1.f));
-    Renderer::beginBatch();
-    Renderer::drawGrid(m_mapGrid, colors);
-    Renderer::endBatch();
-    ShaderManager::getShader("quad").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 0);
-    ShaderManager::getShader("quad").uploadMat4("uView", m_camera.getViewMatrix(), 1);
+    // std::array<glm::vec4, 36> colors;
+    // std::fill(colors.begin(), colors.end(), glm::vec4(1.f, 1.f, 1.f, 1.f));
+    // Renderer::beginBatch();
+    // Renderer::drawGrid(m_mapGrid, m_colors.data(), 100 * 100);
+    // Renderer::endBatch();
+    // ShaderManager::getShader("quad").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 0);
+    // ShaderManager::getShader("quad").uploadMat4("uView", m_camera.getViewMatrix(), 1);
+    m_mapGrid.render();
+
 
     Renderer::beginBatch();
     Renderer::drawQuad({0.f, 10.f}, {1.f, 1.f}, 0.f, {1.f, 0.5f, 0.5f, 1.f});
