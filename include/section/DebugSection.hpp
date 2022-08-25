@@ -14,6 +14,9 @@ class DebugSection final : public Section
     void render() noexcept override;
 
     private:
+    glm::vec2 mouseScreenPosToWorldPos(const glm::vec2& mouse_pos, Camera& camera);
+
+    private:
     VertexArray VAO;
 
     // content variables
@@ -26,11 +29,6 @@ class DebugSection final : public Section
     float vertices[12] = {-0.5f, -0.5f, 0.f, 0.5f, -0.5f, 0.f, 0.5f, 0.5f, 0.f, -0.5f, 0.5f, 0.f};
     uint32_t indices[6] = {0, 1, 2, 2, 3, 0};
     Map m_mapGrid;
-    // std::vector<glm::vec4> m_colors;
 
     Texture2D firstTexture;
-    Texture2D carTexture;
-    Texture2D bigCarTexture;
-    Texture2D gimpCarTexture;
-    Texture2D gimpCar2Texture;
 };

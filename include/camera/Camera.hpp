@@ -24,6 +24,8 @@ class Camera
     virtual const float& getFarPlane() const final;
     virtual const glm::mat4& getViewMatrix() final;
     virtual const glm::mat4& getProjectionMatrix() final;
+    virtual const glm::mat4& getInverseViewMatrix() final;
+    virtual const glm::mat4& getInverseProjectionMatrix() final;
     virtual void setPosition(const glm::vec3& position) final;
     virtual void setNearPlane(const float& near_plane) final;
     virtual void setFarPlane(const float& far_plane) final;
@@ -39,6 +41,8 @@ class Camera
     glm::vec3 m_up = glm::vec3(0.0f, 1.0f, 0.0f);
     glm::mat4 m_viewMatrix = glm::identity<glm::mat4>();
     glm::mat4 m_projectionMatrix = glm::identity<glm::mat4>();
+    glm::mat4 m_inverseViewMatrix = glm::identity<glm::mat4>();
+    glm::mat4 m_inverseProjectionMatrix = glm::identity<glm::mat4>();
     float m_nearPlane = 0.1f;
     float m_farPlane = 100.f;
     glm::vec2 m_resolution;

@@ -151,7 +151,7 @@ void Renderer::drawQuad(const glm::vec2& position, const glm::vec2& size, const 
         beginBatch();
     }
 
-    glm::mat4 model_matrix = glm::translate(glm::mat4(1.f), glm::vec3(position, 0.f)) * glm::rotate(glm::mat4(1.f), glm::radians(rotation), {0.f, 0.f, 1.f}) * glm::scale(glm::mat4(1.f), glm::vec3(size, 1.f));
+    glm::mat4 model_matrix = glm::translate(glm::identity<glm::mat4>(), glm::vec3(position, 0.f)) * glm::rotate(glm::identity<glm::mat4>(), glm::radians(rotation), {0.f, 0.f, 1.f}) * glm::scale(glm::identity<glm::mat4>(), glm::vec3(size, 1.f));
     spdlog::trace("Renderer: model_matrix:\n{}", util::mat4str(model_matrix));
     float texture_index = -1.f;
 

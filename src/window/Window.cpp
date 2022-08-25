@@ -85,6 +85,13 @@ const std::string &Window::getTitle() const
     return m_title;
 }
 
+glm::vec2 Window::getMousePosition() const
+{
+    glm::dvec2 mouse_pos;
+    glfwGetCursorPos(m_window, &(mouse_pos.x), &(mouse_pos.y));
+    return mouse_pos;
+}
+
 bool Window::isFullscreen() const
 {
     return m_isFullscreen;

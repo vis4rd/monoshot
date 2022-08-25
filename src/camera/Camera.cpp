@@ -13,6 +13,8 @@ Camera::Camera(const Camera& copy)
       m_up(copy.m_up),
       m_viewMatrix(copy.m_viewMatrix),
       m_projectionMatrix(copy.m_projectionMatrix),
+      m_inverseViewMatrix(copy.m_inverseViewMatrix),
+      m_inverseProjectionMatrix(copy.m_inverseProjectionMatrix),
       m_nearPlane(copy.m_nearPlane),
       m_farPlane(copy.m_farPlane),
       m_resolution(copy.m_resolution),
@@ -27,6 +29,8 @@ Camera::Camera(Camera&& move)
       m_up(std::move(move.m_up)),
       m_viewMatrix(std::move(move.m_viewMatrix)),
       m_projectionMatrix(std::move(move.m_projectionMatrix)),
+      m_inverseViewMatrix(std::move(move.m_inverseViewMatrix)),
+      m_inverseProjectionMatrix(std::move(move.m_inverseProjectionMatrix)),
       m_nearPlane(std::move(move.m_nearPlane)),
       m_farPlane(std::move(move.m_farPlane)),
       m_resolution(std::move(move.m_resolution)),
@@ -42,6 +46,8 @@ Camera& Camera::operator=(const Camera& copy)
     m_up = copy.m_up;
     m_viewMatrix = copy.m_viewMatrix;
     m_projectionMatrix = copy.m_projectionMatrix;
+    m_inverseViewMatrix = copy.m_inverseViewMatrix;
+    m_inverseProjectionMatrix = copy.m_inverseProjectionMatrix;
     m_nearPlane = copy.m_nearPlane;
     m_farPlane = copy.m_farPlane;
     m_resolution = copy.m_resolution;
@@ -57,6 +63,8 @@ Camera& Camera::operator=(Camera&& move)
     m_up = std::move(move.m_up);
     m_viewMatrix = std::move(move.m_viewMatrix);
     m_projectionMatrix = std::move(move.m_projectionMatrix);
+    m_inverseViewMatrix = std::move(move.m_inverseViewMatrix);
+    m_inverseProjectionMatrix = std::move(move.m_inverseProjectionMatrix);
     m_nearPlane = std::move(move.m_nearPlane);
     m_farPlane = std::move(move.m_farPlane);
     m_resolution = std::move(move.m_resolution);
@@ -100,6 +108,25 @@ const glm::mat4& Camera::getProjectionMatrix()
     return m_projectionMatrix;
 }
 
+const glm::mat4& Camera::getInverseViewMatrix()
+{
+    if(m_viewMatrixNeedsUpdate)
+    {
+        this->updateViewMatrix();
+        m_viewMatrixNeedsUpdate = false;
+    }
+    return m_inverseViewMatrix;
+}
+
+const glm::mat4& Camera::getInverseProjectionMatrix()
+{
+    if(m_projectionMatrixNeedsUpdate)
+    {
+        m_inverseProjectionMatrix = glm::inverse(this->getProjectionMatrix());
+    }
+    return m_inverseProjectionMatrix;
+}
+
 void Camera::setPosition(const glm::vec3& position)
 {
     m_position = position;
@@ -127,4 +154,5 @@ void Camera::setResolution(const glm::vec2& resolution)
 void Camera::updateViewMatrix()
 {
     m_viewMatrix = glm::lookAt(m_position, m_target, m_up);
+    m_inverseViewMatrix = glm::inverse(m_viewMatrix);
 }

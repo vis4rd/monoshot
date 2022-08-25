@@ -10,12 +10,7 @@ DebugSection::DebugSection()
       VAO(),
       m_camera(glm::vec3(0.f, 0.f, 50.f), {ResourceManager::window->getSize().first, ResourceManager::window->getSize().second}),
       m_mapGrid(5, 5),
-      // m_colors(100 * 100, glm::vec4(1.f, 1.f, 1.f, 1.f)),
-      firstTexture(16, 16),
-      carTexture(64, 128),
-      bigCarTexture(1024, 2048),
-      gimpCarTexture(1024, 2048),
-      gimpCar2Texture(1024, 2048)
+      firstTexture(16, 16)
 {
     m_name = "DebugSection";
     auto& input_manager = InputManager::get();
@@ -73,14 +68,8 @@ DebugSection::DebugSection()
     ShaderManager::addShaderProgram("../res/shaders", "triangle_zoom");
 
     m_mapGrid.loadFromFile("../res/maps/new_debug_map.map");
-    // m_mapGrid.update();
-    // m_mapGrid.prepareForRender();
 
     firstTexture.load("../res/textures/first_texture.png");
-    carTexture.load("../res/textures/car.png");
-    bigCarTexture.load("../res/textures/car-big.png");
-    gimpCarTexture.load("../res/textures/car-gimp.png");
-    gimpCar2Texture.load("../res/textures/car-gimp2.png");
 
     m_mapGrid.emplaceTexture(16, 16, "../res/textures/grass.png");
 
@@ -124,29 +113,14 @@ void DebugSection::update() noexcept
 
 void DebugSection::render() noexcept
 {
-    // m_mapGrid.render();
-    // ShaderManager::getShader("grid").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 1);
-    // ShaderManager::getShader("grid").uploadMat4("uView", m_camera.getViewMatrix(), 2);
-
-    // std::array<glm::vec4, 36> colors;
-    // std::fill(colors.begin(), colors.end(), glm::vec4(1.f, 1.f, 1.f, 1.f));
-    // Renderer::beginBatch();
-    // Renderer::drawGrid(m_mapGrid, m_colors.data(), 100 * 100);
-    // Renderer::endBatch();
-    // ShaderManager::getShader("quad").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 0);
-    // ShaderManager::getShader("quad").uploadMat4("uView", m_camera.getViewMatrix(), 1);
     m_mapGrid.render();
-
 
     Renderer::beginBatch();
     Renderer::drawQuad({0.f, 10.f}, {1.f, 1.f}, 0.f, {1.f, 0.5f, 0.5f, 1.f});
     Renderer::drawQuad({0.f, 8.f}, {1.f, 1.f}, 0.f, {1.f, 0.5f, 0.5f, 1.f});
     Renderer::drawQuad({9.f, 12.f}, {1.f, 1.f}, 45.f, {1.f, 0.5f, 0.5f, 1.f});
     Renderer::drawQuad({1.f, -1.f}, {1.f, 1.f}, 45.f, firstTexture.getID(), {1.f, 1.f, 1.f, 1.f});
-    Renderer::drawQuad({-20.f, 0.f}, {4.f, 8.f}, 0.f, carTexture.getID(), {1.f, 1.f, 1.f, 1.f});
-    Renderer::drawQuad({-25.f, 0.f}, {4.f, 8.f}, 0.f, bigCarTexture.getID(), {1.f, 1.f, 1.f, 1.f});
-    Renderer::drawQuad({-30.f, 0.f}, {4.f, 8.f}, 0.f, gimpCarTexture.getID(), {1.f, 1.f, 1.f, 1.f});
-    Renderer::drawQuad({-35.f, 0.f}, {4.f, 8.f}, 0.f, gimpCar2Texture.getID(), {1.f, 1.f, 1.f, 1.f});
+    Renderer::drawQuad({-46.f, 0.f}, {1.f, 1.f}, 90.f, firstTexture.getID(), {1.f, 1.f, 1.f, 1.f});
     Renderer::endBatch();
     ShaderManager::getShader("quad").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 0);
     ShaderManager::getShader("quad").uploadMat4("uView", m_camera.getViewMatrix(), 1);
@@ -160,14 +134,21 @@ void DebugSection::render() noexcept
 
     ImGui::Begin("Section options");
     {
-        static float zoom = 1.f;
+        static float zoom = 50.f;
         ImGui::SliderFloat("rotation", &rotation, -360.f, 360.f, "%.0f degrees");
         ImGui::SliderFloat2("scale", reinterpret_cast<float*>(&scale), 0.01f, 5.f);
         ImGui::SliderFloat2("position", reinterpret_cast<float*>(&position), -10.f, 10.f);
-        if(ImGui::SliderFloat("camera zoom", &zoom, 0.1f, 40.f, "x%.1f"))
+        if(ImGui::SliderFloat("camera zoom", &zoom, 0.1f, 200.f, "x%.1f"))
         {
-            m_camera.setZoom(zoom);
+            // m_camera.setZoom(zoom);
+            const auto& pos = m_camera.getPosition();
+            m_camera.setPosition({pos.x, pos.y, zoom});
         }
+        const glm::vec2 mouse_screen_pos = ResourceManager::window->getMousePosition();
+        const auto mouse_world_pos = this->mouseScreenPosToWorldPos(mouse_screen_pos, m_camera);
+        ImGui::Text("mouse screen position: (%f, %f)", mouse_screen_pos.x, mouse_screen_pos.y);
+        ImGui::Text("mouse world position: (%f, %f)", mouse_world_pos.x, mouse_world_pos.y);
+
         if(ImGui::Button("Calculate matrices"))
         {
             glm::vec3 first = {vertices[0], vertices[1], vertices[2]};
@@ -185,4 +166,35 @@ void DebugSection::render() noexcept
         }
     }
     ImGui::End();
+}
+
+// returns world coordinates at 0 height
+glm::vec2 DebugSection::mouseScreenPosToWorldPos(const glm::vec2& mouse_pos, Camera& camera)
+{
+    const auto& inverse_projection_matrix = camera.getInverseProjectionMatrix();
+    const auto& inverse_view_matrix = camera.getInverseViewMatrix();
+    spdlog::trace("Inverse projection matrix = {}", util::mat4str(inverse_projection_matrix));
+    spdlog::trace("Inverse view matrix = {}", util::mat4str(inverse_view_matrix));
+
+    const auto& mouse_x = mouse_pos.x;
+    const auto& mouse_y = mouse_pos.y;
+    const auto& [window_w, window_h] = ResourceManager::window->getSize();
+    spdlog::trace("Window size = ({}, {})", window_w, window_h);
+
+    const float norm_mouse_x = (2.f * mouse_x / window_w) - 1.f;
+    const float norm_mouse_y = 1.f - (2.f * mouse_y / window_h);
+    spdlog::trace("Normalized mouse position = ({}, {})", norm_mouse_x, norm_mouse_y);
+
+    glm::vec3 norm_mouse_vector = glm::vec3(norm_mouse_x, norm_mouse_y, 1.f);
+    glm::vec4 ray_clip = glm::vec4(norm_mouse_vector.x, norm_mouse_vector.y, -1.f, 1.f);
+    glm::vec4 ray_eye = inverse_projection_matrix * ray_clip;
+    ray_eye = glm::vec4(ray_eye.x, ray_eye.y, -1.f, 0.f);
+    glm::vec3 ray_world = glm::vec3((inverse_view_matrix * ray_eye));
+    ray_world = glm::normalize(ray_world);
+    spdlog::trace("Ray world = {}", util::vec3str(ray_world));
+
+    float l = -(camera.getPosition().z / ray_world.z);
+    spdlog::trace("L = {}", l);
+
+    return {camera.getPosition().x + l * ray_world.x, camera.getPosition().y + l * ray_world.y};
 }

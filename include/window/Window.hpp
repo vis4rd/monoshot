@@ -18,6 +18,8 @@ class Window final : public NativeWindow
 
     FrameBuffer &getFramebuffer() { return screenFB; }
 
+    glm::vec2 getMousePosition() const;
+
     bool isFullscreen() const;
     bool isMaximized() const;
     bool isVerticalSyncEnabled() const;
