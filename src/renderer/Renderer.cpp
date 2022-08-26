@@ -5,6 +5,7 @@
 #include <spdlog/spdlog.h>
 
 static Renderer::Data s_data;
+bool Renderer::m_isInit = false;
 
 static constexpr std::array<glm::vec4, 4> quadVertexPositions = {
     glm::vec4{-0.5f, -0.5f, 0.f, 1.f},
@@ -22,6 +23,12 @@ static constexpr std::array<glm::vec2, 4> quadTexturePositions = {
 
 void Renderer::init()
 {
+    if(Renderer::m_isInit == true)
+    {
+        return;
+    }
+    Renderer::m_isInit = true;
+
     spdlog::debug("Renderer: creating OpenGL backend");
 
     // data
@@ -98,6 +105,7 @@ void Renderer::shutdown()
     glDeleteTextures(1, &s_data.whiteTexture);
 
     s_data.quadBuffer.fill({});
+    Renderer::m_isInit = false;
 }
 
 void Renderer::beginBatch()

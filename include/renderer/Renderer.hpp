@@ -5,8 +5,6 @@
 #include <array>
 #include <numeric>
 
-// #include "../map/Grid.hpp"
-
 class Renderer
 {
     public:
@@ -63,4 +61,7 @@ class Renderer
 
     private:
     static Data& getData();
+
+    private:
+    static bool m_isInit;
 };

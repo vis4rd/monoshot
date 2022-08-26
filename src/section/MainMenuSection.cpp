@@ -1,7 +1,10 @@
 #include "../../include/section/MainMenuSection.hpp"
 
+#include "../../include/section/CreatorSection.hpp"
+
 MainMenuSection::MainMenuSection()
-    : Section(), m_layout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize)
+    : Section(),
+      m_layout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize)
 {
     m_name = "MainMenuSection";
     auto& input_manager = InputManager::get();
@@ -38,6 +41,12 @@ void MainMenuSection::render() noexcept
             spdlog::debug("Clicking 'New game'");
             auto& sm = SectionManager::get();
             sm.emplaceSection<DebugSection>();
+        }
+        else if(ImGui::Button("Map creator", {m_layout.button_w, m_layout.button_h}))
+        {
+            spdlog::debug("Clicking 'Map creator'");
+            auto& sm = SectionManager::get();
+            sm.emplaceSection<CreatorSection>();
         }
         else if(ImGui::Button("Settings", {m_layout.button_w, m_layout.button_h}))
         {

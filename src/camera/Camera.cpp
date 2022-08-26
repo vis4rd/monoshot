@@ -133,6 +133,12 @@ void Camera::setPosition(const glm::vec3& position)
     m_viewMatrixNeedsUpdate = true;
 }
 
+void Camera::setTarget(const glm::vec3& target_position)
+{
+    m_target = target_position;
+    m_viewMatrixNeedsUpdate = true;
+}
+
 void Camera::setNearPlane(const float& near_plane)
 {
     m_nearPlane = near_plane;

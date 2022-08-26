@@ -27,6 +27,7 @@ class Camera
     virtual const glm::mat4& getInverseViewMatrix() final;
     virtual const glm::mat4& getInverseProjectionMatrix() final;
     virtual void setPosition(const glm::vec3& position) final;
+    virtual void setTarget(const glm::vec3& target_position) final;
     virtual void setNearPlane(const float& near_plane) final;
     virtual void setFarPlane(const float& far_plane) final;
     virtual void setResolution(const glm::vec2& resolution) final;

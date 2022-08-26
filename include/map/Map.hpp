@@ -23,6 +23,10 @@ class Map
     virtual std::size_t getSize() const final;
     virtual const std::size_t& getWidth() const final;
     virtual const std::size_t& getHeight() const final;
+    virtual const std::vector<Texture2D>& getTextures() const final;
+
+    virtual const void setTile(const Tile& tile) final;
+    virtual const void setTile(const float& x, const float& y, const float& rotation, const std::size_t& tex_index = 0, const bool& solid = false) final;
 
     virtual void emplaceTexture(const std::int32_t& width, const std::int32_t& height, const std::string& source_path, const std::int32_t& channel_count = 0) final;
     virtual void addTexture(const Texture2D& texture) final;

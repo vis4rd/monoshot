@@ -36,6 +36,36 @@ const std::size_t& Map::getHeight() const
     return m_height;
 }
 
+const std::vector<Texture2D>& Map::getTextures() const
+{
+    return m_textures;
+}
+
+const void Map::setTile(const Tile& tile)
+{
+    const std::size_t center_x = m_width / 2;
+    const std::size_t center_y = m_height / 2;
+    // auto x_diff = static_cast<float>(i) - center_x;
+    // auto y_diff = static_cast<float>(j) - center_y;
+
+    // x = x_diff
+    // y = y_diff
+    // i = x_diff + center_x
+    // j = y_diff + center_j
+    const std::size_t i = static_cast<std::size_t>(tile.x + center_x);
+    const std::size_t j = static_cast<std::size_t>(tile.y + center_y);
+    m_tiles[i][j] = tile;
+}
+
+const void Map::setTile(const float& x, const float& y, const float& rotation, const std::size_t& tex_index, const bool& solid)
+{
+    const std::size_t center_x = m_width / 2;
+    const std::size_t center_y = m_height / 2;
+    const std::size_t i = static_cast<std::size_t>(x + center_x);
+    const std::size_t j = static_cast<std::size_t>(y + center_y);
+    m_tiles[i][j] = {.x = x, .y = y, .rotation = rotation, .textureIndex = tex_index, .solid = solid};
+}
+
 void Map::emplaceTexture(const std::int32_t& width, const std::int32_t& height, const std::string& source_path, const std::int32_t& channel_count)
 {
     m_textures.emplace_back(width, height, channel_count);
