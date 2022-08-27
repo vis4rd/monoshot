@@ -79,12 +79,15 @@ bool Window::update(UPDATEABLES &&...updateables) noexcept
         return false;
     }
 
-    spdlog::trace("Handling inputs");
-    m_inputManager.processGroup(m_window, m_sectionManager.topSection().name());
-    m_inputManager.processGroup(m_window, "window");
-
     spdlog::trace("Polling GLFW events");
     glfwPollEvents();
+
+    spdlog::trace("Handling inputs");
+    if(!ImGui::GetIO().WantCaptureMouse)
+    {
+        m_inputManager.processGroup(m_window, m_sectionManager.topSection().name());
+        m_inputManager.processGroup(m_window, "window");
+    }
 
     spdlog::trace("Updating updateables passed to Window::update()");
     if constexpr(sizeof...(updateables) > 0)
