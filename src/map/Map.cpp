@@ -21,6 +21,16 @@ Map::Map(const std::size_t& width, const std::size_t& height)
     }
 }
 
+Map::~Map()
+{
+    spdlog::trace("Deleting Map instance");
+    for(auto& texture : m_textures)
+    {
+        texture.destroy();
+    }
+    spdlog::trace("Map deletion complete");
+}
+
 std::size_t Map::getSize() const
 {
     return m_width * m_height;
@@ -68,8 +78,9 @@ const void Map::setTile(const float& x, const float& y, const float& rotation, c
 
 void Map::emplaceTexture(const std::int32_t& width, const std::int32_t& height, const std::string& source_path, const std::int32_t& channel_count)
 {
-    m_textures.emplace_back(width, height, channel_count);
-    m_textures.back().load(source_path);
+    spdlog::trace("Emplacing texture '{}' with size ({}, {})", source_path, width, height);
+    auto& texture = m_textures.emplace_back(width, height, channel_count);
+    texture.load(source_path);
 }
 
 void Map::addTexture(const Texture2D& texture)
@@ -125,6 +136,7 @@ void Map::update() noexcept { }
 
 void Map::render() noexcept
 {
+    spdlog::trace("Rendering map...");
     Renderer::beginBatch();
     for(const auto& column : m_tiles)
     {

@@ -6,9 +6,26 @@ Texture2D::Texture2D(const std::int32_t& width, const std::int32_t& height, cons
 {
 }
 
+Texture2D::~Texture2D()
+{
+    spdlog::trace("Texture2D: calling destructor of texture '{}'", m_sourcePath);
+    // this->unload();
+    // glDeleteTextures(1, &m_id);
+    // Delete can not be called here, because vectors like to call destructors when changing size.
+    // Instead, there is destroy() function just for this purpose.
+}
+
 void Texture2D::unload()
 {
+    spdlog::trace("Texture2D: unloading memory from GPU for '{}'", m_sourcePath);
     glTextureSubImage2D(m_id, /*mipmap level*/ 0, /*xoffset*/ 0, /*yoffset*/ 0, /*width*/ m_width, /*height*/ m_height, /*data format*/ GL_RGB, GL_UNSIGNED_BYTE, m_data);
+}
+
+void Texture2D::destroy()
+{
+    spdlog::trace("Texture2D: destroying texture object");
+    this->unload();
+    glDeleteTextures(1, &m_id);
 }
 
 void Texture2D::upload()

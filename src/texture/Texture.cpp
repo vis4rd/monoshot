@@ -26,7 +26,8 @@ void Texture::load(const std::string& source_path)
         stbi_image_free(m_data);
         m_data = nullptr;
     }
-    m_data = stbi_load(source_path.c_str(), &m_width, &m_height, &m_numberOfChannels, 0);
+    m_sourcePath = source_path;
+    m_data = stbi_load(m_sourcePath.c_str(), &m_width, &m_height, &m_numberOfChannels, 0);
     m_isLoaded = true;
 
     this->upload();

@@ -18,7 +18,7 @@ class Map
 {
     public:
     Map(const std::size_t& width, const std::size_t& height);
-    virtual ~Map() = default;
+    virtual ~Map();
 
     virtual std::size_t getSize() const final;
     virtual const std::size_t& getWidth() const final;

@@ -8,6 +8,7 @@ class Texture
 
     virtual void load(const std::string& source_path);
     virtual void unload() = 0;
+    virtual void destroy() = 0;
 
     virtual const std::uint32_t& getID() const final;
     virtual const std::int32_t& getWidth() const final;
