@@ -149,12 +149,12 @@ void CreatorSection::render() noexcept
             for(std::size_t i = 0; i < textures.size(); i++)
             {
                 // ImGui::Selectable(texture.getSourcePath().c_str(), &check);
-                if(ImGui::Selectable(textures[i].getSourcePath().c_str(), &check))
+                if(ImGui::Selectable(textures[i]->getSourcePath().c_str(), &check))
                 {
                     // m_mapGrid.setTile(std::round(mouse_world_pos.x) - 0.5f, std::round(mouse_world_pos.y) - 0.5f, 0.f);  // TODO: replace with actual texture slot
-                    spdlog::debug("Chosen texture slot '{}' with path '{}'", i, textures[i].getSourcePath());
+                    spdlog::debug("Chosen texture slot '{}' with path '{}'", i, textures[i]->getSourcePath());
                     s_selected_texture_index = i;
-                    preview = textures[i].getSourcePath();
+                    preview = textures[i]->getSourcePath();
                 }
             }
             ImGui::EndCombo();

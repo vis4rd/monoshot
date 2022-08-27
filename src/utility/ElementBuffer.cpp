@@ -6,20 +6,21 @@ ElementBuffer::ElementBuffer(const std::uint32_t* indices, std::uint32_t count)
     : m_count(count),
       m_isInit(true)
 {
-    spdlog::debug("Creating ElementBuffer instance");
     glCreateBuffers(1, &m_id);
     glNamedBufferData(m_id, m_count * sizeof(std::uint32_t), indices, GL_STATIC_DRAW);
+    spdlog::debug("Created ElementBuffer instance with ID = {} and count = {}", m_id, m_count);
 }
 
 ElementBuffer::~ElementBuffer()
 {
-    spdlog::debug("Deleting ElementBuffer instance");
+    spdlog::debug("Calling destructor of ElementBuffer instance with ID = {} (no destroy)", m_id);
 }
 
 void ElementBuffer::bind() const
 {
     if(m_isInit)
     {
+        spdlog::trace("Binding ElementBuffer with ID = {}", m_id);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
     }
 }

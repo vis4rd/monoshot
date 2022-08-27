@@ -20,6 +20,7 @@ DebugSection::DebugSection()
         KeyState::PRESS_ONCE,
         []
         {
+            spdlog::debug("Clicking ESC");
             SectionManager::get().popSection();
         });
 
@@ -100,12 +101,14 @@ DebugSection::DebugSection()
 
 DebugSection::~DebugSection()
 {
+    spdlog::trace("Destroying DebugSection");
     Renderer::shutdown();
-    firstTexture.unload();
+    firstTexture.destroy();
 }
 
 void DebugSection::update() noexcept
 {
+    spdlog::trace("Updating DebugSection");
     model_matrix = glm::translate(glm::mat4(1.f), position);
     model_matrix = glm::rotate(model_matrix, glm::radians(rotation), glm::vec3(0.f, 0.f, 1.f));
     model_matrix = glm::scale(model_matrix, scale);
@@ -113,6 +116,7 @@ void DebugSection::update() noexcept
 
 void DebugSection::render() noexcept
 {
+    spdlog::trace("Rendering DebugSection");
     m_mapGrid.render();
 
     Renderer::beginBatch();

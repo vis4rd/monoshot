@@ -28,8 +28,8 @@ static GLenum shaderDataTypeToOpenGLBaseType(const ShaderDataType& type)
 
 VertexArray::VertexArray()
 {
-    spdlog::debug("Creating VertexArray instance");
     glCreateVertexArrays(1, &m_id);
+    spdlog::debug("Created VertexArray instance with ID = {}", m_id);
 }
 
 VertexArray::VertexArray(const VertexArray& copy)
@@ -50,16 +50,18 @@ VertexArray::VertexArray(VertexArray&& move)
 
 VertexArray::~VertexArray()
 {
-    spdlog::debug("Deleting VertexArray instance");
+    spdlog::debug("Deleting VertexArray instance with ID = {}", m_id);
     for(const auto& vb : m_vertexBuffers)
     {
         vb.unbind();
+        spdlog::debug("Deleting VertexBuffer object with ID = {}", vb.getID());
         glDeleteBuffers(1, &vb.getID());
     }
     m_vertexBuffers.clear();
     if(m_elementBuffer.isInitialized())
     {
         m_elementBuffer.unbind();
+        spdlog::debug("Deleting ElementBuffer object with ID = {}", m_elementBuffer.getID());
         glDeleteBuffers(1, &m_elementBuffer.getID());
     }
     this->unbind();
@@ -68,7 +70,7 @@ VertexArray::~VertexArray()
 
 void VertexArray::bind() const
 {
-    spdlog::trace("Binding VertexArray with id = {}", m_id);
+    spdlog::trace("Binding VertexArray with ID = {}", m_id);
     glBindVertexArray(m_id);
 }
 
@@ -79,7 +81,7 @@ void VertexArray::unbind() const
 
 void VertexArray::addVertexBuffer(VertexBuffer&& vertex_buffer)
 {
-    spdlog::debug("Adding a VertexBuffer to VertexArray");
+    spdlog::debug("Adding a VertexBuffer with ID = {} to VertexArray with ID = {}", vertex_buffer.getID(), m_id);
     if(vertex_buffer.getLayout().getElements().empty())
     {
         spdlog::error("Given VertexBuffer does not have a specified layout");
@@ -151,7 +153,7 @@ void VertexArray::addVertexBuffer(VertexBuffer&& vertex_buffer)
 
 void VertexArray::addElementBuffer(const ElementBuffer& element_buffer)
 {
-    spdlog::debug("Adding ElementBuffer to VertexArray");
+    spdlog::debug("Adding ElementBuffer with ID = {} to VertexArray with ID = {}", element_buffer.getID(), m_id);
     if(!element_buffer.isInitialized())
     {
         spdlog::error("Given ElementBuffer is not initialized! Pass data to it on construction or through setData() method");

@@ -37,6 +37,7 @@ ShaderProgram& ShaderManager::addShaderProgram(const fs::path& location, const s
 ShaderProgram& ShaderManager::useShader(const std::string& name)
 {
     auto& result = ShaderManagerData::shaderMap[name];
+    spdlog::trace("Binding ShaderProgram '{}' with ID = {}", name, result.getID());
     result.use();
     return result;
 }
