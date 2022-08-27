@@ -4,6 +4,8 @@ class Texture
 {
     public:
     Texture(const std::int32_t& width, const std::int32_t& height, const std::int32_t& channel_count = 0);
+    Texture(const Texture& copy);
+    Texture(Texture&& move);
     virtual ~Texture();
 
     virtual void load(const std::string& source_path);

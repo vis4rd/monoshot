@@ -26,7 +26,7 @@ Map::~Map()
     spdlog::trace("Deleting Map instance");
     for(auto& texture : m_textures)
     {
-        texture.destroy();
+        texture->destroy();
     }
     spdlog::trace("Map deletion complete");
 }
@@ -46,7 +46,7 @@ const std::size_t& Map::getHeight() const
     return m_height;
 }
 
-const std::vector<Texture2D>& Map::getTextures() const
+const std::vector<std::shared_ptr<Texture2D>>& Map::getTextures() const
 {
     return m_textures;
 }
@@ -79,18 +79,19 @@ const void Map::setTile(const float& x, const float& y, const float& rotation, c
 void Map::emplaceTexture(const std::int32_t& width, const std::int32_t& height, const std::string& source_path, const std::int32_t& channel_count)
 {
     spdlog::trace("Emplacing texture '{}' with size ({}, {})", source_path, width, height);
-    auto& texture = m_textures.emplace_back(width, height, channel_count);
-    texture.load(source_path);
+    auto texture_ptr = std::make_shared<Texture2D>(width, height, channel_count);
+    texture_ptr->load(source_path);
+    m_textures.push_back(std::move(texture_ptr));
 }
 
 void Map::addTexture(const Texture2D& texture)
 {
-    m_textures.push_back(texture);
+    m_textures.push_back(std::make_shared<Texture2D>(texture));
 }
 
 void Map::addTexture(Texture2D&& texture)
 {
-    m_textures.push_back(std::move(texture));
+    m_textures.push_back(std::move(std::make_shared<Texture2D>(texture)));
 }
 
 void Map::loadFromFile(const std::string& filename)
@@ -142,7 +143,7 @@ void Map::render() noexcept
     {
         for(const auto& tile : column)
         {
-            Renderer::drawQuad({tile.x, tile.y}, {1.f, 1.f}, 0.f, m_textures[tile.textureIndex].getID());
+            Renderer::drawQuad({tile.x, tile.y}, {1.f, 1.f}, 0.f, m_textures[tile.textureIndex]->getID());
         }
     }
     Renderer::endBatch();

@@ -6,9 +6,21 @@ Texture2D::Texture2D(const std::int32_t& width, const std::int32_t& height, cons
 {
 }
 
+Texture2D::Texture2D(const Texture2D& copy)
+    : Texture(copy)
+{
+    spdlog::debug("Texture2D: Copying texture with ID = {}", m_id);
+}
+
+Texture2D::Texture2D(Texture2D&& move)
+    : Texture(std::move(move))
+{
+    spdlog::debug("Texture2D: Moving texture with ID = {}", m_id);
+}
+
 Texture2D::~Texture2D()
 {
-    spdlog::trace("Texture2D: calling destructor of texture '{}'", m_sourcePath);
+    spdlog::debug("Texture2D: calling destructor of texture '{}' with ID = {} (no destroy)", m_sourcePath, m_id);
     // this->unload();
     // glDeleteTextures(1, &m_id);
     // Delete can not be called here, because vectors like to call destructors when changing size.
@@ -23,13 +35,14 @@ void Texture2D::unload()
 
 void Texture2D::destroy()
 {
-    spdlog::trace("Texture2D: destroying texture object");
+    spdlog::debug("Texture2D: destroying texture object with ID = {}", m_id);
     this->unload();
     glDeleteTextures(1, &m_id);
 }
 
 void Texture2D::upload()
 {
+    spdlog::debug("Texture2D: Uploading data to the GPU...");
     glCreateTextures(GL_TEXTURE_2D, 1, &m_id);  // ... this is technically OpenGL 4.5+ DSA
     glBindTexture(GL_TEXTURE_2D, m_id);  // but we have to bind the texture here anyway (glCreate* doesn't do that for some reason)
     glTextureParameteri(m_id, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
@@ -39,4 +52,5 @@ void Texture2D::upload()
     glTextureStorage2D(m_id, /*number of tex level(??)*/ 1, /* tex format*/ GL_RGBA8, /*width*/ m_width, /*height*/ m_height);
     glTextureSubImage2D(m_id, /*mipmap level*/ 0, /*xoffset*/ 0, /*yoffset*/ 0, /*width*/ m_width, /*height*/ m_height, /*data format*/ GL_RGBA, GL_UNSIGNED_BYTE, m_data);
     glGenerateTextureMipmap(m_id);
+    spdlog::debug("Texture2D: Uploaded data of texture with ID = {}", m_id);
 }
