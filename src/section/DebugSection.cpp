@@ -7,7 +7,7 @@
 
 DebugSection::DebugSection()
     : Section(),
-      VAO(),
+      // VAO(),
       m_camera(glm::vec3(0.f, 0.f, 50.f), {ResourceManager::window->getSize().first, ResourceManager::window->getSize().second}),
       m_mapGrid(5, 5),
       firstTexture(16, 16)
@@ -24,23 +24,25 @@ DebugSection::DebugSection()
             SectionManager::get().popSection();
         });
 
-    float colors[] = {1.f, 0.f, 0.f, 1.f, 0.f, 1.f, 0.f, 1.f, 0.f, 0.f, 1.f, 1.f, 0.5f, 0.5f, 0.5f, 1.f};
+    // float colors[] = {1.f, 0.f, 0.f, 1.f, 0.f, 1.f, 0.f, 1.f, 0.f, 0.f, 1.f, 1.f, 0.5f, 0.5f, 0.5f, 1.f};
+    // float vertices[12] = {-0.5f, -0.5f, 0.f, 0.5f, -0.5f, 0.f, 0.5f, 0.5f, 0.f, -0.5f, 0.5f, 0.f};
+    // uint32_t indices[6] = {0, 1, 2, 2, 3, 0};
 
-    ElementBuffer EBO(indices, 6);
+    // ElementBuffer EBO(indices, 6);
 
-    VertexBuffer VBO1(sizeof(vertices));
-    BufferLayout layout({BufferElement(ShaderDataType::float3, "aPos")});
-    VBO1.setLayout(layout);
-    VBO1.setData(vertices, sizeof(vertices));
+    // VertexBuffer VBO1(sizeof(vertices));
+    // BufferLayout layout({BufferElement(ShaderDataType::float3, "aPos")});
+    // VBO1.setLayout(layout);
+    // VBO1.setData(vertices, sizeof(vertices));
 
-    VertexBuffer VBO2(sizeof(colors));
-    BufferLayout layout2({BufferElement(ShaderDataType::float4, "aColor")});
-    VBO2.setLayout(layout2);
-    VBO2.setData(colors, sizeof(colors));
+    // VertexBuffer VBO2(sizeof(colors));
+    // BufferLayout layout2({BufferElement(ShaderDataType::float4, "aColor")});
+    // VBO2.setLayout(layout2);
+    // VBO2.setData(colors, sizeof(colors));
 
-    VAO.addVertexBuffer(std::move(VBO1));
-    VAO.addVertexBuffer(std::move(VBO2));
-    VAO.addElementBuffer(EBO);
+    // VAO.addVertexBuffer(std::move(VBO1));
+    // VAO.addVertexBuffer(std::move(VBO2));
+    // VAO.addElementBuffer(EBO);
 
     // So the structure looks more or less like this:
     // VAO
@@ -66,7 +68,7 @@ DebugSection::DebugSection()
     //     vbo_data = [v1x, v1y, v1z, v1r, v1g, v1b, v1a,, v2p, v2c, v3p, v3c,, v4, ..., vn]
 
 
-    ShaderManager::addShaderProgram("../res/shaders", "triangle_zoom");
+    // ShaderManager::addShaderProgram("../res/shaders", "triangle_zoom");
 
     m_mapGrid.loadFromFile("../res/maps/new_debug_map.map");
 
@@ -109,9 +111,9 @@ DebugSection::~DebugSection()
 void DebugSection::update() noexcept
 {
     spdlog::trace("Updating DebugSection");
-    model_matrix = glm::translate(glm::mat4(1.f), position);
-    model_matrix = glm::rotate(model_matrix, glm::radians(rotation), glm::vec3(0.f, 0.f, 1.f));
-    model_matrix = glm::scale(model_matrix, scale);
+    // model_matrix = glm::translate(glm::mat4(1.f), position);
+    // model_matrix = glm::rotate(model_matrix, glm::radians(rotation), glm::vec3(0.f, 0.f, 1.f));
+    // model_matrix = glm::scale(model_matrix, scale);
 }
 
 void DebugSection::render() noexcept
@@ -129,19 +131,19 @@ void DebugSection::render() noexcept
     ShaderManager::getShader("quad").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 0);
     ShaderManager::getShader("quad").uploadMat4("uView", m_camera.getViewMatrix(), 1);
 
-    auto& triangle_zoom_shader = ShaderManager::useShader("triangle_zoom");
-    triangle_zoom_shader.uploadMat4("uTransform", model_matrix, 0);
-    triangle_zoom_shader.uploadMat4("uProjection", m_camera.getProjectionMatrix(), 1);
-    triangle_zoom_shader.uploadMat4("uView", m_camera.getViewMatrix(), 2);
-    VAO.bind();
-    glDrawElements(GL_TRIANGLES, VAO.getElementBuffer().getElementCount(), GL_UNSIGNED_INT, 0);
+    // auto& triangle_zoom_shader = ShaderManager::useShader("triangle_zoom");
+    // triangle_zoom_shader.uploadMat4("uTransform", model_matrix, 0);
+    // triangle_zoom_shader.uploadMat4("uProjection", m_camera.getProjectionMatrix(), 1);
+    // triangle_zoom_shader.uploadMat4("uView", m_camera.getViewMatrix(), 2);
+    // VAO.bind();
+    // glDrawElements(GL_TRIANGLES, VAO.getElementBuffer().getElementCount(), GL_UNSIGNED_INT, 0);
 
     ImGui::Begin("Section options");
     {
         static float zoom = 50.f;
-        ImGui::SliderFloat("rotation", &rotation, -360.f, 360.f, "%.0f degrees");
-        ImGui::SliderFloat2("scale", reinterpret_cast<float*>(&scale), 0.01f, 5.f);
-        ImGui::SliderFloat2("position", reinterpret_cast<float*>(&position), -10.f, 10.f);
+        // ImGui::SliderFloat("rotation", &rotation, -360.f, 360.f, "%.0f degrees");
+        // ImGui::SliderFloat2("scale", reinterpret_cast<float*>(&scale), 0.01f, 5.f);
+        // ImGui::SliderFloat2("position", reinterpret_cast<float*>(&position), -10.f, 10.f);
         if(ImGui::SliderFloat("camera zoom", &zoom, 0.1f, 200.f, "x%.1f"))
         {
             // m_camera.setZoom(zoom);
@@ -153,21 +155,21 @@ void DebugSection::render() noexcept
         ImGui::Text("mouse screen position: (%f, %f)", mouse_screen_pos.x, mouse_screen_pos.y);
         ImGui::Text("mouse world position: (%f, %f)", mouse_world_pos.x, mouse_world_pos.y);
 
-        if(ImGui::Button("Calculate matrices"))
-        {
-            glm::vec3 first = {vertices[0], vertices[1], vertices[2]};
-            glm::vec3 second = {vertices[3], vertices[4], vertices[5]};
-            glm::vec3 third = {vertices[6], vertices[7], vertices[8]};
-            glm::vec3 fourth = {vertices[9], vertices[10], vertices[11]};
-            model_matrix = glm::mat4(1.f);
-            spdlog::debug("Beginning:\n{}", util::mat4str(model_matrix));
-            model_matrix = glm::translate(model_matrix, position);
-            spdlog::debug("After translation:\n{}", util::mat4str(model_matrix));
-            model_matrix = glm::rotate(model_matrix, glm::radians(rotation), glm::vec3(0.f, 0.f, 1.f));
-            spdlog::debug("After rotation:\n{}", util::mat4str(model_matrix));
-            model_matrix = glm::scale(model_matrix, scale);
-            spdlog::debug("After scaling:\n{}", util::mat4str(model_matrix));
-        }
+        // if(ImGui::Button("Calculate matrices"))
+        // {
+        //     glm::vec3 first = {vertices[0], vertices[1], vertices[2]};
+        //     glm::vec3 second = {vertices[3], vertices[4], vertices[5]};
+        //     glm::vec3 third = {vertices[6], vertices[7], vertices[8]};
+        //     glm::vec3 fourth = {vertices[9], vertices[10], vertices[11]};
+        //     model_matrix = glm::mat4(1.f);
+        //     spdlog::debug("Beginning:\n{}", util::mat4str(model_matrix));
+        //     model_matrix = glm::translate(model_matrix, position);
+        //     spdlog::debug("After translation:\n{}", util::mat4str(model_matrix));
+        //     model_matrix = glm::rotate(model_matrix, glm::radians(rotation), glm::vec3(0.f, 0.f, 1.f));
+        //     spdlog::debug("After rotation:\n{}", util::mat4str(model_matrix));
+        //     model_matrix = glm::scale(model_matrix, scale);
+        //     spdlog::debug("After scaling:\n{}", util::mat4str(model_matrix));
+        // }
     }
     ImGui::End();
 }
