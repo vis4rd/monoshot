@@ -18,6 +18,6 @@ class CreatorSection final : public Section
     glm::vec2 mouseScreenPosToWorldPos(const glm::vec2& mouse_pos, Camera& camera);
 
     private:
-    Map m_mapGrid;
+    Map m_map;
     PerspectiveCamera m_camera;
 };

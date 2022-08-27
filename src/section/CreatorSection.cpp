@@ -7,11 +7,14 @@
 
 namespace fs = std::filesystem;
 
+// globals
 static std::size_t s_selected_texture_index = 0;
+static bool s_selected_solid = false;
+static glm::vec2 s_mouse_world_pos = {0.f, 0.f};
 
 CreatorSection::CreatorSection()
     : Section(),
-      m_mapGrid(5, 5),
+      m_map(5, 5),
       m_camera(glm::vec3(0.f, 0.f, 50.f), {ResourceManager::window->getSize().first, ResourceManager::window->getSize().second})
 {
     m_name = "CreatorSection";
@@ -33,7 +36,7 @@ CreatorSection::CreatorSection()
         [&camera = m_camera]
         {
             const auto& pos = camera.getPosition();
-            camera.setPosition({pos.x - 0.1f, pos.y, pos.z});
+            camera.setPosition({pos.x - 0.01f * pos.z, pos.y, pos.z});
             camera.setTarget({pos.x, pos.y, 0.f});
         });
 
@@ -43,7 +46,7 @@ CreatorSection::CreatorSection()
         [&camera = m_camera]
         {
             const auto& pos = camera.getPosition();
-            camera.setPosition({pos.x + 0.1f, pos.y, pos.z});
+            camera.setPosition({pos.x + 0.01f * pos.z, pos.y, pos.z});
             camera.setTarget({pos.x, pos.y, 0.f});
         });
 
@@ -53,7 +56,7 @@ CreatorSection::CreatorSection()
         [&camera = m_camera]
         {
             const auto& pos = camera.getPosition();
-            camera.setPosition({pos.x, pos.y + 0.1f, pos.z});
+            camera.setPosition({pos.x, pos.y + 0.01f * pos.z, pos.z});
             camera.setTarget({pos.x, pos.y, 0.f});
         });
 
@@ -63,13 +66,46 @@ CreatorSection::CreatorSection()
         [&camera = m_camera]
         {
             const auto& pos = camera.getPosition();
-            camera.setPosition({pos.x, pos.y - 0.1f, pos.z});
+            camera.setPosition({pos.x, pos.y - 0.01f * pos.z, pos.z});
             camera.setTarget({pos.x, pos.y, 0.f});
         });
 
-    m_mapGrid.loadFromFile("../res/maps/new_debug_map.map");
+    // toggle solid factor of a tile
+    input_manager.addKeybind(group_id,
+        GLFW_KEY_B,
+        KeyState::PRESS_ONCE,
+        []
+        {
+            s_selected_solid = !s_selected_solid;
+        });
 
-    // m_mapGrid.emplaceTexture(16, 16, "../res/textures/grass.png");
+    // place a tile
+    input_manager.addKeybind(group_id,
+        GLFW_MOUSE_BUTTON_LEFT,
+        KeyState::PRESS_ONCE,
+        [&map = m_map, &pos = s_mouse_world_pos]
+        {
+            spdlog::debug("Placing a tile: {}, on {} with texture slot '{}'", s_selected_solid ? "solid" : "non-solid", util::vec2str(s_mouse_world_pos), s_selected_texture_index);
+            map.setTile(pos.x, pos.y, 0.f, s_selected_texture_index, s_selected_solid);
+        });
+
+    // zooming of the view on mouse scroll
+    auto window = ResourceManager::window->getNativeWindow();
+    glfwSetWindowUserPointer(window, static_cast<void*>(&m_camera));
+    glfwSetScrollCallback(window,
+        [](GLFWwindow* window, double xoffset, double yoffset)
+        {
+            auto camera = static_cast<PerspectiveCamera*>(glfwGetWindowUserPointer(window));
+            const auto& pos = camera->getPosition();
+            auto new_pos_z = pos.z - yoffset;
+            if(new_pos_z < 0.1f)
+            {
+                new_pos_z = 0.1f;
+            }
+            camera->setPosition({pos.x, pos.y, new_pos_z});
+        });
+
+    // m_map.loadFromFile("../res/maps/new_debug_map.map");
 
     Renderer::init();
 
@@ -81,13 +117,16 @@ CreatorSection::CreatorSection()
         if(fs::path(file).extension() == ".png")
         {
             spdlog::debug("Found texture: '{}'", file.path().string());
-            m_mapGrid.emplaceTexture(16, 16, file.path().string());
+            m_map.emplaceTexture(16, 16, file.path().string());
         }
     }
 }
 
 CreatorSection::~CreatorSection()
 {
+    auto window = ResourceManager::window->getNativeWindow();
+    glfwSetWindowUserPointer(window, nullptr);
+    glfwSetScrollCallback(window, nullptr);
     Renderer::shutdown();
 }
 
@@ -95,23 +134,24 @@ void CreatorSection::update() noexcept { }
 
 void CreatorSection::render() noexcept
 {
-    m_mapGrid.render();
-
     Renderer::beginBatch();
+    Renderer::drawQuad({0.f, 0.f}, {m_map.getWidth(), m_map.getHeight()}, 0.f, {0.3f, 0.3f, 0.3f, 1.f});
     Renderer::drawQuad({0.f, 10.f}, {1.f, 1.f}, 0.f, {1.f, 0.5f, 0.5f, 1.f});
     Renderer::drawQuad({0.f, 8.f}, {1.f, 1.f}, 0.f, {1.f, 0.5f, 0.5f, 1.f});
     Renderer::drawQuad({9.f, 12.f}, {1.f, 1.f}, 45.f, {1.f, 0.5f, 0.5f, 1.f});
     Renderer::endBatch();
     ShaderManager::getShader("quad").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 0);
     ShaderManager::getShader("quad").uploadMat4("uView", m_camera.getViewMatrix(), 1);
+    
+    m_map.render();
 
     const auto& camera_pos = m_camera.getPosition();
     const auto& camera_target = m_camera.getTargetPosition();
     const glm::vec2 mouse_screen_pos = ResourceManager::window->getMousePosition();
-    const auto mouse_world_pos = this->mouseScreenPosToWorldPos(mouse_screen_pos, m_camera);
+    s_mouse_world_pos = this->mouseScreenPosToWorldPos(mouse_screen_pos, m_camera);
     ImGui::Begin("Camera options");
     {
-        static float zoom = camera_pos.z;
+        float zoom = camera_pos.z;
         if(ImGui::SliderFloat("camera zoom", &zoom, 0.1f, 200.f, "x%.1f"))
         {
             m_camera.setPosition({camera_pos.x, camera_pos.y, zoom});
@@ -130,28 +170,32 @@ void CreatorSection::render() noexcept
 
     ImGui::Begin("Section options");
     {
-        const std::size_t center_x = m_mapGrid.getWidth() / 2;
-        const std::size_t center_y = m_mapGrid.getHeight() / 2;
+        const std::size_t center_x = m_map.getWidth() / 2;
+        const std::size_t center_y = m_map.getHeight() / 2;
 
-        const std::int32_t i = static_cast<std::int32_t>(std::round(mouse_world_pos.x) - 0.5f);
-        const std::int32_t j = static_cast<std::int32_t>(std::round(mouse_world_pos.y) - 0.5f);
+        const std::int32_t i = static_cast<std::int32_t>(std::round(s_mouse_world_pos.x) - 0.5f);
+        const std::int32_t j = static_cast<std::int32_t>(std::round(s_mouse_world_pos.y) - 0.5f);
         ImGui::Text("Hovered tile: (%d, %d)", i, j);
         ImGui::Text("Mouse screen position: (%.2f, %.2f)", mouse_screen_pos.x, mouse_screen_pos.y);
-        ImGui::Text("Mouse world position: (%.2f, %.2f)", mouse_world_pos.x, mouse_world_pos.y);
+        ImGui::Text("Mouse world position: (%.2f, %.2f)", s_mouse_world_pos.x, s_mouse_world_pos.y);
 
-        // TODO: texture selection, texture placement, saving map to a file, move most of this stuff to update()
+        // TODO(DONE): texture selection
+        // TODO: change empty tile to display alpha = 0 color
+        // TODO: texture placement
+        // TODO: saving map to a file
+        // TODO: move most of this stuff to update()
         ImGui::Separator();
-        std::string preview = "Choose a texture";
+        static std::string preview = "Choose a texture";
         bool check = false;
-        const auto& textures = m_mapGrid.getTextures();
-        if(ImGui::BeginCombo("Textures", preview.data()))
+        const auto& textures = m_map.getTextures();
+        if(ImGui::BeginCombo("Textures", preview.c_str()))
         {
             for(std::size_t i = 0; i < textures.size(); i++)
             {
                 // ImGui::Selectable(texture.getSourcePath().c_str(), &check);
                 if(ImGui::Selectable(textures[i]->getSourcePath().c_str(), &check))
                 {
-                    // m_mapGrid.setTile(std::round(mouse_world_pos.x) - 0.5f, std::round(mouse_world_pos.y) - 0.5f, 0.f);  // TODO: replace with actual texture slot
+                    // m_map.setTile(std::round(mouse_world_pos.x) - 0.5f, std::round(mouse_world_pos.y) - 0.5f, 0.f);  // TODO: replace with actual texture slot
                     spdlog::debug("Chosen texture slot '{}' with path '{}'", i, textures[i]->getSourcePath());
                     s_selected_texture_index = i;
                     preview = textures[i]->getSourcePath();
@@ -159,6 +203,8 @@ void CreatorSection::render() noexcept
             }
             ImGui::EndCombo();
         }
+
+        ImGui::Checkbox("Solid tile", &s_selected_solid);
     }
     ImGui::End();
 }

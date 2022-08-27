@@ -69,11 +69,13 @@ const void Map::setTile(const Tile& tile)
 
 const void Map::setTile(const float& x, const float& y, const float& rotation, const std::size_t& tex_index, const bool& solid)
 {
+    spdlog::debug("Map: Placing a tile!");
     const std::size_t center_x = m_width / 2;
     const std::size_t center_y = m_height / 2;
     const std::size_t i = static_cast<std::size_t>(x + center_x);
     const std::size_t j = static_cast<std::size_t>(y + center_y);
     m_tiles[i][j] = {.x = x, .y = y, .rotation = rotation, .textureIndex = tex_index, .solid = solid};
+    spdlog::debug("Map: Finished placing a tile");
 }
 
 void Map::emplaceTexture(const std::int32_t& width, const std::int32_t& height, const std::string& source_path, const std::int32_t& channel_count)
