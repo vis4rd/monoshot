@@ -3,6 +3,12 @@
 #include "../../include/renderer/Renderer.hpp"
 #include "../../include/utility/ResourceManager.hpp"
 
+#include <filesystem>
+
+namespace fs = std::filesystem;
+
+static std::size_t s_selected_texture_index = 0;
+
 CreatorSection::CreatorSection()
     : Section(),
       m_mapGrid(5, 5),
@@ -28,7 +34,7 @@ CreatorSection::CreatorSection()
         {
             const auto& pos = camera.getPosition();
             camera.setPosition({pos.x - 0.1f, pos.y, pos.z});
-            camera.setTarget({pos.x - 0.1f, pos.y, 0.f});
+            camera.setTarget({pos.x, pos.y, 0.f});
         });
 
     input_manager.addKeybind(group_id,
@@ -38,7 +44,7 @@ CreatorSection::CreatorSection()
         {
             const auto& pos = camera.getPosition();
             camera.setPosition({pos.x + 0.1f, pos.y, pos.z});
-            camera.setTarget({pos.x + 0.1f, pos.y, 0.f});
+            camera.setTarget({pos.x, pos.y, 0.f});
         });
 
     input_manager.addKeybind(group_id,
@@ -48,7 +54,7 @@ CreatorSection::CreatorSection()
         {
             const auto& pos = camera.getPosition();
             camera.setPosition({pos.x, pos.y + 0.1f, pos.z});
-            camera.setTarget({pos.x, pos.y + 0.1f, 0.f});
+            camera.setTarget({pos.x, pos.y, 0.f});
         });
 
     input_manager.addKeybind(group_id,
@@ -58,14 +64,26 @@ CreatorSection::CreatorSection()
         {
             const auto& pos = camera.getPosition();
             camera.setPosition({pos.x, pos.y - 0.1f, pos.z});
-            camera.setTarget({pos.x, pos.y - 0.1f, 0.f});
+            camera.setTarget({pos.x, pos.y, 0.f});
         });
 
     m_mapGrid.loadFromFile("../res/maps/new_debug_map.map");
 
-    m_mapGrid.emplaceTexture(16, 16, "../res/textures/grass.png");
+    // m_mapGrid.emplaceTexture(16, 16, "../res/textures/grass.png");
 
     Renderer::init();
+
+    auto texture_dir = fs::path("../res/textures/");
+    for(const auto& file : fs::directory_iterator(texture_dir))
+    {
+        spdlog::trace("file: '{}'", file.path().string());
+        spdlog::trace("extension: '{}', condition: {}", fs::path(file).extension().string(), (fs::path(file).extension() == ".png"));
+        if(fs::path(file).extension() == ".png")
+        {
+            spdlog::debug("Found texture: '{}'", file.path().string());
+            m_mapGrid.emplaceTexture(16, 16, file.path().string());
+        }
+    }
 }
 
 CreatorSection::~CreatorSection()
@@ -88,6 +106,7 @@ void CreatorSection::render() noexcept
     ShaderManager::getShader("quad").uploadMat4("uView", m_camera.getViewMatrix(), 1);
 
     const auto& camera_pos = m_camera.getPosition();
+    const auto& camera_target = m_camera.getTargetPosition();
     const glm::vec2 mouse_screen_pos = ResourceManager::window->getMousePosition();
     const auto mouse_world_pos = this->mouseScreenPosToWorldPos(mouse_screen_pos, m_camera);
     ImGui::Begin("Camera options");
@@ -97,19 +116,15 @@ void CreatorSection::render() noexcept
         {
             m_camera.setPosition({camera_pos.x, camera_pos.y, zoom});
         }
-
-        ImGui::Separator();
-        ImGui::Text("Camera position: (%.2f, %.2f, %.2f)", camera_pos.x, camera_pos.y, camera_pos.z);
-        ImGui::SameLine();
-        if(ImGui::Button("Set to map center"))
+        if(ImGui::Button("Set position to map center"))
         {
             m_camera.setPosition({0.f, 0.f, camera_pos.z});
             m_camera.setTarget({0.f, 0.f, 0.f});
         }
-        ImGui::Separator();
 
-        ImGui::Text("mouse screen position: (%.2f, %.2f)", mouse_screen_pos.x, mouse_screen_pos.y);
-        ImGui::Text("mouse world position: (%.2f, %.2f)", mouse_world_pos.x, mouse_world_pos.y);
+        ImGui::Separator();
+        ImGui::Text("Camera position: (%.2f, %.2f, %.2f)", camera_pos.x, camera_pos.y, camera_pos.z);
+        ImGui::Text("Camera target: (%.2f, %.2f, %.2f)", camera_target.x, camera_target.y, camera_target.z);
     }
     ImGui::End();
 
@@ -121,8 +136,29 @@ void CreatorSection::render() noexcept
         const std::int32_t i = static_cast<std::int32_t>(std::round(mouse_world_pos.x) - 0.5f);
         const std::int32_t j = static_cast<std::int32_t>(std::round(mouse_world_pos.y) - 0.5f);
         ImGui::Text("Hovered tile: (%d, %d)", i, j);
+        ImGui::Text("Mouse screen position: (%.2f, %.2f)", mouse_screen_pos.x, mouse_screen_pos.y);
+        ImGui::Text("Mouse world position: (%.2f, %.2f)", mouse_world_pos.x, mouse_world_pos.y);
 
         // TODO: texture selection, texture placement, saving map to a file, move most of this stuff to update()
+        ImGui::Separator();
+        std::string preview = "Choose a texture";
+        bool check = false;
+        const auto& textures = m_mapGrid.getTextures();
+        if(ImGui::BeginCombo("Textures", preview.data()))
+        {
+            for(std::size_t i = 0; i < textures.size(); i++)
+            {
+                // ImGui::Selectable(texture.getSourcePath().c_str(), &check);
+                if(ImGui::Selectable(textures[i].getSourcePath().c_str(), &check))
+                {
+                    // m_mapGrid.setTile(std::round(mouse_world_pos.x) - 0.5f, std::round(mouse_world_pos.y) - 0.5f, 0.f);  // TODO: replace with actual texture slot
+                    spdlog::debug("Chosen texture slot '{}' with path '{}'", i, textures[i].getSourcePath());
+                    s_selected_texture_index = i;
+                    preview = textures[i].getSourcePath();
+                }
+            }
+            ImGui::EndCombo();
+        }
     }
     ImGui::End();
 }

@@ -106,6 +106,7 @@ void Renderer::shutdown()
 
     s_data.quadBuffer.fill({});
     Renderer::m_isInit = false;
+    spdlog::debug("Renderer shutdown complete");
 }
 
 void Renderer::beginBatch()

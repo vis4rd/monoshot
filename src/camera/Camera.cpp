@@ -78,6 +78,11 @@ const glm::vec3& Camera::getPosition() const
     return m_position;
 }
 
+const glm::vec3& Camera::getTargetPosition() const
+{
+    return m_target;
+}
+
 const float& Camera::getNearPlane() const
 {
     return m_nearPlane;

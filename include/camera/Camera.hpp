@@ -20,6 +20,7 @@ class Camera
     virtual Camera& operator=(Camera&& move);
 
     virtual const glm::vec3& getPosition() const final;
+    virtual const glm::vec3& getTargetPosition() const final;
     virtual const float& getNearPlane() const final;
     virtual const float& getFarPlane() const final;
     virtual const glm::mat4& getViewMatrix() final;
