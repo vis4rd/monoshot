@@ -70,11 +70,23 @@ DebugSection::DebugSection()
 
     // ShaderManager::addShaderProgram("../res/shaders", "triangle_zoom");
 
-    m_mapGrid.loadFromFile("../res/maps/new_debug_map.map");
+    m_mapGrid.loadFromFile("testMap.map");
 
     firstTexture.load("../res/textures/first_texture.png");
 
-    m_mapGrid.emplaceTexture(16, 16, "../res/textures/grass.png");
+    // copied from creator section
+    auto texture_dir = fs::path("../res/textures/");
+    for(const auto& file : fs::directory_iterator(texture_dir))
+    {
+        spdlog::trace("file: '{}'", file.path().string());
+        spdlog::trace("extension: '{}', condition: {}", fs::path(file).extension().string(), (fs::path(file).extension() == ".png"));
+        if(fs::path(file).extension() == ".png")
+        {
+            spdlog::debug("Found texture: '{}'", file.path().string());
+            m_mapGrid.emplaceTexture(16, 16, file.path().string());
+        }
+    }
+    ////
 
     // glm::vec3 first = {vertices[0], vertices[1], vertices[2]};
     // glm::vec3 second = {vertices[3], vertices[4], vertices[5]};

@@ -190,8 +190,8 @@ void CreatorSection::render() noexcept
         // TODO(DONE): change empty tile to display alpha = 0 color
         // TODO(DONE): texture placement
         // TODO(DONE): highlight hovered tile
-        // TODO: saving map to a file
-        // TODO: prevent saving when empty tiles present
+        // TODO(DONE): saving map to a file
+        // TODO(DONE): prevent saving when empty tiles present
         // TODO: move most of this stuff to update()
         ImGui::Separator();
         static std::string preview = "Choose a texture";
@@ -212,6 +212,10 @@ void CreatorSection::render() noexcept
         }
 
         ImGui::Checkbox("Solid tile", &s_selected_solid);
+        if(ImGui::Button("Save to file"))
+        {
+            m_map.saveToFile("testMap.map");
+        }
     }
     ImGui::End();
 }
