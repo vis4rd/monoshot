@@ -6,11 +6,11 @@ class Keybind
 {
     public:
     Keybind() = default;
-    Keybind(int32_t key, int32_t scancode, KeyState state, std::function<void()> callback);
+    Keybind(int32_t key, /*int32_t scancode,*/ KeyState state, std::function<void()> callback);
 
     public:
     int32_t key;
-    int32_t scancode;
+    // int32_t scancode;
     KeyState state;
     // KeyState previous_state = KeyState::IDLE;
     // KeyState current_state = KeyState::IDLE;

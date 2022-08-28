@@ -53,13 +53,13 @@ constexpr void InputManager::addKeybind(const std::string& group, int32_t key, K
         throw std::runtime_error("Given keybind group does not exist.");
     }
 
-    spdlog::info("Adding new keybind to group {}", group);
+    spdlog::info("Adding new keybind (key '{}') to group '{}'", key, group);
     auto wrapper = [callback, cb_args...]
     {
         std::invoke(callback, cb_args...);
     };
 
-    iter->keybinds[key] = Keybind{key, glfwGetKeyScancode(key), state, std::move(wrapper)};
+    iter->keybinds[key] = Keybind{key, /*glfwGetKeyScancode(key),*/ state, std::move(wrapper)};
 }
 
 template<typename FUNC, typename... Args>
@@ -77,13 +77,13 @@ constexpr void InputManager::addKeybind(const std::size_t& group_id, int32_t key
         throw std::runtime_error("Given keybind group does not exist.");
     }
 
-    spdlog::info("Adding new keybind to group {}", m_keybinds.at(group_id).name);
+    spdlog::info("Adding new keybind (key '{}') to group '{}'", key, m_keybinds.at(group_id).name);
     auto wrapper = [callback, cb_args...]
     {
         std::invoke(callback, cb_args...);
     };
 
-    m_keybinds.at(group_id).keybinds[key] = Keybind(key, glfwGetKeyScancode(key), state, std::move(wrapper));
+    m_keybinds.at(group_id).keybinds[key] = Keybind(key, /*glfwGetKeyScancode(key),*/ state, std::move(wrapper));
     // auto wrapper = [callback, cb_args...](GLFWwindow* window, int32_t key, int32_t action)
     // {
     //     if(glfwGetKey(window, key) == action)
