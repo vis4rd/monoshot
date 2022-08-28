@@ -31,7 +31,7 @@ CreatorSection::CreatorSection()
         });
 
     input_manager.addKeybind(group_id,
-        GLFW_KEY_LEFT,
+        GLFW_KEY_A,
         KeyState::HOLD,
         [&camera = m_camera]
         {
@@ -41,7 +41,7 @@ CreatorSection::CreatorSection()
         });
 
     input_manager.addKeybind(group_id,
-        GLFW_KEY_RIGHT,
+        GLFW_KEY_D,
         KeyState::HOLD,
         [&camera = m_camera]
         {
@@ -51,7 +51,7 @@ CreatorSection::CreatorSection()
         });
 
     input_manager.addKeybind(group_id,
-        GLFW_KEY_UP,
+        GLFW_KEY_W,
         KeyState::HOLD,
         [&camera = m_camera]
         {
@@ -61,7 +61,7 @@ CreatorSection::CreatorSection()
         });
 
     input_manager.addKeybind(group_id,
-        GLFW_KEY_DOWN,
+        GLFW_KEY_S,
         KeyState::HOLD,
         [&camera = m_camera]
         {
@@ -105,8 +105,6 @@ CreatorSection::CreatorSection()
             camera->setPosition({pos.x, pos.y, new_pos_z});
         });
 
-    // m_map.loadFromFile("../res/maps/new_debug_map.map");
-
     Renderer::init();
 
     auto texture_dir = fs::path("../res/textures/");
@@ -142,7 +140,7 @@ void CreatorSection::render() noexcept
     Renderer::endBatch();
     ShaderManager::getShader("quad").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 0);
     ShaderManager::getShader("quad").uploadMat4("uView", m_camera.getViewMatrix(), 1);
-    
+
     m_map.render();
 
     const auto& camera_pos = m_camera.getPosition();
@@ -170,19 +168,18 @@ void CreatorSection::render() noexcept
 
     ImGui::Begin("Section options");
     {
-        const std::size_t center_x = m_map.getWidth() / 2;
-        const std::size_t center_y = m_map.getHeight() / 2;
-
-        const std::int32_t i = static_cast<std::int32_t>(std::round(s_mouse_world_pos.x) - 0.5f);
-        const std::int32_t j = static_cast<std::int32_t>(std::round(s_mouse_world_pos.y) - 0.5f);
-        ImGui::Text("Hovered tile: (%d, %d)", i, j);
+        const std::size_t i = std::llroundf(s_mouse_world_pos.x);
+        const std::size_t j = std::llroundf(s_mouse_world_pos.y);
+        ImGui::Text("Hovered tile: (%lld, %lld)", i, j);
         ImGui::Text("Mouse screen position: (%.2f, %.2f)", mouse_screen_pos.x, mouse_screen_pos.y);
         ImGui::Text("Mouse world position: (%.2f, %.2f)", s_mouse_world_pos.x, s_mouse_world_pos.y);
 
         // TODO(DONE): texture selection
-        // TODO: change empty tile to display alpha = 0 color
-        // TODO: texture placement
+        // TODO(DONE): change empty tile to display alpha = 0 color
+        // TODO(DONE): texture placement
+        // TODO: highlight hovered tile
         // TODO: saving map to a file
+        // TODO: prevent saving when empty tiles present
         // TODO: move most of this stuff to update()
         ImGui::Separator();
         static std::string preview = "Choose a texture";
@@ -192,13 +189,11 @@ void CreatorSection::render() noexcept
         {
             for(std::size_t i = 0; i < textures.size(); i++)
             {
-                // ImGui::Selectable(texture.getSourcePath().c_str(), &check);
-                if(ImGui::Selectable(textures[i]->getSourcePath().c_str(), &check))
+                if(ImGui::Selectable((textures[i]->getSourcePath() + "##unique_id").c_str(), &check))
                 {
-                    // m_map.setTile(std::round(mouse_world_pos.x) - 0.5f, std::round(mouse_world_pos.y) - 0.5f, 0.f);  // TODO: replace with actual texture slot
                     spdlog::debug("Chosen texture slot '{}' with path '{}'", i, textures[i]->getSourcePath());
                     s_selected_texture_index = i;
-                    preview = textures[i]->getSourcePath();
+                    preview = textures[i]->getSourcePath() + "##unique_id";
                 }
             }
             ImGui::EndCombo();
