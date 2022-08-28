@@ -132,8 +132,12 @@ void CreatorSection::update() noexcept { }
 
 void CreatorSection::render() noexcept
 {
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // testing rendering
     Renderer::beginBatch();
-    Renderer::drawQuad({0.f, 0.f}, {m_map.getWidth(), m_map.getHeight()}, 0.f, {0.3f, 0.3f, 0.3f, 1.f});
+    Renderer::drawQuad({0.f, 0.f}, {m_map.getWidth(), m_map.getHeight()}, 0.f, {0.3f, 0.3f, 0.3f, 1.f});  // map background area
     Renderer::drawQuad({0.f, 10.f}, {1.f, 1.f}, 0.f, {1.f, 0.5f, 0.5f, 1.f});
     Renderer::drawQuad({0.f, 8.f}, {1.f, 1.f}, 0.f, {1.f, 0.5f, 0.5f, 1.f});
     Renderer::drawQuad({9.f, 12.f}, {1.f, 1.f}, 45.f, {1.f, 0.5f, 0.5f, 1.f});
@@ -141,7 +145,15 @@ void CreatorSection::render() noexcept
     ShaderManager::getShader("quad").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 0);
     ShaderManager::getShader("quad").uploadMat4("uView", m_camera.getViewMatrix(), 1);
 
+    // map rendering
     m_map.render();
+
+    // hovered tile highlight
+    Renderer::beginBatch();
+    Renderer::drawQuad({std::round(s_mouse_world_pos.x), std::round(s_mouse_world_pos.y)}, {1.f, 1.f}, 0.f, {0.9f, 0.9f, 1.f, 0.2f});
+    Renderer::endBatch();
+
+    glDisable(GL_BLEND);
 
     const auto& camera_pos = m_camera.getPosition();
     const auto& camera_target = m_camera.getTargetPosition();
@@ -177,7 +189,7 @@ void CreatorSection::render() noexcept
         // TODO(DONE): texture selection
         // TODO(DONE): change empty tile to display alpha = 0 color
         // TODO(DONE): texture placement
-        // TODO: highlight hovered tile
+        // TODO(DONE): highlight hovered tile
         // TODO: saving map to a file
         // TODO: prevent saving when empty tiles present
         // TODO: move most of this stuff to update()
