@@ -2,7 +2,6 @@
 
 #include "../shader/ShaderManager.hpp"
 
-// #include "../utility/VertexArray.hpp"
 #include "../texture/Texture2D.hpp"
 
 struct Tile
@@ -33,6 +32,7 @@ class Map
     virtual void addTexture(Texture2D&& texture) final;
 
     void loadFromFile(const std::string& filename);
+    void saveToFile(const std::string& filename);
 
     virtual void update() noexcept;
     virtual void render() noexcept;

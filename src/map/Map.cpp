@@ -138,11 +138,57 @@ void Map::loadFromFile(const std::string& filename)
             j = 0;
             if(i == m_width)
             {
-                spdlog::warn("File contains more data than this map can contain");
+                spdlog::warn("File '{}' contains more data than this map can contain", filename);
                 break;
             }
         }
     }
+}
+
+void Map::saveToFile(const std::string& filename)
+{
+    spdlog::debug("Saving map to file '{}'...", filename);
+
+    // check if all tiles are filled
+    bool okay = true;
+    for(std::size_t i = 0; i < m_width; i++)
+    {
+        for(std::size_t j = 0; j < m_height; j++)
+        {
+            if(m_tiles[i][j].textureIndex < 1)
+            {
+                okay = false;
+                spdlog::error("The tile ({}, {}) is not filled...", i, j);
+            }
+        }
+    }
+    if(!okay)
+    {
+        spdlog::error("The map is not entirely filled, can not save it to the file '{}'. Ignoring...", filename);
+        return;
+    }
+
+    // save to the buffer
+    std::stringstream file_buffer;
+    for(std::size_t i = 0; i < m_width; i++)
+    {
+        for(std::size_t j = 0; j < m_height; j++)
+        {
+            const auto& t = m_tiles[i][j];  // convenience abbreviation
+            file_buffer << t.x << ' ' << t.y << ' ' << t.rotation << ' ' << t.textureIndex << ' ' << t.solid << '\n';
+        }
+    }
+
+    // dump buffer to the file
+    std::ofstream file(filename);
+    if(!file.is_open() || !file.good())
+    {
+        spdlog::error("Could not open file '{}', can not save the map", filename);
+        return;
+    }
+    file << file_buffer.rdbuf();
+    file.close();
+    spdlog::debug("Map saved to file successfully");
 }
 
 void Map::update() noexcept { }
