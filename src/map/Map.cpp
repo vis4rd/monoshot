@@ -19,6 +19,9 @@ Map::Map(const std::size_t& width, const std::size_t& height)
             m_tiles[i][j].y = y_diff;
         }
     }
+    auto& tex_ptr = m_textures.emplace_back(std::make_shared<Texture2D>(1, 1));
+    std::uint32_t tex = 0x00000000;
+    tex_ptr->load(reinterpret_cast<std::uint8_t*>(&tex), sizeof(std::uint32_t));
 }
 
 Map::~Map()
@@ -69,12 +72,19 @@ const void Map::setTile(const Tile& tile)
 
 const void Map::setTile(const float& x, const float& y, const float& rotation, const std::size_t& tex_index, const bool& solid)
 {
-    spdlog::debug("Map: Placing a tile!");
-    const std::size_t center_x = m_width / 2;
-    const std::size_t center_y = m_height / 2;
-    const std::size_t i = static_cast<std::size_t>(x + center_x);
-    const std::size_t j = static_cast<std::size_t>(y + center_y);
-    m_tiles[i][j] = {.x = x, .y = y, .rotation = rotation, .textureIndex = tex_index, .solid = solid};
+    spdlog::debug("Map: Placing a tile with coords ({}, {}), rotation {}, tex_index {}", x, y, rotation, tex_index);
+    const float center_x = m_width / 2.f;
+    const float center_y = m_height / 2.f;
+    if((x < -center_x) || (y < -center_y) || (x > center_x) || (y > center_y))
+    {
+        spdlog::error("Map: Trying to place a tile outside of bounds! (|x| < {} or |y| < {})", center_x, center_y);
+        return;
+    }
+    const std::size_t i = std::llroundf(x + center_x - 0.5f);
+    const std::size_t j = std::llroundf(y + center_y - 0.5f);
+    const float xx = std::round(x);
+    const float yy = std::round(y);
+    m_tiles[i][j] = {.x = xx, .y = yy, .rotation = rotation, .textureIndex = tex_index, .solid = solid};
     spdlog::debug("Map: Finished placing a tile");
 }
 

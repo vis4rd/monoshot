@@ -70,6 +70,22 @@ void Texture::load(const std::string& source_path)
     this->upload();
 }
 
+void Texture::load(std::uint8_t* data, const std::size_t& size)
+{
+    if(m_data != nullptr)
+    {
+        spdlog::warn("Texture has been already loaded before");
+        stbi_image_free(m_data);
+        m_data = nullptr;
+    }
+    m_data = static_cast<std::uint8_t*>(std::malloc(size));
+    std::memcpy(m_data, data, size);
+    m_sourcePath = fmt::format("In memory texture of size {} bytes", size);
+    m_isLoaded = true;
+
+    this->upload();
+}
+
 const std::uint32_t& Texture::getID() const
 {
     return m_id;

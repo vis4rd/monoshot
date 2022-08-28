@@ -9,6 +9,7 @@ class Texture
     virtual ~Texture();
 
     virtual void load(const std::string& source_path);
+    virtual void load(std::uint8_t* data, const std::size_t& size);
     virtual void unload() = 0;
     virtual void destroy() = 0;
 
