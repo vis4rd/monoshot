@@ -6,8 +6,14 @@ InputManager& InputManager::get()
     return instance;
 }
 
-const std::size_t InputManager::addGroup(const std::string& name)
+std::size_t InputManager::addGroup(const std::string& name)
 {
+    auto iter = this->findGroup(name);
+    if(iter != m_keybinds.end())
+    {
+        spdlog::warn("Given group '{}' already exists, ignoring...", name);
+        return std::distance(m_keybinds.begin(), iter);
+    }
     auto valid_name(name);
     if(valid_name.empty())
     {
@@ -21,12 +27,7 @@ const std::size_t InputManager::addGroup(const std::string& name)
 void InputManager::processGroup(GLFWwindow* window, const std::string& group)
 {
     spdlog::trace("Processing keybind group '{}'", group);
-    auto iter = std::find_if(m_keybinds.begin(),
-        m_keybinds.end(),
-        [&group](const KeyGroup& g)
-        {
-            return (g.name == group);
-        });
+    auto iter = this->findGroup(group);
     if(iter != m_keybinds.end())
     {
         spdlog::trace("Keybind states:");
@@ -100,14 +101,9 @@ void InputManager::processGroup(GLFWwindow* window, const std::string& group)
     }
 }
 
-void InputManager::removeGroup(const std::string& group)
+constexpr void InputManager::removeGroup(const std::string& group)
 {
-    auto iter = std::find_if(m_keybinds.begin(),
-        m_keybinds.end(),
-        [&group](const KeyGroup& g)
-        {
-            return (g.name == group);
-        });
+    auto iter = this->findGroup(group);
     if(iter != m_keybinds.end())
     {
         iter->keybinds.clear();
@@ -116,14 +112,9 @@ void InputManager::removeGroup(const std::string& group)
     }
 }
 
-void InputManager::removeKeybind(const std::string& group, int32_t glfw_key)
+constexpr void InputManager::removeKeybind(const std::string& group, int32_t glfw_key)
 {
-    auto iter = std::find_if(m_keybinds.begin(),
-        m_keybinds.end(),
-        [&group](const KeyGroup& g)
-        {
-            return (g.name == group);
-        });
+    auto iter = this->findGroup(group);
     if(iter != m_keybinds.end())
     {
         iter->keybinds.erase(glfw_key);
@@ -276,4 +267,14 @@ bool InputManager::is_functional_key(const std::int32_t key) const
 bool InputManager::is_mouse_key(const std::int32_t key) const
 {
     return key >= GLFW_MOUSE_BUTTON_1 && key <= GLFW_MOUSE_BUTTON_LAST;
+}
+
+constexpr Keybind* InputManager::findKeybindInGroup(const std::string& group, int32_t glfw_key)
+{
+    auto group_iter = this->findGroup(group);
+    if(group_iter == m_keybinds.end())
+    {
+        return nullptr;
+    }
+    return &(group_iter->keybinds[glfw_key]);
 }

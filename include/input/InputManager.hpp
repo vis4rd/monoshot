@@ -11,15 +11,16 @@ class InputManager
     InputManager& operator=(InputManager&&) = delete;
     static InputManager& get();
 
-    const std::size_t addGroup(const std::string& name = {});
+    std::size_t addGroup(const std::string& name = {});
+    void processGroup(GLFWwindow* window, const std::string& group);
+    constexpr void removeGroup(const std::string& group);
 
     template<typename FUNC, typename... Args>
     constexpr void addKeybind(const std::string& group, int32_t key, KeyState state, FUNC&& callback, Args&&... cb_args);
     template<typename FUNC, typename... Args>
     constexpr void addKeybind(const std::size_t& group_id, int32_t key, KeyState state, FUNC&& callback, Args&&... cb_args);
-    void processGroup(GLFWwindow* window, const std::string& group);
-    void removeGroup(const std::string& group);
-    void removeKeybind(const std::string& group, int32_t glfw_key);
+    constexpr bool isKeybindInGroup(const std::string& group, int32_t glfw_key) const;
+    constexpr void removeKeybind(const std::string& group, int32_t glfw_key);
 
     private:
     InputManager() = default;
@@ -27,6 +28,9 @@ class InputManager
     bool is_printable_key(const std::int32_t key) const;
     bool is_functional_key(const std::int32_t key) const;
     bool is_mouse_key(const std::int32_t key) const;
+    constexpr auto findGroup(const std::string& group_name);
+    constexpr auto findGroup(const std::string& group_name) const;
+    constexpr Keybind* findKeybindInGroup(const std::string& group, int32_t glfw_key);
 
     private:
     std::vector<KeyGroup> m_keybinds;
@@ -34,32 +38,44 @@ class InputManager
     std::array<KeyState, GLFW_KEY_LAST + 1> m_previousKeystates = {KeyState::IDLE};
 };
 
+// this function is on top of the file because of deduction of auto
+constexpr auto InputManager::findGroup(const std::string& group_name)
+{
+    return std::find_if(m_keybinds.begin(),
+        m_keybinds.end(),
+        [&group_name](const KeyGroup& g)
+        {
+            return (g.name == group_name);
+        });
+}
+
+// this function is on top of the file because of deduction of auto
+constexpr auto InputManager::findGroup(const std::string& group_name) const
+{
+    return std::find_if(m_keybinds.begin(),
+        m_keybinds.end(),
+        [&group_name](const KeyGroup& g)
+        {
+            return (g.name == group_name);
+        });
+}
+
+constexpr bool InputManager::isKeybindInGroup(const std::string& group, int32_t glfw_key) const
+{
+    auto iter = this->findGroup(group);
+    if(iter == m_keybinds.end())
+    {
+        return false;
+    }
+    return iter->keybinds.contains(glfw_key);
+}
+
 template<typename FUNC, typename... Args>
 constexpr void InputManager::addKeybind(const std::string& group, int32_t key, KeyState state, FUNC&& callback, Args&&... cb_args)
 {
-    if(!this->is_valid_key(key))
-    {
-        spdlog::warn("Given key ID '{}' is not valid, ignoring...", key);
-        return;
-    }
-    auto iter = std::find_if(m_keybinds.begin(),
-        m_keybinds.end(),
-        [&group](const KeyGroup& g)
-        {
-            return (g.name == group);
-        });
-    if(iter == m_keybinds.end())
-    {
-        throw std::runtime_error("Given keybind group does not exist.");
-    }
-
-    spdlog::info("Adding new keybind (key '{}') to group '{}'", key, group);
-    auto wrapper = [callback, cb_args...]
-    {
-        std::invoke(callback, cb_args...);
-    };
-
-    iter->keybinds[key] = Keybind{key, /*glfwGetKeyScancode(key),*/ state, std::move(wrapper)};
+    auto iter = this->findGroup(group);
+    std::size_t index = std::distance(m_keybinds.begin(), iter);
+    this->addKeybind<FUNC, Args...>(index, key, state, std::forward<FUNC>(callback), std::forward<Args>(cb_args)...);
 }
 
 template<typename FUNC, typename... Args>
@@ -68,6 +84,11 @@ constexpr void InputManager::addKeybind(const std::size_t& group_id, int32_t key
     if(!this->is_valid_key(key))
     {
         spdlog::warn("Given key ID '{}' is not valid, ignoring...", key);
+        return;
+    }
+    if(this->isKeybindInGroup(m_keybinds.at(group_id).name, key))
+    {
+        spdlog::warn("Given key ID '{}' is already present in group '{}', ignoring...", key, m_keybinds.at(group_id).name);
         return;
     }
     if((group_id >= m_keybinds.size()) || (group_id < 0))
@@ -83,14 +104,5 @@ constexpr void InputManager::addKeybind(const std::size_t& group_id, int32_t key
         std::invoke(callback, cb_args...);
     };
 
-    m_keybinds.at(group_id).keybinds[key] = Keybind(key, /*glfwGetKeyScancode(key),*/ state, std::move(wrapper));
-    // auto wrapper = [callback, cb_args...](GLFWwindow* window, int32_t key, int32_t action)
-    // {
-    //     if(glfwGetKey(window, key) == action)
-    //     {
-    //         std::invoke(callback, cb_args...);
-    //     }
-    // };
-    // m_keybinds.at(group_id).keybinds[key] =
-    //     Keybind{key, glfwGetKeyScancode(key), action, State::IDLE, State::IDLE, std::move(wrapper)};
+    m_keybinds.at(group_id).keybinds[key] = Keybind(key, state, std::move(wrapper));
 }
