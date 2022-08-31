@@ -84,7 +84,11 @@ const void Map::setTile(const float& x, const float& y, const float& rotation, c
     const std::size_t j = std::llroundf(y + center_y - 0.5f);
     const float xx = std::round(x);
     const float yy = std::round(y);
-    m_tiles[i][j] = {.x = xx, .y = yy, .rotation = rotation, .textureIndex = tex_index, .solid = solid};
+    m_tiles[i][j].x = xx;
+    m_tiles[i][j].y = yy;
+    m_tiles[i][j].rotation = rotation;
+    m_tiles[i][j].textureIndex = tex_index;
+    m_tiles[i][j].solid = solid;
     spdlog::debug("Map: Finished placing a tile");
 }
 
@@ -126,22 +130,22 @@ void Map::loadFromFile(const std::string& filename)
     bool tile_solid = false;
 
     std::size_t i = 0, j = 0;
+    std::size_t line_count = 0;
     while(file_buffer >> tile_x >> tile_y >> tile_rotation >> tile_textureIndex >> tile_solid)
     {
+        if(line_count > m_width * m_height)
+        {
+            spdlog::warn("File '{}' contains more data than this map can contain", filename);
+            break;
+        }
+        spdlog::debug("file buffer >> {} >> {} >> {} >> {} >> {}", tile_x, tile_y, tile_rotation, tile_textureIndex, tile_solid);
+        const auto i = line_count % m_width;
+        const auto j = line_count / m_width;
         m_tiles[i][j].rotation = tile_rotation;
         m_tiles[i][j].textureIndex = tile_textureIndex;
         m_tiles[i][j].solid = tile_solid;
-        j++;
-        if(j == m_height)
-        {
-            i++;
-            j = 0;
-            if(i == m_width)
-            {
-                spdlog::warn("File '{}' contains more data than this map can contain", filename);
-                break;
-            }
-        }
+
+        line_count++;
     }
 }
 
