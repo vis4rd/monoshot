@@ -127,6 +127,7 @@ void Renderer::endBatch()
         glNamedBufferSubData(s_data.quadVbo, 0, size, reinterpret_cast<const void*>(s_data.quadBuffer.data()));
 
         spdlog::trace("Renderer: binding texture units");
+        spdlog::trace("slots taken: {}", s_data.textureSlotsTakenCount);
         for(std::uint32_t i = 0; i < s_data.textureSlotsTakenCount; i++)
         {
             glBindTextureUnit(i, s_data.textureSlots[i]);
@@ -140,6 +141,11 @@ void Renderer::endBatch()
         spdlog::trace("Renderer: binding VAO");
         glBindVertexArray(s_data.quadVao);
         glDrawElements(GL_TRIANGLES, s_data.stats.indexCount, GL_UNSIGNED_INT, nullptr);
+
+        for(std::uint32_t i = 0; i < s_data.textureSlotsTakenCount; i++)
+        {
+            glBindTextureUnit(i, 0);
+        }
 
         s_data.stats.drawCount++;
     }

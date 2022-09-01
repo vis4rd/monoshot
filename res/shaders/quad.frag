@@ -10,7 +10,7 @@ struct VertexOutput
 layout (location = 0) in VertexOutput Input;
 layout (location = 2) in flat float TexIndex;
 
-layout (binding = 0, location = 2) uniform sampler2D uTextures[32];
+layout (location = 2) uniform sampler2D uTextures[32];
 
 out vec4 FragColor;
 

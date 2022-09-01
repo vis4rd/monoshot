@@ -137,7 +137,6 @@ void CreatorSection::render() noexcept
 
     // testing rendering
     Renderer::beginBatch();
-    Renderer::drawQuad({0.f, 0.f}, {m_map.getWidth(), m_map.getHeight()}, 0.f, {0.3f, 0.3f, 0.3f, 1.f});  // map background area
     Renderer::drawQuad({0.f, 10.f}, {1.f, 1.f}, 0.f, {1.f, 0.5f, 0.5f, 1.f});
     Renderer::drawQuad({0.f, 8.f}, {1.f, 1.f}, 0.f, {1.f, 0.5f, 0.5f, 1.f});
     Renderer::drawQuad({9.f, 12.f}, {1.f, 1.f}, 45.f, {1.f, 0.5f, 0.5f, 1.f});
@@ -146,7 +145,7 @@ void CreatorSection::render() noexcept
     ShaderManager::getShader("quad").uploadMat4("uView", m_camera.getViewMatrix(), 1);
 
     // map rendering
-    m_map.render();
+    m_map.render(true);
 
     // hovered tile highlight
     Renderer::beginBatch();

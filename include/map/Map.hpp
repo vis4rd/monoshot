@@ -35,7 +35,7 @@ class Map
     void saveToFile(const std::string& filename);
 
     virtual void update() noexcept;
-    virtual void render() noexcept;
+    virtual void render(bool area = false) noexcept;
 
     protected:
     std::size_t m_width = 0;

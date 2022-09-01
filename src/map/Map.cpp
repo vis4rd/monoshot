@@ -197,10 +197,14 @@ void Map::saveToFile(const std::string& filename)
 
 void Map::update() noexcept { }
 
-void Map::render() noexcept
+void Map::render(bool area) noexcept
 {
     spdlog::trace("Rendering map...");
     Renderer::beginBatch();
+    if(area)
+    {
+        Renderer::drawQuad({0.f, 0.f}, {m_width, m_height}, 0.f, {0.3f, 0.3f, 0.3f, 1.f});  // background area
+    }
     for(const auto& column : m_tiles)
     {
         for(const auto& tile : column)
