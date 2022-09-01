@@ -1,7 +1,9 @@
 #include "../../include/window/NativeWindow.hpp"
 
 #include <spdlog/spdlog.h>
-#include <GLFW/glfw3.h>
+#include <glad/glad.h>
+
+#include "../../include/utility/Logging.hpp"
 
 NativeWindow::NativeWindow(const std::string &title, std::int32_t width, std::int32_t height)
     : m_title(title),
@@ -72,17 +74,6 @@ void NativeWindow::initGLFW()
     }
 }
 
-static void openGLDebugMessageCallback(unsigned source, unsigned type, unsigned id, unsigned severity, int length, const char *message, const void *userParam)
-{
-    switch(severity)
-    {
-        case GL_DEBUG_SEVERITY_HIGH: spdlog::error("[{}][{}][{}] {}", type, id, source, message); return;
-        case GL_DEBUG_SEVERITY_MEDIUM: spdlog::warn("[{}][{}][{}] {}", type, id, source, message); return;
-        case GL_DEBUG_SEVERITY_LOW: spdlog::debug("[{}][{}][{}] {}", type, id, source, message); return;
-        case GL_DEBUG_SEVERITY_NOTIFICATION: spdlog::info("[{}][{}][{}] {}", type, id, source, message); return;
-    }
-}
-
 void NativeWindow::initGL()
 {
     spdlog::debug("Initializing GLAD");
@@ -93,10 +84,7 @@ void NativeWindow::initGL()
     }
 
     // logging
-    glEnable(GL_DEBUG_OUTPUT);
-    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-    glDebugMessageCallback(openGLDebugMessageCallback, nullptr);
-    glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, NULL, GL_FALSE);
+    util::enableOpenGlLogging();
 
     // viewport
     glViewport(0, 0, m_width, m_height);
