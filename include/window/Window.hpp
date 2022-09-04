@@ -13,11 +13,7 @@ class Window final : public NativeWindow
     ~Window();
 
     const ImGuiIO &getImGuiIo() const;
-    std::pair<int32_t, int32_t> getSize() const;
-    const std::string &getTitle() const;
-
-    FrameBuffer &getFramebuffer() { return screenFB; }
-
+    FrameBuffer &getFramebuffer();
     glm::vec2 getMousePosition() const;
 
     bool isFullscreen() const;
@@ -26,8 +22,7 @@ class Window final : public NativeWindow
 
     void toggleFullscreen();
 
-    void setSize(const std::pair<int32_t, int32_t> &new_size);
-    void setTitle(const std::string &title);
+    void setSize(const std::pair<int32_t, int32_t> &new_size) override;
     void setFullscreen(bool fullscreen = true);
     void setMaximized(bool maximized = true);
     void setVerticalSync(bool vsync = true);

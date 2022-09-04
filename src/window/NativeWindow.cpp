@@ -57,6 +57,19 @@ glm::ivec2 NativeWindow::getSize() const
     return {m_width, m_height};
 }
 
+void NativeWindow::setSize(const std::pair<int32_t, int32_t> &new_size)
+{
+    m_width = new_size.first;
+    m_height = new_size.second;
+    glfwSetWindowSize(m_window, m_width, m_height);
+}
+
+void NativeWindow::setTitle(const std::string &title)
+{
+    m_title = title;
+    glfwSetWindowTitle(m_window, m_title.c_str());
+}
+
 static void glfwErrorMessageCallback(int error_code, const char *description)
 {
     spdlog::error("[GLFW ERROR {}] {}", error_code, description);

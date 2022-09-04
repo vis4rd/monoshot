@@ -8,7 +8,7 @@
 DebugSection::DebugSection()
     : Section(),
       // VAO(),
-      m_camera(glm::vec3(0.f, 0.f, 50.f), {ResourceManager::window->getSize().first, ResourceManager::window->getSize().second}),
+      m_camera(glm::vec3(0.f, 0.f, 50.f), ResourceManager::window->getSize()),
       m_mapGrid(5, 5),
       firstTexture(16, 16)
 {
@@ -196,7 +196,9 @@ glm::vec2 DebugSection::mouseScreenPosToWorldPos(const glm::vec2& mouse_pos, Cam
 
     const auto& mouse_x = mouse_pos.x;
     const auto& mouse_y = mouse_pos.y;
-    const auto& [window_w, window_h] = ResourceManager::window->getSize();
+    const auto& window_size = ResourceManager::window->getSize();
+    const auto& window_w = window_size.x;
+    const auto& window_h = window_size.y;
     spdlog::trace("Window size = ({}, {})", window_w, window_h);
 
     const float norm_mouse_x = (2.f * mouse_x / window_w) - 1.f;

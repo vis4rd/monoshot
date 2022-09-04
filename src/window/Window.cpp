@@ -73,16 +73,9 @@ const ImGuiIO &Window::getImGuiIo() const
     return m_io;
 }
 
-std::pair<int32_t, int32_t> Window::getSize() const
+FrameBuffer &Window::getFramebuffer()
 {
-    int32_t width, height;
-    glfwGetWindowSize(m_window, &width, &height);
-    return {width, height};
-}
-
-const std::string &Window::getTitle() const
-{
-    return m_title;
+    return screenFB;
 }
 
 glm::vec2 Window::getMousePosition() const
@@ -114,16 +107,8 @@ void Window::toggleFullscreen()
 
 void Window::setSize(const std::pair<int32_t, int32_t> &new_size)
 {
-    m_width = new_size.first;
-    m_height = new_size.second;
-    glfwSetWindowSize(m_window, m_width, m_height);
+    NativeWindow::setSize(new_size);
     screenFB.resize(m_width, m_height);
-}
-
-void Window::setTitle(const std::string &title)
-{
-    m_title = title;
-    glfwSetWindowTitle(m_window, m_title.c_str());
 }
 
 void Window::setFullscreen(bool fullscreen)

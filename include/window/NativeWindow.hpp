@@ -14,6 +14,9 @@ class NativeWindow
     const std::string &getTitle() const;
     glm::ivec2 getSize() const;
 
+    virtual void setSize(const std::pair<int32_t, int32_t> &new_size);
+    void setTitle(const std::string &title);
+
     private:
     void initGLFW();
     void initGL();

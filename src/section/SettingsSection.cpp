@@ -31,7 +31,9 @@ void SettingsSection::render() noexcept
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {m_layout.button_w_s, m_layout.button_h_s});
     ImGui::Begin("SettingsMenu", nullptr, m_layout.window_flags);
     {
-        const auto& [window_w, window_h] = ResourceManager::window->getSize();
+        const auto& window_size = ResourceManager::window->getSize();
+        const auto& window_w = window_size.x;
+        const auto& window_h = window_size.y;
         std::string current_resolution = std::to_string(window_w) + "x" + std::to_string(window_h);
         ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s, m_layout.menu_y + m_layout.button_h_s});
         if(Custom::ImGui::BeginCombo("Resolution", current_resolution.c_str(), {m_layout.button_w, m_layout.button_h}))
