@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include <GLFW/glfw3.h>
 #include <string>
+#include <vector>
 
 class NativeWindow
 {
@@ -16,6 +17,13 @@ class NativeWindow
 
     virtual void setSize(const std::pair<int32_t, int32_t> &new_size);
     void setTitle(const std::string &title);
+
+    static GLFWmonitor *getCurrentMonitor();
+    static std::pair<const GLFWvidmode *, int> getVideoModes();
+    static std::int32_t getRefreshRate();
+
+    protected:
+    static std::vector<glm::ivec2> queryMonitorResolutions();
 
     private:
     void initGLFW();

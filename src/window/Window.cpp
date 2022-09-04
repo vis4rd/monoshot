@@ -41,12 +41,13 @@ Window::Window(const std::string &title, std::uint32_t width, std::uint32_t heig
     //         glViewport(0, 0, new_width, new_height);
     //     });
 
+    glfwSetWindowUserPointer(m_window, static_cast<void *>(this));
     glfwSetFramebufferSizeCallback(m_window,
         [](GLFWwindow *window, int new_width, int new_height) -> void
         {
+            auto _this = static_cast<Window *>(glfwGetWindowUserPointer(window));
             spdlog::debug("New framebuffer size = {}x{} in pixels", new_width, new_height);
-            glViewport(0, 0, new_width, new_height);
-            glfwSetWindowAspectRatio(window, 16, 9);
+            _this->setSize({new_width, new_height});
         });
 
     // glfwSetWindowContentScaleCallback(m_window,
@@ -59,6 +60,8 @@ Window::Window(const std::string &title, std::uint32_t width, std::uint32_t heig
 Window::~Window()
 {
     spdlog::info("Terminating window instance");
+
+    glfwSetWindowUserPointer(m_window, nullptr);
 
     screenFB.unbind();
     screenVA.unbind();
@@ -108,19 +111,30 @@ void Window::toggleFullscreen()
 void Window::setSize(const std::pair<int32_t, int32_t> &new_size)
 {
     NativeWindow::setSize(new_size);
+    // screenFB.resize(m_width, m_height);
+}
+
+void Window::setFramebufferSize(const std::pair<int32_t, int32_t> &new_size)
+{
     screenFB.resize(m_width, m_height);
 }
 
 void Window::setFullscreen(bool fullscreen)
 {
+    const auto hz = NativeWindow::getRefreshRate();
+    const auto valid_resolutions = NativeWindow::queryMonitorResolutions();
+    const auto monitor = NativeWindow::getCurrentMonitor();
+    const auto video_mode = glfwGetVideoMode(monitor);
+    const auto sr = valid_resolutions.front();  // smallest_resolution
+    const auto lr = valid_resolutions.back();  // largest_resolution
     m_isFullscreen = fullscreen;
     if(fullscreen)
     {
-        glfwSetWindowMonitor(m_window, glfwGetPrimaryMonitor(), 0, 0, 1920, 1080, GLFW_DONT_CARE);
+        glfwSetWindowMonitor(m_window, monitor, 0, 0, video_mode->width, video_mode->height, hz);
     }
     else
     {
-        glfwSetWindowMonitor(m_window, nullptr, m_width / 4.f, m_height / 4.f, 1280, 720, GLFW_DONT_CARE);
+        glfwSetWindowMonitor(m_window, nullptr, (lr.x - sr.x) / 2.f, (lr.y - sr.y) / 2.f, sr.x, sr.y, hz);
     }
     this->setVerticalSync(m_isVSyncEnabled);
 }

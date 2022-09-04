@@ -27,6 +27,11 @@ NativeWindow::NativeWindow(const std::string &title, std::int32_t width, std::in
     }
     glfwMakeContextCurrent(m_window);
 
+    const auto valid_resolutions = NativeWindow::queryMonitorResolutions();
+    const auto sr = valid_resolutions.front();  // smallest_resolution
+    const auto lr = valid_resolutions.back();  // largest_resolution
+    glfwSetWindowSizeLimits(m_window, sr.x, sr.y, lr.x, lr.y);
+
     this->initGL();
 }
 
@@ -68,6 +73,51 @@ void NativeWindow::setTitle(const std::string &title)
 {
     m_title = title;
     glfwSetWindowTitle(m_window, m_title.c_str());
+}
+
+GLFWmonitor *NativeWindow::getCurrentMonitor()
+{
+    return glfwGetPrimaryMonitor();
+}
+
+std::pair<const GLFWvidmode *, int> NativeWindow::getVideoModes()
+{
+    auto monitor = NativeWindow::getCurrentMonitor();
+    if(!monitor)
+    {
+        return std::make_pair(nullptr, 0);
+    }
+    int count;
+    const GLFWvidmode *modes = glfwGetVideoModes(monitor, &count);
+    return std::make_pair(modes, count);
+}
+
+std::int32_t NativeWindow::getRefreshRate()
+{
+    const GLFWvidmode *mode = glfwGetVideoMode(NativeWindow::getCurrentMonitor());
+    if(!mode)
+    {
+        return 0;
+    }
+    return mode->refreshRate;
+}
+
+std::vector<glm::ivec2> NativeWindow::queryMonitorResolutions()
+{
+    const auto &[video_modes, vm_count] = NativeWindow::getVideoModes();
+    const auto hz = NativeWindow::getRefreshRate();
+    spdlog::debug("Monitor refresh rate: {}Hz", hz);
+    std::vector<glm::ivec2> result;
+    for(int i = 0; i < vm_count; i++)
+    {
+        const auto &vm = video_modes[i];
+        if((vm.width % 16 == 0) && (vm.height % 9 == 0) && (vm.refreshRate == hz))
+        {
+            spdlog::debug("Found video mode: r{}g{}b{}, {}x{}, {}Hz", vm.redBits, vm.greenBits, vm.blueBits, vm.width, vm.height, vm.refreshRate);
+            result.emplace_back(vm.width, vm.height);
+        }
+    }
+    return result;
 }
 
 static void glfwErrorMessageCallback(int error_code, const char *description)

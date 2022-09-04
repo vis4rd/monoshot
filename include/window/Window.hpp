@@ -23,6 +23,7 @@ class Window final : public NativeWindow
     void toggleFullscreen();
 
     void setSize(const std::pair<int32_t, int32_t> &new_size) override;
+    void setFramebufferSize(const std::pair<int32_t, int32_t> &new_size);
     void setFullscreen(bool fullscreen = true);
     void setMaximized(bool maximized = true);
     void setVerticalSync(bool vsync = true);
