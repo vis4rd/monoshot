@@ -146,11 +146,15 @@ void CreatorSection::render() noexcept
 
     // map rendering
     m_map.render(true);
+    ShaderManager::getShader("quad").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 0);
+    ShaderManager::getShader("quad").uploadMat4("uView", m_camera.getViewMatrix(), 1);
 
     // hovered tile highlight
     Renderer::beginBatch();
     Renderer::drawQuad({std::round(s_mouse_world_pos.x), std::round(s_mouse_world_pos.y)}, {1.f, 1.f}, 0.f, {0.9f, 0.9f, 1.f, 0.2f});
     Renderer::endBatch();
+    ShaderManager::getShader("quad").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 0);
+    ShaderManager::getShader("quad").uploadMat4("uView", m_camera.getViewMatrix(), 1);
 
     glDisable(GL_BLEND);
 
@@ -185,13 +189,6 @@ void CreatorSection::render() noexcept
         ImGui::Text("Mouse screen position: (%.2f, %.2f)", mouse_screen_pos.x, mouse_screen_pos.y);
         ImGui::Text("Mouse world position: (%.2f, %.2f)", s_mouse_world_pos.x, s_mouse_world_pos.y);
 
-        // TODO(DONE): texture selection
-        // TODO(DONE): change empty tile to display alpha = 0 color
-        // TODO(DONE): texture placement
-        // TODO(DONE): highlight hovered tile
-        // TODO(DONE): saving map to a file
-        // TODO(DONE): prevent saving when empty tiles present
-        // TODO: move most of this stuff to update()
         ImGui::Separator();
         static std::string preview = "Choose a texture";
         bool check = false;

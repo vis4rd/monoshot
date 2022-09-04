@@ -171,8 +171,9 @@ void Window::render(RENDERABLES &&...renderables) noexcept
     }
 
     screenFB.unbind();
-    glClearColor(1.f, 1.f, 1.f, 1.f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    // commented for now, because technically whole texture is overdrawn
+    // glClearColor(1.f, 1.f, 1.f, 1.f);
+    // glClear(GL_COLOR_BUFFER_BIT);
 
     glViewport(0, 0, m_width, m_height);  // set the main viewport to window size
 

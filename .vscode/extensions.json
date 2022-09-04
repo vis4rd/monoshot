@@ -5,6 +5,7 @@
         "ms-vscode.cmake-tools",
         "jeff-hykin.better-cpp-syntax",
         "llvm-vs-code-extensions.vscode-clangd",
-        "slevesque.shader"
+        "slevesque.shader",
+        "seatonjiang.gitmoji-vscode"
     ]
 }

@@ -135,19 +135,25 @@ void Renderer::endBatch()
 
         spdlog::trace("Renderer: binding shader 'quad'");
         auto& quad_shader = ShaderManager::useShader("quad");
-        spdlog::trace("Renderer: uploading texture samplers");
-        quad_shader.uploadArrayInt("uTextures", 32, s_data.textureSamplers.data(), 2);
 
         spdlog::trace("Renderer: binding VAO");
         glBindVertexArray(s_data.quadVao);
         glDrawElements(GL_TRIANGLES, s_data.stats.indexCount, GL_UNSIGNED_INT, nullptr);
 
+        spdlog::trace("Renderer: uploading texture samplers");
+        if(s_data.textureSlotsTakenCount > 1)  // if there are more textures than the default 1x1 one
+        {
+            quad_shader.uploadArrayInt("uTextures", s_data.textureSlotsTakenCount, s_data.textureSamplers.data(), 2);
+        }
+
+        spdlog::trace("Renderer: unbinding texture units");
         for(std::uint32_t i = 0; i < s_data.textureSlotsTakenCount; i++)
         {
             glBindTextureUnit(i, 0);
         }
 
         s_data.stats.drawCount++;
+        spdlog::trace("Renderer: finished batch");
     }
 }
 
