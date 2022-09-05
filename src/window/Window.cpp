@@ -46,9 +46,16 @@ Window::Window(const std::string &title, std::uint32_t width, std::uint32_t heig
         [](GLFWwindow *window, int new_width, int new_height) -> void
         {
             auto _this = static_cast<Window *>(glfwGetWindowUserPointer(window));
-            spdlog::debug("New framebuffer size = {}x{} in pixels", new_width, new_height);
             _this->setSize({new_width, new_height});
+            _this->setFramebufferSize({new_width, new_height});
         });
+
+    // glfwSetWindowMaximizeCallback(m_window,
+    //     [](GLFWwindow *window, int maximized) -> void
+    //     {
+    //         auto _this = static_cast<Window *>(glfwGetWindowUserPointer(window));
+    //         _this->setSize({new_width, new_height});
+    //     });
 
     // glfwSetWindowContentScaleCallback(m_window,
     //     [](GLFWwindow *window, float xscale, float yscale)
@@ -110,13 +117,14 @@ void Window::toggleFullscreen()
 
 void Window::setSize(const std::pair<int32_t, int32_t> &new_size)
 {
+    spdlog::debug("New window size = {}x{} in pixels", new_size.first, new_size.second);
     NativeWindow::setSize(new_size);
-    // screenFB.resize(m_width, m_height);
 }
 
 void Window::setFramebufferSize(const std::pair<int32_t, int32_t> &new_size)
 {
-    screenFB.resize(m_width, m_height);
+    spdlog::debug("New framebuffer size = {}x{} in pixels", new_size.first, new_size.second);
+    screenFB.resize(new_size.first, new_size.second);
 }
 
 void Window::setFullscreen(bool fullscreen)
@@ -191,6 +199,8 @@ void Window::initKeybinds()
         [this]
         {
             this->toggleFullscreen();
+            spdlog::debug("on F11: window size = {}x{}", m_width, m_height);
+            spdlog::debug("on F11: framebuffer size = {}x{}", screenFB.getSize().x, screenFB.getSize().y);
         });
     m_inputManager.addKeybind("window",
         GLFW_KEY_ESCAPE,

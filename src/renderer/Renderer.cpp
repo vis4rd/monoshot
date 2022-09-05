@@ -92,7 +92,9 @@ void Renderer::init()
     glTextureStorage2D(s_data.whiteTexture, /*number of tex level(??)*/ 1, /* tex format*/ GL_RGBA8, /*width*/ 1, /*height*/ 1);
     glTextureSubImage2D(s_data.whiteTexture, /*mipmap level*/ 0, /*xoffset*/ 0, /*yoffset*/ 0, /*width*/ 1, /*height*/ 1, /*data format*/ GL_RGBA, GL_UNSIGNED_BYTE, &color);
 
-    s_data.textureSlots[0] = s_data.whiteTexture;
+    s_data.textureSlots.reserve(32);
+    s_data.usedTextureSlots.reserve(32);
+    s_data.textureSlots.try_emplace(s_data.whiteTexture, s_data.textureSlotsTakenCount);
     s_data.textureSlotsTakenCount++;
 }
 
@@ -105,6 +107,7 @@ void Renderer::shutdown()
     glDeleteTextures(1, &s_data.whiteTexture);
 
     s_data.quadBuffer.fill({});
+    s_data = Renderer::Data();
     Renderer::m_isInit = false;
     spdlog::debug("Renderer shutdown complete");
 }
@@ -128,9 +131,12 @@ void Renderer::endBatch()
 
         spdlog::trace("Renderer: binding texture units");
         spdlog::trace("slots taken: {}", s_data.textureSlotsTakenCount);
-        for(std::uint32_t i = 0; i < s_data.textureSlotsTakenCount; i++)
+        spdlog::trace("slots used: {}", s_data.usedTextureSlots.size());
+
+        for(const auto& [slot, unit] : s_data.textureSlots)
         {
-            glBindTextureUnit(i, s_data.textureSlots[i]);
+            spdlog::trace("Binding texture slot {} to unit {}", slot, unit);
+            glBindTextureUnit(unit, slot);
         }
 
         spdlog::trace("Renderer: binding shader 'quad'");
@@ -141,16 +147,27 @@ void Renderer::endBatch()
         glDrawElements(GL_TRIANGLES, s_data.stats.indexCount, GL_UNSIGNED_INT, nullptr);
 
         spdlog::trace("Renderer: uploading texture samplers");
-        if(s_data.textureSlotsTakenCount > 1)  // if there are more textures than the default 1x1 one
+        if(s_data.usedTextureSlots.size() > 1)  // if there are more textures than the default 1x1 one
         {
             quad_shader.uploadArrayInt("uTextures", s_data.textureSlotsTakenCount, s_data.textureSamplers.data(), 2);
         }
+        // a note about warnings here:
+        // textureSamplers = list of texture units which are to be used in drawing
+        // right now its hardcoded to 0, 1, ..., 31
+        // but sometimes some values are missing, i.e. units 0, 1, 3 are used, but uploaded samplers are [0, 1, 2,] 3, ..., 31
+        // (I think) this requires some testing
+
+        // also on things to fix: missing unit here is an empty texture in Map, which is called on empty tile
+        // so make Map not render when tile is empty
+
+        // on another note, for some god forsaken reason input doesnt work when re-entering CreatorSection, pls fix
 
         spdlog::trace("Renderer: unbinding texture units");
-        for(std::uint32_t i = 0; i < s_data.textureSlotsTakenCount; i++)
+        for(std::uint32_t i = 0; i < s_data.textureSlots.size(); i++)
         {
             glBindTextureUnit(i, 0);
         }
+        s_data.usedTextureSlots.clear();
 
         s_data.stats.drawCount++;
         spdlog::trace("Renderer: finished batch");
@@ -166,7 +183,7 @@ void Renderer::drawQuad(const glm::vec2& position, const glm::vec2& size, const 
 {
     spdlog::trace("Renderer: drawing a Quad, position = ({}, {}), size = ({}, {}), rotation = {}", position.x, position.y, size.x, size.y, rotation);
 
-    if(s_data.stats.indexCount >= s_data.maxIndexCount || s_data.textureSlotsTakenCount >= s_data.textureSlots.size())
+    if(s_data.stats.indexCount >= s_data.maxIndexCount || s_data.textureSlotsTakenCount >= s_data.maxTextures)
     {
         endBatch();
         beginBatch();
@@ -174,32 +191,28 @@ void Renderer::drawQuad(const glm::vec2& position, const glm::vec2& size, const 
 
     glm::mat4 model_matrix = glm::translate(glm::identity<glm::mat4>(), glm::vec3(position, 0.f)) * glm::rotate(glm::identity<glm::mat4>(), glm::radians(rotation), {0.f, 0.f, 1.f}) * glm::scale(glm::identity<glm::mat4>(), glm::vec3(size, 1.f));
     spdlog::trace("Renderer: model_matrix:\n{}", util::mat4str(model_matrix));
-    float texture_index = -1.f;
+    float texture_unit = -1.f;
 
-    // TODO: consider changing this linear complexity to std::unordered_set
-    for(std::uint32_t i = 0; i < s_data.textureSlotsTakenCount; i++)
+    if(s_data.textureSlots.contains(texture_id))
     {
-        if(s_data.textureSlots[i] == texture_id)
-        {
-            texture_index = static_cast<float>(i);
-            break;
-        }
+        texture_unit = s_data.textureSlots[texture_id];
     }
-    //
+    spdlog::trace("texture_unit = {} of texture_id {}", texture_unit, texture_id);
 
-    if(texture_index == -1.f)
+    if(texture_unit == -1.f)
     {
-        texture_index = static_cast<float>(s_data.textureSlotsTakenCount);
-        s_data.textureSlots[s_data.textureSlotsTakenCount] = texture_id;
+        texture_unit = static_cast<float>(s_data.textureSlotsTakenCount);
+        s_data.textureSlots.try_emplace(texture_id, texture_unit);
         s_data.textureSlotsTakenCount++;
     }
+    s_data.usedTextureSlots.try_emplace(texture_id, texture_unit);
 
     for(std::size_t i = 0; i < 4; i++)
     {
         s_data.quadBufferIter->position = model_matrix * quadVertexPositions[i];
         s_data.quadBufferIter->color = color;
         s_data.quadBufferIter->texCoords = quadTexturePositions[i];
-        s_data.quadBufferIter->texIndex = texture_index;
+        s_data.quadBufferIter->texIndex = texture_unit;
         s_data.quadBufferIter++;
         spdlog::trace("Renderer: quad vertex {}: position = {}, color = {}, texCoords = {}, texIndex = {}",
             i,

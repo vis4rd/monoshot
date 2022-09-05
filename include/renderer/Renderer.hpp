@@ -4,6 +4,8 @@
 #include <glad/glad.h>
 #include <array>
 #include <numeric>
+#include <unordered_set>
+#include <unordered_map>
 
 class Renderer
 {
@@ -49,7 +51,8 @@ class Renderer
 
         std::array<QuadVertex, maxVertexCount> quadBuffer{};
         std::array<QuadVertex, maxVertexCount>::iterator quadBufferIter{};
-        std::array<std::uint32_t, maxTextures> textureSlots = {0};
+        std::unordered_map<std::uint32_t, std::uint32_t> textureSlots;  // slot - unit
+        std::unordered_map<std::uint32_t, std::uint32_t> usedTextureSlots;  // slot - unit
         std::array<std::int32_t, maxTextures> textureSamplers = {0};
         std::uint32_t textureSlotsTakenCount = 0;
 
