@@ -126,6 +126,7 @@ CreatorSection::~CreatorSection()
     glfwSetWindowUserPointer(window, nullptr);
     glfwSetScrollCallback(window, nullptr);
     Renderer::shutdown();
+    InputManager::get().removeGroup(m_name);
 }
 
 void CreatorSection::update() noexcept { }
