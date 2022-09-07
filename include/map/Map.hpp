@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../shader/ShaderManager.hpp"
-
 #include "../texture/Texture2D.hpp"
 
 struct Tile
@@ -38,8 +37,13 @@ class Map
     virtual void render(bool area = false) noexcept;
 
     protected:
+    void calculateNewSize(const float& tile_x, const float& tile_y);
+
+    protected:
     std::size_t m_width = 0;
     std::size_t m_height = 0;
-    std::vector<std::vector<Tile>> m_tiles;
+    std::int64_t m_centerX = 0;
+    std::int64_t m_centerY = 0;
+    std::vector<Tile> m_tiles;
     std::vector<std::shared_ptr<Texture2D>> m_textures;
 };

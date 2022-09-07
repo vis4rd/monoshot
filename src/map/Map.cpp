@@ -1,24 +1,15 @@
 #include "../../include/map/Map.hpp"
-
 #include "../../include/renderer/Renderer.hpp"
+
+#include <numeric>
 
 Map::Map(const std::size_t& width, const std::size_t& height)
     : m_width(width),
       m_height(height),
-      m_tiles(width, std::vector<Tile>(height))
+      m_tiles()
 {
-    std::size_t center_x = m_width / 2;
-    std::size_t center_y = m_height / 2;
-    for(std::size_t i = 0; i < m_width; i++)
-    {
-        auto x_diff = static_cast<float>(i) - center_x;
-        for(std::size_t j = 0; j < m_height; j++)
-        {
-            auto y_diff = static_cast<float>(j) - center_y;
-            m_tiles[i][j].x = x_diff;
-            m_tiles[i][j].y = y_diff;
-        }
-    }
+    m_tiles.reserve(width * height);
+
     auto& tex_ptr = m_textures.emplace_back(std::make_shared<Texture2D>(1, 1));
     std::uint32_t tex = 0x00000000;
     tex_ptr->load(reinterpret_cast<std::uint8_t*>(&tex), sizeof(std::uint32_t));
@@ -56,40 +47,22 @@ const std::vector<std::shared_ptr<Texture2D>>& Map::getTextures() const
 
 const void Map::setTile(const Tile& tile)
 {
-    const std::size_t center_x = m_width / 2;
-    const std::size_t center_y = m_height / 2;
-    // auto x_diff = static_cast<float>(i) - center_x;
-    // auto y_diff = static_cast<float>(j) - center_y;
+    spdlog::debug("Map: Placing a tile with coords ({}, {}), rotation {}, tex_index {}", tile.x, tile.y, tile.rotation, tile.textureIndex);
+    this->calculateNewSize(tile.x, tile.y);
 
-    // x = x_diff
-    // y = y_diff
-    // i = x_diff + center_x
-    // j = y_diff + center_j
-    const std::size_t i = static_cast<std::size_t>(tile.x + center_x);
-    const std::size_t j = static_cast<std::size_t>(tile.y + center_y);
-    m_tiles[i][j] = tile;
+    m_tiles.push_back(tile);
+    spdlog::debug("Map: Finished placing a tile");
 }
 
 const void Map::setTile(const float& x, const float& y, const float& rotation, const std::size_t& tex_index, const bool& solid)
 {
-    spdlog::debug("Map: Placing a tile with coords ({}, {}), rotation {}, tex_index {}", x, y, rotation, tex_index);
-    const float center_x = m_width / 2.f;
-    const float center_y = m_height / 2.f;
-    if((x < -center_x) || (y < -center_y) || (x > center_x) || (y > center_y))
-    {
-        spdlog::error("Map: Trying to place a tile outside of bounds! (|x| < {} or |y| < {})", center_x, center_y);
-        return;
-    }
-    const std::size_t i = std::llroundf(x + center_x - 0.5f);
-    const std::size_t j = std::llroundf(y + center_y - 0.5f);
-    const float xx = std::round(x);
-    const float yy = std::round(y);
-    m_tiles[i][j].x = xx;
-    m_tiles[i][j].y = yy;
-    m_tiles[i][j].rotation = rotation;
-    m_tiles[i][j].textureIndex = tex_index;
-    m_tiles[i][j].solid = solid;
-    spdlog::debug("Map: Finished placing a tile");
+    Tile new_tile;
+    new_tile.x = std::round(x);
+    new_tile.y = std::round(y);
+    new_tile.rotation = rotation;
+    new_tile.textureIndex = tex_index;
+    new_tile.solid = solid;
+    this->setTile(new_tile);
 }
 
 void Map::emplaceTexture(const std::int32_t& width, const std::int32_t& height, const std::string& source_path, const std::int32_t& channel_count)
@@ -129,21 +102,11 @@ void Map::loadFromFile(const std::string& filename)
     std::size_t tile_textureIndex = 0;
     bool tile_solid = false;
 
-    std::size_t i = 0, j = 0;
     std::size_t line_count = 0;
     while(file_buffer >> tile_x >> tile_y >> tile_rotation >> tile_textureIndex >> tile_solid)
     {
-        if(line_count > m_width * m_height)
-        {
-            spdlog::warn("File '{}' contains more data than this map can contain", filename);
-            break;
-        }
         spdlog::debug("file buffer >> {} >> {} >> {} >> {} >> {}", tile_x, tile_y, tile_rotation, tile_textureIndex, tile_solid);
-        const auto i = line_count % m_width;
-        const auto j = line_count / m_width;
-        m_tiles[i][j].rotation = tile_rotation;
-        m_tiles[i][j].textureIndex = tile_textureIndex;
-        m_tiles[i][j].solid = tile_solid;
+        this->setTile(tile_x, tile_y, tile_rotation, tile_textureIndex, tile_solid);
 
         line_count++;
     }
@@ -154,19 +117,7 @@ void Map::saveToFile(const std::string& filename)
     spdlog::debug("Saving map to file '{}'...", filename);
 
     // check if all tiles are filled
-    bool okay = true;
-    for(std::size_t i = 0; i < m_width; i++)
-    {
-        for(std::size_t j = 0; j < m_height; j++)
-        {
-            if(m_tiles[i][j].textureIndex < 1)
-            {
-                okay = false;
-                spdlog::error("The tile ({}, {}) is not filled...", i, j);
-            }
-        }
-    }
-    if(!okay)
+    if(m_tiles.size() < m_width * m_height)
     {
         spdlog::error("The map is not entirely filled, can not save it to the file '{}'. Ignoring...", filename);
         return;
@@ -174,13 +125,19 @@ void Map::saveToFile(const std::string& filename)
 
     // save to the buffer
     std::stringstream file_buffer;
-    for(std::size_t i = 0; i < m_width; i++)
+    auto tie = [](const Tile& tile)
     {
-        for(std::size_t j = 0; j < m_height; j++)
+        return std::tie(tile.x, tile.y);
+    };
+    std::sort(m_tiles.begin(),
+        m_tiles.end(),
+        [&tie](const Tile& tile1, const Tile& tile2)
         {
-            const auto& t = m_tiles[i][j];  // convenience abbreviation
-            file_buffer << t.x << ' ' << t.y << ' ' << t.rotation << ' ' << t.textureIndex << ' ' << t.solid << '\n';
-        }
+            return tie(tile1) < tie(tile2);
+        });
+    for(auto& tile : m_tiles)
+    {
+        file_buffer << tile.x << ' ' << tile.y << ' ' << tile.rotation << ' ' << tile.textureIndex << ' ' << tile.solid << '\n';
     }
 
     // dump buffer to the file
@@ -203,14 +160,31 @@ void Map::render(bool area) noexcept
     Renderer::beginBatch();
     if(area)
     {
-        Renderer::drawQuad({0.f, 0.f}, {m_width, m_height}, 0.f, {0.3f, 0.3f, 0.3f, 1.f});  // background area
+        Renderer::drawQuad({m_centerX, m_centerY}, {m_width, m_height}, 0.f, {0.3f, 0.3f, 0.3f, 1.f});  // background area
     }
-    for(const auto& column : m_tiles)
+    for(const auto& tile : m_tiles)
     {
-        for(const auto& tile : column)
-        {
-            Renderer::drawQuad({tile.x, tile.y}, {1.f, 1.f}, 0.f, m_textures[tile.textureIndex]->getID());
-        }
+        Renderer::drawQuad({tile.x, tile.y}, {1.f, 1.f}, tile.rotation, m_textures[tile.textureIndex]->getID());
     }
     Renderer::endBatch();
+}
+
+void Map::calculateNewSize(const float& tile_x, const float& tile_y)
+{
+    const std::size_t center_x = m_width / 2;
+    const std::size_t center_y = m_height / 2;
+    const auto abs_tile_center_x = std::llroundf(std::abs(tile_x));
+    const auto abs_tile_center_y = std::llroundf(std::abs(tile_y));
+    if(abs_tile_center_x > center_x)
+    {
+        m_width = abs_tile_center_x * 2 + 1;
+        spdlog::trace("Map: tile.x > center_x ({} > {}): new_width = {}", abs_tile_center_x, center_x, m_width);
+        spdlog::debug("Map: Tile is out of bounds, new map width = {}", m_width);
+    }
+    if(abs_tile_center_y > center_y)
+    {
+        m_height = abs_tile_center_y * 2 + 1;
+        spdlog::trace("Map: tile.y > center_y (|{}| > {}): new_height = {}", abs_tile_center_y, center_y, m_height);
+        spdlog::debug("Map: Tile is out of bounds, new map height = {}", m_height);
+    }
 }
