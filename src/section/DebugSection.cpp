@@ -70,7 +70,7 @@ DebugSection::DebugSection()
 
     // ShaderManager::addShaderProgram("../res/shaders", "triangle_zoom");
 
-    m_mapGrid.loadFromFile("testMap.map");
+    m_mapGrid.loadFromFile("../res/maps/just_grass.map");
 
     firstTexture.load("../res/textures/first_texture.png");
 
