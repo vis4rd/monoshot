@@ -36,6 +36,11 @@ class Renderer
     static void drawQuad(const glm::vec2& position, const glm::vec2& size, const float& rotation, const ref<Texture2D> texture, const glm::vec4& color = {1.f, 1.f, 1.f, 1.f});
 
     static void drawLine(const glm::vec2& pos1, const glm::vec2& pos2, const glm::vec4& color);
+    static void drawLine(const glm::vec2& pos1, const glm::vec2& pos2, const glm::vec4& color1, const glm::vec4& color2);
+
+    static void drawRect(const glm::vec2& ul, const glm::vec2& br, const glm::vec4& color);  // upper-left + bottom-right corners
+    static void drawRect(const glm::vec2& ul, const glm::vec2& ur, const glm::vec2& br, const glm::vec2& bl, const glm::vec4& color);  // 4 corners
+    static void drawRect(const glm::vec2& center, const glm::vec2& size, const float& rotation, const glm::vec4& color);  // center and size
 
     struct Stats
     {

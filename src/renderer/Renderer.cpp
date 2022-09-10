@@ -1,7 +1,7 @@
 #include "../../include/renderer/Renderer.hpp"
-
-#include "glm/ext/matrix_transform.hpp"
 #include "../../include/shader/ShaderManager.hpp"
+
+#include <glm/ext/matrix_transform.hpp>
 #include <spdlog/spdlog.h>
 
 static Renderer::Data s_data;
@@ -166,17 +166,17 @@ void Renderer::endBatch()
     // lines
     if(s_data.stats.lineCount > 0)
     {
-        spdlog::debug("Renderer: drawing lines");
+        spdlog::trace("Renderer: drawing lines");
         GLsizeiptr size = static_cast<std::uint32_t>(reinterpret_cast<std::uint8_t*>(&*s_data.lineBufferIter) - reinterpret_cast<std::uint8_t*>(&*(s_data.lineBuffer.begin())));
         s_data.lineVao->getVertexBuffers().at(0).setData(reinterpret_cast<const void*>(s_data.lineBuffer.data()), size);
 
-        spdlog::debug("Renderer: binding shader 'line");
+        spdlog::trace("Renderer: binding shader 'line'");
         auto& line_shader = ShaderManager::useShader("line");
 
-        spdlog::debug("Renderer: binding line VAO");
+        spdlog::trace("Renderer: binding line VAO");
         s_data.lineVao->bind();
 
-        spdlog::debug("Renderer: drawing line arrays");
+        spdlog::trace("Renderer: drawing line arrays");
         glDrawArrays(GL_LINES, 0, s_data.stats.lineCount * 2);
     }
 
@@ -245,15 +245,45 @@ void Renderer::drawQuad(const glm::vec2& position, const glm::vec2& size, const 
 
 void Renderer::drawLine(const glm::vec2& pos1, const glm::vec2& pos2, const glm::vec4& color)
 {
+    Renderer::drawLine(pos1, pos2, color, color);
+}
+
+void Renderer::drawLine(const glm::vec2& pos1, const glm::vec2& pos2, const glm::vec4& color1, const glm::vec4& color2)
+{
     s_data.lineBufferIter->position = glm::vec3(pos1, 0.f);
-    s_data.lineBufferIter->color = color;
+    s_data.lineBufferIter->color = color1;
     s_data.lineBufferIter++;
 
     s_data.lineBufferIter->position = glm::vec3(pos2, 0.f);
-    s_data.lineBufferIter->color = color;
+    s_data.lineBufferIter->color = color2;
     s_data.lineBufferIter++;
 
     s_data.stats.lineCount++;
+}
+
+void Renderer::drawRect(const glm::vec2& ul, const glm::vec2& br, const glm::vec4& color)  // upper-left + bottom-right
+{
+    const auto ur = glm::vec2(br.x, ul.y);
+    const auto bl = glm::vec2(ul.x, br.y);
+    Renderer::drawRect(ul, ur, br, bl, color);
+}
+
+void Renderer::drawRect(const glm::vec2& ul, const glm::vec2& ur, const glm::vec2& br, const glm::vec2& bl, const glm::vec4& color)  // 4 corners
+{
+    Renderer::drawLine(bl, br, color);
+    Renderer::drawLine(br, ur, color);
+    Renderer::drawLine(ur, ul, color);
+    Renderer::drawLine(ul, bl, color);
+}
+
+void Renderer::drawRect(const glm::vec2& center, const glm::vec2& size, const float& rotation, const glm::vec4& color)  // center and size
+{
+    glm::mat4 model_matrix = glm::translate(glm::identity<glm::mat4>(), glm::vec3(center, 0.f)) * glm::rotate(glm::identity<glm::mat4>(), glm::radians(rotation), {0.f, 0.f, 1.f}) * glm::scale(glm::identity<glm::mat4>(), glm::vec3(size, 1.f));
+    const auto bl = glm::vec2(model_matrix * quadVertexPositions[0]);
+    const auto br = glm::vec2(model_matrix * quadVertexPositions[1]);
+    const auto ur = glm::vec2(model_matrix * quadVertexPositions[2]);
+    const auto ul = glm::vec2(model_matrix * quadVertexPositions[3]);
+    Renderer::drawRect(ul, ur, br, bl, color);
 }
 
 Renderer::Stats& Renderer::getStats()

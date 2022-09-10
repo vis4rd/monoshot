@@ -153,6 +153,11 @@ void CreatorSection::render() noexcept
     // hovered tile highlight
     Renderer::beginBatch();
     Renderer::drawQuad({std::round(s_mouse_world_pos.x), std::round(s_mouse_world_pos.y)}, {1.f, 1.f}, 0.f, {0.9f, 0.9f, 1.f, 0.2f});
+    // Renderer::drawRect({std::round(s_mouse_world_pos.x), std::round(s_mouse_world_pos.y)}, {1.f, 1.f}, 0.f, {1.f, 1.f, 1.f, 1.f});
+    // Renderer::drawRect({-5.f, 5.f}, {5.f, 5.f}, {5.f, -5.f}, {-5.f, -5.f}, {0.f, 1.f, 0.f, 1.f});
+    // Renderer::drawRect({-3.f, 3.f}, {3.f, -3.f}, {0.f, 1.f, 0.f, 1.f});
+    // Renderer::drawLine({0.f, 0.f}, {std::round(s_mouse_world_pos.x), std::round(s_mouse_world_pos.y)}, {1.f, 0.f, 0.f, 1.f});
+    // Renderer::drawLine({7.f, 7.f}, {7.f, -7.f}, {0.f, 0.f, 1.f, 1.f}, {1.f, 1.f, 1.f, 1.f});
     Renderer::endBatch();
     ShaderManager::getShader("quad").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 0);
     ShaderManager::getShader("quad").uploadMat4("uView", m_camera.getViewMatrix(), 1);
