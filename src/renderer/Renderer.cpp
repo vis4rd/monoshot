@@ -50,36 +50,11 @@ void Renderer::init()
     std::iota(s_data.textureSamplers.begin(), s_data.textureSamplers.end(), 0);  // fill textureSamplers with 0, 1, 2, ..., 31
 
     // buffers
-    // glCreateVertexArrays(1, &s_data.quadVao);
-
-    // glCreateBuffers(1, &s_data.quadVbo);
-    // glNamedBufferData(s_data.quadVbo, s_data.maxVertexCount * sizeof(QuadVertex), nullptr, GL_DYNAMIC_DRAW);
-    // glVertexArrayVertexBuffer(s_data.quadVao, /*vbo index for this vao*/ 0, s_data.quadVbo, 0, sizeof(QuadVertex));
-
-    // glCreateBuffers(1, &s_data.quadEbo);
-    // glNamedBufferData(s_data.quadEbo, sizeof(indices), indices, GL_STATIC_DRAW);
-    // glVertexArrayElementBuffer(s_data.quadVao, s_data.quadEbo);
-
     s_data.quadVao = Renderer::make_ref<VertexArray>();
     auto quadVbo = VertexBuffer(s_data.maxVertexCount * sizeof(QuadVertex));
     auto quadEbo = ElementBuffer(indices, s_data.maxIndexCount);
 
     // // attributes
-    // glVertexArrayAttribFormat(s_data.quadVao, 0, 3, GL_FLOAT, GL_FALSE, offsetof(QuadVertex, position));
-    // glVertexArrayAttribBinding(s_data.quadVao, 0, /*vbo index for this vao*/ 0);
-    // glEnableVertexArrayAttrib(s_data.quadVao, 0);
-
-    // glVertexArrayAttribFormat(s_data.quadVao, 1, 4, GL_FLOAT, GL_FALSE, offsetof(QuadVertex, color));
-    // glVertexArrayAttribBinding(s_data.quadVao, 1, /*vbo index for this vao*/ 0);
-    // glEnableVertexArrayAttrib(s_data.quadVao, 1);
-
-    // glVertexArrayAttribFormat(s_data.quadVao, 2, 2, GL_FLOAT, GL_FALSE, offsetof(QuadVertex, texCoords));
-    // glVertexArrayAttribBinding(s_data.quadVao, 2, /*vbo index for this vao*/ 0);
-    // glEnableVertexArrayAttrib(s_data.quadVao, 2);
-
-    // glVertexArrayAttribFormat(s_data.quadVao, 3, 1, GL_FLOAT, GL_FALSE, offsetof(QuadVertex, texIndex));
-    // glVertexArrayAttribBinding(s_data.quadVao, 3, /*vbo index for this vao*/ 0);
-    // glEnableVertexArrayAttrib(s_data.quadVao, 3);
     BufferLayout layout = {
         BufferElement(ShaderDataType::float3, "aPos"),
         BufferElement(ShaderDataType::float4, "aColor"),
@@ -95,30 +70,18 @@ void Renderer::init()
     ShaderManager::addShaderProgram("../res/shaders", "quad");
 
     // textures
-    // glGenTextures(1, &s_data.whiteTexture);  // this would also work, but...
-    glCreateTextures(GL_TEXTURE_2D, 1, &s_data.whiteTexture);  // ... this is technically OpenGL 4.5+ DSA
-    glBindTexture(GL_TEXTURE_2D, s_data.whiteTexture);  // but we have to bind the texture here anyway (glCreate* doesn't do that for some reason)
-    glTextureParameteri(s_data.whiteTexture, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTextureParameteri(s_data.whiteTexture, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTextureParameteri(s_data.whiteTexture, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTextureParameteri(s_data.whiteTexture, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     std::uint32_t color = 0xffffffff;
-    glTextureStorage2D(s_data.whiteTexture, /*number of tex level(??)*/ 1, /* tex format*/ GL_RGBA8, /*width*/ 1, /*height*/ 1);
-    glTextureSubImage2D(s_data.whiteTexture, /*mipmap level*/ 0, /*xoffset*/ 0, /*yoffset*/ 0, /*width*/ 1, /*height*/ 1, /*data format*/ GL_RGBA, GL_UNSIGNED_BYTE, &color);
+    ref<Texture2D> texture = make_ref<Texture2D>(1, 1);
+    texture->load(reinterpret_cast<std::uint8_t*>(&color), sizeof(color));
 
     s_data.textureSlots.reserve(32);
-    s_data.usedTextureSlots.reserve(32);
-    s_data.textureSlots.try_emplace(s_data.whiteTexture, s_data.textureSlotsTakenCount);
+    s_data.textureSlots.push_back(texture);
     s_data.textureSlotsTakenCount++;
 }
 
 void Renderer::shutdown()
 {
     spdlog::debug("Renderer: shutting down...");
-    // glDeleteVertexArrays(1, &s_data.quadVao);
-    // glDeleteBuffers(1, &s_data.quadVbo);
-    // glDeleteBuffers(1, &s_data.quadEbo);
-    glDeleteTextures(1, &s_data.whiteTexture);
 
     s_data.quadBuffer.fill({});
     s_data = Renderer::Data();
@@ -141,15 +104,14 @@ void Renderer::endBatch()
 
         spdlog::trace("Renderer: filling up VB, sending data to gpu");
         GLsizeiptr size = static_cast<std::uint32_t>(reinterpret_cast<std::uint8_t*>(s_data.quadBufferIter) - reinterpret_cast<std::uint8_t*>(s_data.quadBuffer.begin()));
-        // glNamedBufferSubData(s_data.quadVbo, 0, size, reinterpret_cast<const void*>(s_data.quadBuffer.data()));
         s_data.quadVao->getVertexBuffers().at(0).setData(reinterpret_cast<const void*>(s_data.quadBuffer.data()), size);
 
         spdlog::trace("Renderer: binding texture IDs");
         spdlog::trace("slots taken: {}", s_data.textureSlotsTakenCount);
-        spdlog::trace("slots used: {}", s_data.usedTextureSlots.size());
 
-        for(const auto& [id, slot] : s_data.textureSlots)
+        for(std::size_t slot = 0; slot < s_data.textureSlots.size(); slot++)
         {
+            const auto& id = s_data.textureSlots[slot]->getID();
             spdlog::trace("Binding texture slot {} to unit {}", slot, id);
             glBindTextureUnit(slot, id);  // slot = unit
         }
@@ -158,7 +120,6 @@ void Renderer::endBatch()
         auto& quad_shader = ShaderManager::useShader("quad");
 
         spdlog::trace("Renderer: binding VAO");
-        // glBindVertexArray(s_data.quadVao);
         s_data.quadVao->bind();
         glDrawElements(GL_TRIANGLES, s_data.stats.indexCount, GL_UNSIGNED_INT, nullptr);
 
@@ -166,11 +127,10 @@ void Renderer::endBatch()
         quad_shader.uploadArrayInt("uTextures", s_data.textureSlotsTakenCount, s_data.textureSamplers.data(), 2);
 
         spdlog::trace("Renderer: unbinding texture IDs from slots");
-        for(const auto& [id, slot] : s_data.textureSlots)
+        for(std::size_t slot = 0; slot < s_data.textureSlots.size(); slot++)
         {
             glBindTextureUnit(slot, 0);
         }
-        s_data.usedTextureSlots.clear();
 
         s_data.stats.drawCount++;
         spdlog::trace("Renderer: finished batch");
@@ -179,10 +139,22 @@ void Renderer::endBatch()
 
 void Renderer::drawQuad(const glm::vec2& position, const glm::vec2& size, const float& rotation, const glm::vec4& color)
 {
-    drawQuad(position, size, rotation, s_data.whiteTexture, color);
+    drawQuad(position, size, rotation, s_data.textureSlots.at(0), color);
 }
 
-void Renderer::drawQuad(const glm::vec2& position, const glm::vec2& size, const float& rotation, const std::uint32_t& texture_id, const glm::vec4& color)
+static float findSlot(const std::vector<Renderer::ref<Texture2D>>& slots, const std::uint32_t& texture_id)
+{
+    for(std::size_t slot = 0; slot < s_data.textureSlots.size(); slot++)
+    {
+        if(s_data.textureSlots[slot]->getID() == texture_id)
+        {
+            return static_cast<float>(slot);
+        }
+    }
+    return -1.f;
+}
+
+void Renderer::drawQuad(const glm::vec2& position, const glm::vec2& size, const float& rotation, const ref<Texture2D> texture, const glm::vec4& color)
 {
     spdlog::trace("Renderer: drawing a Quad, position = ({}, {}), size = ({}, {}), rotation = {}", position.x, position.y, size.x, size.y, rotation);
 
@@ -194,28 +166,23 @@ void Renderer::drawQuad(const glm::vec2& position, const glm::vec2& size, const 
 
     glm::mat4 model_matrix = glm::translate(glm::identity<glm::mat4>(), glm::vec3(position, 0.f)) * glm::rotate(glm::identity<glm::mat4>(), glm::radians(rotation), {0.f, 0.f, 1.f}) * glm::scale(glm::identity<glm::mat4>(), glm::vec3(size, 1.f));
     spdlog::trace("Renderer: model_matrix:\n{}", util::mat4str(model_matrix));
-    float texture_unit = -1.f;
 
-    if(s_data.textureSlots.contains(texture_id))
-    {
-        texture_unit = s_data.textureSlots[texture_id];
-    }
-    spdlog::trace("texture_unit = {} of texture_id {}", texture_unit, texture_id);
+    float texture_slot = findSlot(s_data.textureSlots, texture->getID());
+    spdlog::trace("texture_slot = {} of texture_id {}", texture_slot, texture->getID());
 
-    if(texture_unit == -1.f)
+    if(texture_slot == -1.f)
     {
-        texture_unit = static_cast<float>(s_data.textureSlotsTakenCount);
-        s_data.textureSlots.try_emplace(texture_id, texture_unit);
+        texture_slot = static_cast<float>(s_data.textureSlotsTakenCount);
+        s_data.textureSlots.push_back(texture);
         s_data.textureSlotsTakenCount++;
     }
-    s_data.usedTextureSlots.try_emplace(texture_id, texture_unit);
 
     for(std::size_t i = 0; i < 4; i++)
     {
         s_data.quadBufferIter->position = model_matrix * quadVertexPositions[i];
         s_data.quadBufferIter->color = color;
         s_data.quadBufferIter->texCoords = quadTexturePositions[i];
-        s_data.quadBufferIter->texIndex = texture_unit;
+        s_data.quadBufferIter->texIndex = texture_slot;
         s_data.quadBufferIter++;
         spdlog::trace("Renderer: quad vertex {}: position = {}, color = {}, texCoords = {}, texIndex = {}",
             i,

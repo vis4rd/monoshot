@@ -164,7 +164,7 @@ void Map::render(bool area) noexcept
     }
     for(const auto& tile : m_tiles)
     {
-        Renderer::drawQuad({tile.x, tile.y}, {1.f, 1.f}, tile.rotation, m_textures[tile.textureIndex]->getID());
+        Renderer::drawQuad({tile.x, tile.y}, {1.f, 1.f}, tile.rotation, m_textures[tile.textureIndex]);
     }
     Renderer::endBatch();
 }

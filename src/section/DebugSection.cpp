@@ -9,8 +9,7 @@ DebugSection::DebugSection()
     : Section(),
       // VAO(),
       m_camera(glm::vec3(0.f, 0.f, 50.f), ResourceManager::window->getSize()),
-      m_mapGrid(5, 5),
-      firstTexture(16, 16)
+      m_mapGrid(5, 5)
 {
     m_name = "DebugSection";
     auto& input_manager = InputManager::get();
@@ -72,7 +71,8 @@ DebugSection::DebugSection()
 
     m_mapGrid.loadFromFile("../res/maps/just_grass.map");
 
-    firstTexture.load("../res/textures/first_texture.png");
+    firstTexture = std::make_shared<Texture2D>(16, 16);
+    firstTexture->load("../res/textures/first_texture.png");
 
     // copied from creator section
     auto texture_dir = fs::path("../res/textures/");
@@ -117,7 +117,7 @@ DebugSection::~DebugSection()
 {
     spdlog::trace("Destroying DebugSection");
     Renderer::shutdown();
-    firstTexture.destroy();
+    firstTexture->destroy();
 }
 
 void DebugSection::update() noexcept
@@ -137,8 +137,8 @@ void DebugSection::render() noexcept
     Renderer::drawQuad({0.f, 10.f}, {1.f, 1.f}, 0.f, {1.f, 0.5f, 0.5f, 1.f});
     Renderer::drawQuad({0.f, 8.f}, {1.f, 1.f}, 0.f, {1.f, 0.5f, 0.5f, 1.f});
     Renderer::drawQuad({9.f, 12.f}, {1.f, 1.f}, 45.f, {1.f, 0.5f, 0.5f, 1.f});
-    Renderer::drawQuad({1.f, -1.f}, {1.f, 1.f}, 45.f, firstTexture.getID(), {1.f, 1.f, 1.f, 1.f});
-    Renderer::drawQuad({-46.f, 0.f}, {1.f, 1.f}, 90.f, firstTexture.getID(), {1.f, 1.f, 1.f, 1.f});
+    Renderer::drawQuad({1.f, -1.f}, {1.f, 1.f}, 45.f, firstTexture, {1.f, 1.f, 1.f, 1.f});
+    Renderer::drawQuad({-46.f, 0.f}, {1.f, 1.f}, 90.f, firstTexture, {1.f, 1.f, 1.f, 1.f});
     Renderer::endBatch();
     ShaderManager::getShader("quad").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 0);
     ShaderManager::getShader("quad").uploadMat4("uView", m_camera.getViewMatrix(), 1);

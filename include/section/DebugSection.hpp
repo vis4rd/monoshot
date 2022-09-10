@@ -28,5 +28,5 @@ class DebugSection final : public Section
 
     Map m_mapGrid;
 
-    Texture2D firstTexture;
+    std::shared_ptr<Texture2D> firstTexture;
 };

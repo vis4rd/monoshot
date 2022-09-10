@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "../utility/VertexArray.hpp"
+#include "../texture/Texture2D.hpp"
 
 class Renderer
 {
@@ -32,7 +33,7 @@ class Renderer
     static void endBatch();
 
     static void drawQuad(const glm::vec2& position, const glm::vec2& size, const float& rotation, const glm::vec4& color);
-    static void drawQuad(const glm::vec2& position, const glm::vec2& size, const float& rotation, const std::uint32_t& texture_id, const glm::vec4& color = {1.f, 1.f, 1.f, 1.f});
+    static void drawQuad(const glm::vec2& position, const glm::vec2& size, const float& rotation, const ref<Texture2D> texture, const glm::vec4& color = {1.f, 1.f, 1.f, 1.f});
 
     struct Stats
     {
@@ -58,17 +59,11 @@ class Renderer
         static constinit const std::size_t maxIndexCount = maxQuadCount * 6;
         static constinit const std::size_t maxTextures = 32;
 
-        // std::uint32_t quadVao = 0;
-        // std::uint32_t quadVbo = 0;
-        // std::uint32_t quadEbo = 0;
         ref<VertexArray> quadVao;
-
-        std::uint32_t whiteTexture = 0;
 
         std::array<QuadVertex, maxVertexCount> quadBuffer{};
         std::array<QuadVertex, maxVertexCount>::iterator quadBufferIter{};
-        std::unordered_map<std::uint32_t, std::uint32_t> textureSlots;  // slot - unit
-        std::unordered_map<std::uint32_t, std::uint32_t> usedTextureSlots;  // slot - unit
+        std::vector<ref<Texture2D>> textureSlots;  // slot = vec index, unit = tex ID
         std::array<std::int32_t, maxTextures> textureSamplers = {0};
         std::uint32_t textureSlotsTakenCount = 0;
 
