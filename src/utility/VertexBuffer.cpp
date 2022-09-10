@@ -113,7 +113,7 @@ const BufferLayout& VertexBuffer::getLayout() const
 
 void VertexBuffer::setData(const void* data, const std::uint32_t& size)
 {
-    spdlog::debug("Setting drawing data to VertexBuffer with ID = {}", m_id);
+    spdlog::trace("Setting drawing data to VertexBuffer with ID = {}", m_id);
     glNamedBufferSubData(m_id, 0, size, data);
 }
 

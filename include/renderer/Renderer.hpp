@@ -35,11 +35,15 @@ class Renderer
     static void drawQuad(const glm::vec2& position, const glm::vec2& size, const float& rotation, const glm::vec4& color);
     static void drawQuad(const glm::vec2& position, const glm::vec2& size, const float& rotation, const ref<Texture2D> texture, const glm::vec4& color = {1.f, 1.f, 1.f, 1.f});
 
+    static void drawLine(const glm::vec2& pos1, const glm::vec2& pos2, const glm::vec4& color);
+
     struct Stats
     {
         std::uint32_t drawCount = 0;
-        std::uint32_t quadCount = 0;
         std::uint32_t indexCount = 0;
+
+        std::uint32_t quadCount = 0;
+        std::uint32_t lineCount = 0;
     };
 
     private:
@@ -51,18 +55,29 @@ class Renderer
         float texIndex;
     };
 
+    struct LineVertex
+    {
+        glm::vec3 position;
+        glm::vec4 color;
+    };
+
     public:
     struct Data
     {
+        static constinit const std::size_t maxLineCount = 10000;
         static constinit const std::size_t maxQuadCount = 10000;
         static constinit const std::size_t maxVertexCount = maxQuadCount * 4;
         static constinit const std::size_t maxIndexCount = maxQuadCount * 6;
         static constinit const std::size_t maxTextures = 32;
 
         ref<VertexArray> quadVao;
+        std::vector<QuadVertex> quadBuffer = std::vector<QuadVertex>(maxVertexCount);
+        std::vector<QuadVertex>::iterator quadBufferIter{};
 
-        std::array<QuadVertex, maxVertexCount> quadBuffer{};
-        std::array<QuadVertex, maxVertexCount>::iterator quadBufferIter{};
+        ref<VertexArray> lineVao;
+        std::vector<LineVertex> lineBuffer = std::vector<LineVertex>(maxLineCount * 2);
+        std::vector<LineVertex>::iterator lineBufferIter{};
+
         std::vector<ref<Texture2D>> textureSlots;  // slot = vec index, unit = tex ID
         std::array<std::int32_t, maxTextures> textureSamplers = {0};
         std::uint32_t textureSlotsTakenCount = 0;

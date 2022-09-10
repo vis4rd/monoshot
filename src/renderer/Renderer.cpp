@@ -31,37 +31,36 @@ void Renderer::init()
 
     spdlog::debug("Renderer: creating OpenGL backend");
 
+    //// Quads
     // data
-    std::uint32_t indices[s_data.maxIndexCount];
+    std::uint32_t quadIndices[s_data.maxIndexCount];
     std::uint32_t offset = 0;
     for(std::size_t i = 0; i < s_data.maxIndexCount; i += 6)
     {
-        indices[i + 0] = 0 + offset;
-        indices[i + 1] = 1 + offset;
-        indices[i + 2] = 2 + offset;
+        quadIndices[i + 0] = 0 + offset;
+        quadIndices[i + 1] = 1 + offset;
+        quadIndices[i + 2] = 2 + offset;
 
-        indices[i + 3] = 2 + offset;
-        indices[i + 4] = 3 + offset;
-        indices[i + 5] = 0 + offset;
+        quadIndices[i + 3] = 2 + offset;
+        quadIndices[i + 4] = 3 + offset;
+        quadIndices[i + 5] = 0 + offset;
 
         offset += 4;
     }
 
-    std::iota(s_data.textureSamplers.begin(), s_data.textureSamplers.end(), 0);  // fill textureSamplers with 0, 1, 2, ..., 31
-
     // buffers
     s_data.quadVao = Renderer::make_ref<VertexArray>();
     auto quadVbo = VertexBuffer(s_data.maxVertexCount * sizeof(QuadVertex));
-    auto quadEbo = ElementBuffer(indices, s_data.maxIndexCount);
+    auto quadEbo = ElementBuffer(quadIndices, s_data.maxIndexCount);
 
-    // // attributes
-    BufferLayout layout = {
+    // attributes
+    BufferLayout quadLayout = {
         BufferElement(ShaderDataType::float3, "aPos"),
         BufferElement(ShaderDataType::float4, "aColor"),
         BufferElement(ShaderDataType::float2, "aTexCoords"),
         BufferElement(ShaderDataType::float1, "aTexIndex"),
     };
-    quadVbo.setLayout(layout);
+    quadVbo.setLayout(quadLayout);
 
     s_data.quadVao->addVertexBuffer(std::move(quadVbo));
     s_data.quadVao->addElementBuffer(quadEbo);
@@ -69,7 +68,27 @@ void Renderer::init()
     // shaders
     ShaderManager::addShaderProgram("../res/shaders", "quad");
 
+    //// Lines
+    // buffers
+    s_data.lineVao = Renderer::make_ref<VertexArray>();
+    auto lineVbo = VertexBuffer(s_data.maxVertexCount * sizeof(LineVertex));
+
+    // attributes
+    BufferLayout lineLayout = {
+        BufferElement(ShaderDataType::float3, "aPos"),
+        BufferElement(ShaderDataType::float4, "aColor"),
+    };
+    lineVbo.setLayout(lineLayout);
+
+    s_data.lineVao->addVertexBuffer(std::move(lineVbo));
+
+    // shaders
+    ShaderManager::addShaderProgram("../res/shaders", "line");
+
+
     // textures
+    std::iota(s_data.textureSamplers.begin(), s_data.textureSamplers.end(), 0);  // fill textureSamplers with 0, 1, 2, ..., 31
+
     std::uint32_t color = 0xffffffff;
     ref<Texture2D> texture = make_ref<Texture2D>(1, 1);
     texture->load(reinterpret_cast<std::uint8_t*>(&color), sizeof(color));
@@ -81,9 +100,17 @@ void Renderer::init()
 
 void Renderer::shutdown()
 {
+    if(!m_isInit)
+    {
+        return;
+    }
     spdlog::debug("Renderer: shutting down...");
 
-    s_data.quadBuffer.fill({});
+    // spdlog::debug("Renderer: deleting quadBuffer");
+    // s_data.quadBuffer.fill({});
+    // spdlog::debug("Renderer: deleting lineBuffer");
+    // s_data.lineBuffer.fill({});
+    spdlog::debug("Renderer: deleting all RendererData");
     s_data = Renderer::Data();
     Renderer::m_isInit = false;
     spdlog::debug("Renderer: shutdown complete");
@@ -93,17 +120,20 @@ void Renderer::beginBatch()
 {
     spdlog::trace("Renderer: beginning a new batch, index_count = {}", s_data.stats.indexCount);
     s_data.stats.indexCount = 0;
+    s_data.stats.lineCount = 0;
     s_data.quadBufferIter = s_data.quadBuffer.begin();
+    s_data.lineBufferIter = s_data.lineBuffer.begin();
 }
 
 void Renderer::endBatch()
 {
-    if(s_data.stats.indexCount > 0)
-    {
-        spdlog::trace("Renderer: ending a batch");
+    spdlog::trace("Renderer: ending a batch");
 
+    // quads
+    if(s_data.stats.indexCount > 0)  // TODO: possibly can be removed in favor of just quadCount
+    {
         spdlog::trace("Renderer: filling up VB, sending data to gpu");
-        GLsizeiptr size = static_cast<std::uint32_t>(reinterpret_cast<std::uint8_t*>(s_data.quadBufferIter) - reinterpret_cast<std::uint8_t*>(s_data.quadBuffer.begin()));
+        GLsizeiptr size = static_cast<std::uint32_t>(reinterpret_cast<std::uint8_t*>(&*s_data.quadBufferIter) - reinterpret_cast<std::uint8_t*>(&*(s_data.quadBuffer.begin())));
         s_data.quadVao->getVertexBuffers().at(0).setData(reinterpret_cast<const void*>(s_data.quadBuffer.data()), size);
 
         spdlog::trace("Renderer: binding texture IDs");
@@ -119,7 +149,7 @@ void Renderer::endBatch()
         spdlog::trace("Renderer: binding shader 'quad'");
         auto& quad_shader = ShaderManager::useShader("quad");
 
-        spdlog::trace("Renderer: binding VAO");
+        spdlog::trace("Renderer: binding quad VAO");
         s_data.quadVao->bind();
         glDrawElements(GL_TRIANGLES, s_data.stats.indexCount, GL_UNSIGNED_INT, nullptr);
 
@@ -131,10 +161,27 @@ void Renderer::endBatch()
         {
             glBindTextureUnit(slot, 0);
         }
-
-        s_data.stats.drawCount++;
-        spdlog::trace("Renderer: finished batch");
     }
+
+    // lines
+    if(s_data.stats.lineCount > 0)
+    {
+        spdlog::debug("Renderer: drawing lines");
+        GLsizeiptr size = static_cast<std::uint32_t>(reinterpret_cast<std::uint8_t*>(&*s_data.lineBufferIter) - reinterpret_cast<std::uint8_t*>(&*(s_data.lineBuffer.begin())));
+        s_data.lineVao->getVertexBuffers().at(0).setData(reinterpret_cast<const void*>(s_data.lineBuffer.data()), size);
+
+        spdlog::debug("Renderer: binding shader 'line");
+        auto& line_shader = ShaderManager::useShader("line");
+
+        spdlog::debug("Renderer: binding line VAO");
+        s_data.lineVao->bind();
+
+        spdlog::debug("Renderer: drawing line arrays");
+        glDrawArrays(GL_LINES, 0, s_data.stats.lineCount * 2);
+    }
+
+    s_data.stats.drawCount++;
+    spdlog::trace("Renderer: finished batch");
 }
 
 void Renderer::drawQuad(const glm::vec2& position, const glm::vec2& size, const float& rotation, const glm::vec4& color)
@@ -194,6 +241,19 @@ void Renderer::drawQuad(const glm::vec2& position, const glm::vec2& size, const 
 
     s_data.stats.indexCount += 6;
     s_data.stats.quadCount++;
+}
+
+void Renderer::drawLine(const glm::vec2& pos1, const glm::vec2& pos2, const glm::vec4& color)
+{
+    s_data.lineBufferIter->position = glm::vec3(pos1, 0.f);
+    s_data.lineBufferIter->color = color;
+    s_data.lineBufferIter++;
+
+    s_data.lineBufferIter->position = glm::vec3(pos2, 0.f);
+    s_data.lineBufferIter->color = color;
+    s_data.lineBufferIter++;
+
+    s_data.stats.lineCount++;
 }
 
 Renderer::Stats& Renderer::getStats()
