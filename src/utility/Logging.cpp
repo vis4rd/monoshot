@@ -25,7 +25,7 @@ void openGLDebugMessageCallback(std::uint32_t source, std::uint32_t type, std::u
         case GL_DEBUG_SEVERITY_HIGH: spdlog::critical("[Object: {}][Type: {}][Source: {}] {}", id, logTypeStr(type), logSourceStr(source), message); return;
         case GL_DEBUG_SEVERITY_MEDIUM: spdlog::error("[Object: {}][Type: {}][Source: {}] {}", id, logTypeStr(type), logSourceStr(source), message); return;
         case GL_DEBUG_SEVERITY_LOW: spdlog::warn("[Object: {}][Type: {}][Source: {}] {}", id, logTypeStr(type), logSourceStr(source), message); return;
-        case GL_DEBUG_SEVERITY_NOTIFICATION: spdlog::debug("[Object: {}][Type: {}][Source: {}] {}", id, logTypeStr(type), logSourceStr(source), message); return;
+        case GL_DEBUG_SEVERITY_NOTIFICATION: spdlog::trace("[Object: {}][Type: {}][Source: {}] {}", id, logTypeStr(type), logSourceStr(source), message); return;
     }
 }
 
@@ -33,10 +33,17 @@ void enableOpenGlLogging()
 {
     if(glDebugMessageControl != nullptr)
     {
+        // 131169 - ???
+        // 131185 - ???
+        // 131218 - ???
+        // 131204 - texture does not have a defined base level so not generating mipmaps
+        std::vector<std::uint32_t> useless_codes = {/*131169, 131185, 131218, */ 131204u};
+        useless_codes.shrink_to_fit();
+
         glEnable(GL_DEBUG_OUTPUT);
         glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
         glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
-        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
+        glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_OTHER, GL_DONT_CARE, useless_codes.size(), useless_codes.data(), GL_FALSE);
         glDebugMessageCallback((GLDEBUGPROC)openGLDebugMessageCallback, nullptr);
     }
 }

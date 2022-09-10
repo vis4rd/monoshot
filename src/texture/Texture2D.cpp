@@ -1,5 +1,7 @@
 #include "../../include/texture/Texture2D.hpp"
+
 #include <glad/glad.h>
+#include <spdlog/spdlog.h>
 
 Texture2D::Texture2D(const std::int32_t& width, const std::int32_t& height, const std::int32_t& channel_count)
     : Texture(width, height, channel_count)

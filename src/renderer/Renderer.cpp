@@ -129,14 +129,14 @@ void Renderer::endBatch()
         GLsizeiptr size = static_cast<std::uint32_t>(reinterpret_cast<std::uint8_t*>(s_data.quadBufferIter) - reinterpret_cast<std::uint8_t*>(s_data.quadBuffer.begin()));
         glNamedBufferSubData(s_data.quadVbo, 0, size, reinterpret_cast<const void*>(s_data.quadBuffer.data()));
 
-        spdlog::trace("Renderer: binding texture units");
+        spdlog::trace("Renderer: binding texture IDs");
         spdlog::trace("slots taken: {}", s_data.textureSlotsTakenCount);
         spdlog::trace("slots used: {}", s_data.usedTextureSlots.size());
 
-        for(const auto& [slot, unit] : s_data.textureSlots)
+        for(const auto& [id, slot] : s_data.textureSlots)
         {
-            spdlog::trace("Binding texture slot {} to unit {}", slot, unit);
-            glBindTextureUnit(unit, slot);
+            spdlog::trace("Binding texture slot {} to unit {}", slot, id);
+            glBindTextureUnit(slot, id);  // slot = unit
         }
 
         spdlog::trace("Renderer: binding shader 'quad'");
@@ -146,26 +146,13 @@ void Renderer::endBatch()
         glBindVertexArray(s_data.quadVao);
         glDrawElements(GL_TRIANGLES, s_data.stats.indexCount, GL_UNSIGNED_INT, nullptr);
 
-        spdlog::trace("Renderer: uploading texture samplers");
-        if(s_data.usedTextureSlots.size() > 1)  // if there are more textures than the default 1x1 one
+        spdlog::trace("Renderer: uploading texture slots");
+        quad_shader.uploadArrayInt("uTextures", s_data.textureSlotsTakenCount, s_data.textureSamplers.data(), 2);
+
+        spdlog::trace("Renderer: unbinding texture IDs from slots");
+        for(const auto& [id, slot] : s_data.textureSlots)
         {
-            quad_shader.uploadArrayInt("uTextures", s_data.textureSlotsTakenCount, s_data.textureSamplers.data(), 2);
-        }
-        // a note about warnings here:
-        // textureSamplers = list of texture units which are to be used in drawing
-        // right now its hardcoded to 0, 1, ..., 31
-        // but sometimes some values are missing, i.e. units 0, 1, 3 are used, but uploaded samplers are [0, 1, 2,] 3, ..., 31
-        // (I think) this requires some testing
-
-        // also on things to fix: missing unit here is an empty texture in Map, which is called on empty tile
-        // so make Map not render when tile is empty
-
-        // on another note, for some god forsaken reason input doesnt work when re-entering CreatorSection, pls fix
-
-        spdlog::trace("Renderer: unbinding texture units");
-        for(std::uint32_t i = 0; i < s_data.textureSlots.size(); i++)
-        {
-            glBindTextureUnit(i, 0);
+            glBindTextureUnit(slot, 0);
         }
         s_data.usedTextureSlots.clear();
 
