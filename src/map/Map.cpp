@@ -154,7 +154,7 @@ void Map::saveToFile(const std::string& filename)
 
 void Map::update() noexcept { }
 
-void Map::render(bool area) noexcept
+void Map::render(bool area, bool show_solid) noexcept
 {
     spdlog::trace("Rendering map...");
     Renderer::beginBatch();
@@ -165,6 +165,10 @@ void Map::render(bool area) noexcept
     for(const auto& tile : m_tiles)
     {
         Renderer::drawQuad({tile.x, tile.y}, {1.f, 1.f}, tile.rotation, m_textures[tile.textureIndex]);
+        if(show_solid && tile.solid)
+        {
+            Renderer::drawRect({tile.x, tile.y}, {0.2f, 0.2f}, tile.rotation, {1.f, 1.f, 1.f, 1.f});
+        }
     }
     Renderer::endBatch();
 }

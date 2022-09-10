@@ -34,7 +34,7 @@ class Map
     void saveToFile(const std::string& filename);
 
     virtual void update() noexcept;
-    virtual void render(bool area = false) noexcept;
+    virtual void render(bool area = false, bool show_solid = false) noexcept;
 
     protected:
     void calculateNewSize(const float& tile_x, const float& tile_y);

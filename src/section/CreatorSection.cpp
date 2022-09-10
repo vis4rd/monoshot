@@ -146,7 +146,7 @@ void CreatorSection::render() noexcept
     ShaderManager::getShader("quad").uploadMat4("uView", m_camera.getViewMatrix(), 1);
 
     // map rendering
-    m_map.render(true);
+    m_map.render(true, true);
     ShaderManager::getShader("quad").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 0);
     ShaderManager::getShader("quad").uploadMat4("uView", m_camera.getViewMatrix(), 1);
 
