@@ -53,19 +53,17 @@ VertexArray::~VertexArray()
     spdlog::debug("Deleting VertexArray instance with ID = {}", m_id);
     for(const auto& vb : m_vertexBuffers)
     {
-        vb.unbind();
         spdlog::debug("Deleting VertexBuffer object with ID = {}", vb.getID());
         glDeleteBuffers(1, &vb.getID());
     }
     m_vertexBuffers.clear();
     if(m_elementBuffer.isInitialized())
     {
-        m_elementBuffer.unbind();
         spdlog::debug("Deleting ElementBuffer object with ID = {}", m_elementBuffer.getID());
         glDeleteBuffers(1, &m_elementBuffer.getID());
     }
-    this->unbind();
     glDeleteVertexArrays(1, &m_id);
+    this->unbind();
 }
 
 void VertexArray::bind() const

@@ -2,13 +2,28 @@
 
 #include <glm/glm.hpp>
 #include <glad/glad.h>
+
 #include <array>
 #include <numeric>
 #include <unordered_set>
 #include <unordered_map>
+#include <memory>
+
+#include "../utility/VertexArray.hpp"
 
 class Renderer
 {
+    public:
+    template<typename T>
+    using ref = std::shared_ptr<T>;
+
+    private:
+    template<typename T, typename... Args>
+    static constexpr ref<T> make_ref(Args&&... args)
+    {
+        return std::make_shared<T>(args...);
+    }
+
     public:
     static void init();
     static void shutdown();
@@ -43,9 +58,10 @@ class Renderer
         static constinit const std::size_t maxIndexCount = maxQuadCount * 6;
         static constinit const std::size_t maxTextures = 32;
 
-        std::uint32_t quadVao = 0;
-        std::uint32_t quadVbo = 0;
-        std::uint32_t quadEbo = 0;
+        // std::uint32_t quadVao = 0;
+        // std::uint32_t quadVbo = 0;
+        // std::uint32_t quadEbo = 0;
+        ref<VertexArray> quadVao;
 
         std::uint32_t whiteTexture = 0;
 

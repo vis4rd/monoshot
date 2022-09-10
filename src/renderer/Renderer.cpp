@@ -50,32 +50,46 @@ void Renderer::init()
     std::iota(s_data.textureSamplers.begin(), s_data.textureSamplers.end(), 0);  // fill textureSamplers with 0, 1, 2, ..., 31
 
     // buffers
-    glCreateVertexArrays(1, &s_data.quadVao);
+    // glCreateVertexArrays(1, &s_data.quadVao);
 
-    glCreateBuffers(1, &s_data.quadVbo);
-    glNamedBufferData(s_data.quadVbo, s_data.maxVertexCount * sizeof(QuadVertex), nullptr, GL_DYNAMIC_DRAW);
-    glVertexArrayVertexBuffer(s_data.quadVao, /*vbo index for this vao*/ 0, s_data.quadVbo, 0, sizeof(QuadVertex));
+    // glCreateBuffers(1, &s_data.quadVbo);
+    // glNamedBufferData(s_data.quadVbo, s_data.maxVertexCount * sizeof(QuadVertex), nullptr, GL_DYNAMIC_DRAW);
+    // glVertexArrayVertexBuffer(s_data.quadVao, /*vbo index for this vao*/ 0, s_data.quadVbo, 0, sizeof(QuadVertex));
 
-    glCreateBuffers(1, &s_data.quadEbo);
-    glNamedBufferData(s_data.quadEbo, sizeof(indices), indices, GL_STATIC_DRAW);
-    glVertexArrayElementBuffer(s_data.quadVao, s_data.quadEbo);
+    // glCreateBuffers(1, &s_data.quadEbo);
+    // glNamedBufferData(s_data.quadEbo, sizeof(indices), indices, GL_STATIC_DRAW);
+    // glVertexArrayElementBuffer(s_data.quadVao, s_data.quadEbo);
 
-    // attributes
-    glVertexArrayAttribFormat(s_data.quadVao, 0, 3, GL_FLOAT, GL_FALSE, offsetof(QuadVertex, position));
-    glVertexArrayAttribBinding(s_data.quadVao, 0, /*vbo index for this vao*/ 0);
-    glEnableVertexArrayAttrib(s_data.quadVao, 0);
+    s_data.quadVao = Renderer::make_ref<VertexArray>();
+    auto quadVbo = VertexBuffer(s_data.maxVertexCount * sizeof(QuadVertex));
+    auto quadEbo = ElementBuffer(indices, s_data.maxIndexCount);
 
-    glVertexArrayAttribFormat(s_data.quadVao, 1, 4, GL_FLOAT, GL_FALSE, offsetof(QuadVertex, color));
-    glVertexArrayAttribBinding(s_data.quadVao, 1, /*vbo index for this vao*/ 0);
-    glEnableVertexArrayAttrib(s_data.quadVao, 1);
+    // // attributes
+    // glVertexArrayAttribFormat(s_data.quadVao, 0, 3, GL_FLOAT, GL_FALSE, offsetof(QuadVertex, position));
+    // glVertexArrayAttribBinding(s_data.quadVao, 0, /*vbo index for this vao*/ 0);
+    // glEnableVertexArrayAttrib(s_data.quadVao, 0);
 
-    glVertexArrayAttribFormat(s_data.quadVao, 2, 2, GL_FLOAT, GL_FALSE, offsetof(QuadVertex, texCoords));
-    glVertexArrayAttribBinding(s_data.quadVao, 2, /*vbo index for this vao*/ 0);
-    glEnableVertexArrayAttrib(s_data.quadVao, 2);
+    // glVertexArrayAttribFormat(s_data.quadVao, 1, 4, GL_FLOAT, GL_FALSE, offsetof(QuadVertex, color));
+    // glVertexArrayAttribBinding(s_data.quadVao, 1, /*vbo index for this vao*/ 0);
+    // glEnableVertexArrayAttrib(s_data.quadVao, 1);
 
-    glVertexArrayAttribFormat(s_data.quadVao, 3, 1, GL_FLOAT, GL_FALSE, offsetof(QuadVertex, texIndex));
-    glVertexArrayAttribBinding(s_data.quadVao, 3, /*vbo index for this vao*/ 0);
-    glEnableVertexArrayAttrib(s_data.quadVao, 3);
+    // glVertexArrayAttribFormat(s_data.quadVao, 2, 2, GL_FLOAT, GL_FALSE, offsetof(QuadVertex, texCoords));
+    // glVertexArrayAttribBinding(s_data.quadVao, 2, /*vbo index for this vao*/ 0);
+    // glEnableVertexArrayAttrib(s_data.quadVao, 2);
+
+    // glVertexArrayAttribFormat(s_data.quadVao, 3, 1, GL_FLOAT, GL_FALSE, offsetof(QuadVertex, texIndex));
+    // glVertexArrayAttribBinding(s_data.quadVao, 3, /*vbo index for this vao*/ 0);
+    // glEnableVertexArrayAttrib(s_data.quadVao, 3);
+    BufferLayout layout = {
+        BufferElement(ShaderDataType::float3, "aPos"),
+        BufferElement(ShaderDataType::float4, "aColor"),
+        BufferElement(ShaderDataType::float2, "aTexCoords"),
+        BufferElement(ShaderDataType::float1, "aTexIndex"),
+    };
+    quadVbo.setLayout(layout);
+
+    s_data.quadVao->addVertexBuffer(std::move(quadVbo));
+    s_data.quadVao->addElementBuffer(quadEbo);
 
     // shaders
     ShaderManager::addShaderProgram("../res/shaders", "quad");
@@ -100,21 +114,21 @@ void Renderer::init()
 
 void Renderer::shutdown()
 {
-    spdlog::debug("Renderer: Deleting VAO, VBOs and textures");
-    glDeleteVertexArrays(1, &s_data.quadVao);
-    glDeleteBuffers(1, &s_data.quadVbo);
-    glDeleteBuffers(1, &s_data.quadEbo);
+    spdlog::debug("Renderer: shutting down...");
+    // glDeleteVertexArrays(1, &s_data.quadVao);
+    // glDeleteBuffers(1, &s_data.quadVbo);
+    // glDeleteBuffers(1, &s_data.quadEbo);
     glDeleteTextures(1, &s_data.whiteTexture);
 
     s_data.quadBuffer.fill({});
     s_data = Renderer::Data();
     Renderer::m_isInit = false;
-    spdlog::debug("Renderer shutdown complete");
+    spdlog::debug("Renderer: shutdown complete");
 }
 
 void Renderer::beginBatch()
 {
-    spdlog::trace("Renderer: beggining a new batch, index_count = {}", s_data.stats.indexCount);
+    spdlog::trace("Renderer: beginning a new batch, index_count = {}", s_data.stats.indexCount);
     s_data.stats.indexCount = 0;
     s_data.quadBufferIter = s_data.quadBuffer.begin();
 }
@@ -127,7 +141,8 @@ void Renderer::endBatch()
 
         spdlog::trace("Renderer: filling up VB, sending data to gpu");
         GLsizeiptr size = static_cast<std::uint32_t>(reinterpret_cast<std::uint8_t*>(s_data.quadBufferIter) - reinterpret_cast<std::uint8_t*>(s_data.quadBuffer.begin()));
-        glNamedBufferSubData(s_data.quadVbo, 0, size, reinterpret_cast<const void*>(s_data.quadBuffer.data()));
+        // glNamedBufferSubData(s_data.quadVbo, 0, size, reinterpret_cast<const void*>(s_data.quadBuffer.data()));
+        s_data.quadVao->getVertexBuffers().at(0).setData(reinterpret_cast<const void*>(s_data.quadBuffer.data()), size);
 
         spdlog::trace("Renderer: binding texture IDs");
         spdlog::trace("slots taken: {}", s_data.textureSlotsTakenCount);
@@ -143,7 +158,8 @@ void Renderer::endBatch()
         auto& quad_shader = ShaderManager::useShader("quad");
 
         spdlog::trace("Renderer: binding VAO");
-        glBindVertexArray(s_data.quadVao);
+        // glBindVertexArray(s_data.quadVao);
+        s_data.quadVao->bind();
         glDrawElements(GL_TRIANGLES, s_data.stats.indexCount, GL_UNSIGNED_INT, nullptr);
 
         spdlog::trace("Renderer: uploading texture slots");
