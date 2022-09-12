@@ -1,5 +1,7 @@
 #include "../../include/window/Window.hpp"
 
+#include "../../include/utility/ResourceManager.hpp"
+
 Window::Window()
     : Window("Arcade Game", 1280, 720, false)
 {
@@ -41,11 +43,11 @@ Window::Window(const std::string &title, std::uint32_t width, std::uint32_t heig
     //         glViewport(0, 0, new_width, new_height);
     //     });
 
-    glfwSetWindowUserPointer(m_window, static_cast<void *>(this));
+    spdlog::debug("Is m_window a nullptr? {}", m_window == nullptr);
     glfwSetFramebufferSizeCallback(m_window,
         [](GLFWwindow *window, int new_width, int new_height) -> void
         {
-            auto _this = static_cast<Window *>(glfwGetWindowUserPointer(window));
+            auto &_this = ResourceManager::window;
             _this->setSize({new_width, new_height});
             _this->setFramebufferSize({new_width, new_height});
         });
@@ -67,8 +69,6 @@ Window::Window(const std::string &title, std::uint32_t width, std::uint32_t heig
 Window::~Window()
 {
     spdlog::info("Terminating window instance");
-
-    glfwSetWindowUserPointer(m_window, nullptr);
 
     screenFB.unbind();
     screenVA.unbind();
