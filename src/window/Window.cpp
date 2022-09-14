@@ -192,24 +192,24 @@ void Window::initImGui()
 
 void Window::initKeybinds()
 {
-    auto id = m_inputManager.addGroup("window");
-    m_inputManager.addKeybind("window",
-        GLFW_KEY_F11,
-        KeyState::PRESS_ONCE,
-        [this]
-        {
-            this->toggleFullscreen();
-            spdlog::debug("on F11: window size = {}x{}", m_width, m_height);
-            spdlog::debug("on F11: framebuffer size = {}x{}", screenFB.getSize().x, screenFB.getSize().y);
-        });
-    m_inputManager.addKeybind("window",
-        GLFW_KEY_ESCAPE,
-        KeyState::PRESS_ONCE,
-        [&should_close = m_shouldClose]
-        {
-            if(SectionManager::get().size() == 1)
-            {
-                should_close = true;
-            }
-        });
+    // auto id = m_inputManager.addGroup("window");
+    // m_inputManager.addKeybind(id,
+    //     GLFW_KEY_F11,
+    //     KeyState::PRESS_ONCE,
+    //     [this]
+    //     {
+    //         this->toggleFullscreen();
+    //         spdlog::debug("on F11: window size = {}x{}", m_width, m_height);
+    //         spdlog::debug("on F11: framebuffer size = {}x{}", screenFB.getSize().x, screenFB.getSize().y);
+    //     });
+    // m_inputManager.addKeybind(id,
+    //     GLFW_KEY_ESCAPE,
+    //     KeyState::PRESS_ONCE,
+    //     [&should_close = m_shouldClose]
+    //     {
+    //         if(SectionManager::get().size() == 1)
+    //         {
+    //             should_close = true;
+    //         }
+    //     });
 }

@@ -19,75 +19,75 @@ CreatorSection::CreatorSection()
 {
     m_name = "CreatorSection";
 
-    auto& input_manager = InputManager::get();
-    auto group_id = input_manager.addGroup(m_name);
+    // auto& input_manager = InputManager::get();
+    // auto group_id = input_manager.addGroup(m_name);
 
-    input_manager.addKeybind(group_id,
-        GLFW_KEY_ESCAPE,
-        KeyState::PRESS_ONCE,
-        []
-        {
-            SectionManager::get().popSection();
-        });
+    // input_manager.addKeybind(group_id,
+    //     GLFW_KEY_ESCAPE,
+    //     KeyState::PRESS_ONCE,
+    //     []
+    //     {
+    //         SectionManager::get().popSection();
+    //     });
 
-    input_manager.addKeybind(group_id,
-        GLFW_KEY_A,
-        KeyState::HOLD,
-        [&camera = m_camera]
-        {
-            const auto& pos = camera.getPosition();
-            camera.setPosition({pos.x - 0.01f * pos.z, pos.y, pos.z});
-            camera.setTarget({pos.x, pos.y, 0.f});
-        });
+    // input_manager.addKeybind(group_id,
+    //     GLFW_KEY_A,
+    //     KeyState::HOLD,
+    //     [&camera = m_camera]
+    //     {
+    //         const auto& pos = camera.getPosition();
+    //         camera.setPosition({pos.x - 0.01f * pos.z, pos.y, pos.z});
+    //         camera.setTarget({pos.x, pos.y, 0.f});
+    //     });
 
-    input_manager.addKeybind(group_id,
-        GLFW_KEY_D,
-        KeyState::HOLD,
-        [&camera = m_camera]
-        {
-            const auto& pos = camera.getPosition();
-            camera.setPosition({pos.x + 0.01f * pos.z, pos.y, pos.z});
-            camera.setTarget({pos.x, pos.y, 0.f});
-        });
+    // input_manager.addKeybind(group_id,
+    //     GLFW_KEY_D,
+    //     KeyState::HOLD,
+    //     [&camera = m_camera]
+    //     {
+    //         const auto& pos = camera.getPosition();
+    //         camera.setPosition({pos.x + 0.01f * pos.z, pos.y, pos.z});
+    //         camera.setTarget({pos.x, pos.y, 0.f});
+    //     });
 
-    input_manager.addKeybind(group_id,
-        GLFW_KEY_W,
-        KeyState::HOLD,
-        [&camera = m_camera]
-        {
-            const auto& pos = camera.getPosition();
-            camera.setPosition({pos.x, pos.y + 0.01f * pos.z, pos.z});
-            camera.setTarget({pos.x, pos.y, 0.f});
-        });
+    // input_manager.addKeybind(group_id,
+    //     GLFW_KEY_W,
+    //     KeyState::HOLD,
+    //     [&camera = m_camera]
+    //     {
+    //         const auto& pos = camera.getPosition();
+    //         camera.setPosition({pos.x, pos.y + 0.01f * pos.z, pos.z});
+    //         camera.setTarget({pos.x, pos.y, 0.f});
+    //     });
 
-    input_manager.addKeybind(group_id,
-        GLFW_KEY_S,
-        KeyState::HOLD,
-        [&camera = m_camera]
-        {
-            const auto& pos = camera.getPosition();
-            camera.setPosition({pos.x, pos.y - 0.01f * pos.z, pos.z});
-            camera.setTarget({pos.x, pos.y, 0.f});
-        });
+    // input_manager.addKeybind(group_id,
+    //     GLFW_KEY_S,
+    //     KeyState::HOLD,
+    //     [&camera = m_camera]
+    //     {
+    //         const auto& pos = camera.getPosition();
+    //         camera.setPosition({pos.x, pos.y - 0.01f * pos.z, pos.z});
+    //         camera.setTarget({pos.x, pos.y, 0.f});
+    //     });
 
-    // toggle solid factor of a tile
-    input_manager.addKeybind(group_id,
-        GLFW_KEY_B,
-        KeyState::PRESS_ONCE,
-        []
-        {
-            s_selected_solid = !s_selected_solid;
-        });
+    // // toggle solid factor of a tile
+    // input_manager.addKeybind(group_id,
+    //     GLFW_KEY_B,
+    //     KeyState::PRESS_ONCE,
+    //     []
+    //     {
+    //         s_selected_solid = !s_selected_solid;
+    //     });
 
-    // place a tile
-    input_manager.addKeybind(group_id,
-        GLFW_MOUSE_BUTTON_LEFT,
-        KeyState::PRESS_ONCE,
-        [&map = m_map, &pos = s_mouse_world_pos]
-        {
-            spdlog::debug("Placing a tile: {}, on {} with texture slot '{}'", s_selected_solid ? "solid" : "non-solid", util::vec2str(s_mouse_world_pos), s_selected_texture_index);
-            map.setTile(pos.x, pos.y, 0.f, s_selected_texture_index, s_selected_solid);
-        });
+    // // place a tile
+    // input_manager.addKeybind(group_id,
+    //     GLFW_MOUSE_BUTTON_LEFT,
+    //     KeyState::PRESS_ONCE,
+    //     [&map = m_map, &pos = s_mouse_world_pos]
+    //     {
+    //         spdlog::debug("Placing a tile: {}, on {} with texture slot '{}'", s_selected_solid ? "solid" : "non-solid", util::vec2str(s_mouse_world_pos), s_selected_texture_index);
+    //         map.setTile(pos.x, pos.y, 0.f, s_selected_texture_index, s_selected_solid);
+    //     });
 
     // zooming of the view on mouse scroll
     auto window = ResourceManager::window->getNativeWindow();
@@ -129,7 +129,49 @@ CreatorSection::~CreatorSection()
     InputManager::get().removeGroup(m_name);
 }
 
-void CreatorSection::update() noexcept { }
+void CreatorSection::update() noexcept
+{
+    auto& input = InputManager::get();
+    auto* window = ResourceManager::window->getNativeWindow();
+    auto& pos = m_camera.getPosition();
+    if(input.isPressedOnce(GLFW_KEY_ESCAPE, window))
+    {
+        spdlog::debug("Lets pop some sections");
+        SectionManager::get().popSection();
+    }
+    if(input.isHeld(GLFW_KEY_A, window))
+    {
+        m_camera.setPosition({pos.x - 0.01f * pos.z, pos.y, pos.z});
+        m_camera.setTarget({pos.x, pos.y, 0.f});
+    }
+    if(input.isHeld(GLFW_KEY_D, window))
+    {
+        m_camera.setPosition({pos.x + 0.01f * pos.z, pos.y, pos.z});
+        m_camera.setTarget({pos.x, pos.y, 0.f});
+    }
+    if(input.isHeld(GLFW_KEY_W, window))
+    {
+        m_camera.setPosition({pos.x, pos.y + 0.01f * pos.z, pos.z});
+        m_camera.setTarget({pos.x, pos.y, 0.f});
+    }
+    if(input.isHeld(GLFW_KEY_S, window))
+    {
+        m_camera.setPosition({pos.x, pos.y - 0.01f * pos.z, pos.z});
+        m_camera.setTarget({pos.x, pos.y, 0.f});
+    }
+    if(input.isPressedOnce(GLFW_KEY_B, window))
+    {
+        s_selected_solid = !s_selected_solid;
+    }
+    if(!ImGui::GetIO().WantCaptureMouse)
+    {
+        if(input.isPressedOnce(GLFW_MOUSE_BUTTON_LEFT, window))
+        {
+            // spdlog::debug("Placing a tile: {}, on {} with texture slot '{}'", s_selected_solid ? "solid" : "non-solid", util::vec2str(s_mouse_world_pos), s_selected_texture_index);
+            m_map.setTile(s_mouse_world_pos.x, s_mouse_world_pos.y, 0.f, s_selected_texture_index, s_selected_solid);
+        }
+    }
+}
 
 void CreatorSection::render() noexcept
 {
