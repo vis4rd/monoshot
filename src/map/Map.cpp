@@ -47,11 +47,11 @@ const std::vector<std::shared_ptr<Texture2D>>& Map::getTextures() const
 
 const void Map::setTile(const Tile& tile)
 {
-    spdlog::debug("Map: Placing a tile with coords ({}, {}), rotation {}, tex_index {}", tile.x, tile.y, tile.rotation, tile.textureIndex);
+    spdlog::trace("Map: Placing a tile with coords ({}, {}), rotation {}, tex_index {}", tile.x, tile.y, tile.rotation, tile.textureIndex);
     this->calculateNewSize(tile.x, tile.y);
 
     m_tiles.push_back(tile);
-    spdlog::debug("Map: Finished placing a tile");
+    spdlog::trace("Map: Finished placing a tile");
 }
 
 const void Map::setTile(const float& x, const float& y, const float& rotation, const std::size_t& tex_index, const bool& solid)
@@ -105,7 +105,7 @@ void Map::loadFromFile(const std::string& filename)
     std::size_t line_count = 0;
     while(file_buffer >> tile_x >> tile_y >> tile_rotation >> tile_textureIndex >> tile_solid)
     {
-        spdlog::debug("file buffer >> {} >> {} >> {} >> {} >> {}", tile_x, tile_y, tile_rotation, tile_textureIndex, tile_solid);
+        spdlog::trace("file buffer >> {} >> {} >> {} >> {} >> {}", tile_x, tile_y, tile_rotation, tile_textureIndex, tile_solid);
         this->setTile(tile_x, tile_y, tile_rotation, tile_textureIndex, tile_solid);
 
         line_count++;

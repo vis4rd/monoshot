@@ -211,8 +211,9 @@ void Renderer::drawQuad(const glm::vec2& position, const glm::vec2& size, const 
         beginBatch();
     }
 
-    glm::mat4 model_matrix = glm::translate(glm::identity<glm::mat4>(), glm::vec3(position, 0.f)) * glm::rotate(glm::identity<glm::mat4>(), glm::radians(rotation), {0.f, 0.f, 1.f}) * glm::scale(glm::identity<glm::mat4>(), glm::vec3(size, 1.f));
-    spdlog::trace("Renderer: model_matrix:\n{}", util::mat4str(model_matrix));
+    const auto identity = glm::identity<glm::mat4>();
+    glm::mat4 model_matrix = glm::translate(identity, glm::vec3(position, 0.f)) * glm::rotate(identity, glm::radians(rotation), {0.f, 0.f, 1.f}) * glm::scale(identity, glm::vec3(size, 1.f));
+    // spdlog::trace("Renderer: model_matrix:\n{}", util::mat4str(model_matrix));
 
     float texture_slot = findSlot(s_data.textureSlots, texture->getID());
     spdlog::trace("texture_slot = {} of texture_id {}", texture_slot, texture->getID());
@@ -231,12 +232,12 @@ void Renderer::drawQuad(const glm::vec2& position, const glm::vec2& size, const 
         s_data.quadBufferIter->texCoords = quadTexturePositions[i];
         s_data.quadBufferIter->texIndex = texture_slot;
         s_data.quadBufferIter++;
-        spdlog::trace("Renderer: quad vertex {}: position = {}, color = {}, texCoords = {}, texIndex = {}",
+        /*spdlog::trace("Renderer: quad vertex {}: position = {}, color = {}, texCoords = {}, texIndex = {}",
             i,
             util::vec3str(s_data.quadBufferIter->position),
             util::vec4str(s_data.quadBufferIter->color),
             util::vec2str(s_data.quadBufferIter->texCoords),
-            s_data.quadBufferIter->texIndex);
+            s_data.quadBufferIter->texIndex);*/
     }
 
     s_data.stats.indexCount += 6;
