@@ -132,5 +132,6 @@ void InputManager::updateKeyState(const std::int32_t& glfw_key, GLFWwindow* wind
 
 bool InputManager::isKeyInState(const std::int32_t& key, KeyState state, GLFWwindow* window)
 {
+    this->updateKeyState(key, window);
     return (state == m_currentKeystates.at(static_cast<std::size_t>(key)));
 }
