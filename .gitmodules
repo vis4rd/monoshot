@@ -15,3 +15,7 @@
 	path = lib/spdlog
 	url = https://github.com/gabime/spdlog
 	branch = 76fb40d95455f249bd70824ecfcae7a8f0930fa3
+[submodule "ENTT"]
+	path = lib/entt
+	url = https://github.com/skypjack/entt.git
+	branch = e4ccb87

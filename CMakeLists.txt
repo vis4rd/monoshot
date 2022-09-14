@@ -44,6 +44,9 @@ set(STB_IMAGE_SOURCE_DIR "${PROJECT_SOURCE_DIR}/lib/stb_image")
 set(STB_IMAGE_SOURCE_PATH "${STB_IMAGE_SOURCE_DIR}/stb_image.h")
 file(MAKE_DIRECTORY ${STB_IMAGE_SOURCE_DIR})
 
+# EnTT
+add_subdirectory("${PROJECT_SOURCE_DIR}/lib/entt")
+
 if(NOT EXISTS ${STB_IMAGE_SOURCE_PATH})
     file(DOWNLOAD
         "https://raw.githubusercontent.com/nothings/stb/dev/stb_image.h"
@@ -112,6 +115,7 @@ target_link_libraries(${EXECUTABLE_NAME}
            imgui_backend
            spdlog::spdlog
            stbi
+           EnTT::EnTT
 )
 
 target_precompile_headers(${EXECUTABLE_NAME}
