@@ -86,7 +86,7 @@ bool Window::update(UPDATEABLES &&...updateables) noexcept
     // }
 
     auto &input = InputManager::get();
-    if(input.isPressedOnce(GLFW_KEY_F11, m_window))
+    if(input.isPressedOnce(GLFW_KEY_F11))
     {
         this->toggleFullscreen();
         spdlog::debug("on F11: window size = {}x{}", m_width, m_height);
@@ -94,7 +94,7 @@ bool Window::update(UPDATEABLES &&...updateables) noexcept
     }
     if(SectionManager::get().size() == 1)
     {
-        if(input.isPressedOnce(GLFW_KEY_ESCAPE, m_window))
+        if(input.isPressedOnce(GLFW_KEY_ESCAPE))
         {
             m_shouldClose = true;
         }

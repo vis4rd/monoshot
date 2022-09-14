@@ -118,8 +118,7 @@ void DebugSection::update() noexcept
     // model_matrix = glm::scale(model_matrix, scale);
 
     auto& input = InputManager::get();
-    auto* window = ResourceManager::window->getNativeWindow();
-    if(input.isPressedOnce(GLFW_KEY_ESCAPE, window))
+    if(input.isPressedOnce(GLFW_KEY_ESCAPE))
     {
         spdlog::debug("Lets pop some sections");
         SectionManager::get().popSection();

@@ -143,38 +143,38 @@ void CreatorSection::update() noexcept
     auto& delta_time = ResourceManager::timer->deltaTime();
     const double base_velocity = 1.f;
     const double velocity = base_velocity * delta_time * pos.z;
-    if(input.isPressedOnce(GLFW_KEY_ESCAPE, window))
+    if(input.isPressedOnce(GLFW_KEY_ESCAPE))
     {
         spdlog::debug("Lets pop some sections");
         SectionManager::get().popSection();
     }
-    if(input.isHeld(GLFW_KEY_A, window))
+    if(input.isHeld(GLFW_KEY_A))
     {
         m_camera.setPosition({pos.x - velocity, pos.y, pos.z});
         m_camera.setTarget({pos.x, pos.y, 0.f});
     }
-    if(input.isHeld(GLFW_KEY_D, window))
+    if(input.isHeld(GLFW_KEY_D))
     {
         m_camera.setPosition({pos.x + velocity, pos.y, pos.z});
         m_camera.setTarget({pos.x, pos.y, 0.f});
     }
-    if(input.isHeld(GLFW_KEY_W, window))
+    if(input.isHeld(GLFW_KEY_W))
     {
         m_camera.setPosition({pos.x, pos.y + velocity, pos.z});
         m_camera.setTarget({pos.x, pos.y, 0.f});
     }
-    if(input.isHeld(GLFW_KEY_S, window))
+    if(input.isHeld(GLFW_KEY_S))
     {
         m_camera.setPosition({pos.x, pos.y - velocity, pos.z});
         m_camera.setTarget({pos.x, pos.y, 0.f});
     }
-    if(input.isPressedOnce(GLFW_KEY_B, window))
+    if(input.isPressedOnce(GLFW_KEY_B))
     {
         s_selected_solid = !s_selected_solid;
     }
     if(!ImGui::GetIO().WantCaptureMouse)
     {
-        if(input.isPressedOnce(GLFW_MOUSE_BUTTON_LEFT, window))
+        if(input.isPressedOnce(GLFW_MOUSE_BUTTON_LEFT))
         {
             // spdlog::debug("Placing a tile: {}, on {} with texture slot '{}'", s_selected_solid ? "solid" : "non-solid", util::vec2str(s_mouse_world_pos), s_selected_texture_index);
             m_map.setTile(s_mouse_world_pos.x, s_mouse_world_pos.y, 0.f, s_selected_texture_index, s_selected_solid);
