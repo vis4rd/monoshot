@@ -79,10 +79,25 @@ bool Window::update(UPDATEABLES &&...updateables) noexcept
     glfwPollEvents();
 
     spdlog::trace("Handling inputs");
-    if(!ImGui::GetIO().WantCaptureMouse)
+    // if(!ImGui::GetIO().WantCaptureMouse)
+    // {
+    //     // m_inputManager.processGroup(m_window, m_sectionManager.topSection().name());
+    //     // m_inputManager.processGroup(m_window, "window");
+    // }
+
+    auto &input = InputManager::get();
+    if(input.isPressedOnce(GLFW_KEY_F11, m_window))
     {
-        m_inputManager.processGroup(m_window, m_sectionManager.topSection().name());
-        m_inputManager.processGroup(m_window, "window");
+        this->toggleFullscreen();
+        spdlog::debug("on F11: window size = {}x{}", m_width, m_height);
+        spdlog::debug("on F11: framebuffer size = {}x{}", screenFB.getSize().x, screenFB.getSize().y);
+    }
+    if(SectionManager::get().size() == 1)
+    {
+        if(input.isPressedOnce(GLFW_KEY_ESCAPE, m_window))
+        {
+            m_shouldClose = true;
+        }
     }
 
     spdlog::trace("Updating updateables passed to Window::update()");
