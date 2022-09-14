@@ -11,6 +11,7 @@ class InputManager
     InputManager& operator=(InputManager&&) = delete;
     static InputManager& get();
 
+    // callback interface
     std::size_t addGroup(const std::string& name = {});
     void processGroup(GLFWwindow* window, const std::string& group);
     constexpr void removeGroup(const std::string& group);
@@ -22,6 +23,13 @@ class InputManager
     constexpr bool isKeybindInGroup(const std::string& group, int32_t glfw_key) const;
     constexpr void removeKeybind(const std::string& group, int32_t glfw_key);
 
+    // immediate interface
+    bool isPressedOnce(const std::int32_t& key, GLFWwindow* window);
+    bool isHeld(const std::int32_t& key, GLFWwindow* window);
+    bool isReleased(const std::int32_t& key, GLFWwindow* window);
+    bool isRepeated(const std::int32_t& key, GLFWwindow* window);
+    bool isIdle(const std::int32_t& key, GLFWwindow* window);
+
     private:
     InputManager() = default;
     constexpr bool is_valid_key(const std::int32_t key) const;
@@ -32,8 +40,11 @@ class InputManager
     constexpr auto findGroup(const std::string& group_name) const;
     constexpr Keybind* findKeybindInGroup(const std::string& group, int32_t glfw_key);
 
+    void updateKeyState(const std::int32_t& key, GLFWwindow* window);
+    bool isKeyInState(const std::int32_t& key, KeyState state, GLFWwindow* window);
+
     private:
-    std::vector<KeyGroup> m_keybinds;
+    std::vector<KeyGroup> m_keybinds{};
     std::array<KeyState, GLFW_KEY_LAST + 1> m_currentKeystates = {KeyState::IDLE};
     std::array<KeyState, GLFW_KEY_LAST + 1> m_previousKeystates = {KeyState::IDLE};
 };
