@@ -97,10 +97,16 @@ CreatorSection::CreatorSection()
         {
             auto camera = static_cast<PerspectiveCamera*>(glfwGetWindowUserPointer(window));
             const auto& pos = camera->getPosition();
-            auto new_pos_z = pos.z - yoffset;
+            const auto& delta_time = ResourceManager::timer->deltaTime();
+
+            auto new_pos_z = pos.z - yoffset * delta_time * 100.f /* zoom velocity*/;
             if(new_pos_z < 0.1f)
             {
                 new_pos_z = 0.1f;
+            }
+            else if(new_pos_z > 100.f)
+            {
+                new_pos_z = 100.f;
             }
             camera->setPosition({pos.x, pos.y, new_pos_z});
         });
@@ -134,6 +140,9 @@ void CreatorSection::update() noexcept
     auto& input = InputManager::get();
     auto* window = ResourceManager::window->getNativeWindow();
     auto& pos = m_camera.getPosition();
+    auto& delta_time = ResourceManager::timer->deltaTime();
+    const double base_velocity = 1.f;
+    const double velocity = base_velocity * delta_time * pos.z;
     if(input.isPressedOnce(GLFW_KEY_ESCAPE, window))
     {
         spdlog::debug("Lets pop some sections");
@@ -141,22 +150,22 @@ void CreatorSection::update() noexcept
     }
     if(input.isHeld(GLFW_KEY_A, window))
     {
-        m_camera.setPosition({pos.x - 0.01f * pos.z, pos.y, pos.z});
+        m_camera.setPosition({pos.x - velocity, pos.y, pos.z});
         m_camera.setTarget({pos.x, pos.y, 0.f});
     }
     if(input.isHeld(GLFW_KEY_D, window))
     {
-        m_camera.setPosition({pos.x + 0.01f * pos.z, pos.y, pos.z});
+        m_camera.setPosition({pos.x + velocity, pos.y, pos.z});
         m_camera.setTarget({pos.x, pos.y, 0.f});
     }
     if(input.isHeld(GLFW_KEY_W, window))
     {
-        m_camera.setPosition({pos.x, pos.y + 0.01f * pos.z, pos.z});
+        m_camera.setPosition({pos.x, pos.y + velocity, pos.z});
         m_camera.setTarget({pos.x, pos.y, 0.f});
     }
     if(input.isHeld(GLFW_KEY_S, window))
     {
-        m_camera.setPosition({pos.x, pos.y - 0.01f * pos.z, pos.z});
+        m_camera.setPosition({pos.x, pos.y - velocity, pos.z});
         m_camera.setTarget({pos.x, pos.y, 0.f});
     }
     if(input.isPressedOnce(GLFW_KEY_B, window))
@@ -227,6 +236,8 @@ void CreatorSection::render() noexcept
         ImGui::Text("Hovered tile: (%lld, %lld)", i, j);
         ImGui::Text("Mouse screen position: (%.2f, %.2f)", mouse_screen_pos.x, mouse_screen_pos.y);
         ImGui::Text("Mouse world position: (%.2f, %.2f)", s_mouse_world_pos.x, s_mouse_world_pos.y);
+        ImGui::Text("Time since app start: %lf", ResourceManager::timer->getTotalTime());
+        ImGui::Text("Time since last frame: %lf", ResourceManager::timer->deltaTime());
 
         ImGui::Separator();
         static std::string preview = "Choose a texture";
