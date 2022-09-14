@@ -1,7 +1,7 @@
 # Versioning control
 
-set(VERSION_CACHE_FILE "../meta/VERSION.md")
-set(VERSION_HEADER_FILE "../meta/Version.hpp")
+set(VERSION_CACHE_FILE "${CMAKE_CURRENT_LIST_DIR}/VERSION.md")
+set(VERSION_HEADER_FILE "${CMAKE_CURRENT_LIST_DIR}/Version.hpp")
 file(READ ${VERSION_CACHE_FILE} VERSION)
 
 # Possible versions:

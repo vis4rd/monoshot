@@ -1,11 +1,17 @@
 cmake_minimum_required(VERSION 3.19 FATAL_ERROR)
 
 # Project setup
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/build")
+
 project(OPENGL_TEMPLATE)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/build")
+if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
+    message(FATAL_ERROR "In-source builds are forbidden.")
+endif()
+
 set(EXECUTABLE_NAME "main")
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 include(FetchContent)
 
@@ -73,18 +79,29 @@ target_include_directories(stbi INTERFACE ${STB_IMAGE_SOURCE_DIR})
 target_sources(stbi PRIVATE ${STB_IMAGE_FILE_SOURCE})
 
 # Other sources
-file(GLOB_RECURSE SOURCES "src/*.cpp")
-
+file(GLOB_RECURSE SOURCES 
+    "${PROJECT_SOURCE_DIR}/src/*.cpp"
+    "${PROJECT_SOURCE_DIR}/include/*.hpp"
+)
 
 # App
 add_executable(${EXECUTABLE_NAME})
 
+set_target_properties(${EXECUTABLE_NAME} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin"
+    ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/build"
+    VS_STARTUP_PROJECT ${EXECUTABLE_NAME}
+    FOLDER "App"
+)
+
 target_compile_features(${EXECUTABLE_NAME}
-    PRIVATE "cxx_std_20")
+    PRIVATE "cxx_std_20"
+)
 
 target_sources(${EXECUTABLE_NAME}
     PRIVATE ${SOURCES}
-            "${PROJECT_SOURCE_DIR}/main.cpp")
+            "${PROJECT_SOURCE_DIR}/main.cpp"
+)
 
 target_link_libraries(${EXECUTABLE_NAME}
     PUBLIC glfw
@@ -123,3 +140,22 @@ add_custom_command(
     TARGET ${EXECUTABLE_NAME} PRE_BUILD
     COMMAND ${CMAKE_COMMAND} -P "${PROJECT_SOURCE_DIR}/meta/ProjectVersioning.cmake"
 )
+
+# IDE Folder Management
+function(target_group_source_files target)
+    get_target_property(sources ${target} SOURCES)
+    foreach(file ${sources})
+        file(RELATIVE_PATH relative_file "${PROJECT_SOURCE_DIR}" ${file})
+    
+        if("${relative_file}" MATCHES ".*\\.cpp")
+            source_group("Source Files" FILES ${relative_file})
+        elseif("${relative_file}" MATCHES ".*\\.hpp")
+            source_group("Header Files" FILES ${relative_file})
+        else()
+            source_group("Other Files" FILES ${relative_file})
+        endif()
+    
+    endforeach()
+endfunction()
+
+target_group_source_files(${EXECUTABLE_NAME})
