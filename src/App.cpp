@@ -10,6 +10,9 @@ App::App(const std::string& window_title, uint32_t width, uint32_t height)
     m_window = std::make_shared<Window>(window_title, width, height, false, true);
     ResourceManager::window = m_window;
 
+    m_timer = std::make_shared<Timer>();
+    ResourceManager::timer = m_timer;
+
     MainMenuStyle();
 
     m_sectionManager.emplaceSection<MainMenuSection>();
@@ -54,6 +57,7 @@ void App::run() noexcept
     spdlog::info("Starting main application loop");
     while(m_window->update(m_sectionManager))
     {
+        m_timer->update();
         m_window->render(m_sectionManager);
     }
     spdlog::info("Halted main application loop");

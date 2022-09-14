@@ -3,6 +3,7 @@
 #include "section/MainMenuSection.hpp"
 #include "../meta/Version.hpp"
 #include "ui/styles/MainMenuStyle.hpp"
+#include "utility/Timer.hpp"
 
 class App
 {
@@ -22,6 +23,7 @@ class App
 
     private:
     std::shared_ptr<Window> m_window;
+    std::shared_ptr<Timer> m_timer;
     InputManager& m_input;
     SectionManager& m_sectionManager;
 };
