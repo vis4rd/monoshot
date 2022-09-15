@@ -4,6 +4,8 @@
 #include "../utility/VertexArray.hpp"
 #include "../texture/Texture2D.hpp"
 
+#include <entt/entity/registry.hpp>
+
 class DebugSection final : public Section
 {
     public:
@@ -25,8 +27,10 @@ class DebugSection final : public Section
     // glm::vec3 position = {0.f, 0.f, 0.f};
     // glm::mat4 model_matrix = glm::identity<glm::mat4>();
     PerspectiveCamera m_camera;
-
     Map m_mapGrid;
 
     std::shared_ptr<Texture2D> firstTexture;
+
+    entt::registry m_registry;
+    entt::entity m_hero;
 };

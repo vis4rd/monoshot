@@ -111,8 +111,10 @@ CreatorSection::CreatorSection()
             camera->setPosition({pos.x, pos.y, new_pos_z});
         });
 
+    // renderer
     Renderer::init();
 
+    // textures in a map
     auto texture_dir = fs::path("../res/textures/");
     for(const auto& file : fs::directory_iterator(texture_dir))
     {
