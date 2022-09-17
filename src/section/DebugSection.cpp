@@ -135,6 +135,7 @@ void DebugSection::update() noexcept
         SectionManager::get().popSection();
     }
 
+    // process main hero entity
     if(m_registry.valid(m_hero))
     {
         // clang-format off
@@ -144,7 +145,7 @@ void DebugSection::update() noexcept
         auto& mvel = m_registry.get<ecs::component::max_velocity>(m_hero);
         auto& acc = m_registry.get<ecs::component::acceleration>(m_hero);
         auto& dir = m_registry.get<ecs::component::direction>(m_hero);
-
+        auto& rot = m_registry.get<ecs::component::rotation>(m_hero);
         
         glm::vec2 move_direction = {0.f, 0.f};
         if(input.isHeld(GLFW_KEY_A)) { move_direction.x -= 1.f; }
@@ -152,6 +153,7 @@ void DebugSection::update() noexcept
         if(input.isHeld(GLFW_KEY_W)) { move_direction.y += 1.f; }
         if(input.isHeld(GLFW_KEY_S)) { move_direction.y -= 1.f; }
 
+        // calculate velocity and next position
         auto length = glm::length(move_direction);
         if(length > 0.f)
         {
@@ -174,6 +176,15 @@ void DebugSection::update() noexcept
         }
         pos.x += vel * glm::cos(dir) * delta_time;
         pos.y += vel * glm::sin(dir) * delta_time;
+
+        // make camera follow main hero
+        m_camera.setPosition({pos, m_camera.getPosition().z});
+        m_camera.setTarget({pos, 0.f});
+
+        // calculate main hero rotation after mouse cursor
+        const glm::vec2 mouse_screen_pos = ResourceManager::window->getMousePosition();
+        const auto mouse_world_pos = this->mouseScreenPosToWorldPos(mouse_screen_pos, m_camera);
+        rot.data = glm::degrees(std::atan2(mouse_world_pos.y - pos.y, mouse_world_pos.x - pos.x));
     }
     // clang-format on
 }
@@ -219,7 +230,7 @@ void DebugSection::render() noexcept
         const auto mouse_world_pos = this->mouseScreenPosToWorldPos(mouse_screen_pos, m_camera);
         ImGui::Text("mouse screen position: (%f, %f)", mouse_screen_pos.x, mouse_screen_pos.y);
         ImGui::Text("mouse world position: (%f, %f)", mouse_world_pos.x, mouse_world_pos.y);
-        ImGui::Text("hero: pos(%.2f, %.2f), vel(%.2f), acc(%.2f)", pos.x, pos.y, vel.data, acc.data);
+        ImGui::Text("hero: pos(%.2f, %.2f), vel(%.2f), acc(%.2f), rot(%.2f)", pos.x, pos.y, vel.data, acc.data, rot.data);
 
         // if(ImGui::Button("Calculate matrices"))
         // {

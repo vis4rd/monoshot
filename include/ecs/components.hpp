@@ -41,7 +41,7 @@ struct velocity : public impl::ImplicitConversionsInterface<float>
 
 struct max_velocity : public impl::ImplicitConversionsInterface<float>
 {
-    max_velocity() : impl::ImplicitConversionsInterface<float>(10.f) { }
+    max_velocity() : impl::ImplicitConversionsInterface<float>(7.f) { }
 };
 
 struct acceleration : public impl::ImplicitConversionsInterface<float>
