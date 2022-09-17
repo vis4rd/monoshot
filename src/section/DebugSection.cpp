@@ -119,6 +119,7 @@ DebugSection::~DebugSection()
     spdlog::trace("Destroying DebugSection");
     Renderer::shutdown();
     firstTexture->destroy();
+    m_registry.clear();
 }
 
 void DebugSection::update() noexcept
@@ -134,43 +135,46 @@ void DebugSection::update() noexcept
         SectionManager::get().popSection();
     }
 
-    auto& delta_time = ResourceManager::timer->deltaTime();
-    auto& pos = m_registry.get<ecs::component::position>(m_hero);
-    auto& vel = m_registry.get<ecs::component::velocity>(m_hero);
-    auto& mvel = m_registry.get<ecs::component::max_velocity>(m_hero);
-    auto& acc = m_registry.get<ecs::component::acceleration>(m_hero);
-    auto& dir = m_registry.get<ecs::component::direction>(m_hero);
-
-    // clang-format off
-    glm::vec2 move_direction = {0.f, 0.f};
-    if(input.isHeld(GLFW_KEY_A)) { move_direction.x -= 1.f; }
-    if(input.isHeld(GLFW_KEY_D)) { move_direction.x += 1.f; }
-    if(input.isHeld(GLFW_KEY_W)) { move_direction.y += 1.f; }
-    if(input.isHeld(GLFW_KEY_S)) { move_direction.y -= 1.f; }
-
-    auto length = glm::length(move_direction);
-    if(length > 0.f)
+    if(m_registry.valid(m_hero))
     {
-        float target_direction = std::atan2(move_direction.y, move_direction.x);
-        dir.data = target_direction;
+        // clang-format off
+        auto& delta_time = ResourceManager::timer->deltaTime();
+        auto& pos = m_registry.get<ecs::component::position>(m_hero);
+        auto& vel = m_registry.get<ecs::component::velocity>(m_hero);
+        auto& mvel = m_registry.get<ecs::component::max_velocity>(m_hero);
+        auto& acc = m_registry.get<ecs::component::acceleration>(m_hero);
+        auto& dir = m_registry.get<ecs::component::direction>(m_hero);
 
-        vel += acc * delta_time;
-        if(vel > mvel)
-        {
-            vel.data = mvel;
-        }
-    }
-    else
-    {
-        vel -= acc * delta_time;
-        if(vel < 0.f)
-        {
-            vel.data = 0.f;
-        }
-    }
-    pos.x += vel * glm::cos(dir) * delta_time;
-    pos.y += vel * glm::sin(dir) * delta_time;
+        
+        glm::vec2 move_direction = {0.f, 0.f};
+        if(input.isHeld(GLFW_KEY_A)) { move_direction.x -= 1.f; }
+        if(input.isHeld(GLFW_KEY_D)) { move_direction.x += 1.f; }
+        if(input.isHeld(GLFW_KEY_W)) { move_direction.y += 1.f; }
+        if(input.isHeld(GLFW_KEY_S)) { move_direction.y -= 1.f; }
 
+        auto length = glm::length(move_direction);
+        if(length > 0.f)
+        {
+            float target_direction = std::atan2(move_direction.y, move_direction.x);
+            dir.data = target_direction;
+
+            vel += acc * delta_time;
+            if(vel > mvel)
+            {
+                vel.data = mvel;
+            }
+        }
+        else
+        {
+            vel -= acc * delta_time;
+            if(vel < 0.f)
+            {
+                vel.data = 0.f;
+            }
+        }
+        pos.x += vel * glm::cos(dir) * delta_time;
+        pos.y += vel * glm::sin(dir) * delta_time;
+    }
     // clang-format on
 }
 
