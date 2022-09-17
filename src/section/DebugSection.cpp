@@ -108,8 +108,10 @@ DebugSection::DebugSection()
     // ecs
     m_registry.emplace<ecs::component::position>(m_hero);
     m_registry.emplace<ecs::component::velocity>(m_hero);
+    m_registry.emplace<ecs::component::max_velocity>(m_hero);
     m_registry.emplace<ecs::component::acceleration>(m_hero);
     m_registry.emplace<ecs::component::rotation>(m_hero);
+    m_registry.emplace<ecs::component::direction>(m_hero);
 }
 
 DebugSection::~DebugSection()
@@ -129,39 +131,47 @@ void DebugSection::update() noexcept
     auto& input = InputManager::get();
     if(input.isPressedOnce(GLFW_KEY_ESCAPE))
     {
-        spdlog::debug("Lets pop some sections");
         SectionManager::get().popSection();
-    }
-    glm::vec2 move_direction = {0.f, 0.f};
-    if(input.isHeld(GLFW_KEY_A))
-    {
-        move_direction.x -= 1.f;
-    }
-    if(input.isHeld(GLFW_KEY_D))
-    {
-        move_direction.x += 1.f;
-    }
-    if(input.isHeld(GLFW_KEY_W))
-    {
-        move_direction.y += 1.f;
-    }
-    if(input.isHeld(GLFW_KEY_S))
-    {
-        move_direction.y -= 1.f;
     }
 
     auto& delta_time = ResourceManager::timer->deltaTime();
     auto& pos = m_registry.get<ecs::component::position>(m_hero);
     auto& vel = m_registry.get<ecs::component::velocity>(m_hero);
+    auto& mvel = m_registry.get<ecs::component::max_velocity>(m_hero);
     auto& acc = m_registry.get<ecs::component::acceleration>(m_hero);
-    if(move_direction.x != 0.f || move_direction.y != 0.f)
+    auto& dir = m_registry.get<ecs::component::direction>(m_hero);
+
+    // clang-format off
+    glm::vec2 move_direction = {0.f, 0.f};
+    if(input.isHeld(GLFW_KEY_A)) { move_direction.x -= 1.f; }
+    if(input.isHeld(GLFW_KEY_D)) { move_direction.x += 1.f; }
+    if(input.isHeld(GLFW_KEY_W)) { move_direction.y += 1.f; }
+    if(input.isHeld(GLFW_KEY_S)) { move_direction.y -= 1.f; }
+
+    auto length = glm::length(move_direction);
+    if(length > 0.f)
     {
-        vel.m_velocity = glm::min(vel + acc * delta_time, vel.m_maxVelocity * delta_time);
-        const auto shift_x = move_direction.x * vel.m_velocity * delta_time;
-        const auto shift_y = move_direction.y * vel.m_velocity * delta_time;
-        pos.m_position.x += shift_x;
-        pos.m_position.y += shift_y;
+        float target_direction = std::atan2(move_direction.y, move_direction.x);
+        dir.data = target_direction;
+
+        vel += acc * delta_time;
+        if(vel > mvel)
+        {
+            vel.data = mvel;
+        }
     }
+    else
+    {
+        vel -= acc * delta_time;
+        if(vel < 0.f)
+        {
+            vel.data = 0.f;
+        }
+    }
+    pos.x += vel * glm::cos(dir) * delta_time;
+    pos.y += vel * glm::sin(dir) * delta_time;
+
+    // clang-format on
 }
 
 void DebugSection::render() noexcept
@@ -177,7 +187,7 @@ void DebugSection::render() noexcept
     Renderer::drawQuad({-46.f, 0.f}, {1.f, 1.f}, 90.f, firstTexture, {1.f, 1.f, 1.f, 1.f});
 
     const auto& [pos, rot, vel, acc] = m_registry.get<ecs::component::position, ecs::component::rotation, ecs::component::velocity, ecs::component::acceleration>(m_hero);
-    Renderer::drawQuad(pos.m_position, {0.6f, 0.6f}, rot.m_rotation, {1.f, 0.f, 0.f, 1.f});
+    Renderer::drawQuad({pos.x, pos.y}, {0.6f, 0.6f}, rot, {1.f, 0.f, 0.f, 1.f});
     Renderer::endBatch();
     ShaderManager::getShader("quad").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 0);
     ShaderManager::getShader("quad").uploadMat4("uView", m_camera.getViewMatrix(), 1);
@@ -205,7 +215,7 @@ void DebugSection::render() noexcept
         const auto mouse_world_pos = this->mouseScreenPosToWorldPos(mouse_screen_pos, m_camera);
         ImGui::Text("mouse screen position: (%f, %f)", mouse_screen_pos.x, mouse_screen_pos.y);
         ImGui::Text("mouse world position: (%f, %f)", mouse_world_pos.x, mouse_world_pos.y);
-        ImGui::Text("hero: pos(%f, %f), vel(%f), acc(%f)", pos.m_position.x, pos.m_position.y, vel.m_velocity, acc.m_acceleration);
+        ImGui::Text("hero: pos(%.2f, %.2f), vel(%.2f), acc(%.2f)", pos.x, pos.y, vel.data, acc.data);
 
         // if(ImGui::Button("Calculate matrices"))
         // {

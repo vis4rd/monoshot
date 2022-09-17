@@ -6,33 +6,52 @@ namespace ecs::component
 {
 // clang-format off
 
-struct position
+namespace impl
 {
-    glm::vec2 m_position = {};
-    position(glm::vec2 position = {}) : m_position(position) { }
-    operator glm::vec2&() { return m_position; }
+    template <typename T>
+    class ImplicitConversionsInterface
+    {
+        public:
+        ImplicitConversionsInterface(const T& val) : data(val) { }
+        ImplicitConversionsInterface() : ImplicitConversionsInterface(static_cast<T>(0)) { }
+        operator T&() { return data; }
+        operator const T&() const { return data; }
+        operator T() const { return data; }
+
+        public:
+        T data;
+    };
+    // TODO: replace this with 'scalar' base class with all operators overloaded
+}
+
+struct position : public glm::vec2
+{
+
 };
 
-struct rotation
+struct rotation : public impl::ImplicitConversionsInterface<float>
 {
-    float m_rotation = 0.f;
-    rotation(float rotation = 0.f) : m_rotation(rotation) { }
-    operator float&() { return m_rotation; }
+
 };
 
-struct velocity
+struct velocity : public impl::ImplicitConversionsInterface<float>
 {
-    float m_velocity = 0.f;
-    float m_maxVelocity = 100.f;
-    velocity(float velocity = 0.f) : m_velocity(velocity) { }
-    operator float&() { return m_velocity; }
+
 };
 
-struct acceleration
+struct max_velocity : public impl::ImplicitConversionsInterface<float>
 {
-    float m_acceleration = 1.f;
-    acceleration(float acceleration = 1.f) : m_acceleration(acceleration) { }
-    operator float&() { return m_acceleration; }
+    max_velocity() : impl::ImplicitConversionsInterface<float>(10.f) { }
+};
+
+struct acceleration : public impl::ImplicitConversionsInterface<float>
+{
+    acceleration() : impl::ImplicitConversionsInterface<float>(100.f) { }
+};
+
+struct direction : public impl::ImplicitConversionsInterface<float> // direction of movement in degrees
+{
+
 };
 
 // clang-format on
