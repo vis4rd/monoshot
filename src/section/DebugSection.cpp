@@ -112,6 +112,8 @@ DebugSection::DebugSection()
     m_registry.emplace<ecs::component::acceleration>(m_hero);
     m_registry.emplace<ecs::component::rotation>(m_hero);
     m_registry.emplace<ecs::component::direction>(m_hero);
+
+    m_mapGrid.addTilesToRegistry(m_registry);
 }
 
 DebugSection::~DebugSection()
@@ -146,12 +148,34 @@ void DebugSection::update() noexcept
         auto& acc = m_registry.get<ecs::component::acceleration>(m_hero);
         auto& dir = m_registry.get<ecs::component::direction>(m_hero);
         auto& rot = m_registry.get<ecs::component::rotation>(m_hero);
+
+        // sort map tiles by distance to the hero
+        m_registry.sort<ecs::component::position>([&pos](const auto& lhs, const auto& rhs)
+        {
+            return glm::abs(glm::length(lhs-pos)) < glm::abs(glm::length(rhs-pos));
+        });
         
+        // poll next move events
         glm::vec2 move_direction = {0.f, 0.f};
         if(input.isHeld(GLFW_KEY_A)) { move_direction.x -= 1.f; }
         if(input.isHeld(GLFW_KEY_D)) { move_direction.x += 1.f; }
         if(input.isHeld(GLFW_KEY_W)) { move_direction.y += 1.f; }
         if(input.isHeld(GLFW_KEY_S)) { move_direction.y -= 1.f; }
+
+        // forbid moving into solid tiles
+        const auto view = m_registry.view<ecs::component::position>();
+        for(std::int32_t iter = 0; const auto& tile : view)
+        {
+            if(iter >= 4)
+            {
+                break;
+            }
+            const auto& pos = view.get<ecs::component::position>(tile);
+            // TODO: calculate actual border poisitons of tiles
+            // TODO: set proper mode_directions to 0 if there is a collision
+
+            iter++;
+        }
 
         // calculate velocity and next position
         auto length = glm::length(move_direction);
@@ -185,8 +209,9 @@ void DebugSection::update() noexcept
         const glm::vec2 mouse_screen_pos = ResourceManager::window->getMousePosition();
         const auto mouse_world_pos = this->mouseScreenPosToWorldPos(mouse_screen_pos, m_camera);
         rot.data = glm::degrees(std::atan2(mouse_world_pos.y - pos.y, mouse_world_pos.x - pos.x));
+
+        // clang-format on
     }
-    // clang-format on
 }
 
 void DebugSection::render() noexcept
