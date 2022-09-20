@@ -1,5 +1,6 @@
 #include "../../include/map/Map.hpp"
 #include "../../include/renderer/Renderer.hpp"
+#include "../../include/ecs/systems.hpp"
 
 #include <numeric>
 
@@ -45,7 +46,7 @@ const std::vector<std::shared_ptr<Texture2D>>& Map::getTextures() const
     return m_textures;
 }
 
-const void Map::setTile(const Tile& tile)
+void Map::setTile(const Tile& tile)
 {
     spdlog::trace("Map: Placing a tile with coords ({}, {}), rotation {}, tex_index {}", tile.x, tile.y, tile.rotation, tile.textureIndex);
     this->calculateNewSize(tile.x, tile.y);
@@ -54,7 +55,7 @@ const void Map::setTile(const Tile& tile)
     spdlog::trace("Map: Finished placing a tile");
 }
 
-const void Map::setTile(const float& x, const float& y, const float& rotation, const std::size_t& tex_index, const bool& solid)
+void Map::setTile(const float& x, const float& y, const float& rotation, const std::size_t& tex_index, const bool& solid)
 {
     Tile new_tile;
     new_tile.x = std::round(x);
@@ -63,6 +64,24 @@ const void Map::setTile(const float& x, const float& y, const float& rotation, c
     new_tile.textureIndex = tex_index;
     new_tile.solid = solid;
     this->setTile(new_tile);
+}
+
+void Map::addTilesToRegistry(entt::registry& registry) const
+{
+    for(const auto& tile : m_tiles)
+    {
+        if(tile.solid == false)
+        {
+            continue;
+        }
+        auto entity = registry.create();
+        auto& pos = registry.emplace<ecs::component::position>(entity);
+        auto& rot = registry.emplace<ecs::component::rotation>(entity);
+
+        pos.x = tile.x;
+        pos.y = tile.y;
+        rot.data = tile.rotation;
+    }
 }
 
 void Map::emplaceTexture(const std::int32_t& width, const std::int32_t& height, const std::string& source_path, const std::int32_t& channel_count)
