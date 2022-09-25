@@ -3,6 +3,7 @@
 #include "../../include/renderer/Renderer.hpp"
 #include "../../include/utility/ResourceManager.hpp"
 #include "../../include/ecs/systems.hpp"
+#include "../../include/utility/Collisions.hpp"
 
 #include <stb_image.h>
 
@@ -79,7 +80,6 @@ DebugSection::DebugSection()
             m_mapGrid.emplaceTexture(16, 16, file.path().string());
         }
     }
-    ////
 
     // glm::vec3 first = {vertices[0], vertices[1], vertices[2]};
     // glm::vec3 second = {vertices[3], vertices[4], vertices[5]};
@@ -142,12 +142,12 @@ void DebugSection::update() noexcept
     {
         // clang-format off
         auto& delta_time = ResourceManager::timer->deltaTime();
-        auto& pos = m_registry.get<ecs::component::position>(m_hero);
-        auto& vel = m_registry.get<ecs::component::velocity>(m_hero);
-        auto& mvel = m_registry.get<ecs::component::max_velocity>(m_hero);
-        auto& acc = m_registry.get<ecs::component::acceleration>(m_hero);
-        auto& dir = m_registry.get<ecs::component::direction>(m_hero);
-        auto& rot = m_registry.get<ecs::component::rotation>(m_hero);
+        glm::vec2& pos = m_registry.get<ecs::component::position>(m_hero);
+        float& vel = m_registry.get<ecs::component::velocity>(m_hero);
+        float& mvel = m_registry.get<ecs::component::max_velocity>(m_hero);
+        float& acc = m_registry.get<ecs::component::acceleration>(m_hero);
+        glm::vec2& dir = m_registry.get<ecs::component::direction>(m_hero);
+        float& rot = m_registry.get<ecs::component::rotation>(m_hero);
 
         // sort map tiles by distance to the hero
         m_registry.sort<ecs::component::position>([&pos](const auto& lhs, const auto& rhs)
@@ -157,58 +157,115 @@ void DebugSection::update() noexcept
         
         // poll next move events
         glm::vec2 move_direction = {0.f, 0.f};
-        if(input.isHeld(GLFW_KEY_A)) { move_direction.x -= 1.f; }
-        if(input.isHeld(GLFW_KEY_D)) { move_direction.x += 1.f; }
-        if(input.isHeld(GLFW_KEY_W)) { move_direction.y += 1.f; }
-        if(input.isHeld(GLFW_KEY_S)) { move_direction.y -= 1.f; }
+        if(input.isHeld(GLFW_KEY_A) || input.isPressedOnce(GLFW_KEY_LEFT)) { move_direction.x -= 1.f; }
+        if(input.isHeld(GLFW_KEY_D) || input.isPressedOnce(GLFW_KEY_RIGHT)) { move_direction.x += 1.f; }
+        if(input.isHeld(GLFW_KEY_W) || input.isPressedOnce(GLFW_KEY_UP)) { move_direction.y += 1.f; }
+        if(input.isHeld(GLFW_KEY_S) || input.isPressedOnce(GLFW_KEY_DOWN)) { move_direction.y -= 1.f; }
 
-        // forbid moving into solid tiles
-        const auto view = m_registry.view<ecs::component::position>();
-        for(std::int32_t iter = 0; const auto& tile : view)
+        if(move_direction != glm::vec2(0.f, 0.f))
         {
-            if(iter >= 4)
+            // calculate velocity and next position
+            auto length = glm::length(move_direction);
+            if(length > 0.f)
             {
-                break;
+                dir = move_direction;
+
+                vel += acc * delta_time;
+                if(vel > mvel)
+                {
+                    vel = mvel;
+                }
             }
-            const auto& pos = view.get<ecs::component::position>(tile);
-            // TODO: calculate actual border poisitons of tiles
-            // TODO: set proper mode_directions to 0 if there is a collision
+            auto next_pos = pos + vel * dir * static_cast<float>(delta_time);
 
-            iter++;
-        }
-
-        // calculate velocity and next position
-        auto length = glm::length(move_direction);
-        if(length > 0.f)
-        {
-            float target_direction = std::atan2(move_direction.y, move_direction.x);
-            dir.data = target_direction;
-
-            vel += acc * delta_time;
-            if(vel > mvel)
+            // forbid moving into solid tiles
+            const auto view = m_registry.view<ecs::component::position>();
+            bool is_collision = false;
+            const auto signum = [](const float& val) -> float
             {
-                vel.data = mvel;
+                if(val < 0.f)
+                {
+                    return -1.f;
+                }
+                else if(val > 0.f)
+                {
+                    return 1.f;
+                }
+                else
+                {
+                    return 0.f;
+                }
+            };
+            for(std::int32_t iter = 0; const auto& tile : view)
+            {
+                if(tile == m_hero)
+                {
+                    continue;
+                }
+                if(iter >= 4)
+                {
+                    break;
+                }
+                const auto& tile_pos = view.get<ecs::component::position>(tile);
+                const auto& tile_rot = 0.f;
+
+                const auto intersection = AABB::findCollision(next_pos, {0.6f, 0.6f}, tile_pos, {1.f, 1.f});
+                if(intersection != glm::vec2{0.f, 0.f})
+                {
+                    // spdlog::debug("INTERSECTION: pos = ({}, {})", pos.x, pos.y);
+                    // spdlog::debug("INTERSECTION: next_pos = ({}, {})", next_pos.x, next_pos.y);
+                    // spdlog::debug("INTERSECTION: intersection = ({}, {})", intersection.x, intersection.y);
+                    // spdlog::debug("INTERSECTION: velocity = {}", vel);
+                    // spdlog::debug("INTERSECTION: dir = ({}, {})", dir.x, dir.y);
+
+                    glm::vec2 center_diff = glm::abs(tile_pos - pos);  // TODO: scale it by sizes of both rectangles
+                    if(center_diff.x >= center_diff.y)  // collision is horizontal
+                    {
+                        // spdlog::debug("INTERSECTION: collision is horizontal");
+                        next_pos.x = next_pos.x - intersection.x * signum(dir.x);
+                        // next_pos.y = pos.y;  // TODO: cut by the factor of how much shorter is the x movement
+                                                //? (this is probably the cause of this stuttering)
+                        // spdlog::debug("INTERSECTION: updated next_pos = ({}, {})", next_pos.x, next_pos.y);
+                        dir.x = 0.f;
+                        // spdlog::debug("INTERSECTION: updated dir = ({}, {})", dir.x, dir.y);
+                        // spdlog::debug("INTERSECTION: updated velocity = {}", vel);
+                    }
+                    else
+                    {
+                        // spdlog::debug("INTERSECTION: collision is vertical");
+                        next_pos.y = next_pos.y - intersection.y * signum(dir.y);
+                        // next_pos.x = pos.x;  // TODO: cut by the factor of how much shorter is the y movement
+                                                //? (this is probably the cause of this stuttering)
+                        // spdlog::debug("INTERSECTION: updated next_pos = ({}, {})", next_pos.x, next_pos.y);
+                        dir.y = 0.f;
+                        // spdlog::debug("INTERSECTION: updated dir = ({}, {})", dir.x, dir.y);
+                        // spdlog::debug("INTERSECTION: updated velocity = {}", vel);
+                    }
+                    // spdlog::debug("INTERSECTION: intersection * dir = ({}, {})", intersection.x * std::abs(dir.x), intersection.y * std::abs(dir.y));
+                }
+                
+                iter++;
             }
+            
+            pos = next_pos;
+
+            // make camera follow main hero
+            m_camera.setPosition({pos, m_camera.getPosition().z});
+            m_camera.setTarget({pos, 0.f});
         }
         else
         {
             vel -= acc * delta_time;
             if(vel < 0.f)
             {
-                vel.data = 0.f;
+                vel = 0.f;
             }
         }
-        pos.x += vel * glm::cos(dir) * delta_time;
-        pos.y += vel * glm::sin(dir) * delta_time;
-
-        // make camera follow main hero
-        m_camera.setPosition({pos, m_camera.getPosition().z});
-        m_camera.setTarget({pos, 0.f});
 
         // calculate main hero rotation after mouse cursor
         const glm::vec2 mouse_screen_pos = ResourceManager::window->getMousePosition();
         const auto mouse_world_pos = this->mouseScreenPosToWorldPos(mouse_screen_pos, m_camera);
-        rot.data = glm::degrees(std::atan2(mouse_world_pos.y - pos.y, mouse_world_pos.x - pos.x));
+        rot = glm::degrees(std::atan2(mouse_world_pos.y - pos.y, mouse_world_pos.x - pos.x));
 
         // clang-format on
     }
