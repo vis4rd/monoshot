@@ -81,6 +81,7 @@ void Map::addTilesToRegistry(entt::registry& registry) const
         pos.x = tile.x;
         pos.y = tile.y;
         rot.data = tile.rotation;
+        spdlog::debug("Filling ECS registry with tile pos = ({}, {}), rot = {}", pos.x, pos.y, rot.data);
     }
 }
 
