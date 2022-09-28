@@ -7,6 +7,9 @@
 
 #include <stb_image.h>
 
+constexpr glm::vec2 hero_size = {1.2f, 0.6f};
+constexpr glm::vec2 tile_size = {1.f, 1.f};
+
 DebugSection::DebugSection()
     : Section(),
       // VAO(),
@@ -209,39 +212,31 @@ void DebugSection::update() noexcept
                 const auto& tile_pos = view.get<ecs::component::position>(tile);
                 const auto& tile_rot = 0.f;
 
-                const auto intersection = AABB::findCollision(next_pos, {0.6f, 0.6f}, tile_pos, {1.f, 1.f});
-                if(intersection != glm::vec2{0.f, 0.f})
+                const auto intersection = AABB::findCollision(next_pos, hero_size, tile_pos, tile_size);
+                if(intersection.x > 0.f && intersection.y > 0.f)
                 {
-                    // spdlog::debug("INTERSECTION: pos = ({}, {})", pos.x, pos.y);
-                    // spdlog::debug("INTERSECTION: next_pos = ({}, {})", next_pos.x, next_pos.y);
-                    // spdlog::debug("INTERSECTION: intersection = ({}, {})", intersection.x, intersection.y);
-                    // spdlog::debug("INTERSECTION: velocity = {}", vel);
-                    // spdlog::debug("INTERSECTION: dir = ({}, {})", dir.x, dir.y);
+                    glm::vec2 center_diff = glm::abs(tile_pos - pos);
+                    glm::vec2 sum_of_sizes = hero_size + tile_size;
+                    glm::vec2 ncd = center_diff / (sum_of_sizes / 2.f);  // normalized center difference
+                    // glm::vec2 nss = glm::normalize(sum_of_sizes);  // normalized sum of sizes
 
-                    glm::vec2 center_diff = glm::abs(tile_pos - pos);  // TODO: scale it by sizes of both rectangles
-                    if(center_diff.x >= center_diff.y)  // collision is horizontal
+                    if(center_diff.x * std::abs(ncd.x) > center_diff.y * std::abs(ncd.y))  // collision is horizontal
+                    //? consider multiplying both by nss.x and nss.y
                     {
-                        // spdlog::debug("INTERSECTION: collision is horizontal");
                         next_pos.x = next_pos.x - intersection.x * signum(dir.x);
                         // next_pos.y = pos.y;  // TODO: cut by the factor of how much shorter is the x movement
                                                 //? (this is probably the cause of this stuttering)
-                        // spdlog::debug("INTERSECTION: updated next_pos = ({}, {})", next_pos.x, next_pos.y);
+                                                // currently it is not really necessary as incorrect offset values are truly minimal
                         dir.x = 0.f;
-                        // spdlog::debug("INTERSECTION: updated dir = ({}, {})", dir.x, dir.y);
-                        // spdlog::debug("INTERSECTION: updated velocity = {}", vel);
                     }
-                    else
+                    else  // collision is vertical
                     {
-                        // spdlog::debug("INTERSECTION: collision is vertical");
                         next_pos.y = next_pos.y - intersection.y * signum(dir.y);
                         // next_pos.x = pos.x;  // TODO: cut by the factor of how much shorter is the y movement
                                                 //? (this is probably the cause of this stuttering)
-                        // spdlog::debug("INTERSECTION: updated next_pos = ({}, {})", next_pos.x, next_pos.y);
+                                                // currently it is not really necessary as incorrect offset values are truly minimal
                         dir.y = 0.f;
-                        // spdlog::debug("INTERSECTION: updated dir = ({}, {})", dir.x, dir.y);
-                        // spdlog::debug("INTERSECTION: updated velocity = {}", vel);
                     }
-                    // spdlog::debug("INTERSECTION: intersection * dir = ({}, {})", intersection.x * std::abs(dir.x), intersection.y * std::abs(dir.y));
                 }
                 
                 iter++;
@@ -277,14 +272,14 @@ void DebugSection::render() noexcept
     m_mapGrid.render();
 
     Renderer::beginBatch();
-    Renderer::drawQuad({0.f, 10.f}, {1.f, 1.f}, 0.f, {1.f, 0.5f, 0.5f, 1.f});
-    Renderer::drawQuad({0.f, 8.f}, {1.f, 1.f}, 0.f, {1.f, 0.5f, 0.5f, 1.f});
-    Renderer::drawQuad({9.f, 12.f}, {1.f, 1.f}, 45.f, {1.f, 0.5f, 0.5f, 1.f});
-    Renderer::drawQuad({1.f, -1.f}, {1.f, 1.f}, 45.f, firstTexture, {1.f, 1.f, 1.f, 1.f});
-    Renderer::drawQuad({-46.f, 0.f}, {1.f, 1.f}, 90.f, firstTexture, {1.f, 1.f, 1.f, 1.f});
+    // Renderer::drawQuad({0.f, 10.f}, tile_size, 0.f, {1.f, 0.5f, 0.5f, 1.f});
+    // Renderer::drawQuad({0.f, 8.f}, tile_size, 0.f, {1.f, 0.5f, 0.5f, 1.f});
+    // Renderer::drawQuad({9.f, 12.f}, tile_size, 45.f, {1.f, 0.5f, 0.5f, 1.f});
+    // Renderer::drawQuad({1.f, -1.f}, tile_size, 45.f, firstTexture, {1.f, 1.f, 1.f, 1.f});
+    // Renderer::drawQuad({-46.f, 0.f}, tile_size, 90.f, firstTexture, {1.f, 1.f, 1.f, 1.f});
 
     const auto& [pos, rot, vel, acc] = m_registry.get<ecs::component::position, ecs::component::rotation, ecs::component::velocity, ecs::component::acceleration>(m_hero);
-    Renderer::drawQuad({pos.x, pos.y}, {0.6f, 0.6f}, rot, {1.f, 0.f, 0.f, 1.f});
+    Renderer::drawQuad({pos.x, pos.y}, hero_size, rot, {1.f, 0.f, 0.f, 1.f});
     Renderer::endBatch();
     ShaderManager::getShader("quad").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 0);
     ShaderManager::getShader("quad").uploadMat4("uView", m_camera.getViewMatrix(), 1);
