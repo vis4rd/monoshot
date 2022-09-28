@@ -96,14 +96,7 @@ glm::vec2 findCollision(const glm::vec2& pos1, const glm::vec2& size1, const glm
     const float inter_right = glm::min(pos1.x + size1.x / 2.f, pos2.x + size2.x / 2.f);
     const float inter_top = glm::min(pos1.y + size1.y / 2.f, pos2.y + size2.y / 2.f);
 
-    if((inter_left < inter_right) && (inter_bottom < inter_top))
-    {
-        return {inter_right - inter_left, inter_top - inter_bottom};
-    }
-    else
-    {
-        return {0.f, 0.f};
-    }
+    return {inter_right - inter_left, inter_top - inter_bottom};
 }
 
 }  // namespace AABB
