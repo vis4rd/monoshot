@@ -1,1 +1,1 @@
-# opengl_project_template
+# opengl_testing
