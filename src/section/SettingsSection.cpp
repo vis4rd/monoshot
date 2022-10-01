@@ -18,14 +18,15 @@ SettingsSection::SettingsSection()
         });
 }
 
-void SettingsSection::update() noexcept { }
-
-void SettingsSection::render() noexcept
+void SettingsSection::update() noexcept
 {
     const ImGuiViewport& main_viewport = *ImGui::GetMainViewport();
     m_layout.update(main_viewport.WorkPos, main_viewport.WorkSize);
     m_navLayout.update(main_viewport.WorkPos, main_viewport.WorkSize);
+}
 
+void SettingsSection::render() noexcept
+{
     ImGui::SetNextWindowPos({m_layout.menu_x, m_layout.menu_y});
     ImGui::SetNextWindowSize({m_layout.menu_w, m_layout.menu_h});
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {m_layout.button_w_s, m_layout.button_h_s});
@@ -38,9 +39,8 @@ void SettingsSection::render() noexcept
         ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s, m_layout.menu_y + m_layout.button_h_s});
         if(Custom::ImGui::BeginCombo("Resolution", current_resolution.c_str(), {m_layout.button_w, m_layout.button_h}))
         {
-            // const auto* modes = glfwGetVideoModes(glfwGetPrimaryMonitor(), &mode_count);
             const auto resolutions = ResourceManager::window->queryMonitorResolutions();
-            int32_t mode_count = resolutions.size();
+            const int32_t mode_count = resolutions.size();
 
             std::vector<bool> states(mode_count);
             for(int32_t i = 0; i < mode_count; i++)
@@ -57,6 +57,8 @@ void SettingsSection::render() noexcept
             ImGui::EndCombo();
         }
 
+        const auto next_y = ImGui::GetCursorScreenPos().y;
+        ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s, next_y});
         if(ImGui::Button("Button 1", {m_layout.button_w, m_layout.button_h}))
         {
             spdlog::debug("Clicking Button 1");
