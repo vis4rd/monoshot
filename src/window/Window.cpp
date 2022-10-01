@@ -15,7 +15,6 @@ Window::Window(const std::string &title, std::uint32_t width, std::uint32_t heig
     spdlog::info("Creating window instance");
 
     this->initImGui();
-    this->initKeybinds();
 
     this->setFullscreen(fullscreen);
     this->setVerticalSync(vsync);
@@ -36,34 +35,16 @@ Window::Window(const std::string &title, std::uint32_t width, std::uint32_t heig
 
     ShaderManager::addShaderProgram("../res/shaders", "screen");
 
-    // glfwSetWindowSizeCallback(m_window,
-    //     [](GLFWwindow *window, int new_width, int new_height) -> void
-    //     {
-    //         spdlog::debug("New window size = {}x{} in screen coordinates", new_width, new_height);
-    //         glViewport(0, 0, new_width, new_height);
-    //     });
-
-    spdlog::debug("Is m_window a nullptr? {}", m_window == nullptr);
-    glfwSetFramebufferSizeCallback(m_window,
+    // update internal size tracking for UI and framebuffer size when user resizes the window
+    glfwSetWindowSizeCallback(m_window,
         [](GLFWwindow *window, int new_width, int new_height) -> void
         {
+            spdlog::debug("New window size = {}x{} in screen coordinates", new_width, new_height);
             auto &_this = ResourceManager::window;
-            _this->setSize({new_width, new_height});
+            _this->m_width = new_width;
+            _this->m_height = new_height;
             _this->setFramebufferSize({new_width, new_height});
         });
-
-    // glfwSetWindowMaximizeCallback(m_window,
-    //     [](GLFWwindow *window, int maximized) -> void
-    //     {
-    //         auto _this = static_cast<Window *>(glfwGetWindowUserPointer(window));
-    //         _this->setSize({new_width, new_height});
-    //     });
-
-    // glfwSetWindowContentScaleCallback(m_window,
-    //     [](GLFWwindow *window, float xscale, float yscale)
-    //     {
-    //         // set_interface_scale(xscale, yscale);
-    //     });
 }
 
 Window::~Window()
@@ -132,17 +113,16 @@ void Window::setFullscreen(bool fullscreen)
     const auto hz = NativeWindow::getRefreshRate();
     const auto valid_resolutions = NativeWindow::queryMonitorResolutions();
     const auto monitor = NativeWindow::getCurrentMonitor();
-    const auto video_mode = glfwGetVideoMode(monitor);
     const auto sr = valid_resolutions.front();  // smallest_resolution
     const auto lr = valid_resolutions.back();  // largest_resolution
     m_isFullscreen = fullscreen;
     if(fullscreen)
     {
-        glfwSetWindowMonitor(m_window, monitor, 0, 0, video_mode->width, video_mode->height, hz);
+        glfwSetWindowMonitor(m_window, monitor, GLFW_DONT_CARE, GLFW_DONT_CARE, lr.x, lr.y, hz);
     }
     else
     {
-        glfwSetWindowMonitor(m_window, nullptr, (lr.x - sr.x) / 2.f, (lr.y - sr.y) / 2.f, sr.x, sr.y, hz);
+        glfwSetWindowMonitor(m_window, nullptr, (lr.x - sr.x) / 2.f, (lr.y - sr.y) / 2.f, sr.x, sr.y, GLFW_DONT_CARE);
     }
     this->setVerticalSync(m_isVSyncEnabled);
 }
@@ -174,12 +154,11 @@ void Window::initImGui()
     ImGui::CreateContext();
     auto &io = ImGui::GetIO();
     (void)io;
-    // io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
-    // io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; // Enable Gamepad Controls
+
+    // TODO: disable this functionality in release builds
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;  // Enable Docking
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;  // Enable Multi-Viewport
-    // io.ConfigViewportsNoAutoMerge = true;
-    // io.ConfigViewportsNoTaskBarIcon = true;
+
     m_io = io;
 
     // Setup Dear ImGui style
@@ -188,28 +167,4 @@ void Window::initImGui()
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(m_window, true);
     ImGui_ImplOpenGL3_Init("#version 450");
-}
-
-void Window::initKeybinds()
-{
-    // auto id = m_inputManager.addGroup("window");
-    // m_inputManager.addKeybind(id,
-    //     GLFW_KEY_F11,
-    //     KeyState::PRESS_ONCE,
-    //     [this]
-    //     {
-    //         this->toggleFullscreen();
-    //         spdlog::debug("on F11: window size = {}x{}", m_width, m_height);
-    //         spdlog::debug("on F11: framebuffer size = {}x{}", screenFB.getSize().x, screenFB.getSize().y);
-    //     });
-    // m_inputManager.addKeybind(id,
-    //     GLFW_KEY_ESCAPE,
-    //     KeyState::PRESS_ONCE,
-    //     [&should_close = m_shouldClose]
-    //     {
-    //         if(SectionManager::get().size() == 1)
-    //         {
-    //             should_close = true;
-    //         }
-    //     });
 }

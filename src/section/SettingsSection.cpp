@@ -38,13 +38,15 @@ void SettingsSection::render() noexcept
         ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s, m_layout.menu_y + m_layout.button_h_s});
         if(Custom::ImGui::BeginCombo("Resolution", current_resolution.c_str(), {m_layout.button_w, m_layout.button_h}))
         {
-            int32_t mode_count = 0;
-            const auto* modes = glfwGetVideoModes(glfwGetPrimaryMonitor(), &mode_count);
+            // const auto* modes = glfwGetVideoModes(glfwGetPrimaryMonitor(), &mode_count);
+            const auto resolutions = ResourceManager::window->queryMonitorResolutions();
+            int32_t mode_count = resolutions.size();
+
             std::vector<bool> states(mode_count);
             for(int32_t i = 0; i < mode_count; i++)
             {
-                const auto& temp_w = modes[i].width;
-                const auto& temp_h = modes[i].height;
+                const auto& temp_w = resolutions[i].x;
+                const auto& temp_h = resolutions[i].y;
                 std::string temp_resolution = std::to_string(temp_w) + "x" + std::to_string(temp_h);
                 if(ImGui::Selectable(temp_resolution.c_str(), states[i]))
                 {
@@ -54,7 +56,8 @@ void SettingsSection::render() noexcept
             }
             ImGui::EndCombo();
         }
-        else if(ImGui::Button("Button 1", {m_layout.button_w, m_layout.button_h}))
+
+        if(ImGui::Button("Button 1", {m_layout.button_w, m_layout.button_h}))
         {
             spdlog::debug("Clicking Button 1");
         }

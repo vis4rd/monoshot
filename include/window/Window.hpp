@@ -37,8 +37,6 @@ class Window final : public NativeWindow
     void render(RENDERABLES &&...renderables) noexcept;
 
     private:
-    void initKeybinds();
-    void initFramebuffer();
     void initImGui();
 
     private:
@@ -79,18 +77,15 @@ bool Window::update(UPDATEABLES &&...updateables) noexcept
     glfwPollEvents();
 
     spdlog::trace("Handling inputs");
-    // if(!ImGui::GetIO().WantCaptureMouse)
-    // {
-    //     // m_inputManager.processGroup(m_window, m_sectionManager.topSection().name());
-    //     // m_inputManager.processGroup(m_window, "window");
-    // }
 
     auto &input = InputManager::get();
     if(input.isPressedOnce(GLFW_KEY_F11))
     {
-        this->toggleFullscreen();
         spdlog::debug("on F11: window size = {}x{}", m_width, m_height);
         spdlog::debug("on F11: framebuffer size = {}x{}", screenFB.getSize().x, screenFB.getSize().y);
+        this->toggleFullscreen();
+        spdlog::debug("after F11: window size = {}x{}", m_width, m_height);
+        spdlog::debug("after F11: framebuffer size = {}x{}", screenFB.getSize().x, screenFB.getSize().y);
     }
     if(SectionManager::get().size() == 1)
     {
@@ -131,7 +126,7 @@ void Window::render(RENDERABLES &&...renderables) noexcept
     glViewport(0, 0, screenFB.getSize().x, screenFB.getSize().y);  // set framebuffer viewport to its size
 
     // Render
-    //// Render my own stuff
+    /// Render my own stuff
     if constexpr(sizeof...(renderables) > 0)
     {
         (renderables.render(), ...);
@@ -170,7 +165,7 @@ void Window::render(RENDERABLES &&...renderables) noexcept
         ImGui::End();
     }
 
-    //// Render ImGui (UI) on top
+    /// Render ImGui (UI) on top
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     if(m_io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)

@@ -21,8 +21,6 @@ class NativeWindow
     static GLFWmonitor *getCurrentMonitor();
     static std::pair<const GLFWvidmode *, int> getVideoModes();
     static std::int32_t getRefreshRate();
-
-    protected:
     static std::vector<glm::ivec2> queryMonitorResolutions();
 
     private:
