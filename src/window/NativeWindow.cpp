@@ -120,6 +120,28 @@ std::vector<glm::ivec2> NativeWindow::queryMonitorResolutions()
     return result;
 }
 
+std::vector<std::uint32_t> NativeWindow::queryMonitorRefreshRates()
+{
+    const auto &[video_modes, vm_count] = NativeWindow::getVideoModes();
+    std::vector<std::uint32_t> result;
+    const auto is_already_added = [&result](const auto hz) -> bool
+    {
+        return result.end() != std::find(result.begin(), result.end(), hz);
+    };
+
+    for(int i = 0; i < vm_count; i++)
+    {
+        const auto &vm = video_modes[i];
+        spdlog::debug("Found refresh rate: {}Hz", vm.refreshRate);
+        if(!is_already_added(vm.refreshRate))
+        {
+            result.emplace_back(vm.refreshRate);
+        }
+    }
+    std::sort(result.begin(), result.end());
+    return result;
+}
+
 static void glfwErrorMessageCallback(int error_code, const char *description)
 {
     spdlog::error("[GLFW ERROR {}] {}", error_code, description);

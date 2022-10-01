@@ -22,6 +22,7 @@ class NativeWindow
     static std::pair<const GLFWvidmode *, int> getVideoModes();
     static std::int32_t getRefreshRate();
     static std::vector<glm::ivec2> queryMonitorResolutions();
+    static std::vector<std::uint32_t> queryMonitorRefreshRates();
 
     private:
     void initGLFW();

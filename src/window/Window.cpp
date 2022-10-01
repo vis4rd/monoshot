@@ -145,6 +145,16 @@ void Window::setVerticalSync(bool vsync)
     glfwSwapInterval(static_cast<int>(vsync));
 }
 
+void Window::setRefreshRate(std::uint32_t hz)
+{
+    if(this->isFullscreen())
+    {
+        const auto monitor = NativeWindow::getCurrentMonitor();
+        glfwSetWindowMonitor(m_window, monitor, GLFW_DONT_CARE, GLFW_DONT_CARE, m_width, m_height, hz);
+        this->setVerticalSync(m_isVSyncEnabled);
+    }
+}
+
 void Window::initImGui()
 {
     spdlog::debug("Initializing ImGui");

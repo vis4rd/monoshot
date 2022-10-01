@@ -23,10 +23,10 @@ inline void LowerNavigationBox(const UI::BaseLayout& layout)
             auto& sm = SectionManager::get();
             sm.popSection();
         }
-        else if(ImGui::SameLine(); ImGui::Button("Other option", {layout.button_w, layout.button_h}))
-        {
-            spdlog::debug("Clicking 'Other option'");
-        }
+        // else if(ImGui::SameLine(); ImGui::Button("Other option", {layout.button_w, layout.button_h}))
+        // {
+        //     spdlog::debug("Clicking 'Other option'");
+        // }
     }
     ImGui::End();
     ImGui::PopStyleVar();

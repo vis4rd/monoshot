@@ -27,6 +27,7 @@ class Window final : public NativeWindow
     void setFullscreen(bool fullscreen = true);
     void setMaximized(bool maximized = true);
     void setVerticalSync(bool vsync = true);
+    void setRefreshRate(std::uint32_t hz);
 
     template<typename... UPDATEABLES>
     requires CUpdateablePack<UPDATEABLES...>
