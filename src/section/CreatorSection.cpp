@@ -180,7 +180,7 @@ void CreatorSection::update() noexcept
     }
     if(!ImGui::GetIO().WantCaptureMouse)
     {
-        if(input.isPressedOnce(GLFW_MOUSE_BUTTON_LEFT))
+        if(input.isHeld(GLFW_MOUSE_BUTTON_LEFT))
         {
             // spdlog::debug("Placing a tile: {}, on {} with texture slot '{}'", s_selected_solid ? "solid" : "non-solid", util::vec2str(s_mouse_world_pos), s_selected_texture_index);
             m_map.setTile(s_mouse_world_pos.x, s_mouse_world_pos.y, 0.f, s_selected_texture_index, s_selected_solid);

@@ -51,7 +51,15 @@ void Map::setTile(const Tile& tile)
     spdlog::trace("Map: Placing a tile with coords ({}, {}), rotation {}, tex_index {}", tile.x, tile.y, tile.rotation, tile.textureIndex);
     this->calculateNewSize(tile.x, tile.y);
 
-    m_tiles.push_back(tile);
+    const auto iter = this->findTile(tile.x, tile.y);
+    if(iter != m_tiles.end())
+    {
+        *iter = tile;
+    }
+    else
+    {
+        m_tiles.push_back(tile);
+    }
     spdlog::trace("Map: Finished placing a tile");
 }
 
@@ -68,13 +76,21 @@ void Map::setTile(const float& x, const float& y, const float& rotation, const s
 
 void Map::removeTile(const float& x, const float& y)
 {
-    m_tiles.erase(std::remove_if(m_tiles.begin(),
-                      m_tiles.end(),
-                      [&x, &y](const Tile tile1)
-                      {
-                          return (std::abs(tile1.x - std::round(x)) < 0.1f) && (std::abs(tile1.y - std::round(y)) < 0.1f);
-                      }),
-        m_tiles.end());
+    const auto iter = this->findTile(x, y);
+    if(iter != m_tiles.end())
+    {
+        m_tiles.erase(iter);
+    }
+}
+
+std::vector<Tile>::iterator Map::findTile(const float& x, const float& y)
+{
+    return std::find_if(m_tiles.begin(),
+        m_tiles.end(),
+        [&x, &y](const Tile tile1)
+        {
+            return (std::abs(tile1.x - std::round(x)) < 0.1f) && (std::abs(tile1.y - std::round(y)) < 0.1f);
+        });
 }
 
 void Map::addTilesToRegistry(entt::registry& registry) const
