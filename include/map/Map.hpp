@@ -27,6 +27,7 @@ class Map
 
     virtual void setTile(const Tile& tile) final;
     virtual void setTile(const float& x, const float& y, const float& rotation, const std::size_t& tex_index = 0, const bool& solid = false) final;
+    virtual void removeTile(const float& x, const float& y) final;
     virtual void addTilesToRegistry(entt::registry& registry) const final;
 
     virtual void emplaceTexture(const std::int32_t& width, const std::int32_t& height, const std::string& source_path, const std::int32_t& channel_count = 0) final;

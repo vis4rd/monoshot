@@ -66,6 +66,17 @@ void Map::setTile(const float& x, const float& y, const float& rotation, const s
     this->setTile(new_tile);
 }
 
+void Map::removeTile(const float& x, const float& y)
+{
+    m_tiles.erase(std::remove_if(m_tiles.begin(),
+                      m_tiles.end(),
+                      [&x, &y](const Tile tile1)
+                      {
+                          return (std::abs(tile1.x - std::round(x)) < 0.1f) && (std::abs(tile1.y - std::round(y)) < 0.1f);
+                      }),
+        m_tiles.end());
+}
+
 void Map::addTilesToRegistry(entt::registry& registry) const
 {
     for(const auto& tile : m_tiles)

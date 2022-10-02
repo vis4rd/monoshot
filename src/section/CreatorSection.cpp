@@ -174,6 +174,10 @@ void CreatorSection::update() noexcept
     {
         s_selected_solid = !s_selected_solid;
     }
+    if(input.isHeld(GLFW_KEY_DELETE))
+    {
+        m_map.removeTile(s_mouse_world_pos.x, s_mouse_world_pos.y);
+    }
     if(!ImGui::GetIO().WantCaptureMouse)
     {
         if(input.isPressedOnce(GLFW_MOUSE_BUTTON_LEFT))
