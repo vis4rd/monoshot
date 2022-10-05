@@ -9,7 +9,7 @@
 #include <tuple>
 #include <memory>
 
-// MapTheme's point is to connect textures and colors to blocks
+// MapTheme's point is to associate textures and colors with blocks
 
 struct MapTheme
 {
@@ -20,8 +20,10 @@ struct MapTheme
     Color backgroundColor;
 };
 
+// clang-format off
 static MapTheme FOREST_THEME{
-    .wallBlock = std::make_tuple(Block::Wall, glm::vec4{1.f, 1.f, 1.f,  1.f}
+    .wallBlock = std::make_tuple(Block::Wall, glm::vec4{1.f, 1.f, 1.f, 1.f}
        ),
-    .backgroundColor = {0.f, 1.f, 0.1f, 1.f}
+    .backgroundColor = {53.f / 256.f, 100.f / 256.f, 53.f / 256.f, 1.f}  // 53, 100, 53
 };
+// clang-format on
