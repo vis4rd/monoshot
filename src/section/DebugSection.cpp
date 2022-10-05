@@ -324,6 +324,13 @@ void DebugSection::render() noexcept
         //     model_matrix = glm::scale(model_matrix, scale);
         //     spdlog::debug("After scaling:\n{}", util::mat4str(model_matrix));
         // }
+
+        auto& clear_color = ResourceManager::mapThemeBackgroundColor;
+        float* cc = reinterpret_cast<float*>(&clear_color);
+        if(ImGui::ColorEdit3("clear color", cc))
+        {
+            glClearColor(clear_color.r * clear_color.a, clear_color.g * clear_color.a, clear_color.b * clear_color.a, clear_color.a);
+        }
     }
     ImGui::End();
 }

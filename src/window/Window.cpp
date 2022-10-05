@@ -45,6 +45,9 @@ Window::Window(const std::string &title, std::uint32_t width, std::uint32_t heig
             _this->m_height = new_height;
             _this->setFramebufferSize({new_width, new_height});
         });
+
+    glm::vec4 clear_color = glm::vec4(0.f, 0.f, 0.f, 1.f);
+    glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a);
 }
 
 Window::~Window()

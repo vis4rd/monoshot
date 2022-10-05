@@ -111,7 +111,6 @@ requires CRenderablePack<RENDERABLES...>
 void Window::render(RENDERABLES &&...renderables) noexcept
 {
     static bool show_debug_panel = true;
-    static glm::vec4 clear_color = glm::vec4(0.f, 0.f, 0.f, 1.f);
 
     // Start the Dear ImGui frame
     ImGui_ImplOpenGL3_NewFrame();
@@ -120,7 +119,6 @@ void Window::render(RENDERABLES &&...renderables) noexcept
 
     // Clear previous frame
     screenFB.bind();
-    glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -153,11 +151,6 @@ void Window::render(RENDERABLES &&...renderables) noexcept
         if(ImGui::Checkbox("Toggle fullscreen", &m_isFullscreen))
         {
             this->setFullscreen(m_isFullscreen);
-        }
-
-        if(ImGui::ColorEdit3("clear color", (float *)&clear_color))
-        {
-            glClearColor(clear_color.r * clear_color.a, clear_color.g * clear_color.a, clear_color.b * clear_color.a, clear_color.a);
         }
 
         ImGui::Text("Performance: [%.2fms] [%.0ffps]", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);

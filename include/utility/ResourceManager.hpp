@@ -9,4 +9,5 @@ struct ResourceManager
 {
     static std::shared_ptr<Window> window;
     static std::shared_ptr<Timer> timer;
+    static glm::vec4 mapThemeBackgroundColor;
 };
