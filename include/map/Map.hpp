@@ -2,6 +2,7 @@
 
 #include "../shader/ShaderManager.hpp"
 #include "../texture/Texture2D.hpp"
+#include "MapTheme.hpp"
 
 #include <entt/entity/registry.hpp>
 
@@ -10,7 +11,8 @@ struct Tile
     float x = 0;
     float y = 0;
     float rotation = 0.f;
-    std::size_t textureIndex = 0;
+    // std::size_t textureIndex = 0;
+    Block block;
     bool solid = false;  // indicates if collisions should apply
 };
 
@@ -26,7 +28,7 @@ class Map
     virtual const std::vector<std::shared_ptr<Texture2D>>& getTextures() const final;
 
     virtual void setTile(const Tile& tile) final;
-    virtual void setTile(const float& x, const float& y, const float& rotation, const std::size_t& tex_index = 0, const bool& solid = false) final;
+    virtual void setTile(const float& x, const float& y, const float& rotation, Block block, const bool& solid) final;
     virtual void removeTile(const float& x, const float& y) final;
     virtual std::vector<Tile>::iterator findTile(const float& x, const float& y) final;
     virtual void addTilesToRegistry(entt::registry& registry) const final;
@@ -51,4 +53,5 @@ class Map
     std::int64_t m_centerY = 0;
     std::vector<Tile> m_tiles;
     std::vector<std::shared_ptr<Texture2D>> m_textures;
+    MapTheme& m_theme = FOREST_THEME;
 };

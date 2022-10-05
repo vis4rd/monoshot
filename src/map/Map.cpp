@@ -1,6 +1,7 @@
 #include "../../include/map/Map.hpp"
 #include "../../include/renderer/Renderer.hpp"
 #include "../../include/ecs/systems.hpp"
+#include "../../include/utility/ResourceManager.hpp"
 
 #include <numeric>
 
@@ -14,6 +15,10 @@ Map::Map(const std::size_t& width, const std::size_t& height)
     auto& tex_ptr = m_textures.emplace_back(std::make_shared<Texture2D>(1, 1));
     std::uint32_t tex = 0x00000000;
     tex_ptr->load(reinterpret_cast<std::uint8_t*>(&tex), sizeof(std::uint32_t));
+
+    ResourceManager::mapThemeBackgroundColor = m_theme.backgroundColor;
+    const auto& clear_color = m_theme.backgroundColor;
+    glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a);
 }
 
 Map::~Map()
@@ -48,7 +53,8 @@ const std::vector<std::shared_ptr<Texture2D>>& Map::getTextures() const
 
 void Map::setTile(const Tile& tile)
 {
-    spdlog::trace("Map: Placing a tile with coords ({}, {}), rotation {}, tex_index {}", tile.x, tile.y, tile.rotation, tile.textureIndex);
+    // spdlog::trace("Map: Placing a tile with coords ({}, {}), rotation {}, tex_index {}", tile.x, tile.y, tile.rotation, tile.textureIndex);
+    spdlog::trace("Map: Placing a tile with coords ({}, {}), rotation {}, block {}", tile.x, tile.y, tile.rotation, tile.block);
     this->calculateNewSize(tile.x, tile.y);
 
     const auto iter = this->findTile(tile.x, tile.y);
@@ -63,13 +69,13 @@ void Map::setTile(const Tile& tile)
     spdlog::trace("Map: Finished placing a tile");
 }
 
-void Map::setTile(const float& x, const float& y, const float& rotation, const std::size_t& tex_index, const bool& solid)
+void Map::setTile(const float& x, const float& y, const float& rotation, Block block, const bool& solid)
 {
     Tile new_tile;
     new_tile.x = std::round(x);
     new_tile.y = std::round(y);
     new_tile.rotation = rotation;
-    new_tile.textureIndex = tex_index;
+    new_tile.block = block;
     new_tile.solid = solid;
     this->setTile(new_tile);
 }
@@ -146,14 +152,15 @@ void Map::loadFromFile(const std::string& filename)
     float tile_x = 0;
     float tile_y = 0;
     float tile_rotation = 0.f;
-    std::size_t tile_textureIndex = 0;
+    // std::size_t tile_textureIndex = 0;
+    std::size_t tile_block = 0;
     bool tile_solid = false;
 
     std::size_t line_count = 0;
-    while(file_buffer >> tile_x >> tile_y >> tile_rotation >> tile_textureIndex >> tile_solid)
+    while(file_buffer >> tile_x >> tile_y >> tile_rotation >> tile_block >> tile_solid)
     {
-        spdlog::trace("file buffer >> {} >> {} >> {} >> {} >> {}", tile_x, tile_y, tile_rotation, tile_textureIndex, tile_solid);
-        this->setTile(tile_x, tile_y, tile_rotation, tile_textureIndex, tile_solid);
+        spdlog::trace("file buffer >> {} >> {} >> {} >> {} >> {}", tile_x, tile_y, tile_rotation, tile_block, tile_solid);
+        this->setTile(tile_x, tile_y, tile_rotation, static_cast<Block>(tile_block), tile_solid);
 
         line_count++;
     }
@@ -164,11 +171,11 @@ void Map::saveToFile(const std::string& filename)
     spdlog::debug("Saving map to file '{}'...", filename);
 
     // check if all tiles are filled
-    if(m_tiles.size() < m_width * m_height)
-    {
-        spdlog::error("The map is not entirely filled, can not save it to the file '{}'. Ignoring...", filename);
-        return;
-    }
+    // if(m_tiles.size() < m_width * m_height)
+    // {
+    //     spdlog::error("The map is not entirely filled, can not save it to the file '{}'. Ignoring...", filename);
+    //     return;
+    // }
 
     // save to the buffer
     std::stringstream file_buffer;
@@ -184,7 +191,7 @@ void Map::saveToFile(const std::string& filename)
         });
     for(auto& tile : m_tiles)
     {
-        file_buffer << tile.x << ' ' << tile.y << ' ' << tile.rotation << ' ' << tile.textureIndex << ' ' << tile.solid << '\n';
+        file_buffer << tile.x << ' ' << tile.y << ' ' << tile.rotation << ' ' << tile.block << ' ' << tile.solid << '\n';
     }
 
     // dump buffer to the file
@@ -209,9 +216,13 @@ void Map::render(bool area, bool show_solid) noexcept
     {
         Renderer::drawQuad({m_centerX, m_centerY}, {m_width, m_height}, 0.f, {0.3f, 0.3f, 0.3f, 1.f});  // background area
     }
+    const auto& wall_color = std::get<1>(m_theme.wallBlock);
     for(const auto& tile : m_tiles)
     {
-        Renderer::drawQuad({tile.x, tile.y}, {1.f, 1.f}, tile.rotation, m_textures[tile.textureIndex]);
+        if(tile.block == Block::Wall)
+        {
+            Renderer::drawQuad({tile.x, tile.y}, {1.f, 1.f}, tile.rotation, wall_color);
+        }
         if(show_solid && tile.solid)
         {
             Renderer::drawRect({tile.x, tile.y}, {0.2f, 0.2f}, tile.rotation, {1.f, 1.f, 1.f, 1.f});
