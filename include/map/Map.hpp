@@ -40,6 +40,8 @@ class Map
     void loadFromFile(const std::string& filename);
     void saveToFile(const std::string& filename);
 
+    virtual void setTheme(const MapTheme& new_theme) final;
+
     virtual void update() noexcept;
     virtual void render(bool area = false, bool show_solid = false) noexcept;
 
@@ -53,5 +55,5 @@ class Map
     std::int64_t m_centerY = 0;
     std::vector<Tile> m_tiles;
     std::vector<std::shared_ptr<Texture2D>> m_textures;
-    MapTheme& m_theme = FOREST_THEME;
+    MapTheme& m_theme = MapThemes::FOREST_THEME;
 };

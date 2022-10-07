@@ -16,9 +16,7 @@ Map::Map(const std::size_t& width, const std::size_t& height)
     std::uint32_t tex = 0x00000000;
     tex_ptr->load(reinterpret_cast<std::uint8_t*>(&tex), sizeof(std::uint32_t));
 
-    ResourceManager::mapThemeBackgroundColor = m_theme.backgroundColor;
-    const auto& clear_color = m_theme.backgroundColor;
-    glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a);
+    this->setTheme(MapThemes::FOREST_THEME);
 }
 
 Map::~Map()
@@ -204,6 +202,14 @@ void Map::saveToFile(const std::string& filename)
     file << file_buffer.rdbuf();
     file.close();
     spdlog::debug("Map saved to file successfully");
+}
+
+void Map::setTheme(const MapTheme& new_theme)
+{
+    m_theme = new_theme;
+    ResourceManager::mapThemeBackgroundColor = m_theme.backgroundColor;
+    const auto& clear_color = m_theme.backgroundColor;
+    glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a);
 }
 
 void Map::update() noexcept { }

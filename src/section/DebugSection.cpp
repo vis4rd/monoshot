@@ -7,7 +7,7 @@
 
 #include <stb_image.h>
 
-constexpr glm::vec2 hero_size = {1.2f, 0.6f};
+constexpr glm::vec2 hero_size = {0.6f, 0.6f};
 constexpr glm::vec2 tile_size = {1.f, 1.f};
 
 DebugSection::DebugSection()
@@ -308,6 +308,31 @@ void DebugSection::render() noexcept
         ImGui::Text("mouse screen position: (%f, %f)", mouse_screen_pos.x, mouse_screen_pos.y);
         ImGui::Text("mouse world position: (%f, %f)", mouse_world_pos.x, mouse_world_pos.y);
         ImGui::Text("hero: pos(%.2f, %.2f), vel(%.2f), acc(%.2f), rot(%.2f)", pos.x, pos.y, vel.data, acc.data, rot.data);
+
+        static std::string preview = "Forest Theme";
+        bool check = false;
+        if(ImGui::BeginCombo("map_theme", preview.c_str()))
+        {
+            if(ImGui::Selectable("Tutorial Theme##unique_id", &check))
+            {
+                preview = "Tutorial Theme";
+                spdlog::debug("Switching MapTheme to '{}'", preview);
+                m_mapGrid.setTheme(MapThemes::TUTORIAL_THEME);
+            }
+            if(ImGui::Selectable("Forest Theme##unique_id", &check))
+            {
+                preview = "Forest Theme";
+                spdlog::debug("Switching MapTheme to '{}'", preview);
+                m_mapGrid.setTheme(MapThemes::FOREST_THEME);
+            }
+            if(ImGui::Selectable("Winter Theme##unique_id", &check))
+            {
+                preview = "Winter Theme";
+                spdlog::debug("Switching MapTheme to '{}'", preview);
+                m_mapGrid.setTheme(MapThemes::WINTER_THEME);
+            }
+            ImGui::EndCombo();
+        }
 
         // if(ImGui::Button("Calculate matrices"))
         // {
