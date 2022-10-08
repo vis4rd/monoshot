@@ -13,6 +13,10 @@ endif()
 set(EXECUTABLE_NAME "main")
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+option(CMAKE_BUILD_TYPE "Build type of the binary (Release/Debug/RelWithDebInfo/MinSizeRel" "Debug")
+
+string(COMPARE EQUAL ${CMAKE_BUILD_TYPE} "Debug" DEBUG_MODE)
+
 include(FetchContent)
 
 # GLFW
@@ -43,9 +47,6 @@ add_subdirectory("${PROJECT_SOURCE_DIR}/lib/spdlog")
 set(STB_IMAGE_SOURCE_DIR "${PROJECT_SOURCE_DIR}/lib/stb_image")
 set(STB_IMAGE_SOURCE_PATH "${STB_IMAGE_SOURCE_DIR}/stb_image.h")
 file(MAKE_DIRECTORY ${STB_IMAGE_SOURCE_DIR})
-
-# EnTT
-add_subdirectory("${PROJECT_SOURCE_DIR}/lib/entt")
 
 if(NOT EXISTS ${STB_IMAGE_SOURCE_PATH})
     file(DOWNLOAD
@@ -82,6 +83,9 @@ add_library(stbi OBJECT STATIC)
 target_include_directories(stbi INTERFACE ${STB_IMAGE_SOURCE_DIR})
 target_sources(stbi PRIVATE ${STB_IMAGE_FILE_SOURCE})
 
+# EnTT
+add_subdirectory("${PROJECT_SOURCE_DIR}/lib/entt")
+
 # Other sources
 file(GLOB_RECURSE SOURCES 
     "${PROJECT_SOURCE_DIR}/src/*.cpp"
@@ -97,6 +101,12 @@ set_target_properties(${EXECUTABLE_NAME} PROPERTIES
     VS_STARTUP_PROJECT ${EXECUTABLE_NAME}
     FOLDER "App"
 )
+
+if(DEBUG_MODE)
+    target_compile_definitions(${EXECUTABLE_NAME}
+        PRIVATE "DEBUG_MODE"
+    )
+endif()
 
 target_compile_features(${EXECUTABLE_NAME}
     PRIVATE "cxx_std_20"

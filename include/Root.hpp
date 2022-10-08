@@ -22,3 +22,7 @@
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
+
+#ifndef DEBUG_MODE
+    #define DEBUG_MODE 0
+#endif
