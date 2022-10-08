@@ -8,8 +8,7 @@
 namespace fs = std::filesystem;
 
 // globals
-// static std::size_t s_selected_texture_index = 0;
-static Block s_selected_block = Block::Wall;
+static BlockID s_selected_block = BlockID::Wall;
 static bool s_selected_solid = false;
 static glm::vec2 s_mouse_world_pos = {0.f, 0.f};
 
@@ -184,7 +183,7 @@ void CreatorSection::update() noexcept
         if(input.isHeld(GLFW_MOUSE_BUTTON_LEFT))
         {
             // spdlog::debug("Placing a tile: {}, on {} with texture slot '{}'", s_selected_solid ? "solid" : "non-solid", util::vec2str(s_mouse_world_pos), s_selected_texture_index);
-            m_map.setTile(s_mouse_world_pos.x, s_mouse_world_pos.y, 0.f, Block::Wall, s_selected_solid);
+            m_map.setTile(s_mouse_world_pos.x, s_mouse_world_pos.y, 0.f, BlockID::Wall, s_selected_solid);
         }
     }
 }
@@ -247,32 +246,17 @@ void CreatorSection::render() noexcept
         ImGui::Text("Time since last frame: %lf", ResourceManager::timer->deltaTime());
 
         ImGui::Separator();
-        // static std::string preview = "Choose a texture";
         static std::string preview = "Wall";
         bool check = false;
-        // const auto& textures = m_map.getTextures();
-        // if(ImGui::BeginCombo("Textures", preview.c_str()))
-        // {
-        //     for(std::size_t i = 0; i < textures.size(); i++)
-        //     {
-        //         if(ImGui::Selectable((textures[i]->getSourcePath() + "##unique_id").c_str(), &check))
-        //         {
-        //             spdlog::debug("Chosen texture slot '{}' with path '{}'", i, textures[i]->getSourcePath());
-        //             s_selected_texture_index = i;
-        //             preview = textures[i]->getSourcePath() + "##unique_id";
-        //         }
-        //     }
-        //     ImGui::EndCombo();
-        // }
         if(ImGui::BeginCombo("Blocks", preview.c_str()))
         {
-            for(std::size_t block = 0; block < Block::BLOCK_COUNT; block++)
+            for(std::size_t block_id = 0; block_id < BlockID::BLOCK_COUNT; block_id++)
             {
-                if(ImGui::Selectable((blockToString(block) + std::string("##unique_id")).c_str(), &check))
+                if(ImGui::Selectable((blockToString(block_id) + std::string("##unique_id")).c_str(), &check))
                 {
-                    spdlog::debug("Selected block '{}'", blockToString(block));
-                    s_selected_block = static_cast<Block>(block);
-                    preview = blockToString(block) + std::string("##unique_id");
+                    spdlog::debug("Selected block '{}'", blockToString(block_id));
+                    s_selected_block = static_cast<BlockID>(block_id);
+                    preview = blockToString(block_id) + std::string("##unique_id");
                 }
             }
             ImGui::EndCombo();

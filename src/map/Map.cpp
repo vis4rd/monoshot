@@ -51,8 +51,7 @@ const std::vector<std::shared_ptr<Texture2D>>& Map::getTextures() const
 
 void Map::setTile(const Tile& tile)
 {
-    // spdlog::trace("Map: Placing a tile with coords ({}, {}), rotation {}, tex_index {}", tile.x, tile.y, tile.rotation, tile.textureIndex);
-    spdlog::trace("Map: Placing a tile with coords ({}, {}), rotation {}, block {}", tile.x, tile.y, tile.rotation, tile.block);
+    spdlog::trace("Map: Placing a tile with coords ({}, {}), rotation {}, block_id {}", tile.x, tile.y, tile.rotation, tile.block_id);
     this->calculateNewSize(tile.x, tile.y);
 
     const auto iter = this->findTile(tile.x, tile.y);
@@ -67,13 +66,13 @@ void Map::setTile(const Tile& tile)
     spdlog::trace("Map: Finished placing a tile");
 }
 
-void Map::setTile(const float& x, const float& y, const float& rotation, Block block, const bool& solid)
+void Map::setTile(const float& x, const float& y, const float& rotation, BlockID block_id, const bool& solid)
 {
     Tile new_tile;
     new_tile.x = std::round(x);
     new_tile.y = std::round(y);
     new_tile.rotation = rotation;
-    new_tile.block = block;
+    new_tile.block_id = block_id;
     new_tile.solid = solid;
     this->setTile(new_tile);
 }
@@ -150,7 +149,6 @@ void Map::loadFromFile(const std::string& filename)
     float tile_x = 0;
     float tile_y = 0;
     float tile_rotation = 0.f;
-    // std::size_t tile_textureIndex = 0;
     std::size_t tile_block = 0;
     bool tile_solid = false;
 
@@ -158,7 +156,7 @@ void Map::loadFromFile(const std::string& filename)
     while(file_buffer >> tile_x >> tile_y >> tile_rotation >> tile_block >> tile_solid)
     {
         spdlog::trace("file buffer >> {} >> {} >> {} >> {} >> {}", tile_x, tile_y, tile_rotation, tile_block, tile_solid);
-        this->setTile(tile_x, tile_y, tile_rotation, static_cast<Block>(tile_block), tile_solid);
+        this->setTile(tile_x, tile_y, tile_rotation, static_cast<BlockID>(tile_block), tile_solid);
 
         line_count++;
     }
@@ -189,7 +187,7 @@ void Map::saveToFile(const std::string& filename)
         });
     for(auto& tile : m_tiles)
     {
-        file_buffer << tile.x << ' ' << tile.y << ' ' << tile.rotation << ' ' << tile.block << ' ' << tile.solid << '\n';
+        file_buffer << tile.x << ' ' << tile.y << ' ' << tile.rotation << ' ' << tile.block_id << ' ' << tile.solid << '\n';
     }
 
     // dump buffer to the file
@@ -225,7 +223,7 @@ void Map::render(bool area, bool show_solid) noexcept
     const auto& [wall_block, wall_color, wall_texture] = m_theme.wallBlock;
     for(const auto& tile : m_tiles)
     {
-        if(tile.block == Block::Wall)
+        if(tile.block_id == BlockID::Wall)
         {
             if(wall_texture != nullptr)
             {

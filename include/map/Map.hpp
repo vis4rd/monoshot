@@ -11,8 +11,7 @@ struct Tile
     float x = 0;
     float y = 0;
     float rotation = 0.f;
-    // std::size_t textureIndex = 0;
-    Block block;
+    BlockID block_id;
     bool solid = false;  // indicates if collisions should apply
 };
 
@@ -28,7 +27,7 @@ class Map
     virtual const std::vector<std::shared_ptr<Texture2D>>& getTextures() const final;
 
     virtual void setTile(const Tile& tile) final;
-    virtual void setTile(const float& x, const float& y, const float& rotation, Block block, const bool& solid) final;
+    virtual void setTile(const float& x, const float& y, const float& rotation, BlockID block_id, const bool& solid) final;
     virtual void removeTile(const float& x, const float& y) final;
     virtual std::vector<Tile>::iterator findTile(const float& x, const float& y) final;
     virtual void addTilesToRegistry(entt::registry& registry) const final;
