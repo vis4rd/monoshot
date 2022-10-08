@@ -14,10 +14,11 @@
 struct MapTheme
 {
     using Color = glm::vec4;
-    using BlockData = std::tuple<Block, Color>;
+    using TexPtr = std::shared_ptr<Texture2D>;
+    using BlockData = std::tuple<Block, Color, TexPtr>;
 
-    BlockData wallBlock;
     Color backgroundColor;
+    BlockData wallBlock;
 };
 
 namespace MapThemes
@@ -25,18 +26,18 @@ namespace MapThemes
 
 // clang-format off
 static MapTheme TUTORIAL_THEME{
-    .wallBlock = std::make_tuple(Block::Wall, glm::vec4{165.f / 256.f, 146.f / 256.f, 101.f / 256.f, 1.f}),  // 165, 146, 101
-    .backgroundColor = {76.f / 256.f, 55.f / 256.f, 7.f / 256.f, 1.f}  // 76, 55, 7
+    .backgroundColor = {76.f / 256.f, 55.f / 256.f, 7.f / 256.f, 1.f},  // 76, 55, 7
+    .wallBlock = std::make_tuple(Block::Wall, glm::vec4{165.f / 256.f, 146.f / 256.f, 101.f / 256.f, 1.f}, nullptr)  // 165, 146, 101
 };
 
 static MapTheme FOREST_THEME{
-    .wallBlock = std::make_tuple(Block::Wall, glm::vec4{149.f / 256.f, 193.f / 256.f, 149.f / 256.f, 1.f}),  // 111, 252, 111
-    .backgroundColor = {53.f / 256.f, 100.f / 256.f, 53.f / 256.f, 1.f}  // 53, 100, 53
+    .backgroundColor = {53.f / 256.f, 100.f / 256.f, 53.f / 256.f, 1.f},  // 53, 100, 53
+    .wallBlock = std::make_tuple(Block::Wall, glm::vec4{149.f / 256.f, 193.f / 256.f, 149.f / 256.f, 1.f}, nullptr)  // 111, 252, 111
 };
 
 static MapTheme WINTER_THEME{
-    .wallBlock = std::make_tuple(Block::Wall, glm::vec4{0.2f, 0.2f, 0.2f, 1.f}),
-    .backgroundColor = {215.f / 256.f, 220.f / 256.f, 221.f / 256.f, 1.f}  // 215, 220, 221
+    .backgroundColor = {215.f / 256.f, 220.f / 256.f, 221.f / 256.f, 1.f},  // 215, 220, 221
+    .wallBlock = std::make_tuple(Block::Wall, glm::vec4{0.2f, 0.2f, 0.2f, 1.f}, nullptr)
 };
 // clang-format on
 

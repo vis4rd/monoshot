@@ -222,12 +222,19 @@ void Map::render(bool area, bool show_solid) noexcept
     {
         Renderer::drawQuad({m_centerX, m_centerY}, {m_width, m_height}, 0.f, {0.3f, 0.3f, 0.3f, 1.f});  // background area
     }
-    const auto& wall_color = std::get<1>(m_theme.wallBlock);
+    const auto& [wall_block, wall_color, wall_texture] = m_theme.wallBlock;
     for(const auto& tile : m_tiles)
     {
         if(tile.block == Block::Wall)
         {
-            Renderer::drawQuad({tile.x, tile.y}, {1.f, 1.f}, tile.rotation, wall_color);
+            if(wall_texture != nullptr)
+            {
+                Renderer::drawQuad({tile.x, tile.y}, {1.f, 1.f}, tile.rotation, wall_texture, wall_color);
+            }
+            else
+            {
+                Renderer::drawQuad({tile.x, tile.y}, {1.f, 1.f}, tile.rotation, wall_color);
+            }
         }
         if(show_solid && tile.solid)
         {
