@@ -126,6 +126,9 @@ void Window::setFullscreen(bool fullscreen)
     else
     {
         glfwSetWindowMonitor(m_window, nullptr, (lr.x - sr.x) / 2.f, (lr.y - sr.y) / 2.f, sr.x, sr.y, GLFW_DONT_CARE);
+        this->setFramebufferSize({sr.x, sr.y});  // update framebuffer size when leaving fullscreen
+        m_width = sr.x;  // update internal size indicator
+        m_height = sr.y;
     }
     this->setVerticalSync(m_isVSyncEnabled);
 }
@@ -171,6 +174,8 @@ void Window::initImGui()
     // TODO: disable this functionality in release builds
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;  // Enable Docking
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;  // Enable Multi-Viewport
+
+    io.Fonts->AddFontDefault();
 
     m_io = io;
 

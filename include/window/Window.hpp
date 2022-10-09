@@ -153,6 +153,8 @@ void Window::render(RENDERABLES &&...renderables) noexcept
             this->setFullscreen(m_isFullscreen);
         }
 
+        ImGui::Text("Window size: (%d, %d)", m_width, m_height);
+        ImGui::Text("Framebuffer size: (%d, %d)", screenFB.getSize().x, screenFB.getSize().y);
         ImGui::Text("Performance: [%.2fms] [%.0ffps]", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
         ImGui::Text("Mouse Position: Screen[%.2fx, %.2fy]", ImGui::GetMousePos().x, ImGui::GetMousePos().y);
 
