@@ -1,10 +1,13 @@
 #include "../../include/section/MainMenuSection.hpp"
 
 #include "../../include/section/CreatorSection.hpp"
+#include "../../include/utility/ResourceManager.hpp"
 
 MainMenuSection::MainMenuSection()
     : Section(),
-      m_layout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize)
+      m_layout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize),
+      // TODO: change title font size to resize dynamically or set it up just for fullscreen
+      m_titleFont("../res/fonts/prisma/Prisma.ttf", 100.f * ResourceManager::window->getSize().x / 1920.f)
 {
     m_name = "MainMenuSection";
     auto& input_manager = InputManager::get();
@@ -24,12 +27,15 @@ void MainMenuSection::render() noexcept
 {
     m_layout.update(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize);
 
+    auto font_guard = m_titleFont.use();
     ImGui::SetNextWindowPos({m_layout.menu_x, m_layout.menu_y - 100.f});
+    ImGui::SetNextWindowSize({ResourceManager::window->getSize().x - 200.f, m_titleFont.get()->FontSize + 50.f});
     ImGui::Begin("MainMenuGameTitle", nullptr, m_layout.window_flags);
     {
         ImGui::Text("Top-down Shooter Game");
     }
     ImGui::End();
+    font_guard.popFont();
 
     ImGui::SetNextWindowPos({m_layout.menu_x, m_layout.menu_y});
     ImGui::SetNextWindowSize({m_layout.menu_w, m_layout.menu_h});
