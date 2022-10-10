@@ -26,6 +26,7 @@ class Window final : public NativeWindow
     void setFramebufferSize(const std::pair<int32_t, int32_t> &new_size);
     void setFullscreen(bool fullscreen = true);
     void setMaximized(bool maximized = true);
+    void setMinimized(bool minimized = true);
     void setVerticalSync(bool vsync = true);
     void setRefreshRate(std::uint32_t hz);
 
@@ -44,6 +45,8 @@ class Window final : public NativeWindow
     ImGuiIO m_io;
     bool m_shouldClose = false;
     bool m_isFullscreen = true;
+    bool m_isMaximized = false;
+    bool m_isMinimized = false;
     bool m_isVSyncEnabled = true;
     SectionManager &m_sectionManager = SectionManager::get();
     InputManager &m_inputManager = InputManager::get();
@@ -87,6 +90,14 @@ bool Window::update(UPDATEABLES &&...updateables) noexcept
         this->toggleFullscreen();
         spdlog::debug("after F11: window size = {}x{}", m_width, m_height);
         spdlog::debug("after F11: framebuffer size = {}x{}", screenFB.getSize().x, screenFB.getSize().y);
+    }
+    if constexpr(Flag::DebugMode)
+    {
+        if(input.isPressedOnce(GLFW_KEY_APOSTROPHE))  // debugging purposes
+        {
+            static int break_count;
+            spdlog::debug("======================= {} =========================", break_count++);
+        }
     }
     if(SectionManager::get().size() == 1)
     {

@@ -3,7 +3,7 @@
 #include "../../include/utility/ResourceManager.hpp"
 
 Window::Window()
-    : Window("Arcade Game", 1280, 720, false)
+    : Window("Arcade Game", 1280, 720, false, true)
 {
 }
 
@@ -18,6 +18,7 @@ Window::Window(const std::string &title, std::uint32_t width, std::uint32_t heig
 
     this->setFullscreen(fullscreen);
     this->setVerticalSync(vsync);
+    m_isMaximized = static_cast<bool>(glfwGetWindowAttrib(m_window, GLFW_MAXIMIZED));
 
     constexpr float screen_vertex_buffer[16] = {-1.f, -1.f, 0.f, 0.f, 1.f, -1.f, 1.f, 0.f, 1.f, 1.f, 1.f, 1.f, -1.f, 1.f, 0.f, 1.f};
     constexpr std::uint32_t screen_element_buffer[6] = {0, 1, 2, 2, 3, 0};
@@ -44,6 +45,36 @@ Window::Window(const std::string &title, std::uint32_t width, std::uint32_t heig
             _this->m_width = new_width;
             _this->m_height = new_height;
             _this->setFramebufferSize({new_width, new_height});
+        });
+
+    glfwSetWindowMaximizeCallback(m_window,
+        [](GLFWwindow *window, int maximized) -> void
+        {
+            auto &_this = ResourceManager::window;
+            _this->m_isMaximized = static_cast<bool>(maximized);
+            if(_this->m_isMaximized)
+            {
+                spdlog::debug("Window has been maximized");
+            }
+            else
+            {
+                spdlog::debug("Window has been restored");
+            }
+        });
+
+    glfwSetWindowIconifyCallback(m_window,
+        [](GLFWwindow *window, int minimized) -> void
+        {
+            auto &_this = ResourceManager::window;
+            _this->m_isMinimized = static_cast<bool>(minimized);
+            if(_this->m_isMinimized)
+            {
+                spdlog::debug("Window has been minimized");
+            }
+            else
+            {
+                spdlog::debug("Window has been restored");
+            }
         });
 
     glm::vec4 clear_color = glm::vec4(0.f, 0.f, 0.f, 1.f);
@@ -86,7 +117,7 @@ bool Window::isFullscreen() const
 
 bool Window::isMaximized() const
 {
-    return static_cast<bool>(glfwGetWindowAttrib(m_window, GLFW_MAXIMIZED));
+    return m_isMaximized;
 }
 
 bool Window::isVerticalSyncEnabled() const
@@ -122,6 +153,9 @@ void Window::setFullscreen(bool fullscreen)
     if(fullscreen)
     {
         glfwSetWindowMonitor(m_window, monitor, GLFW_DONT_CARE, GLFW_DONT_CARE, lr.x, lr.y, hz);
+        this->setFramebufferSize({lr.x, lr.y});
+        m_width = lr.x;
+        m_height = lr.y;
     }
     else
     {
@@ -135,9 +169,23 @@ void Window::setFullscreen(bool fullscreen)
 
 void Window::setMaximized(bool maximized)
 {
-    if(maximized)
+    m_isMaximized = maximized;
+    if(m_isMaximized)
     {
         glfwMaximizeWindow(m_window);
+    }
+    else
+    {
+        glfwRestoreWindow(m_window);
+    }
+}
+
+void Window::setMinimized(bool minimized)
+{
+    m_isMinimized = minimized;
+    if(m_isMinimized)
+    {
+        glfwIconifyWindow(m_window);
     }
     else
     {
