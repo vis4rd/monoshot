@@ -4,8 +4,13 @@
 
 enum BlockID : std::size_t
 {
-    Wall = 0,
-    BLOCK_COUNT
+    FIRST_BLOCK = 0,
+
+    // write blocks here
+    Wall,
+
+    LAST_BLOCK,
+    BLOCK_COUNT = LAST_BLOCK - FIRST_BLOCK - 1
 };
 
 inline const char* blockToString(std::size_t block_id)
