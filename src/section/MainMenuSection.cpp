@@ -28,11 +28,11 @@ void MainMenuSection::render() noexcept
     m_layout.update(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize);
 
     auto font_guard = m_titleFont.use();
-    ImGui::SetNextWindowPos({m_layout.menu_x, m_layout.menu_y - 100.f});
+    ImGui::SetNextWindowPos({m_layout.menu_x, m_layout.menu_y - (100.f * ResourceManager::window->getSize().x / 1920.f) - 100.f});
     ImGui::SetNextWindowSize({ResourceManager::window->getSize().x - 200.f, m_titleFont.get()->FontSize + 50.f});
     ImGui::Begin("MainMenuGameTitle", nullptr, m_layout.window_flags);
     {
-        ImGui::Text("Top-down Shooter Game");
+        ImGui::Text("%s", m_titleText.c_str());
     }
     ImGui::End();
     font_guard.popFont();
