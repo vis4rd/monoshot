@@ -7,7 +7,7 @@ App::App(const std::string& window_title, uint32_t width, uint32_t height)
 {
     spdlog::info("App version: {}.{}.{} (build {})", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, BUILD_NUMBER);
 
-    m_window = std::make_shared<Window>(window_title, width, height, false, true);
+    m_window = std::make_shared<Window>(window_title, width, height, true, true);
     ResourceManager::window = m_window;
 
     m_timer = std::make_shared<Timer>();

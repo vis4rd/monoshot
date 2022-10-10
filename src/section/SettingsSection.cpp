@@ -7,15 +7,6 @@ SettingsSection::SettingsSection()
       m_navLayout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize)
 {
     m_name = "SettingsSection";
-    auto& input_manager = InputManager::get();
-    auto group_id = input_manager.addGroup(m_name);
-    input_manager.addKeybind(group_id,
-        GLFW_KEY_ESCAPE,
-        KeyState::PRESS_ONCE,
-        []
-        {
-            SectionManager::get().popSection();
-        });
 }
 
 void SettingsSection::update() noexcept
@@ -23,6 +14,12 @@ void SettingsSection::update() noexcept
     const ImGuiViewport& main_viewport = *ImGui::GetMainViewport();
     m_layout.update(main_viewport.WorkPos, main_viewport.WorkSize);
     m_navLayout.update(main_viewport.WorkPos, main_viewport.WorkSize);
+
+    auto& input = InputManager::get();
+    if(input.isPressedOnce(GLFW_KEY_ESCAPE))
+    {
+        SectionManager::get().popSection();
+    }
 }
 
 void SettingsSection::render() noexcept
