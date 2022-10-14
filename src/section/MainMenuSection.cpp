@@ -5,9 +5,7 @@
 
 MainMenuSection::MainMenuSection()
     : Section(),
-      m_layout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize),
-      // TODO: change title font size to resize dynamically or set it up just for fullscreen
-      m_titleFont("../res/fonts/prisma/Prisma.ttf", 100.f * ResourceManager::window->getSize().x / 1920.f)
+      m_layout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize)
 {
     m_name = "MainMenuSection";
     auto& input_manager = InputManager::get();
@@ -25,18 +23,25 @@ void MainMenuSection::update() noexcept { }
 
 void MainMenuSection::render() noexcept
 {
+    using res = ResourceManager;
+    const auto& title_font = res::uiTitleFont;
+    const auto& title_font_size = *res::uiTitleFontSize;
+
     m_layout.update(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize);
 
-    auto font_guard = m_titleFont.use();
-    ImGui::SetNextWindowPos({m_layout.menu_x, m_layout.menu_y - (100.f * ResourceManager::window->getSize().x / 1920.f) - 100.f});
-    ImGui::SetNextWindowSize({ResourceManager::window->getSize().x - 200.f, m_titleFont.get()->FontSize + 50.f});
+    auto title_font_guard = title_font->use();
+    ImGui::SetNextWindowPos({m_layout.menu_x, m_layout.menu_y - title_font_size - 100.f});
+    ImGui::SetNextWindowSize({ResourceManager::window->getSize().x - 200.f, title_font->get()->FontSize + 50.f});
     ImGui::Begin("MainMenuGameTitle", nullptr, m_layout.window_flags);
     {
         ImGui::Text("%s", m_titleText.c_str());
     }
     ImGui::End();
-    font_guard.popFont();
+    title_font_guard.popFont();
 
+    const auto& button_font = res::uiButtonFont;
+
+    auto button_font_guard = button_font->use();
     ImGui::SetNextWindowPos({m_layout.menu_x, m_layout.menu_y});
     ImGui::SetNextWindowSize({m_layout.menu_w, m_layout.menu_h});
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {m_layout.button_w_s, m_layout.button_h_s});

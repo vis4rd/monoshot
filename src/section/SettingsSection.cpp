@@ -24,7 +24,11 @@ void SettingsSection::update() noexcept
 
 void SettingsSection::render() noexcept
 {
-    auto& window = ResourceManager::window;
+    using res = ResourceManager;
+    auto& window = res::window;
+    const auto& button_font = res::uiButtonFont;
+
+    auto button_font_guard = button_font->use();
     ImGui::SetNextWindowPos({m_layout.menu_x, m_layout.menu_y});
     ImGui::SetNextWindowSize({m_layout.menu_w, m_layout.menu_h});
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {m_layout.button_w_s, m_layout.button_h_s});
