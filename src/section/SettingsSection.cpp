@@ -63,7 +63,7 @@ void SettingsSection::render() noexcept
         std::string current_refresh_rate = std::to_string(window->getRefreshRate()) + "Hz";
         auto next_y = ImGui::GetCursorScreenPos().y;
         ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s, next_y});
-        if(Custom::ImGui::BeginCombo("Refresh Rate", current_refresh_rate.c_str(), {m_layout.button_w, m_layout.button_h}))
+        if(Custom::ImGui::BeginCombo("Rate ", current_refresh_rate.c_str(), {m_layout.button_w, m_layout.button_h}))
         {
             const auto refresh_rates = window->queryMonitorRefreshRates();
             const int32_t mode_count = refresh_rates.size();
