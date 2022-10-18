@@ -67,22 +67,10 @@ DebugSection::DebugSection()
     // ShaderManager::addShaderProgram("../res/shaders", "triangle_zoom");
 
     m_mapGrid.loadFromFile("testMap.map");
+    m_mapGrid.addObject({-30.f, 0.f}, 0.f, ObjectID::LargeTree);
 
-    firstTexture = std::make_shared<Texture2D>(16, 16);
-    firstTexture->load("../res/textures/first_texture.png");
-
-    // copied from creator section
-    auto texture_dir = fs::path("../res/textures/");
-    for(const auto& file : fs::directory_iterator(texture_dir))
-    {
-        spdlog::trace("file: '{}'", file.path().string());
-        spdlog::trace("extension: '{}', condition: {}", fs::path(file).extension().string(), (fs::path(file).extension() == ".png"));
-        if(fs::path(file).extension() == ".png")
-        {
-            spdlog::debug("Found texture: '{}'", file.path().string());
-            m_mapGrid.emplaceTexture(16, 16, file.path().string());
-        }
-    }
+    // firstTexture = std::make_shared<Texture2D>(16, 16);
+    // firstTexture->load("../res/textures/first_texture.png");
 
     // glm::vec3 first = {vertices[0], vertices[1], vertices[2]};
     // glm::vec3 second = {vertices[3], vertices[4], vertices[5]};
@@ -123,7 +111,7 @@ DebugSection::~DebugSection()
 {
     spdlog::trace("Destroying DebugSection");
     Renderer::shutdown();
-    firstTexture->destroy();
+    // firstTexture->destroy();
     m_registry.clear();
 }
 

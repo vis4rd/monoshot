@@ -21,12 +21,13 @@ MainMenuSection::MainMenuSection()
         });
 }
 
-void MainMenuSection::update() noexcept { }
+void MainMenuSection::update() noexcept
+{
+    m_layout.update(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize);
+}
 
 void MainMenuSection::render() noexcept
 {
-    m_layout.update(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize);
-
     auto font_guard = m_titleFont.use();
     ImGui::SetNextWindowPos({m_layout.menu_x, m_layout.menu_y - (100.f * ResourceManager::window->getSize().x / 1920.f) - 100.f});
     ImGui::SetNextWindowSize({ResourceManager::window->getSize().x - 200.f, m_titleFont.get()->FontSize + 50.f});

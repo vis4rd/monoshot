@@ -3,10 +3,6 @@
 #include "../../include/renderer/Renderer.hpp"
 #include "../../include/utility/ResourceManager.hpp"
 
-#include <filesystem>
-
-namespace fs = std::filesystem;
-
 // globals
 static BlockID s_selected_block = BlockID::Wall;
 static bool s_selected_solid = false;
@@ -113,19 +109,6 @@ CreatorSection::CreatorSection()
 
     // renderer
     Renderer::init();
-
-    // textures in a map
-    auto texture_dir = fs::path("../res/textures/");
-    for(const auto& file : fs::directory_iterator(texture_dir))
-    {
-        spdlog::trace("file: '{}'", file.path().string());
-        spdlog::trace("extension: '{}', condition: {}", fs::path(file).extension().string(), (fs::path(file).extension() == ".png"));
-        if(fs::path(file).extension() == ".png")
-        {
-            spdlog::debug("Found texture: '{}'", file.path().string());
-            m_map.emplaceTexture(16, 16, file.path().string());
-        }
-    }
 }
 
 CreatorSection::~CreatorSection()
