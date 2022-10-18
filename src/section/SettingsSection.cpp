@@ -24,7 +24,11 @@ void SettingsSection::update() noexcept
 
 void SettingsSection::render() noexcept
 {
-    auto& window = ResourceManager::window;
+    using res = ResourceManager;
+    auto& window = res::window;
+    const auto& button_font = res::uiButtonFont;
+
+    auto button_font_guard = button_font->use();
     ImGui::SetNextWindowPos({m_layout.menu_x, m_layout.menu_y});
     ImGui::SetNextWindowSize({m_layout.menu_w, m_layout.menu_h});
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {m_layout.button_w_s, m_layout.button_h_s});
@@ -59,7 +63,7 @@ void SettingsSection::render() noexcept
         std::string current_refresh_rate = std::to_string(window->getRefreshRate()) + "Hz";
         auto next_y = ImGui::GetCursorScreenPos().y;
         ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s, next_y});
-        if(Custom::ImGui::BeginCombo("Refresh Rate", current_refresh_rate.c_str(), {m_layout.button_w, m_layout.button_h}))
+        if(Custom::ImGui::BeginCombo("Rate ", current_refresh_rate.c_str(), {m_layout.button_w, m_layout.button_h}))
         {
             const auto refresh_rates = window->queryMonitorRefreshRates();
             const int32_t mode_count = refresh_rates.size();

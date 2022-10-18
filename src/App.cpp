@@ -1,4 +1,6 @@
 #include "../include/App.hpp"
+
+#include "../include/ui/fonts/Font.hpp"
 #include "../include/utility/ResourceManager.hpp"
 
 App::App(const std::string& window_title, uint32_t width, uint32_t height)
@@ -13,6 +15,7 @@ App::App(const std::string& window_title, uint32_t width, uint32_t height)
     m_timer = std::make_shared<Timer>();
     ResourceManager::timer = m_timer;
 
+    this->initFonts();
     this->initTextures();
 
     MainMenuStyle();
@@ -49,6 +52,21 @@ void App::initTextures() noexcept
     using res = ResourceManager;
     res::largeTreeTexture = std::make_shared<Texture2D>(128, 128);
     res::largeTreeTexture->load("../res/textures/small_tree.png");
+}
+
+void App::initFonts() noexcept
+{
+    using res = ResourceManager;
+
+    const auto& window_width = res::window->getSize().x;
+
+    // TODO: change title font size to resize dynamically or set it up just for fullscreen
+    res::uiTitleFontSize = std::make_shared<float>(100.f * window_width / 1920.f);
+    res::uiTitleFont = std::make_shared<Font>("../res/fonts/prisma/Prisma.ttf", *res::uiTitleFontSize);
+    // res::uiButtonFontSize = std::make_shared<float>(20.f * window_width / 1920.f);
+    // res::uiButtonFont = std::make_shared<Font>("../res/fonts/abandoned/Abandoned-Bold.ttf", *res::uiButtonFontSize);
+    res::uiButtonFontSize = std::make_shared<float>(20.f * window_width / 1920.f);
+    res::uiButtonFont = std::make_shared<Font>("../res/fonts/brass-mono/regular_comfortable.otf", *res::uiButtonFontSize);
 }
 
 Window& App::getWindow()

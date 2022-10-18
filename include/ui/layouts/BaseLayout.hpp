@@ -45,15 +45,17 @@ struct BaseLayout
     float button_h_s = base_h_spacing * scale_h;
 
 
-    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoMove
-                                    | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse
                                     | ImGuiWindowFlags_NoNav
                                     // | ImGuiWindowFlags_NoBackground  // uncomment when everything setup
                                     | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoDocking;
 };
 
 BaseLayout::BaseLayout(const ImVec2& workpos, const ImVec2& worksize)
-    : viewport_w(worksize.x), viewport_h(worksize.y), viewport_x(workpos.x), viewport_y(workpos.y)
+    : viewport_w(worksize.x),
+      viewport_h(worksize.y),
+      viewport_x(workpos.x),
+      viewport_y(workpos.y)
 {
 }
 

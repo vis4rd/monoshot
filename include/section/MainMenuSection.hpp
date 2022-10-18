@@ -14,5 +14,4 @@ class MainMenuSection final : public Section
     private:
     const std::string m_titleText = "MONOSHOT";
     UI::MainMenuLayout m_layout;
-    Font m_titleFont;
 };

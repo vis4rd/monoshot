@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SettingsSection.hpp"
+#include "../ui/layouts/NewGameLayout.hpp"
 
 class NewGameSection final : public Section
 {
@@ -9,4 +10,8 @@ class NewGameSection final : public Section
 
     void update() noexcept override;
     void render() noexcept override;
+
+    private:
+    UI::NewGameLayout m_layout;
+    UI::LowerNavigationBoxLayout m_navLayout;
 };
