@@ -8,13 +8,10 @@
 Map::Map(const std::size_t& width, const std::size_t& height)
     : m_width(width),
       m_height(height),
-      m_tiles()
+      m_tiles(),
+      m_objects()
 {
     m_tiles.reserve(width * height);
-
-    auto& tex_ptr = m_textures.emplace_back(std::make_shared<Texture2D>(1, 1));
-    std::uint32_t tex = 0x00000000;
-    tex_ptr->load(reinterpret_cast<std::uint8_t*>(&tex), sizeof(std::uint32_t));
 
     this->setTheme(MapThemes::FOREST_THEME);
 }
@@ -22,11 +19,6 @@ Map::Map(const std::size_t& width, const std::size_t& height)
 Map::~Map()
 {
     spdlog::trace("Deleting Map instance");
-    for(auto& texture : m_textures)
-    {
-        texture->destroy();
-    }
-    spdlog::trace("Map deletion complete");
 }
 
 std::size_t Map::getSize() const
@@ -44,9 +36,21 @@ const std::size_t& Map::getHeight() const
     return m_height;
 }
 
-const std::vector<std::shared_ptr<Texture2D>>& Map::getTextures() const
+void Map::addObject(const glm::vec2& position, const float& rotation, ObjectID object_id)
 {
-    return m_textures;
+    switch(object_id)
+    {
+        case Car: break;
+        case DestroyedCar: break;
+        case Chair: break;
+        case OutdoorBench: break;
+        case Table: break;
+        case SmallTree: break;
+        case LargeTree: m_objects.push_back(std::move(MapObject::createLargeTree(position))); break;
+        case SmallBush: break;
+        case LargeBush: break;
+        default: break;
+    }
 }
 
 void Map::setTile(const Tile& tile)
@@ -113,24 +117,6 @@ void Map::addTilesToRegistry(entt::registry& registry) const
         rot.data = tile.rotation;
         spdlog::debug("Filling ECS registry with tile pos = ({}, {}), rot = {}", pos.x, pos.y, rot.data);
     }
-}
-
-void Map::emplaceTexture(const std::int32_t& width, const std::int32_t& height, const std::string& source_path, const std::int32_t& channel_count)
-{
-    spdlog::trace("Emplacing texture '{}' with size ({}, {})", source_path, width, height);
-    auto texture_ptr = std::make_shared<Texture2D>(width, height, channel_count);
-    texture_ptr->load(source_path);
-    m_textures.push_back(std::move(texture_ptr));
-}
-
-void Map::addTexture(const Texture2D& texture)
-{
-    m_textures.push_back(std::make_shared<Texture2D>(texture));
-}
-
-void Map::addTexture(Texture2D&& texture)
-{
-    m_textures.push_back(std::move(std::make_shared<Texture2D>(texture)));
 }
 
 void Map::loadFromFile(const std::string& filename)
@@ -238,6 +224,10 @@ void Map::render(bool area, bool show_solid) noexcept
         {
             Renderer::drawRect({tile.x, tile.y}, {0.2f, 0.2f}, tile.rotation, {1.f, 1.f, 1.f, 1.f});
         }
+    }
+    for(const auto& object : m_objects)
+    {
+        Renderer::drawQuad(object.getPosition(), object.getSize(), object.getRotation(), object.getTexture(), wall_color);
     }
     Renderer::endBatch();
 }

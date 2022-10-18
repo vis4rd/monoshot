@@ -3,6 +3,7 @@
 #include "../shader/ShaderManager.hpp"
 #include "../texture/Texture2D.hpp"
 #include "MapTheme.hpp"
+#include "object/MapObject.hpp"
 
 #include <entt/entity/registry.hpp>
 
@@ -24,17 +25,14 @@ class Map
     virtual std::size_t getSize() const final;
     virtual const std::size_t& getWidth() const final;
     virtual const std::size_t& getHeight() const final;
-    virtual const std::vector<std::shared_ptr<Texture2D>>& getTextures() const final;
+
+    virtual void addObject(const glm::vec2& position, const float& rotation, ObjectID object_id) final;
 
     virtual void setTile(const Tile& tile) final;
     virtual void setTile(const float& x, const float& y, const float& rotation, BlockID block_id, const bool& solid) final;
     virtual void removeTile(const float& x, const float& y) final;
     virtual std::vector<Tile>::iterator findTile(const float& x, const float& y) final;
     virtual void addTilesToRegistry(entt::registry& registry) const final;
-
-    virtual void emplaceTexture(const std::int32_t& width, const std::int32_t& height, const std::string& source_path, const std::int32_t& channel_count = 0) final;
-    virtual void addTexture(const Texture2D& texture) final;
-    virtual void addTexture(Texture2D&& texture) final;
 
     void loadFromFile(const std::string& filename);
     void saveToFile(const std::string& filename);
@@ -53,6 +51,6 @@ class Map
     std::int64_t m_centerX = 0;
     std::int64_t m_centerY = 0;
     std::vector<Tile> m_tiles;
-    std::vector<std::shared_ptr<Texture2D>> m_textures;
+    std::vector<MapObject> m_objects;
     MapTheme& m_theme = MapThemes::FOREST_THEME;
 };
