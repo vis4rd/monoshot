@@ -18,6 +18,7 @@ class MapObject
     const std::shared_ptr<Texture2D>& getTexture() const;
     void setPosition(const glm::vec2& new_pos);
 
+    static MapObject createPredefined(const glm::vec2& position, ObjectID id, bool randomize = false);
     static MapObject createLargeTree(const glm::vec2& position);
 
     public:
