@@ -12,6 +12,7 @@ class App
     virtual ~App() noexcept;
 
     static void initLogger() noexcept;
+    void initTextures() noexcept;
 
     Window& getWindow();
     const Window& getWindow() const;

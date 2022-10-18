@@ -13,6 +13,8 @@ App::App(const std::string& window_title, uint32_t width, uint32_t height)
     m_timer = std::make_shared<Timer>();
     ResourceManager::timer = m_timer;
 
+    this->initTextures();
+
     MainMenuStyle();
 
     m_sectionManager.emplaceSection<MainMenuSection>();
@@ -40,6 +42,13 @@ void App::initLogger() noexcept
     spdlog::set_default_logger(std::make_shared<spdlog::logger>(multisink_logger));
 
     spdlog::debug("Logging initialized");
+}
+
+void App::initTextures() noexcept
+{
+    using res = ResourceManager;
+    res::largeTreeTexture = std::make_shared<Texture2D>(128, 128);
+    res::largeTreeTexture->load("../res/textures/small_tree.png");
 }
 
 Window& App::getWindow()
