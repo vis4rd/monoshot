@@ -232,8 +232,15 @@ void Map::update() noexcept { }
 
 void Map::render(bool area, bool show_solid) noexcept
 {
-    spdlog::trace("Rendering map...");
     Renderer::beginBatch();
+    this->drawTiles(area, show_solid);
+    this->drawObjects(show_solid);
+    Renderer::endBatch();
+}
+
+void Map::drawTiles(bool area, bool show_solid)
+{
+    spdlog::trace("Drawing Map tiles...");
     if(area)
     {
         Renderer::drawQuad({m_centerX, m_centerY}, {m_width, m_height}, 0.f, {0.3f, 0.3f, 0.3f, 1.f});  // background area
@@ -257,11 +264,16 @@ void Map::render(bool area, bool show_solid) noexcept
             Renderer::drawRect({tile.x, tile.y}, {0.2f, 0.2f}, tile.rotation, {1.f, 1.f, 1.f, 1.f});
         }
     }
+}
+
+void Map::drawObjects(bool show_solid)
+{
+    spdlog::trace("Drawing Map objects...");
+    const auto& [wall_block, wall_color, wall_texture] = m_theme.wallBlock;
     for(const auto& object : m_objects)
     {
         Renderer::drawQuad(object.getPosition(), object.getSize(), object.getRotation(), object.getTexture(), wall_color);
     }
-    Renderer::endBatch();
 }
 
 void Map::calculateNewSize(const float& tile_x, const float& tile_y)

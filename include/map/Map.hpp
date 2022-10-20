@@ -16,31 +16,34 @@ struct Tile
     bool solid = false;  // indicates if collisions should apply
 };
 
-class Map
+class Map final
 {
     public:
     Map(const std::size_t& width, const std::size_t& height);
-    virtual ~Map();
+    ~Map();
 
-    virtual std::size_t getSize() const final;
-    virtual const std::size_t& getWidth() const final;
-    virtual const std::size_t& getHeight() const final;
+    std::size_t getSize() const;
+    const std::size_t& getWidth() const;
+    const std::size_t& getHeight() const;
 
-    virtual void addObject(const glm::vec2& position, const float& rotation, ObjectID object_id) final;
+    void addObject(const glm::vec2& position, const float& rotation, ObjectID object_id);
 
-    virtual void setTile(const Tile& tile) final;
-    virtual void setTile(const float& x, const float& y, const float& rotation, BlockID block_id, const bool& solid) final;
-    virtual void removeTile(const float& x, const float& y) final;
-    virtual std::vector<Tile>::iterator findTile(const float& x, const float& y) final;
-    virtual void addTilesToRegistry(entt::registry& registry) const final;
+    void setTile(const Tile& tile);
+    void setTile(const float& x, const float& y, const float& rotation, BlockID block_id, const bool& solid);
+    void removeTile(const float& x, const float& y);
+    std::vector<Tile>::iterator findTile(const float& x, const float& y);
+    void addTilesToRegistry(entt::registry& registry) const;
 
     void loadFromFile(const std::string& filename);
     void saveToFile(const std::string& filename);
 
-    virtual void setTheme(const MapTheme& new_theme) final;
+    void setTheme(const MapTheme& new_theme);
 
-    virtual void update() noexcept;
-    virtual void render(bool area = false, bool show_solid = false) noexcept;
+    void update() noexcept;
+    void render(bool area = false, bool show_solid = false) noexcept;  // one pass draw
+
+    void drawTiles(bool area = false, bool show_solid = false);
+    void drawObjects(bool show_solid = false);
 
     protected:
     void calculateNewSize(const float& tile_x, const float& tile_y);
