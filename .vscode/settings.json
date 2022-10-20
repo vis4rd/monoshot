@@ -4,13 +4,13 @@
     "C_Cpp.intelliSenseEngine": "Disabled",
     "C_Cpp.errorSquiggles": "Disabled",
     "clangd.arguments": [
-        "--header-insertion",
-        "never"
+        "--header-insertion", "never"
     ],
     "cmake.buildBeforeRun": false,
     "cmake.configureOnEdit": false,
     "cmake.configureOnOpen": false,
     "cmake.statusbar.visibility": "icon",
+    "editor.defaultFormatter": "xaver.clang-format",
     "editor.formatOnSave": true,
     "editor.inlayHints.enabled": "off",
     "git.suggestSmartCommit": false,

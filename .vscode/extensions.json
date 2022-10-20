@@ -1,12 +1,13 @@
 {
     "recommendations": [
-        "ms-vscode.cpptools",
-        "twxs.cmake",
-        "ms-vscode.cmake-tools",
+        "aaron-bond.better-comments",
         "jeff-hykin.better-cpp-syntax",
         "llvm-vs-code-extensions.vscode-clangd",
-        "slevesque.shader",
+        "ms-vscode.cmake-tools",
+        "ms-vscode.cpptools",
         "seatonjiang.gitmoji-vscode",
-        "aaron-bond.better-comments"
+        "slevesque.shader",
+        "twxs.cmake",
+        "xaver.clang-format"
     ]
 }
