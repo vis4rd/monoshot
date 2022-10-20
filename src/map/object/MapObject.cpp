@@ -3,12 +3,13 @@
 #include "../../../include/utility/ResourceManager.hpp"
 #include "../../../include/utility/RandomNumber.hpp"
 
-MapObject::MapObject(const glm::vec2& position, const glm::vec2& size, std::shared_ptr<Texture2D> texture, float rotation, bool has_collision)
+MapObject::MapObject(const glm::vec2& position, const glm::vec2& size, std::shared_ptr<Texture2D> texture, float rotation, bool has_collision, float opacity_on_collision)
     : m_position(position),
       m_size(size),
       m_rotation(rotation),
       m_texture(texture),
-      hasCollision(has_collision)
+      hasCollision(has_collision),
+      opacityOnCollision(opacity_on_collision)
 {
     id = ObjectID::FIRST_OBJECT;
 }
@@ -50,41 +51,47 @@ MapObject MapObject::createPredefined(const glm::vec2& position, ObjectID id, bo
     std::shared_ptr<Texture2D> texture;
     bool has_collision = false;
     glm::vec2 size{};
+    float opacity_on_collision = 1.f;  // domain <0; 1>
     switch(id)
     {
         case ObjectID::Car:
         {
             texture = res::carTexture;
             size = {0.f, 0.f};
-            has_collision = false;
+            has_collision = true;
+            opacity_on_collision = 1.f;
             break;
         }
         case ObjectID::DestroyedCar:
         {
             texture = res::destroyedCarTexture;
             size = {0.f, 0.f};
-            has_collision = false;
+            has_collision = true;
+            opacity_on_collision = 1.f;
             break;
         }
         case ObjectID::Chair:
         {
             texture = res::chairTexture;
             size = {0.f, 0.f};
-            has_collision = false;
+            has_collision = true;
+            opacity_on_collision = 1.f;
             break;
         }
         case ObjectID::OutdoorBench:
         {
             texture = res::outdoorBenchTexture;
             size = {0.f, 0.f};
-            has_collision = false;
+            has_collision = true;
+            opacity_on_collision = 1.f;
             break;
         }
         case ObjectID::Table:
         {
             texture = res::tableTexture;
             size = {0.f, 0.f};
-            has_collision = false;
+            has_collision = true;
+            opacity_on_collision = 1.f;
             break;
         }
         case ObjectID::SmallTree:
@@ -92,6 +99,7 @@ MapObject MapObject::createPredefined(const glm::vec2& position, ObjectID id, bo
             texture = res::smallTreeTexture;
             size = {0.f, 0.f};
             has_collision = false;
+            opacity_on_collision = 0.7f;
             break;
         }
         case ObjectID::LargeTree:
@@ -99,6 +107,7 @@ MapObject MapObject::createPredefined(const glm::vec2& position, ObjectID id, bo
             texture = res::largeTreeTexture;
             size = {10.f, 10.f};
             has_collision = false;
+            opacity_on_collision = 0.7f;
             break;
         }
         case ObjectID::SmallBush:
@@ -106,6 +115,7 @@ MapObject MapObject::createPredefined(const glm::vec2& position, ObjectID id, bo
             texture = res::smallBushTexture;
             size = {0.f, 0.f};
             has_collision = false;
+            opacity_on_collision = 0.7f;
             break;
         }
         case ObjectID::LargeBush:
@@ -113,16 +123,18 @@ MapObject MapObject::createPredefined(const glm::vec2& position, ObjectID id, bo
             texture = res::largeBushTexture;
             size = {0.f, 0.f};
             has_collision = false;
+            opacity_on_collision = 0.7f;
             break;
         }
         default:
         {
             size = {0.f, 0.f};
             has_collision = false;
+            opacity_on_collision = 1.f;
             break;
         }
     }
-    auto retval = MapObject(position, size, std::move(texture), random_rotation, has_collision);
+    auto retval = MapObject(position, size, std::move(texture), random_rotation, has_collision, opacity_on_collision);
     retval.id = id;
     return retval;
 }

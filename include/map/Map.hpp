@@ -43,7 +43,7 @@ class Map final
     void render(bool area = false, bool show_solid = false) noexcept;  // one pass draw
 
     void drawTiles(bool area = false, bool show_solid = false);
-    void drawObjects(bool show_solid = false);
+    void drawObjects(const glm::vec2& hero_pos, bool show_solid = false);
 
     protected:
     void calculateNewSize(const float& tile_x, const float& tile_y);

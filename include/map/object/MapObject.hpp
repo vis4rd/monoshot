@@ -9,7 +9,7 @@
 class MapObject
 {
     public:
-    MapObject(const glm::vec2& position, const glm::vec2& size, std::shared_ptr<Texture2D> texture, float rotation = 0.f, bool has_collision = true);
+    MapObject(const glm::vec2& position, const glm::vec2& size, std::shared_ptr<Texture2D> texture, float rotation = 0.f, bool has_collision = true, float opacity_on_collision = 1.f);
     ~MapObject() = default;
 
     const glm::vec2& getPosition() const;
@@ -24,6 +24,7 @@ class MapObject
     public:
     bool hasCollision = true;
     ObjectID id;
+    float opacityOnCollision = 1.f;
 
     private:
     glm::vec2 m_position{};

@@ -2,6 +2,7 @@
 #include "../../include/renderer/Renderer.hpp"
 #include "../../include/ecs/systems.hpp"
 #include "../../include/utility/ResourceManager.hpp"
+#include "../../include/utility/Collisions.hpp"
 
 #include <numeric>
 
@@ -234,7 +235,7 @@ void Map::render(bool area, bool show_solid) noexcept
 {
     Renderer::beginBatch();
     this->drawTiles(area, show_solid);
-    this->drawObjects(show_solid);
+    this->drawObjects({}, show_solid);
     Renderer::endBatch();
 }
 
@@ -266,13 +267,19 @@ void Map::drawTiles(bool area, bool show_solid)
     }
 }
 
-void Map::drawObjects(bool show_solid)
+void Map::drawObjects(const glm::vec2& hero_pos, bool show_solid)
 {
     spdlog::trace("Drawing Map objects...");
     const auto& [wall_block, wall_color, wall_texture] = m_theme.wallBlock;
     for(const auto& object : m_objects)
     {
-        Renderer::drawQuad(object.getPosition(), object.getSize(), object.getRotation(), object.getTexture(), wall_color);
+        // const auto obj_bb = OBB::createBoundingBox(object.getPosition(), object.getSize(), object.getRotation());
+        // const auto hero_bb = OBB::createBoundingBox(hero_pos, {0.6f, 0.6f}, 0.f);
+        // const bool col = OBB::getCollision(hero_bb, obj_bb);
+        const bool col = AABB::isColliding(hero_pos, {0.6f, 0.6f}, object.getPosition(), object.getSize());
+        glm::vec4 collision_color = {1.f, 1.f, 1.f, col ? object.opacityOnCollision : 1.f};
+        spdlog::debug("collision_color = ({}, {}, {}, {})", collision_color.x, collision_color.y, collision_color.z, collision_color.w);
+        Renderer::drawQuad(object.getPosition(), object.getSize(), object.getRotation(), object.getTexture(), wall_color * collision_color);
     }
 }
 
