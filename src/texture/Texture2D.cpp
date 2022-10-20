@@ -22,7 +22,7 @@ Texture2D::Texture2D(Texture2D&& move)
 
 Texture2D::~Texture2D()
 {
-    spdlog::debug("Texture2D: calling destructor of texture '{}' with ID = {} (no destroy)", m_sourcePath, m_id);
+    // spdlog::debug("Texture2D: calling destructor of texture '{}' with ID = {} (no destroy)", m_sourcePath, m_id);
     // this->unload();
     // glDeleteTextures(1, &m_id);
     // Delete can not be called here, because vectors like to call destructors when changing size.
