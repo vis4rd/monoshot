@@ -121,6 +121,8 @@ void Map::addTilesToRegistry(entt::registry& registry) const
 
 void Map::loadFromFile(const std::string& filename)
 {
+    spdlog::debug("Loading map from file '{}'...", filename);
+
     std::ifstream file(filename);
     if(!file.is_open() || !file.good())
     {
@@ -138,14 +140,33 @@ void Map::loadFromFile(const std::string& filename)
     std::size_t tile_block = 0;
     bool tile_solid = false;
 
-    std::size_t line_count = 0;
-    while(file_buffer >> tile_x >> tile_y >> tile_rotation >> tile_block >> tile_solid)
+    std::string line{};
+    while(std::getline(file_buffer, line))
     {
-        spdlog::trace("file buffer >> {} >> {} >> {} >> {} >> {}", tile_x, tile_y, tile_rotation, tile_block, tile_solid);
+        if(line.empty())
+        {
+            break;
+        }
+        std::stringstream line_buffer(line);
+        line_buffer >> tile_x >> tile_y >> tile_rotation >> tile_block >> tile_solid;
         this->setTile(tile_x, tile_y, tile_rotation, static_cast<BlockID>(tile_block), tile_solid);
-
-        line_count++;
+        spdlog::debug("Loading Tile: pos = ({}, {}), rot = {}, solid = {}, ID = '{}'", tile_x, tile_y, tile_rotation, tile_solid, blockToString(tile_block));
     }
+
+    float object_pos_x = 0.f;
+    float object_pos_y = 0.f;
+    float object_size_x = 0.f;
+    float object_size_y = 0.f;
+    float object_rotation = 0.f;
+    bool object_solid = false;
+    std::size_t object_id = 2000;
+    while(file_buffer >> object_pos_x >> object_pos_y >> object_size_x >> object_size_y >> object_rotation >> object_solid >> object_id)
+    {
+        this->addObject({object_pos_x, object_pos_y}, object_rotation, static_cast<ObjectID>(object_id));
+        spdlog::debug("Loading MapObject: pos = ({}, {}), size = ({}, {}), rot = {}, solid = {}, ID = '{}'", object_pos_x, object_pos_y, object_size_x, object_size_y, object_rotation, object_solid, objectIdToString(object_id));
+    }
+
+    spdlog::debug("Map loaded from file successfully");
 }
 
 void Map::saveToFile(const std::string& filename)
@@ -159,21 +180,31 @@ void Map::saveToFile(const std::string& filename)
     //     return;
     // }
 
-    // save to the buffer
-    std::stringstream file_buffer;
-    auto tie = [](const Tile& tile)
+    // clang-format off
+    std::sort(m_tiles.begin(), m_tiles.end(), [](const Tile& tile1, const Tile& tile2)
     {
-        return std::tie(tile.x, tile.y);
-    };
-    std::sort(m_tiles.begin(),
-        m_tiles.end(),
-        [&tie](const Tile& tile1, const Tile& tile2)
-        {
-            return tie(tile1) < tie(tile2);
-        });
-    for(auto& tile : m_tiles)
+        auto tie = [](const Tile& tile) { return std::tie(tile.x, tile.y); };
+        return tie(tile1) < tie(tile2);
+    });
+    // clang-format on
+
+    // save tiles
+    std::stringstream file_buffer{};
+    for(const auto& tile : m_tiles)
     {
         file_buffer << tile.x << ' ' << tile.y << ' ' << tile.rotation << ' ' << tile.block_id << ' ' << tile.solid << '\n';
+        spdlog::debug("Saving Tile: pos = ({}, {}), rot = {}, solid = {}, ID = '{}'", tile.x, tile.y, tile.rotation, tile.solid, blockToString(tile.block_id));
+    }
+
+    file_buffer << "\n";  // create an empty line between tiles and objects in a file
+
+    // save objects
+    for(const auto& object : m_objects)
+    {
+        const auto& pos = object.getPosition();
+        const auto& size = object.getSize();
+        file_buffer << pos.x << ' ' << pos.y << ' ' << size.x << ' ' << size.y << ' ' << object.getRotation() << ' ' << object.hasCollision << ' ' << object.id << '\n';
+        spdlog::debug("Saving MapObject: pos = ({}, {}), size = ({}, {}), rot = {}, solid = {}, ID = '{}'", pos.x, pos.y, size.x, size.y, object.getRotation(), object.hasCollision, objectIdToString(object.id));
     }
 
     // dump buffer to the file
@@ -185,6 +216,7 @@ void Map::saveToFile(const std::string& filename)
     }
     file << file_buffer.rdbuf();
     file.close();
+
     spdlog::debug("Map saved to file successfully");
 }
 

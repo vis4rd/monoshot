@@ -67,7 +67,6 @@ DebugSection::DebugSection()
     // ShaderManager::addShaderProgram("../res/shaders", "triangle_zoom");
 
     m_mapGrid.loadFromFile("testMap.map");
-    m_mapGrid.addObject({-30.f, 0.f}, 0.f, ObjectID::LargeTree);
 
     // firstTexture = std::make_shared<Texture2D>(16, 16);
     // firstTexture->load("../res/textures/first_texture.png");
