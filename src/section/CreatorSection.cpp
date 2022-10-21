@@ -1,13 +1,14 @@
 #include "../../include/section/CreatorSection.hpp"
 
 #include "../../include/renderer/Renderer.hpp"
+#include "../../include/utility/RandomNumber.hpp"
 #include "../../include/utility/ResourceManager.hpp"
 
 // globals
 static std::size_t s_selected_map_item = BlockID::Wall;
 static bool s_selected_solid = false;
 static glm::vec2 s_mouse_world_pos = {0.f, 0.f};
-static bool s_randomize_hover = false;
+static float s_randomized_rotation = random::getRandomNumber(0.f, 360.f);
 
 CreatorSection::CreatorSection()
     : Section(),
@@ -98,12 +99,8 @@ void CreatorSection::update() noexcept
         {
             if(input.isPressedOnce(GLFW_MOUSE_BUTTON_LEFT))
             {
-                m_map.addObject(s_mouse_world_pos, 0.f, static_cast<ObjectID>(s_selected_map_item));
-                s_randomize_hover = true;
-            }
-            else
-            {
-                s_randomize_hover = false;
+                m_map.addObject(s_mouse_world_pos, s_randomized_rotation, static_cast<ObjectID>(s_selected_map_item));
+                s_randomized_rotation = random::getRandomNumber(0.f, 360.f);
             }
         }
         else if(s_selected_map_item > BlockID::FIRST_BLOCK && s_selected_map_item < BlockID::LAST_BLOCK)  // if its a Block
@@ -126,18 +123,20 @@ void CreatorSection::render() noexcept
     ShaderManager::getShader("quad").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 0);
     ShaderManager::getShader("quad").uploadMat4("uView", m_camera.getViewMatrix(), 1);
 
-    // hovered tile highlight
+
     Renderer::beginBatch();
     if(s_selected_map_item > ObjectID::FIRST_OBJECT && s_selected_map_item < ObjectID::LAST_OBJECT)
     {
-        const auto map_object = MapObject::createPredefined(s_mouse_world_pos, static_cast<ObjectID>(s_selected_map_item), s_randomize_hover);
-        if(map_object.getTexture())
+        // hovered object highlight
+        const auto map_object = MapObject::createPredefined(static_cast<ObjectID>(s_selected_map_item), s_mouse_world_pos, s_randomized_rotation);
+        if(map_object.getTexture())  // TODO: remove this branch when all textures are initialized
         {
             Renderer::drawQuad(map_object.getPosition(), map_object.getSize(), map_object.getRotation(), map_object.getTexture(), {0.9f, 0.9f, 1.f, 0.2f});
         }
     }
     else if(s_selected_map_item > BlockID::FIRST_BLOCK && s_selected_map_item < BlockID::LAST_BLOCK)
     {
+        // hovered tile highlight
         Renderer::drawQuad({std::round(s_mouse_world_pos.x), std::round(s_mouse_world_pos.y)}, {1.f, 1.f}, 0.f, {0.9f, 0.9f, 1.f, 0.2f});
     }
     // Renderer::drawRect({std::round(s_mouse_world_pos.x), std::round(s_mouse_world_pos.y)}, {1.f, 1.f}, 0.f, {1.f, 1.f, 1.f, 1.f});

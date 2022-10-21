@@ -1,7 +1,6 @@
 #include "../../../include/map/object/MapObject.hpp"
 
 #include "../../../include/utility/ResourceManager.hpp"
-#include "../../../include/utility/RandomNumber.hpp"
 
 MapObject::MapObject(const glm::vec2& position, const glm::vec2& size, std::shared_ptr<Texture2D> texture, float rotation, bool has_collision, float opacity_on_collision)
     : m_position(position),
@@ -39,15 +38,10 @@ void MapObject::setPosition(const glm::vec2& new_pos)
     m_position = new_pos;
 }
 
-MapObject MapObject::createPredefined(const glm::vec2& position, ObjectID id, bool randomize)
+MapObject MapObject::createPredefined(ObjectID id, const glm::vec2& position, float rotation)
 {
     using res = ResourceManager;
 
-    static float random_rotation;
-    if(randomize)
-    {
-        random_rotation = random::getRandomNumber(0.f, 360.f);
-    }
     std::shared_ptr<Texture2D> texture;
     bool has_collision = false;
     glm::vec2 size{};
@@ -97,7 +91,7 @@ MapObject MapObject::createPredefined(const glm::vec2& position, ObjectID id, bo
         case ObjectID::SmallTree:
         {
             texture = res::smallTreeTexture;
-            size = {0.f, 0.f};
+            size = {5.f, 5.f};
             has_collision = false;
             opacity_on_collision = 0.7f;
             break;
@@ -134,12 +128,17 @@ MapObject MapObject::createPredefined(const glm::vec2& position, ObjectID id, bo
             break;
         }
     }
-    auto retval = MapObject(position, size, std::move(texture), random_rotation, has_collision, opacity_on_collision);
+    auto retval = MapObject(position, size, std::move(texture), rotation, has_collision, opacity_on_collision);
     retval.id = id;
-    return retval;
+    return std::move(retval);
 }
 
-MapObject MapObject::createLargeTree(const glm::vec2& position)
+MapObject MapObject::createSmallTree(const glm::vec2& position, float rotation)
 {
-    return MapObject::createPredefined(position, ObjectID::LargeTree);
+    return MapObject::createPredefined(ObjectID::SmallTree, position, rotation);
+}
+
+MapObject MapObject::createLargeTree(const glm::vec2& position, float rotation)
+{
+    return MapObject::createPredefined(ObjectID::LargeTree, position, rotation);
 }

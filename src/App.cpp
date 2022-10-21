@@ -51,7 +51,10 @@ void App::initTextures() noexcept
 {
     using res = ResourceManager;
     res::largeTreeTexture = std::make_shared<Texture2D>(128, 128);
-    res::largeTreeTexture->load("../res/textures/small_tree.png");
+    res::largeTreeTexture->load("../res/textures/large_tree.png");
+
+    res::smallTreeTexture = std::make_shared<Texture2D>(64, 64);
+    res::smallTreeTexture->load("../res/textures/small_tree.png");
 }
 
 void App::initFonts() noexcept

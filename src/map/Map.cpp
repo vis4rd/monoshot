@@ -39,24 +39,13 @@ const std::size_t& Map::getHeight() const
 
 void Map::addObject(const glm::vec2& position, const float& rotation, ObjectID object_id)
 {
-    switch(object_id)
-    {
-        case Car: break;
-        case DestroyedCar: break;
-        case Chair: break;
-        case OutdoorBench: break;
-        case Table: break;
-        case SmallTree: break;
-        case LargeTree: m_objects.push_back(std::move(MapObject::createLargeTree(position))); break;
-        case SmallBush: break;
-        case LargeBush: break;
-        default: break;
-    }
+    spdlog::debug("Placed MapObject: OID = {}, pos = ({}, {}), rot = {}", objectIdToString(object_id), position.x, position.y, rotation);
+    m_objects.push_back(std::move(MapObject::createPredefined(object_id, position, rotation)));
 }
 
 void Map::setTile(const Tile& tile)
 {
-    spdlog::trace("Map: Placing a tile with coords ({}, {}), rotation {}, block_id {}", tile.x, tile.y, tile.rotation, tile.block_id);
+    spdlog::debug("Map: Placing a tile with coords ({}, {}), rotation {}, block_id {}", tile.x, tile.y, tile.rotation, tile.block_id);
     this->calculateNewSize(tile.x, tile.y);
 
     const auto iter = this->findTile(tile.x, tile.y);
@@ -68,7 +57,6 @@ void Map::setTile(const Tile& tile)
     {
         m_tiles.push_back(tile);
     }
-    spdlog::trace("Map: Finished placing a tile");
 }
 
 void Map::setTile(const float& x, const float& y, const float& rotation, BlockID block_id, const bool& solid)
@@ -278,7 +266,7 @@ void Map::drawObjects(const glm::vec2& hero_pos, bool show_solid)
         // const bool col = OBB::getCollision(hero_bb, obj_bb);
         const bool col = AABB::isColliding(hero_pos, {0.6f, 0.6f}, object.getPosition(), object.getSize());
         glm::vec4 collision_color = {1.f, 1.f, 1.f, col ? object.opacityOnCollision : 1.f};
-        spdlog::debug("collision_color = ({}, {}, {}, {})", collision_color.x, collision_color.y, collision_color.z, collision_color.w);
+        spdlog::trace("OID = {}, collision_color = ({}, {}, {}, {})", objectIdToString(object.id), collision_color.x, collision_color.y, collision_color.z, collision_color.w);
         Renderer::drawQuad(object.getPosition(), object.getSize(), object.getRotation(), object.getTexture(), wall_color * collision_color);
     }
 }
