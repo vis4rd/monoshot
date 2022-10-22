@@ -58,6 +58,9 @@ void App::initTextures() noexcept
 
     res::outdoorBenchTexture = std::make_shared<Texture2D>(48, 16);
     res::outdoorBenchTexture->load("../res/textures/outdoors_bench.png");
+
+    res::chairTexture = std::make_shared<Texture2D>(16, 16);
+    res::chairTexture->load("../res/textures/chair.png");
 }
 
 void App::initFonts() noexcept

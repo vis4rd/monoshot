@@ -67,7 +67,7 @@ MapObject MapObject::createPredefined(ObjectID id, const glm::vec2& position, fl
         case ObjectID::Chair:
         {
             texture = res::chairTexture;
-            size = {0.f, 0.f};
+            size = {1.f, 1.f};
             has_collision = true;
             opacity_on_collision = 1.f;
             break;
