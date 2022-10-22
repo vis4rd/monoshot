@@ -55,6 +55,9 @@ void App::initTextures() noexcept
 
     res::smallTreeTexture = std::make_shared<Texture2D>(64, 64);
     res::smallTreeTexture->load("../res/textures/small_tree.png");
+
+    res::outdoorBenchTexture = std::make_shared<Texture2D>(48, 16);
+    res::outdoorBenchTexture->load("../res/textures/outdoors_bench.png");
 }
 
 void App::initFonts() noexcept

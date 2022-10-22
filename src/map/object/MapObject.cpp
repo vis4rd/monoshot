@@ -75,7 +75,7 @@ MapObject MapObject::createPredefined(ObjectID id, const glm::vec2& position, fl
         case ObjectID::OutdoorBench:
         {
             texture = res::outdoorBenchTexture;
-            size = {0.f, 0.f};
+            size = {3.f, 1.f};
             has_collision = true;
             opacity_on_collision = 1.f;
             break;
