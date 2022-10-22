@@ -89,6 +89,10 @@ void CreatorSection::update() noexcept
     {
         s_selected_solid = !s_selected_solid;
     }
+    if(input.isPressedOnce(GLFW_KEY_R))
+    {
+        s_randomized_rotation = std::fmod((std::floor(s_randomized_rotation / 45.f) + 1.f) * 45.f, 360.f);  // nudge rotation values to every 45 degrees
+    }
     if(input.isHeld(GLFW_KEY_DELETE))
     {
         m_map.removeTile(s_mouse_world_pos.x, s_mouse_world_pos.y);
@@ -214,6 +218,8 @@ void CreatorSection::render() noexcept
         {
             m_map.saveToFile("testMap.map");
         }
+
+        ImGui::SliderFloat("Object rotation", &s_randomized_rotation, 0.f, 360.f);
     }
     ImGui::End();
 }
