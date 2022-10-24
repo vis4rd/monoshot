@@ -51,7 +51,7 @@ MapObject MapObject::createPredefined(ObjectID id, const glm::vec2& position, fl
         case ObjectID::Car:
         {
             texture = res::carTexture;
-            size = {0.f, 0.f};
+            size = {2.f, 4.f};
             has_collision = true;
             opacity_on_collision = 1.f;
             break;
@@ -59,7 +59,7 @@ MapObject MapObject::createPredefined(ObjectID id, const glm::vec2& position, fl
         case ObjectID::DestroyedCar:
         {
             texture = res::destroyedCarTexture;
-            size = {0.f, 0.f};
+            size = {2.f, 4.f};
             has_collision = true;
             opacity_on_collision = 1.f;
             break;
@@ -83,7 +83,7 @@ MapObject MapObject::createPredefined(ObjectID id, const glm::vec2& position, fl
         case ObjectID::Table:
         {
             texture = res::tableTexture;
-            size = {0.f, 0.f};
+            size = {2.f, 2.f};
             has_collision = true;
             opacity_on_collision = 1.f;
             break;
@@ -107,7 +107,7 @@ MapObject MapObject::createPredefined(ObjectID id, const glm::vec2& position, fl
         case ObjectID::SmallBush:
         {
             texture = res::smallBushTexture;
-            size = {0.f, 0.f};
+            size = {3.f, 3.f};
             has_collision = false;
             opacity_on_collision = 0.7f;
             break;
@@ -115,7 +115,7 @@ MapObject MapObject::createPredefined(ObjectID id, const glm::vec2& position, fl
         case ObjectID::LargeBush:
         {
             texture = res::largeBushTexture;
-            size = {0.f, 0.f};
+            size = {4.f, 4.f};
             has_collision = false;
             opacity_on_collision = 0.7f;
             break;

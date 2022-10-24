@@ -61,6 +61,21 @@ void App::initTextures() noexcept
 
     res::chairTexture = std::make_shared<Texture2D>(16, 16);
     res::chairTexture->load("../res/textures/chair.png");
+
+    res::tableTexture = std::make_shared<Texture2D>(32, 32);
+    res::tableTexture->load("../res/textures/table.png");
+
+    res::smallBushTexture = std::make_shared<Texture2D>(48, 48);
+    res::smallBushTexture->load("../res/textures/small_bush.png");
+
+    res::largeBushTexture = std::make_shared<Texture2D>(56, 56);
+    res::largeBushTexture->load("../res/textures/large_bush.png");
+
+    res::carTexture = std::make_shared<Texture2D>(32, 64);
+    res::carTexture->load("../res/textures/car.png");
+
+    res::destroyedCarTexture = std::make_shared<Texture2D>(32, 64);
+    res::destroyedCarTexture->load("../res/textures/destroyed_car.png");
 }
 
 void App::initFonts() noexcept
