@@ -96,6 +96,7 @@ void CreatorSection::update() noexcept
     if(input.isHeld(GLFW_KEY_DELETE))
     {
         m_map.removeTile(s_mouse_world_pos.x, s_mouse_world_pos.y);
+        m_map.removeObject(s_mouse_world_pos);
     }
     if(!ImGui::GetIO().WantCaptureMouse)
     {

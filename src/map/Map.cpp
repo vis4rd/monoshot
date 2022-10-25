@@ -43,6 +43,21 @@ void Map::addObject(const glm::vec2& position, const float& rotation, ObjectID o
     m_objects.push_back(std::move(MapObject::createPredefined(object_id, position, rotation)));
 }
 
+void Map::removeObject(const glm::vec2& position)
+{
+    std::size_t dynamic_size = m_objects.size();
+    for(std::size_t i = 0; i < dynamic_size; i++)
+    {
+        const bool col = AABB::isColliding(position, {0.01f, 0.01f}, m_objects[i].getPosition(), m_objects[i].getSize());
+        if(col)
+        {
+            m_objects.erase(m_objects.begin() + i);
+            i--;
+            dynamic_size = m_objects.size();
+        }
+    }
+}
+
 void Map::setTile(const Tile& tile)
 {
     spdlog::debug("Map: Placing a tile with coords ({}, {}), rotation {}, block_id {}", tile.x, tile.y, tile.rotation, tile.block_id);

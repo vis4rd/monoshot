@@ -27,6 +27,7 @@ class Map final
     const std::size_t& getHeight() const;
 
     void addObject(const glm::vec2& position, const float& rotation, ObjectID object_id);
+    void removeObject(const glm::vec2& position);
 
     void setTile(const Tile& tile);
     void setTile(const float& x, const float& y, const float& rotation, BlockID block_id, const bool& solid);
