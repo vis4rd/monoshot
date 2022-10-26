@@ -3,6 +3,7 @@
 #include "../../include/renderer/Renderer.hpp"
 #include "../../include/utility/RandomNumber.hpp"
 #include "../../include/utility/ResourceManager.hpp"
+#include <tinyfiledialogs/tinyfiledialogs.h>
 
 // globals
 static std::size_t s_selected_map_item = BlockID::Wall;
@@ -217,7 +218,12 @@ void CreatorSection::render() noexcept
         ImGui::Checkbox("Solid tile", &s_selected_solid);
         if(ImGui::Button("Save to file"))
         {
-            m_map.saveToFile("testMap.map");
+            std::array<const char*, 2> patterns = {"*.map", "*.msmap"};
+            const char* file_path = tinyfd_saveFileDialog("Choose save location...", "./", patterns.size(), patterns.data(), nullptr);
+            if(nullptr != file_path)
+            {
+                m_map.saveToFile(file_path);
+            }
         }
 
         ImGui::SliderFloat("Object rotation", &s_randomized_rotation, 0.f, 360.f);
