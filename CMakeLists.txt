@@ -124,12 +124,12 @@ target_link_libraries(${EXECUTABLE_NAME}
     PUBLIC glfw
            glad
            glm::glm
-           imgui
-           imgui_backend
+           imgui::imgui
+           imgui::backend_glfw
            spdlog::spdlog
            stbi
            EnTT::EnTT
-           tinyfd
+           tinyfd::tinyfd
 )
 
 target_precompile_headers(${EXECUTABLE_NAME}

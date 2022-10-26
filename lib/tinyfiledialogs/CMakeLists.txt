@@ -6,6 +6,7 @@ project(TINYFILEDIALOGS
 )
 
 add_library(tinyfd STATIC)
+add_library(tinyfd::tinyfd ALIAS tinyfd)
 
 target_compile_features(tinyfd
     PRIVATE "cxx_std_20"
