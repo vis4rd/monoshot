@@ -19,3 +19,6 @@
 	path = lib/entt
 	url = https://github.com/skypjack/entt.git
 	branch = e4ccb87
+[submodule "TINYFILEDIALOGS"]
+	path = lib/tinyfiledialogs/tinyfiledialogs
+	url = https://git.code.sf.net/p/tinyfiledialogs/code

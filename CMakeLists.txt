@@ -86,6 +86,9 @@ target_sources(stbi PRIVATE ${STB_IMAGE_FILE_SOURCE})
 # EnTT
 add_subdirectory("${PROJECT_SOURCE_DIR}/lib/entt")
 
+# tinyfiledialogs
+add_subdirectory("${PROJECT_SOURCE_DIR}/lib/tinyfiledialogs")
+
 # Other sources
 file(GLOB_RECURSE SOURCES 
     "${PROJECT_SOURCE_DIR}/src/*.cpp"
@@ -126,6 +129,7 @@ target_link_libraries(${EXECUTABLE_NAME}
            spdlog::spdlog
            stbi
            EnTT::EnTT
+           tinyfd
 )
 
 target_precompile_headers(${EXECUTABLE_NAME}
