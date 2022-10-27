@@ -3,7 +3,7 @@
 #include "../../include/utility/ResourceManager.hpp"
 
 Window::Window()
-    : Window("Arcade Game", 1280, 720, false, true)
+    : Window("MONOSHOT", 1280, 720, false, true)
 {
 }
 
@@ -144,6 +144,11 @@ void Window::setFramebufferSize(const std::pair<int32_t, int32_t> &new_size)
 
 void Window::setFullscreen(bool fullscreen)
 {
+    if(m_isFullscreen == fullscreen)  // if there's no need to change anything, leave
+    {
+        return;
+    }
+
     const auto hz = NativeWindow::getRefreshRate();
     const auto valid_resolutions = NativeWindow::queryMonitorResolutions();
     const auto monitor = NativeWindow::getCurrentMonitor();
@@ -164,11 +169,18 @@ void Window::setFullscreen(bool fullscreen)
         m_width = sr.x;  // update internal size indicator
         m_height = sr.y;
     }
-    this->setVerticalSync(m_isVSyncEnabled);
+
+    m_isVSyncEnabled = !m_isVSyncEnabled;  // override the guard of setVerticalSync() method
+    this->setVerticalSync(!m_isVSyncEnabled);
 }
 
 void Window::setMaximized(bool maximized)
 {
+    if(m_isMaximized == maximized)  // if there's no need to change anything, leave
+    {
+        return;
+    }
+
     m_isMaximized = maximized;
     if(m_isMaximized)
     {
@@ -182,6 +194,11 @@ void Window::setMaximized(bool maximized)
 
 void Window::setMinimized(bool minimized)
 {
+    if(m_isMinimized == minimized)  // if there's no need to change anything, leave
+    {
+        return;
+    }
+
     m_isMinimized = minimized;
     if(m_isMinimized)
     {
@@ -195,6 +212,11 @@ void Window::setMinimized(bool minimized)
 
 void Window::setVerticalSync(bool vsync)
 {
+    if(m_isVSyncEnabled == vsync)  // if there's no need to change anything, leave
+    {
+        return;
+    }
+
     m_isVSyncEnabled = vsync;
     glfwSwapInterval(static_cast<int>(vsync));
 }
@@ -219,10 +241,11 @@ void Window::initImGui()
     auto &io = ImGui::GetIO();
     (void)io;
 
-    // TODO: disable this functionality in release builds
-    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;  // Enable Docking
-    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;  // Enable Multi-Viewport
-
+    if constexpr(Flag::DebugMode)
+    {
+        io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+    }
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     io.Fonts->AddFontDefault();
 
     m_io = io;

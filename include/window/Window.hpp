@@ -44,10 +44,10 @@ class Window final : public NativeWindow
     private:
     ImGuiIO m_io;
     bool m_shouldClose = false;
-    bool m_isFullscreen = true;
+    bool m_isFullscreen = false;
     bool m_isMaximized = false;
     bool m_isMinimized = false;
-    bool m_isVSyncEnabled = true;
+    bool m_isVSyncEnabled = false;
     SectionManager &m_sectionManager = SectionManager::get();
     InputManager &m_inputManager = InputManager::get();
     VertexArray screenVA;
@@ -121,7 +121,14 @@ requires CRenderablePack<RENDERABLES...>
 
 void Window::render(RENDERABLES &&...renderables) noexcept
 {
+    if(m_isMinimized)
+    {
+        return;
+    }
+
     static bool show_debug_panel = true;
+    static bool enable_vsync = m_isVSyncEnabled;
+    static bool enable_fullscreen = m_isFullscreen;
 
     // Start the Dear ImGui frame
     ImGui_ImplOpenGL3_NewFrame();
@@ -154,14 +161,14 @@ void Window::render(RENDERABLES &&...renderables) noexcept
             ImGui::ShowDemoWindow(&show_demo_window);
         }
 
-        if(ImGui::Checkbox("Toggle VSYNC", &m_isVSyncEnabled))
+        if(ImGui::Checkbox("Toggle VSYNC", &enable_vsync))
         {
-            this->setVerticalSync(m_isVSyncEnabled);
+            this->setVerticalSync(enable_vsync);
         }
 
-        if(ImGui::Checkbox("Toggle fullscreen", &m_isFullscreen))
+        if(ImGui::Checkbox("Toggle fullscreen", &enable_fullscreen))
         {
-            this->setFullscreen(m_isFullscreen);
+            this->setFullscreen(enable_fullscreen);
         }
 
         ImGui::Text("Window size: (%d, %d)", m_width, m_height);

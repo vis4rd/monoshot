@@ -8,7 +8,7 @@ int main(int, char**)
 {
     App::initLogger();
 
-    App app("Hello OpenGL + ImGui!", 1280, 720);
+    App app("MONOSHOT", 1280, 720);
     app.run();
 
     return 0;

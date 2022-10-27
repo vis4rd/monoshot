@@ -30,6 +30,6 @@
 namespace Flag
 {
 
-static constexpr bool DebugMode = DEBUG_MODE;
+constexpr bool DebugMode = DEBUG_MODE;
 
 }

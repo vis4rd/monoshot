@@ -1,8 +1,6 @@
 #include "../../include/window/NativeWindow.hpp"
 
-#include <spdlog/spdlog.h>
-#include <glad/glad.h>
-
+#include "../../include/Root.hpp"
 #include "../../include/utility/Logging.hpp"
 
 NativeWindow::NativeWindow(const std::string &title, std::int32_t width, std::int32_t height)
@@ -169,7 +167,10 @@ void NativeWindow::initGL()
     }
 
     // logging
-    util::enableOpenGlLogging();
+    if constexpr(Flag::DebugMode)
+    {
+        util::enableOpenGlLogging();
+    }
 
     // viewport
     glViewport(0, 0, m_width, m_height);
