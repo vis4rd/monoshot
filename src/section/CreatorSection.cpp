@@ -218,8 +218,8 @@ void CreatorSection::render() noexcept
         ImGui::Checkbox("Solid tile", &s_selected_solid);
         if(ImGui::Button("Save to file"))
         {
-            std::array<const char*, 2> patterns = {"*.map", "*.msmap"};
-            const char* file_path = tinyfd_saveFileDialog("Choose save location...", "./", patterns.size(), patterns.data(), nullptr);
+            std::array<const char*, 1> patterns = {"*.msmap"};
+            const char* file_path = tinyfd_saveFileDialog("Choose save location...", "./", patterns.size(), patterns.data(), "*.msmap - Monoshot map savefile");
             if(nullptr != file_path)
             {
                 m_map.saveToFile(file_path);

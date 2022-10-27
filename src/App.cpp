@@ -9,7 +9,14 @@ App::App(const std::string& window_title, uint32_t width, uint32_t height)
 {
     spdlog::info("App version: {}.{}.{} (build {})", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, BUILD_NUMBER);
 
-    m_window = std::make_shared<Window>(window_title, width, height, true, true);
+    if constexpr(Flag::DebugMode)  // Debug Build
+    {
+        m_window = std::make_shared<Window>(window_title, width, height, false, true);  // windowed, vsync
+    }
+    else  // Release Build
+    {
+        m_window = std::make_shared<Window>(window_title, width, height);  // fullscreen, vsync
+    }
     ResourceManager::window = m_window;
 
     m_timer = std::make_shared<Timer>();
