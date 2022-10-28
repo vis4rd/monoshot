@@ -34,6 +34,7 @@ void SettingsSection::render() noexcept
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {m_layout.button_w_s, m_layout.button_h_s});
     ImGui::Begin("SettingsMenu", nullptr, m_layout.window_flags);
     {
+        // Resolution
         const auto& window_size = window->getSize();
         const auto& window_w = window_size.x;
         const auto& window_h = window_size.y;
@@ -59,6 +60,7 @@ void SettingsSection::render() noexcept
             ImGui::EndCombo();
         }
 
+        // Refresh Rate
         ImGui::BeginDisabled(!window->isFullscreen());
         std::string current_refresh_rate = std::to_string(window->getRefreshRate()) + "Hz";
         auto next_y = ImGui::GetCursorScreenPos().y;
@@ -83,13 +85,43 @@ void SettingsSection::render() noexcept
         }
         ImGui::EndDisabled();
 
+        // Fullscreen
+        std::string current_window_mode = window->isFullscreen() ? "Fullscreen" : "Windowed";
+        next_y = ImGui::GetCursorScreenPos().y;
+        ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s, next_y});
+        if(Custom::ImGui::BeginCombo("Window Mode", current_window_mode.c_str(), {m_layout.button_w, m_layout.button_h}))
+        {
+            if(ImGui::Selectable("Fullscreen", window->isFullscreen()))
+            {
+                current_window_mode = "Fullscreen";
+                window->setFullscreen(true);
+            }
+            else if(ImGui::Selectable("Windowed", !window->isFullscreen()))
+            {
+                current_window_mode = "Windowed";
+                window->setFullscreen(false);
+            }
+            ImGui::EndCombo();
+        }
 
-        // next_y = ImGui::GetCursorScreenPos().y;
-        // ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s, next_y});
-        // if(ImGui::Button("Button 1", {m_layout.button_w, m_layout.button_h}))
-        // {
-        //     spdlog::debug("Clicking Button 1");
-        // }
+        // Vertical Sync
+        std::string current_vertical_sync = window->isVerticalSyncEnabled() ? "Enabled" : "Disabled";
+        next_y = ImGui::GetCursorScreenPos().y;
+        ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s, next_y});
+        if(Custom::ImGui::BeginCombo("Vertical Sync", current_vertical_sync.c_str(), {m_layout.button_w, m_layout.button_h}))
+        {
+            if(ImGui::Selectable("Enabled", window->isVerticalSyncEnabled()))
+            {
+                current_window_mode = "Enabled";
+                window->setVerticalSync(true);
+            }
+            else if(ImGui::Selectable("Disabled", !window->isVerticalSyncEnabled()))
+            {
+                current_window_mode = "Disabled";
+                window->setVerticalSync(false);
+            }
+            ImGui::EndCombo();
+        }
     }
     ImGui::End();
     ImGui::PopStyleVar();
