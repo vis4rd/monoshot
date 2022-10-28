@@ -104,14 +104,14 @@ std::vector<glm::ivec2> NativeWindow::queryMonitorResolutions()
 {
     const auto &[video_modes, vm_count] = NativeWindow::getVideoModes();
     const auto hz = NativeWindow::getRefreshRate();
-    spdlog::debug("Monitor refresh rate: {}Hz", hz);
+    spdlog::trace("Monitor refresh rate: {}Hz", hz);
     std::vector<glm::ivec2> result;
     for(int i = 0; i < vm_count; i++)
     {
         const auto &vm = video_modes[i];
         if((vm.width % 16 == 0) && (vm.height % 9 == 0) && (vm.refreshRate == hz))
         {
-            spdlog::debug("Found video mode: r{}g{}b{}, {}x{}, {}Hz", vm.redBits, vm.greenBits, vm.blueBits, vm.width, vm.height, vm.refreshRate);
+            spdlog::trace("Found video mode: r{}g{}b{}, {}x{}, {}Hz", vm.redBits, vm.greenBits, vm.blueBits, vm.width, vm.height, vm.refreshRate);
             result.emplace_back(vm.width, vm.height);
         }
     }
