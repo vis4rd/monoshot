@@ -285,73 +285,60 @@ void DebugSection::render() noexcept
     // VAO.bind();
     // glDrawElements(GL_TRIANGLES, VAO.getElementBuffer().getElementCount(), GL_UNSIGNED_INT, 0);
 
-    ImGui::Begin("Section options");
+    if constexpr(Flag::DebugMode)
     {
-        static float zoom = 50.f;
-        // ImGui::SliderFloat("rotation", &rotation, -360.f, 360.f, "%.0f degrees");
-        // ImGui::SliderFloat2("scale", reinterpret_cast<float*>(&scale), 0.01f, 5.f);
-        // ImGui::SliderFloat2("position", reinterpret_cast<float*>(&position), -10.f, 10.f);
-        if(ImGui::SliderFloat("camera zoom", &zoom, 0.1f, 200.f, "x%.1f"))
+        ImGui::Begin("Section options");
         {
-            // m_camera.setZoom(zoom);
-            const auto& pos = m_camera.getPosition();
-            m_camera.setPosition({pos.x, pos.y, zoom});
-        }
-        const glm::vec2 mouse_screen_pos = ResourceManager::window->getMousePosition();
-        const auto mouse_world_pos = this->mouseScreenPosToWorldPos(mouse_screen_pos, m_camera);
-        ImGui::Text("mouse screen position: (%f, %f)", mouse_screen_pos.x, mouse_screen_pos.y);
-        ImGui::Text("mouse world position: (%f, %f)", mouse_world_pos.x, mouse_world_pos.y);
-        ImGui::Text("hero: pos(%.2f, %.2f), vel(%.2f), acc(%.2f), rot(%.2f)", pos.x, pos.y, vel.data, acc.data, rot.data);
-
-        static std::string preview = "Forest Theme";
-        bool check = false;
-        if(ImGui::BeginCombo("map_theme", preview.c_str()))
-        {
-            if(ImGui::Selectable("Tutorial Theme##unique_id", &check))
+            static float zoom = 50.f;
+            // ImGui::SliderFloat("rotation", &rotation, -360.f, 360.f, "%.0f degrees");
+            // ImGui::SliderFloat2("scale", reinterpret_cast<float*>(&scale), 0.01f, 5.f);
+            // ImGui::SliderFloat2("position", reinterpret_cast<float*>(&position), -10.f, 10.f);
+            if(ImGui::SliderFloat("camera zoom", &zoom, 0.1f, 200.f, "x%.1f"))
             {
-                preview = "Tutorial Theme";
-                spdlog::debug("Switching MapTheme to '{}'", preview);
-                m_mapGrid.setTheme(MapThemes::TUTORIAL_THEME);
+                // m_camera.setZoom(zoom);
+                const auto& pos = m_camera.getPosition();
+                m_camera.setPosition({pos.x, pos.y, zoom});
             }
-            if(ImGui::Selectable("Forest Theme##unique_id", &check))
-            {
-                preview = "Forest Theme";
-                spdlog::debug("Switching MapTheme to '{}'", preview);
-                m_mapGrid.setTheme(MapThemes::FOREST_THEME);
-            }
-            if(ImGui::Selectable("Winter Theme##unique_id", &check))
-            {
-                preview = "Winter Theme";
-                spdlog::debug("Switching MapTheme to '{}'", preview);
-                m_mapGrid.setTheme(MapThemes::WINTER_THEME);
-            }
-            ImGui::EndCombo();
-        }
+            const glm::vec2 mouse_screen_pos = ResourceManager::window->getMousePosition();
+            const auto mouse_world_pos = this->mouseScreenPosToWorldPos(mouse_screen_pos, m_camera);
+            ImGui::Text("mouse screen position: (%f, %f)", mouse_screen_pos.x, mouse_screen_pos.y);
+            ImGui::Text("mouse world position: (%f, %f)", mouse_world_pos.x, mouse_world_pos.y);
+            ImGui::Text("hero: pos(%.2f, %.2f), vel(%.2f), acc(%.2f), rot(%.2f)", pos.x, pos.y, vel.data, acc.data, rot.data);
 
-        // if(ImGui::Button("Calculate matrices"))
-        // {
-        //     glm::vec3 first = {vertices[0], vertices[1], vertices[2]};
-        //     glm::vec3 second = {vertices[3], vertices[4], vertices[5]};
-        //     glm::vec3 third = {vertices[6], vertices[7], vertices[8]};
-        //     glm::vec3 fourth = {vertices[9], vertices[10], vertices[11]};
-        //     model_matrix = glm::mat4(1.f);
-        //     spdlog::debug("Beginning:\n{}", util::mat4str(model_matrix));
-        //     model_matrix = glm::translate(model_matrix, position);
-        //     spdlog::debug("After translation:\n{}", util::mat4str(model_matrix));
-        //     model_matrix = glm::rotate(model_matrix, glm::radians(rotation), glm::vec3(0.f, 0.f, 1.f));
-        //     spdlog::debug("After rotation:\n{}", util::mat4str(model_matrix));
-        //     model_matrix = glm::scale(model_matrix, scale);
-        //     spdlog::debug("After scaling:\n{}", util::mat4str(model_matrix));
-        // }
+            static std::string preview = "Forest Theme";
+            bool check = false;
+            if(ImGui::BeginCombo("map_theme", preview.c_str()))
+            {
+                if(ImGui::Selectable("Tutorial Theme##unique_id", &check))
+                {
+                    preview = "Tutorial Theme";
+                    spdlog::debug("Switching MapTheme to '{}'", preview);
+                    m_mapGrid.setTheme(MapThemes::TUTORIAL_THEME);
+                }
+                if(ImGui::Selectable("Forest Theme##unique_id", &check))
+                {
+                    preview = "Forest Theme";
+                    spdlog::debug("Switching MapTheme to '{}'", preview);
+                    m_mapGrid.setTheme(MapThemes::FOREST_THEME);
+                }
+                if(ImGui::Selectable("Winter Theme##unique_id", &check))
+                {
+                    preview = "Winter Theme";
+                    spdlog::debug("Switching MapTheme to '{}'", preview);
+                    m_mapGrid.setTheme(MapThemes::WINTER_THEME);
+                }
+                ImGui::EndCombo();
+            }
 
-        auto& clear_color = ResourceManager::mapThemeBackgroundColor;
-        float* cc = reinterpret_cast<float*>(&clear_color);
-        if(ImGui::ColorEdit3("clear color", cc))
-        {
-            glClearColor(clear_color.r * clear_color.a, clear_color.g * clear_color.a, clear_color.b * clear_color.a, clear_color.a);
+            auto& clear_color = ResourceManager::mapThemeBackgroundColor;
+            float* cc = reinterpret_cast<float*>(&clear_color);
+            if(ImGui::ColorEdit3("clear color", cc))
+            {
+                glClearColor(clear_color.r * clear_color.a, clear_color.g * clear_color.a, clear_color.b * clear_color.a, clear_color.a);
+            }
         }
+        ImGui::End();
     }
-    ImGui::End();
 }
 
 // returns world coordinates at 0 height
