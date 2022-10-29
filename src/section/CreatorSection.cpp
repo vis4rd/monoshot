@@ -121,11 +121,14 @@ void CreatorSection::update() noexcept
 
 void CreatorSection::render() noexcept
 {
+    static bool draw_area = true;
+    static bool draw_bbs = true;
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // map rendering
-    m_map.render(true, true);
+    m_map.render(draw_area, draw_bbs);
     ShaderManager::getShader("quad").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 0);
     ShaderManager::getShader("quad").uploadMat4("uView", m_camera.getViewMatrix(), 1);
 
@@ -216,6 +219,8 @@ void CreatorSection::render() noexcept
         }
 
         ImGui::Checkbox("Solid tile", &s_selected_solid);
+        ImGui::Checkbox("Draw map area", &draw_area);
+        ImGui::Checkbox("Draw bounding boxes", &draw_bbs);
         if(ImGui::Button("Save to file"))
         {
             std::array<const char*, 1> patterns = {"*.msmap"};
