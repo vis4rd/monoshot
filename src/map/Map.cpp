@@ -115,11 +115,29 @@ void Map::addTilesToRegistry(entt::registry& registry) const
         auto entity = registry.create();
         auto& pos = registry.emplace<ecs::component::position>(entity);
         auto& rot = registry.emplace<ecs::component::rotation>(entity);
+        glm::vec2& size = registry.emplace<ecs::component::size>(entity);
 
         pos.x = tile.x;
         pos.y = tile.y;
         rot.data = tile.rotation;
+        size = {1.f, 1.f};
         spdlog::debug("Filling ECS registry with tile pos = ({}, {}), rot = {}", pos.x, pos.y, rot.data);
+    }
+    for(const auto& object : m_objects)
+    {
+        if(!object.hasCollision)
+        {
+            continue;
+        }
+        auto entity = registry.create();
+        glm::vec2& pos = registry.emplace<ecs::component::position>(entity);
+        float& rot = registry.emplace<ecs::component::rotation>(entity);
+        glm::vec2& size = registry.emplace<ecs::component::size>(entity);
+
+        pos = object.getPosition();
+        rot = object.getRotation();
+        size = object.getSize();
+        spdlog::debug("Filling ECS registry with tile pos = ({}, {}), rot = {}", pos.x, pos.y, rot);
     }
 }
 
@@ -265,7 +283,7 @@ void Map::drawTiles(bool area, bool show_solid)
         }
         if(show_solid && tile.solid)
         {
-            Renderer::drawRect({tile.x, tile.y}, {0.2f, 0.2f}, tile.rotation, {1.f, 1.f, 1.f, 1.f});
+            Renderer::drawRect({tile.x, tile.y}, {1.f, 1.f}, tile.rotation, {1.f, 1.f, 1.f, 1.f});
         }
     }
 }
@@ -276,13 +294,14 @@ void Map::drawObjects(const glm::vec2& hero_pos, bool show_solid)
     const auto& [wall_block, wall_color, wall_texture] = m_theme.wallBlock;
     for(const auto& object : m_objects)
     {
-        // const auto obj_bb = OBB::createBoundingBox(object.getPosition(), object.getSize(), object.getRotation());
-        // const auto hero_bb = OBB::createBoundingBox(hero_pos, {0.6f, 0.6f}, 0.f);
-        // const bool col = OBB::getCollision(hero_bb, obj_bb);
         const bool col = AABB::isColliding(hero_pos, {0.6f, 0.6f}, object.getPosition(), object.getSize());
         glm::vec4 collision_color = {1.f, 1.f, 1.f, col ? object.opacityOnCollision : 1.f};
-        spdlog::trace("OID = {}, collision_color = ({}, {}, {}, {})", objectIdToString(object.id), collision_color.x, collision_color.y, collision_color.z, collision_color.w);
+        // spdlog::trace("OID = {}, collision_color = ({}, {}, {}, {})", objectIdToString(object.id), collision_color.x, collision_color.y, collision_color.z, collision_color.w);
         Renderer::drawQuad(object.getPosition(), object.getSize(), object.getRotation(), object.getTexture(), wall_color * collision_color);
+        if(show_solid && object.hasCollision)
+        {
+            Renderer::drawRect(object.getPosition(), object.getSize(), /*object.getRotation()*/ 0.f, {1.f, 1.f, 1.f, 1.f});  // TODO: draw bbs with rotation when OBB collision will work
+        }
     }
 }
 

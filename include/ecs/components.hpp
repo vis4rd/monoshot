@@ -49,10 +49,12 @@ namespace impl
     };
 }
 
+struct size : public glm::vec2 { };
 struct position : public glm::vec2 { };
 struct rotation : public impl::Scalar<float> { };
 struct velocity : public impl::Scalar<float> { };
-struct direction : public glm::vec2 { };  // direction of movement in degrees 
+struct direction : public glm::vec2 { };  // direction of movement in degrees
+struct collision : public impl::Scalar<bool> { };
 
 struct max_velocity : public impl::Scalar<float>
 {
