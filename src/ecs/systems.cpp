@@ -67,7 +67,7 @@ void collide_with_hero(entt::registry& registry, const entt::entity& hero_id, gl
         auto next_pos = pos + vel * dir * static_cast<float>(delta_time);
 
         // forbid moving into solid tiles
-        const auto view = registry.view<ecs::component::position, ecs::component::size>();
+        const auto view = registry.view<ecs::component::position>();
 
         for(std::int32_t iter = 0; const auto& element : view)
         {
@@ -81,7 +81,7 @@ void collide_with_hero(entt::registry& registry, const entt::entity& hero_id, gl
             }
             const auto& tile_pos = view.get<ecs::component::position>(element);
             const auto& tile_rot = 0.f;
-            const glm::vec2& tile_size = view.get<ecs::component::size>(element);
+            const glm::vec2& tile_size = registry.get<ecs::component::size>(element);
 
             const auto intersection = AABB::findCollision(next_pos, hero_size, tile_pos, tile_size);
             if(intersection.x > 0.f && intersection.y > 0.f)
