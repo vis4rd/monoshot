@@ -30,7 +30,7 @@ class Renderer
     static void shutdown();
 
     static void beginBatch();
-    static void endBatch();
+    static void endBatch(const glm::mat4& projection, const glm::mat4& view);
 
     static void drawQuad(const glm::vec2& position, const glm::vec2& size, const float& rotation, const glm::vec4& color);
     static void drawQuad(const glm::vec2& position, const glm::vec2& size, const float& rotation, const ref<Texture2D> texture, const glm::vec4& color = {1.f, 1.f, 1.f, 1.f});
@@ -86,6 +86,9 @@ class Renderer
         std::vector<ref<Texture2D>> textureSlots;  // slot = vec index, unit = tex ID
         std::array<std::int32_t, maxTextures> textureSamplers = {0};
         std::uint32_t textureSlotsTakenCount = 0;
+
+        glm::mat4 last_projection_matrix{};
+        glm::mat4 last_view_matrix{};
 
         Renderer::Stats stats;
     };

@@ -128,10 +128,7 @@ void CreatorSection::render() noexcept
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // map rendering
-    m_map.render(draw_area, draw_bbs);
-    ShaderManager::getShader("quad").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 0);
-    ShaderManager::getShader("quad").uploadMat4("uView", m_camera.getViewMatrix(), 1);
-
+    m_map.render(m_camera.getProjectionMatrix(), m_camera.getViewMatrix(), draw_area, draw_bbs);
 
     Renderer::beginBatch();
     if(s_selected_map_item > ObjectID::FIRST_OBJECT && s_selected_map_item < ObjectID::LAST_OBJECT)
@@ -153,9 +150,7 @@ void CreatorSection::render() noexcept
     // Renderer::drawRect({-3.f, 3.f}, {3.f, -3.f}, {0.f, 1.f, 0.f, 1.f});
     // Renderer::drawLine({0.f, 0.f}, {std::round(s_mouse_world_pos.x), std::round(s_mouse_world_pos.y)}, {1.f, 0.f, 0.f, 1.f});
     // Renderer::drawLine({7.f, 7.f}, {7.f, -7.f}, {0.f, 0.f, 1.f, 1.f}, {1.f, 1.f, 1.f, 1.f});
-    Renderer::endBatch();
-    ShaderManager::getShader("quad").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 0);
-    ShaderManager::getShader("quad").uploadMat4("uView", m_camera.getViewMatrix(), 1);
+    Renderer::endBatch(m_camera.getProjectionMatrix(), m_camera.getViewMatrix());
 
     glDisable(GL_BLEND);
 

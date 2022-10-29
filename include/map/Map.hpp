@@ -41,7 +41,7 @@ class Map final
     void setTheme(const MapTheme& new_theme);
 
     void update() noexcept;
-    void render(bool area = false, bool show_solid = false) noexcept;  // one pass draw
+    void render(const glm::mat4& projection, const glm::mat4& view, bool area = false, bool show_solid = false) noexcept;  // one pass draw
 
     void drawTiles(bool area = false, bool show_solid = false);
     void drawObjects(const glm::vec2& hero_pos, bool show_solid = false);

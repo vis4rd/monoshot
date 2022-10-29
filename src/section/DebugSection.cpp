@@ -8,7 +8,6 @@
 #include <stb_image.h>
 
 constexpr glm::vec2 hero_size = {0.6f, 0.6f};
-constexpr glm::vec2 tile_size = {1.f, 1.f};
 
 DebugSection::DebugSection()
     : Section(),
@@ -131,20 +130,7 @@ void DebugSection::update() noexcept
     if(m_registry.valid(m_hero))
     {
         // clang-format off
-        auto& delta_time = ResourceManager::timer->deltaTime();
-        glm::vec2& pos = m_registry.get<ecs::component::position>(m_hero);
-        float& vel = m_registry.get<ecs::component::velocity>(m_hero);
-        float& mvel = m_registry.get<ecs::component::max_velocity>(m_hero);
-        float& acc = m_registry.get<ecs::component::acceleration>(m_hero);
-        glm::vec2& dir = m_registry.get<ecs::component::direction>(m_hero);
-        float& rot = m_registry.get<ecs::component::rotation>(m_hero);
 
-        // sort map tiles by distance to the hero
-        m_registry.sort<ecs::component::position>([&pos](const auto& lhs, const auto& rhs)
-        {
-            return glm::abs(glm::length(lhs-pos)) < glm::abs(glm::length(rhs-pos));
-        });
-        
         // poll next move events
         glm::vec2 move_direction = {0.f, 0.f};
         if(input.isHeld(GLFW_KEY_A) || input.isPressedOnce(GLFW_KEY_LEFT)) { move_direction.x -= 1.f; }
@@ -152,101 +138,17 @@ void DebugSection::update() noexcept
         if(input.isHeld(GLFW_KEY_W) || input.isPressedOnce(GLFW_KEY_UP)) { move_direction.y += 1.f; }
         if(input.isHeld(GLFW_KEY_S) || input.isPressedOnce(GLFW_KEY_DOWN)) { move_direction.y -= 1.f; }
 
-        if(move_direction != glm::vec2(0.f, 0.f))
-        {
-            // calculate velocity and next position
-            auto length = glm::length(move_direction);
-            if(length > 0.f)
-            {
-                dir = move_direction;
+        ecs::system::collide_with_hero(m_registry, m_hero, move_direction);
 
-                vel += acc * delta_time;
-                if(vel > mvel)
-                {
-                    vel = mvel;
-                }
-            }
-            auto next_pos = pos + vel * dir * static_cast<float>(delta_time);
-
-            // forbid moving into solid tiles
-            const auto view = m_registry.view<ecs::component::position>();
-            bool is_collision = false;
-            const auto signum = [](const float& val) -> float
-            {
-                if(val < 0.f)
-                {
-                    return -1.f;
-                }
-                else if(val > 0.f)
-                {
-                    return 1.f;
-                }
-                else
-                {
-                    return 0.f;
-                }
-            };
-            for(std::int32_t iter = 0; const auto& tile : view)
-            {
-                if(tile == m_hero)
-                {
-                    continue;
-                }
-                if(iter >= 4)
-                {
-                    break;
-                }
-                const auto& tile_pos = view.get<ecs::component::position>(tile);
-                const auto& tile_rot = 0.f;
-
-                const auto intersection = AABB::findCollision(next_pos, hero_size, tile_pos, tile_size);
-                if(intersection.x > 0.f && intersection.y > 0.f)
-                {
-                    glm::vec2 center_diff = glm::abs(tile_pos - pos);
-                    glm::vec2 sum_of_sizes = hero_size + tile_size;
-                    glm::vec2 ncd = center_diff / (sum_of_sizes / 2.f);  // normalized center difference
-                    // glm::vec2 nss = glm::normalize(sum_of_sizes);  // normalized sum of sizes
-
-                    if(center_diff.x * std::abs(ncd.x) > center_diff.y * std::abs(ncd.y))  // collision is horizontal
-                    //? consider multiplying both by nss.x and nss.y
-                    {
-                        next_pos.x = next_pos.x - intersection.x * signum(dir.x);
-                        // next_pos.y = pos.y;  // TODO: cut by the factor of how much shorter is the x movement
-                                                //? (this is probably the cause of this stuttering)
-                                                // currently it is not really necessary as incorrect offset values are truly minimal
-                        dir.x = 0.f;
-                    }
-                    else  // collision is vertical
-                    {
-                        next_pos.y = next_pos.y - intersection.y * signum(dir.y);
-                        // next_pos.x = pos.x;  // TODO: cut by the factor of how much shorter is the y movement
-                                                //? (this is probably the cause of this stuttering)
-                                                // currently it is not really necessary as incorrect offset values are truly minimal
-                        dir.y = 0.f;
-                    }
-                }
-                
-                iter++;
-            }
-            
-            pos = next_pos;
-
-            // make camera follow main hero
-            m_camera.setPosition({pos, m_camera.getPosition().z});
-            m_camera.setTarget({pos, 0.f});
-        }
-        else
-        {
-            vel -= acc * delta_time;
-            if(vel < 0.f)
-            {
-                vel = 0.f;
-            }
-        }
+        // make camera follow main hero
+        const glm::vec2& pos = m_registry.get<const ecs::component::position>(m_hero);
+        m_camera.setPosition({pos, m_camera.getPosition().z});
+        m_camera.setTarget({pos, 0.f});
 
         // calculate main hero rotation after mouse cursor
         const glm::vec2 mouse_screen_pos = ResourceManager::window->getMousePosition();
         const auto mouse_world_pos = this->mouseScreenPosToWorldPos(mouse_screen_pos, m_camera);
+        float& rot = m_registry.get<ecs::component::rotation>(m_hero);
         rot = glm::degrees(std::atan2(mouse_world_pos.y - pos.y, mouse_world_pos.x - pos.x));
 
         // clang-format on
@@ -256,9 +158,11 @@ void DebugSection::update() noexcept
 void DebugSection::render() noexcept
 {
     spdlog::trace("Rendering DebugSection");
+    static bool draw_area = false;
+    static bool draw_bbs = false;
 
     Renderer::beginBatch();
-    m_mapGrid.drawTiles();
+    m_mapGrid.drawTiles(draw_area, draw_bbs);
 
     // Renderer::drawQuad({0.f, 10.f}, tile_size, 0.f, {1.f, 0.5f, 0.5f, 1.f});
     // Renderer::drawQuad({0.f, 8.f}, tile_size, 0.f, {1.f, 0.5f, 0.5f, 1.f});
@@ -271,10 +175,8 @@ void DebugSection::render() noexcept
     const auto& [pos, rot, vel, acc] = m_registry.get<ecs::component::position, ecs::component::rotation, ecs::component::velocity, ecs::component::acceleration>(m_hero);
     Renderer::drawQuad({pos.x, pos.y}, hero_size, rot, {1.f, 0.f, 0.f, 1.f});
 
-    m_mapGrid.drawObjects({pos.x, pos.y});
-    Renderer::endBatch();
-    ShaderManager::getShader("quad").uploadMat4("uProjection", m_camera.getProjectionMatrix(), 0);
-    ShaderManager::getShader("quad").uploadMat4("uView", m_camera.getViewMatrix(), 1);
+    m_mapGrid.drawObjects({pos.x, pos.y}, draw_bbs);
+    Renderer::endBatch(m_camera.getProjectionMatrix(), m_camera.getViewMatrix());
 
     glDisable(GL_BLEND);
 
@@ -329,6 +231,8 @@ void DebugSection::render() noexcept
                 }
                 ImGui::EndCombo();
             }
+            ImGui::Checkbox("Draw map area", &draw_area);
+            ImGui::Checkbox("Draw bounding boxes", &draw_bbs);
 
             auto& clear_color = ResourceManager::mapThemeBackgroundColor;
             float* cc = reinterpret_cast<float*>(&clear_color);

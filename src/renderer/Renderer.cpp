@@ -125,38 +125,42 @@ void Renderer::beginBatch()
     s_data.lineBufferIter = s_data.lineBuffer.begin();
 }
 
-void Renderer::endBatch()
+void Renderer::endBatch(const glm::mat4& projection, const glm::mat4& view)
 {
-    spdlog::trace("Renderer: ending a batch");
+    // spdlog::trace("Renderer: ending a batch");  // commented for performance reasons
+    s_data.last_projection_matrix = projection;
+    s_data.last_view_matrix = view;
 
     // quads
     if(s_data.stats.indexCount > 0)  // TODO: possibly can be removed in favor of just quadCount
     {
-        spdlog::trace("Renderer: filling up VB, sending data to gpu");
+        // spdlog::trace("Renderer: filling up VB, sending data to gpu");  // commented for performance reasons
         GLsizeiptr size = static_cast<std::uint32_t>(reinterpret_cast<std::uint8_t*>(&*s_data.quadBufferIter) - reinterpret_cast<std::uint8_t*>(&*(s_data.quadBuffer.begin())));
         s_data.quadVao->getVertexBuffers().at(0).setData(reinterpret_cast<const void*>(s_data.quadBuffer.data()), size);
 
-        spdlog::trace("Renderer: binding texture IDs");
-        spdlog::trace("slots taken: {}", s_data.textureSlotsTakenCount);
+        // spdlog::trace("Renderer: binding texture IDs");  // commented for performance reasons
+        // spdlog::trace("slots taken: {}", s_data.textureSlotsTakenCount);  // commented for performance reasons
 
         for(std::size_t slot = 0; slot < s_data.textureSlots.size(); slot++)
         {
             const auto& id = s_data.textureSlots[slot]->getID();
-            spdlog::trace("Binding texture slot {} to unit {}", slot, id);
+            // spdlog::trace("Binding texture slot {} to unit {}", slot, id);  // commented for performance reasons
             glBindTextureUnit(slot, id);  // slot = unit
         }
 
-        spdlog::trace("Renderer: binding shader 'quad'");
+        // spdlog::trace("Renderer: binding shader 'quad'");  // commented for performance reasons
         auto& quad_shader = ShaderManager::useShader("quad");
 
-        spdlog::trace("Renderer: binding quad VAO");
+        // spdlog::trace("Renderer: binding quad VAO");  // commented for performance reasons
         s_data.quadVao->bind();
         glDrawElements(GL_TRIANGLES, s_data.stats.indexCount, GL_UNSIGNED_INT, nullptr);
 
-        spdlog::trace("Renderer: uploading texture slots");
+        // spdlog::trace("Renderer: uploading uniforms");  // commented for performance reasons
         quad_shader.uploadArrayInt("uTextures", s_data.textureSlotsTakenCount, s_data.textureSamplers.data(), 2);
+        quad_shader.uploadMat4("uProjection", projection, 0);
+        quad_shader.uploadMat4("uView", view, 1);
 
-        spdlog::trace("Renderer: unbinding texture IDs from slots");
+        // spdlog::trace("Renderer: unbinding texture IDs from slots");  // commented for performance reasons
         for(std::size_t slot = 0; slot < s_data.textureSlots.size(); slot++)
         {
             glBindTextureUnit(slot, 0);
@@ -166,22 +170,26 @@ void Renderer::endBatch()
     // lines
     if(s_data.stats.lineCount > 0)
     {
-        spdlog::trace("Renderer: drawing lines");
+        // spdlog::trace("Renderer: drawing lines");  // commented for performance reasons
         GLsizeiptr size = static_cast<std::uint32_t>(reinterpret_cast<std::uint8_t*>(&*s_data.lineBufferIter) - reinterpret_cast<std::uint8_t*>(&*(s_data.lineBuffer.begin())));
         s_data.lineVao->getVertexBuffers().at(0).setData(reinterpret_cast<const void*>(s_data.lineBuffer.data()), size);
 
-        spdlog::trace("Renderer: binding shader 'line'");
+        // spdlog::trace("Renderer: binding shader 'line'");  // commented for performance reasons
         auto& line_shader = ShaderManager::useShader("line");
 
-        spdlog::trace("Renderer: binding line VAO");
+        // spdlog::trace("Renderer: binding line VAO");  // commented for performance reasons
         s_data.lineVao->bind();
 
-        spdlog::trace("Renderer: drawing line arrays");
+        // spdlog::trace("Renderer: drawing line arrays");  // commented for performance reasons
         glDrawArrays(GL_LINES, 0, s_data.stats.lineCount * 2);
+
+        // spdlog::trace("Renderer: uploading uniforms");  // commented for performance reasons
+        line_shader.uploadMat4("uProjection", projection, 0);
+        line_shader.uploadMat4("uView", view, 1);
     }
 
     s_data.stats.drawCount++;
-    spdlog::trace("Renderer: finished batch");
+    // spdlog::trace("Renderer: finished batch");  // commented for performance reasons
 }
 
 void Renderer::drawQuad(const glm::vec2& position, const glm::vec2& size, const float& rotation, const glm::vec4& color)
@@ -203,11 +211,11 @@ static float findSlot(const std::vector<Renderer::ref<Texture2D>>& slots, const 
 
 void Renderer::drawQuad(const glm::vec2& position, const glm::vec2& size, const float& rotation, const ref<Texture2D> texture, const glm::vec4& color)
 {
-    spdlog::trace("Renderer: drawing a Quad, position = ({}, {}), size = ({}, {}), rotation = {}", position.x, position.y, size.x, size.y, rotation);
+    // spdlog::trace("Renderer: drawing a Quad, position = ({}, {}), size = ({}, {}), rotation = {}", position.x, position.y, size.x, size.y, rotation);
 
     if(s_data.stats.indexCount >= s_data.maxIndexCount || s_data.textureSlotsTakenCount >= s_data.maxTextures)
     {
-        endBatch();
+        endBatch(s_data.last_projection_matrix, s_data.last_view_matrix);
         beginBatch();
     }
 
@@ -216,7 +224,7 @@ void Renderer::drawQuad(const glm::vec2& position, const glm::vec2& size, const 
     // spdlog::trace("Renderer: model_matrix:\n{}", util::mat4str(model_matrix));
 
     float texture_slot = findSlot(s_data.textureSlots, texture->getID());
-    spdlog::trace("texture_slot = {} of texture_id {}", texture_slot, texture->getID());
+    // spdlog::trace("texture_slot = {} of texture_id {}", texture_slot, texture->getID());
 
     if(texture_slot == -1.f)
     {

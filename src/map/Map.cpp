@@ -252,12 +252,12 @@ void Map::setTheme(const MapTheme& new_theme)
 
 void Map::update() noexcept { }
 
-void Map::render(bool area, bool show_solid) noexcept
+void Map::render(const glm::mat4& projection, const glm::mat4& view, bool area, bool show_solid) noexcept
 {
     Renderer::beginBatch();
     this->drawTiles(area, show_solid);
     this->drawObjects({}, show_solid);
-    Renderer::endBatch();
+    Renderer::endBatch(projection, view);
 }
 
 void Map::drawTiles(bool area, bool show_solid)
