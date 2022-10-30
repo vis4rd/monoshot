@@ -124,9 +124,6 @@ void CreatorSection::render() noexcept
     static bool draw_area = true;
     static bool draw_bbs = true;
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
     // map rendering
     m_map.render(m_camera.getProjectionMatrix(), m_camera.getViewMatrix(), draw_area, draw_bbs);
 
@@ -151,8 +148,6 @@ void CreatorSection::render() noexcept
     // Renderer::drawLine({0.f, 0.f}, {std::round(s_mouse_world_pos.x), std::round(s_mouse_world_pos.y)}, {1.f, 0.f, 0.f, 1.f});
     // Renderer::drawLine({7.f, 7.f}, {7.f, -7.f}, {0.f, 0.f, 1.f, 1.f}, {1.f, 1.f, 1.f, 1.f});
     Renderer::endBatch(m_camera.getProjectionMatrix(), m_camera.getViewMatrix());
-
-    glDisable(GL_BLEND);
 
     const auto& camera_pos = m_camera.getPosition();
     const auto& camera_target = m_camera.getTargetPosition();

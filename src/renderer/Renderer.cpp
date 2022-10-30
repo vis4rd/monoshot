@@ -148,6 +148,9 @@ void Renderer::endBatch(const glm::mat4& projection, const glm::mat4& view)
             glBindTextureUnit(slot, id);  // slot = unit
         }
 
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
         // spdlog::trace("Renderer: binding shader 'quad'");  // commented for performance reasons
         auto& quad_shader = ShaderManager::useShader("quad");
 
@@ -159,6 +162,8 @@ void Renderer::endBatch(const glm::mat4& projection, const glm::mat4& view)
         quad_shader.uploadArrayInt("uTextures", s_data.textureSlotsTakenCount, s_data.textureSamplers.data(), 2);
         quad_shader.uploadMat4("uProjection", projection, 0);
         quad_shader.uploadMat4("uView", view, 1);
+
+        glDisable(GL_BLEND);
 
         // spdlog::trace("Renderer: unbinding texture IDs from slots");  // commented for performance reasons
         for(std::size_t slot = 0; slot < s_data.textureSlots.size(); slot++)

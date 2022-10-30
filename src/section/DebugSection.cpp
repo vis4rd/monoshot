@@ -170,15 +170,11 @@ void DebugSection::render() noexcept
     // Renderer::drawQuad({1.f, -1.f}, tile_size, 45.f, firstTexture, {1.f, 1.f, 1.f, 1.f});
     // Renderer::drawQuad({-46.f, 0.f}, tile_size, 90.f, firstTexture, {1.f, 1.f, 1.f, 1.f});
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     const auto& [pos, rot, vel, acc] = m_registry.get<ecs::component::position, ecs::component::rotation, ecs::component::velocity, ecs::component::acceleration>(m_hero);
     Renderer::drawQuad({pos.x, pos.y}, hero_size, rot, {1.f, 0.f, 0.f, 1.f});
 
     m_mapGrid.drawObjects({pos.x, pos.y}, draw_bbs);
     Renderer::endBatch(m_camera.getProjectionMatrix(), m_camera.getViewMatrix());
-
-    glDisable(GL_BLEND);
 
     // auto& triangle_zoom_shader = ShaderManager::useShader("triangle_zoom");
     // triangle_zoom_shader.uploadMat4("uTransform", model_matrix, 0);
