@@ -4,13 +4,13 @@ cmake_minimum_required(VERSION 3.19 FATAL_ERROR)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/build")
 
-project(OPENGL_TEMPLATE)
+project(MONOSHOT)
 
 if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
     message(FATAL_ERROR "In-source builds are forbidden.")
 endif()
 
-set(EXECUTABLE_NAME "main")
+set(EXECUTABLE_NAME "Monoshot")
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 option(CMAKE_BUILD_TYPE "Build type of the binary (Release/Debug/RelWithDebInfo/MinSizeRel" "Debug")

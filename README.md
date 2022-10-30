@@ -31,7 +31,7 @@ $ cmake [-DCMAKE_BUILD_TYPE=Debug] [-G "MinGW Makefiles"] ..
 There are several ways to build the code depending on platform and CMake generator:
 ```bash
 # on windows: open Visual Studio solution and build there
-$ ./OPENGL_TEMPLATE.sln
+$ ./MONOSHOT.sln
 
 # on linux: run make
 $ make

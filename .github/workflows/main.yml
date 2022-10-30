@@ -12,6 +12,6 @@ jobs:
       - uses: pixta-dev/repository-mirroring-action@v1
         with:
           target_repo_url:
-            git@gitlab.com:vis4rd/opengl_testing.git
+            git@gitlab.com:vis4rd/monoshot.git
           ssh_private_key:
             ${{ secrets.GITLAB_SSH_PRIVATE_KEY }}
