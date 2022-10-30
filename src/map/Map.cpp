@@ -300,7 +300,7 @@ void Map::drawObjects(const glm::vec2& hero_pos, bool show_solid)
         Renderer::drawQuad(object.getPosition(), object.getSize(), object.getRotation(), object.getTexture(), wall_color * collision_color);
         if(show_solid && object.hasCollision)
         {
-            Renderer::drawRect(object.getPosition(), object.getSize(), /*object.getRotation()*/ 0.f, {1.f, 1.f, 1.f, 1.f});  // TODO: draw bbs with rotation when OBB collision will work
+            Renderer::drawRect(object.getPosition(), object.getSize(), object.getRotation(), {1.f, 1.f, 1.f, 1.f});
         }
     }
 }

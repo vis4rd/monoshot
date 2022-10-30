@@ -69,51 +69,43 @@ void collide_with_hero(entt::registry& registry, const entt::entity& hero_id, gl
         // forbid moving into solid tiles
         const auto view = registry.view<ecs::component::position>();
 
+        // glm::vec2 intersection(0.f, 0.f);
         for(std::int32_t iter = 0; const auto& element : view)
         {
             if(element == hero_id)
             {
                 continue;
             }
-            if(iter >= 4)
-            {
-                break;
-            }
-            const auto& tile_pos = view.get<ecs::component::position>(element);
-            const auto& tile_rot = 0.f;
+            // if(iter >= 4)
+            // {
+            //     break;
+            // }
+            glm::vec2& tile_pos = view.get<ecs::component::position>(element);
+            const float& tile_rot = registry.get<ecs::component::rotation>(element);
             const glm::vec2& tile_size = registry.get<ecs::component::size>(element);
 
-            const auto intersection = AABB::findCollision(next_pos, hero_size, tile_pos, tile_size);
-            if(intersection.x > 0.f && intersection.y > 0.f)
-            {
-                glm::vec2 center_diff = glm::abs(tile_pos - pos);
-                glm::vec2 sum_of_sizes = hero_size + tile_size;
-                glm::vec2 ncd = center_diff / (sum_of_sizes / 2.f);  // normalized center difference
-                // glm::vec2 nss = glm::normalize(sum_of_sizes);  // normalized sum of sizes
+            // if(iter == 0)
+            // {
+            //     spdlog::debug("Closest tile = ({}, {})", tile_pos.x, tile_pos.y);
+            // }
 
-                if(center_diff.x * std::abs(ncd.x) > center_diff.y * std::abs(ncd.y))  // collision is horizontal
-                //? consider multiplying both by nss.x and nss.y
-                {
-                    next_pos.x = next_pos.x - intersection.x * signum(dir.x);
-                    // next_pos.y = pos.y;  // TODO: cut by the factor of how much shorter is the x movement
-                    //? (this is probably the cause of this stuttering)
-                    // currently it is not really necessary as incorrect offset values are truly minimal
-                    dir.x = 0.f;
-                }
-                else  // collision is vertical
-                {
-                    next_pos.y = next_pos.y - intersection.y * signum(dir.y);
-                    // next_pos.x = pos.x;  // TODO: cut by the factor of how much shorter is the y movement
-                    //? (this is probably the cause of this stuttering)
-                    // currently it is not really necessary as incorrect offset values are truly minimal
-                    dir.y = 0.f;
-                }
-            }
+            pos = next_pos;
+
+
+            // auto collision = OBB::findCollisionSat(pos, hero_size, rot, tile_pos, tile_size, tile_rot);
+            // intersection.x = glm::max(intersection.x, collision.x);
+            // intersection.y = glm::max(intersection.y, collision.y);
+            // spdlog::debug("Intersection with tile ({}, {}) = ({}, {})", tile_pos.x, tile_pos.y, intersection.x, intersection.y);
+            // if(intersection != glm::vec2(0.f, 0.f))
+            // {
+            //     break;
+            // }
+            auto collision = OBB::findCollisionDiag(tile_pos, tile_size, tile_rot, pos, hero_size, 0.f);
 
             iter++;
         }
 
-        pos = next_pos;
+        // pos += intersection;
     }
     else
     {
