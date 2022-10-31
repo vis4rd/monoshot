@@ -27,7 +27,7 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory("${PROJECT_SOURCE_DIR}/lib/glfw")
 
 # OpenGL
-find_package(OpenGL 4 REQUIRED)
+find_package(OpenGL 4.5 REQUIRED)
 
 # GLAD
 add_subdirectory("${PROJECT_SOURCE_DIR}/lib/glad")
