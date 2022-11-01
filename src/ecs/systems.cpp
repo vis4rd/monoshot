@@ -29,19 +29,56 @@ void move(entt::registry& registry, const float& delta_time)
 
 void collide_with_hero(entt::registry& registry, const entt::entity& hero_id, glm::vec2& hero_move_direction)
 {
-    constexpr glm::vec2 hero_size{0.6f, 0.6f};
-    constexpr auto signum = []<typename T>(T val) -> float
+    const auto is_colliding_with_anything = [&hero_id, &registry](const glm::vec2& next_pos) -> bool
     {
-        return (T(0) < val) - (val < T(0));
+        constexpr glm::vec2 hero_size{0.6f, 0.6f};
+        const auto view = registry.view<const ecs::component::position>();
+        // const float& hero_rot = registry.get<const ecs::component::rotation>(hero_id);
+        for(std::int32_t iter = 0; const auto& element : view)
+        {
+            if(iter >= 4)
+            {
+                break;
+            }
+            if(element == hero_id)
+            {
+                continue;
+            }
+            const glm::vec2& tile_pos = view.get<const ecs::component::position>(element);
+            const float& tile_rot = registry.get<const ecs::component::rotation>(element);
+            const glm::vec2& tile_size = registry.get<const ecs::component::size>(element);
+
+            // TODO: unfortunately hero rotation sometimes causes the character to get stuck, pls fix
+            if(OBB::findCollision(next_pos, hero_size, /*hero_rot*/ 0.f, tile_pos, tile_size, tile_rot))
+            {
+                return true;
+            }
+
+            iter++;
+        }
+        return false;
     };
 
-    auto& delta_time = ResourceManager::timer->deltaTime();
+    const auto resolve_collision = [&is_colliding_with_anything](glm::vec2& current_pos, glm::vec2 step) -> void
+    {
+        // brute-force checking whther there is a collision in the next step
+        std::size_t tries = 1;
+        for(; is_colliding_with_anything(current_pos + step) && tries < 5; tries++)
+        {
+            step /= 2.f;
+        }
+        if(tries < 5)
+        {
+            current_pos += step;
+        }
+    };
+
+    const float& delta_time = ResourceManager::timer->deltaTime();
     glm::vec2& pos = registry.get<ecs::component::position>(hero_id);
     float& vel = registry.get<ecs::component::velocity>(hero_id);
-    float& mvel = registry.get<ecs::component::max_velocity>(hero_id);
+    const float& mvel = registry.get<const ecs::component::max_velocity>(hero_id);
     float& acc = registry.get<ecs::component::acceleration>(hero_id);
     glm::vec2& dir = registry.get<ecs::component::direction>(hero_id);
-    float& rot = registry.get<ecs::component::rotation>(hero_id);
 
     // sort map tiles by distance to the hero
     registry.sort<ecs::component::position>(
@@ -50,71 +87,34 @@ void collide_with_hero(entt::registry& registry, const entt::entity& hero_id, gl
             return glm::abs(glm::length(lhs - pos)) < glm::abs(glm::length(rhs - pos));
         });
 
-    if(hero_move_direction != glm::vec2(0.f, 0.f))
+    // resolve movement variables
+    const bool does_hero_move = (hero_move_direction.x != 0.f) || (hero_move_direction.y != 0.f);
+    if(does_hero_move)
     {
-        // calculate velocity and next position
-        auto length = glm::length(hero_move_direction);
-        if(length > 0.f)
+        dir = hero_move_direction;
+        vel += acc * delta_time;
+        if(vel > mvel)
         {
-            dir = hero_move_direction;
-
-            vel += acc * delta_time;
-            if(vel > mvel)
-            {
-                vel = mvel;
-            }
+            vel = mvel;
         }
-        auto next_pos = pos + vel * dir * static_cast<float>(delta_time);
-
-        // forbid moving into solid tiles
-        const auto view = registry.view<ecs::component::position>();
-
-        // glm::vec2 intersection(0.f, 0.f);
-        for(std::int32_t iter = 0; const auto& element : view)
-        {
-            if(element == hero_id)
-            {
-                continue;
-            }
-            // if(iter >= 4)
-            // {
-            //     break;
-            // }
-            glm::vec2& tile_pos = view.get<ecs::component::position>(element);
-            const float& tile_rot = registry.get<ecs::component::rotation>(element);
-            const glm::vec2& tile_size = registry.get<ecs::component::size>(element);
-
-            // if(iter == 0)
-            // {
-            //     spdlog::debug("Closest tile = ({}, {})", tile_pos.x, tile_pos.y);
-            // }
-
-            pos = next_pos;
-
-
-            // auto collision = OBB::findCollisionSat(pos, hero_size, rot, tile_pos, tile_size, tile_rot);
-            // intersection.x = glm::max(intersection.x, collision.x);
-            // intersection.y = glm::max(intersection.y, collision.y);
-            // spdlog::debug("Intersection with tile ({}, {}) = ({}, {})", tile_pos.x, tile_pos.y, intersection.x, intersection.y);
-            // if(intersection != glm::vec2(0.f, 0.f))
-            // {
-            //     break;
-            // }
-            auto collision = OBB::findCollisionDiag(tile_pos, tile_size, tile_rot, pos, hero_size, 0.f);
-
-            iter++;
-        }
-
-        // pos += intersection;
     }
-    else
+    else  // hero does not additionally move in this frame/tick
     {
         vel -= acc * delta_time;
         if(vel < 0.f)
         {
             vel = 0.f;
+            dir = {0.f, 0.f};
         }
     }
-}  // collide_with_hero()
+
+    // prepare next step shifts
+    auto shift_x = glm::vec2(dir.x, 0.f) * vel * delta_time;
+    auto shift_y = glm::vec2(0.f, dir.y) * vel * delta_time;
+
+    // there should not be much penalty for doing both axes separatly because 99.9% of situations there is no collision on first iteration in either case
+    resolve_collision(pos, shift_x);
+    resolve_collision(pos, shift_y);
+}
 
 }  // namespace ecs::system

@@ -13,8 +13,13 @@ struct Polygon
     glm::vec2 position;
 };
 
+// clang-format off
+[[deprecated("Currently refined SAT algorithm is not working correctly")]]
 glm::vec2 findCollisionSat(glm::vec2& pos1, const glm::vec2& size1, const float& rotation1, glm::vec2& pos2, const glm::vec2& size2, const float& rotation2);
-bool findCollisionDiag(glm::vec2& pos1, const glm::vec2& size1, const float& rotation1, glm::vec2& pos2, const glm::vec2& size2, const float& rotation2);
+// clang-format on
+
+// glm::vec2 findSegmentIntersection(const glm::vec2& one_s, const glm::vec2& one_e, const glm::vec2& two_s, const glm::vec2& two_e);
+bool findCollision(const glm::vec2& pos1, const glm::vec2& size1, const float& rotation1, const glm::vec2& pos2, const glm::vec2& size2, const float& rotation2);
 
 }  // namespace OBB
 

@@ -13,6 +13,7 @@ Polygon::Polygon(const glm::vec2& center, const glm::vec2& size, const float& ro
     : points(4),
       position(center)
 {
+    //? possibly this matrix operation can be simplified if this path becomes too hot
     glm::mat4 model = glm::translate(glm::mat4(1.f), glm::vec3(center, 0.f));
     model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.f, 0.f, 1.f));
     model = glm::scale(model, glm::vec3(size, 1.f));
@@ -73,50 +74,62 @@ glm::vec2 findCollisionSat(glm::vec2& pos1, const glm::vec2& size1, const float&
     return -overlap * d;
 }
 
-bool findCollisionDiag(glm::vec2& pos1, const glm::vec2& size1, const float& rotation1, glm::vec2& pos2, const glm::vec2& size2, const float& rotation2)
+/**
+ * @brief Find intersection between two line segments.
+ *
+ * @warning This function assumes that the intersection exists. If it doesn't, the behavior is undefined.
+ * @return glm::vec2
+ */
+// glm::vec2 findSegmentIntersection(const glm::vec2& one_s, const glm::vec2& one_e, const glm::vec2& two_s, const glm::vec2& two_e)
+// {
+//     constexpr auto cross = [](const glm::vec2& one, const glm::vec2& two) -> float
+//     {
+//         return one.x * two.y - one.y * two.x;
+//     };
+//     const auto one = one_e - one_s;
+//     const auto two = two_e - two_s;
+//     const auto one_x_two = cross(one, two);
+//     const auto tsos_x_one = cross(two_s - one_s, one);
+//     const auto tsos_x_two = cross(two_s - one_s, two);
+
+// const auto t = tsos_x_two / one_x_two;
+// const auto u = tsos_x_one / one_x_two;
+// return one_s + t * one;}
+
+
+// Polygon "Diagonal" Collision Algorithm (not an official name)
+// source: https://youtu.be/7Ik2vowGcU0
+
+bool findCollision(const glm::vec2& pos1, const glm::vec2& size1, const float& rotation1, const glm::vec2& pos2, const glm::vec2& size2, const float& rotation2)
 {
-    Polygon r1(pos1, size1, 0.f);
-    Polygon r2(pos2, size2, rotation2);
-
-    auto* poly1 = &r1;
-    auto* poly2 = &r2;
-
-    for(int shape = 0; shape < 2; shape++)
+    constexpr auto doSegmentsIntersect = [](const glm::vec2& line1_s, const glm::vec2& line1_e, const glm::vec2& line2_s, const glm::vec2& line2_e) -> bool
     {
-        if(shape == 1)
+        // TODO: seems like this code does not cover some corner cases, possibly replace it with some more refined one
+        return (((line2_s.x - line1_s.x) * (line1_e.y - line1_s.y) - (line2_s.y - line1_s.y) * (line1_e.x - line1_s.x)) * ((line2_e.x - line1_s.x) * (line1_e.y - line1_s.y) - (line2_e.y - line1_s.y) * (line1_e.x - line1_s.x)) < 0)
+               && (((line1_s.x - line2_s.x) * (line2_e.y - line2_s.y) - (line1_s.y - line2_s.y) * (line2_e.x - line2_s.x)) * ((line1_e.x - line2_s.x) * (line2_e.y - line2_s.y) - (line1_e.y - line2_s.y) * (line2_e.x - line2_s.x)) < 0);
+    };
+
+    // TODO: remove Polygons and simplify this function if possible
+    const Polygon poly1(pos1, size1, rotation1);
+    const Polygon poly2(pos2, size2, rotation2);
+
+    for(int poly1_point_index = 0; poly1_point_index < poly1.points.size(); poly1_point_index++)
+    {
+        glm::vec2 poly1_center = poly1.position;
+        glm::vec2 poly1_point = poly1.points[poly1_point_index];
+
+        for(int poly2_point_index = 0; poly2_point_index < poly2.points.size(); poly2_point_index++)
         {
-            poly1 = &r2;
-            poly2 = &r1;
-        }
+            glm::vec2 poly2_point1 = poly2.points[poly2_point_index];
+            glm::vec2 poly2_point2 = poly2.points[(poly2_point_index + 1) % poly2.points.size()];
 
-        // Check diagonals of this polygon...
-        for(int p = 0; p < poly1->points.size(); p++)
-        {
-            glm::vec2 line_r1s = poly1->position;
-            glm::vec2 line_r1e = poly1->points[p];
-
-            glm::vec2 displacement(0.f, 0.f);
-
-            // ...against edges of this polygon
-            for(int q = 0; q < poly2->points.size(); q++)
+            // check if poly1's center -> vertex line segment intersects with poly2's edge
+            if(doSegmentsIntersect(poly1_center, poly1_point, poly2_point1, poly2_point2))
             {
-                glm::vec2 line_r2s = poly2->points[q];
-                glm::vec2 line_r2e = poly2->points[(q + 1) % poly2->points.size()];
-
-                // Standard "off the shelf" line segment intersection
-                float h = (line_r2e.x - line_r2s.x) * (line_r1s.y - line_r1e.y) - (line_r1s.x - line_r1e.x) * (line_r2e.y - line_r2s.y);
-                float t1 = ((line_r2s.y - line_r2e.y) * (line_r1s.x - line_r2s.x) + (line_r2e.x - line_r2s.x) * (line_r1s.y - line_r2s.y)) / h;
-                float t2 = ((line_r1s.y - line_r1e.y) * (line_r1s.x - line_r2s.x) + (line_r1e.x - line_r1s.x) * (line_r1s.y - line_r2s.y)) / h;
-
-                if(t1 >= 0.0f && t1 < 1.0f && t2 >= 0.0f && t2 < 1.0f)
-                {
-                    displacement += (1.0f - t1) * (line_r1e - line_r1s);
-                }
+                return true;
             }
-            pos1 += displacement * (shape == 0 ? -1.f : 1.f);
         }
     }
-
     return false;
 }
 
