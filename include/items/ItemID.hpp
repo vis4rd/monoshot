@@ -7,6 +7,7 @@ enum ItemID : std::size_t
     FIRST_ITEM = 1000,
 
     // write items here
+    Undefined,
     MedKit,
     Bandage,
 
