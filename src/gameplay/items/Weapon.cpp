@@ -1,4 +1,4 @@
-#include "../../include/items/Weapon.hpp"
+#include "../../../include/gameplay/items/Weapon.hpp"
 
 #include <algorithm>
 

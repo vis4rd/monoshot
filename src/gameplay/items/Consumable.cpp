@@ -1,4 +1,4 @@
-#include "../../include/items/Consumable.hpp"
+#include "../../../include/gameplay/items/Consumable.hpp"
 
 #include "../../include/utility/Timer.hpp"
 
