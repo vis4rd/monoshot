@@ -1,6 +1,8 @@
 #pragma once
 
-#include "DebugSection.hpp"
+#include "Section.hpp"
+#include "../ui/layouts/SettingsLayout.hpp"
+#include "../ui/layouts/LowerNavigationBoxLayout.hpp"
 
 class SettingsSection final : public Section
 {

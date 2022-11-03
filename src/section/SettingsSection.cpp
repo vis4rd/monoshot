@@ -1,5 +1,8 @@
 #include "../../include/section/SettingsSection.hpp"
+
 #include "../../include/utility/ResourceManager.hpp"
+#include "../../include/ui/elements/external/BeginCombo.hpp"
+#include "../../include/ui/elements/LowerNavigationBox.hpp"
 
 SettingsSection::SettingsSection()
     : Section(),

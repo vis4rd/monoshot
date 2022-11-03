@@ -1,7 +1,8 @@
 #pragma once
 
-#include "NewGameSection.hpp"
+#include "Section.hpp"
 #include "../ui/fonts/Font.hpp"
+#include "../ui/layouts/MainMenuLayout.hpp"
 
 class MainMenuSection final : public Section
 {

@@ -1,6 +1,8 @@
 #include "../../include/section/MainMenuSection.hpp"
 
+#include "../../include/section/NewGameSection.hpp"
 #include "../../include/section/CreatorSection.hpp"
+#include "../../include/section/SettingsSection.hpp"
 #include "../../include/utility/ResourceManager.hpp"
 
 MainMenuSection::MainMenuSection()

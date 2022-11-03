@@ -1,5 +1,6 @@
 #include "../../include/section/DebugSection.hpp"
 
+#include "../../include/ui/elements/LowerNavigationBox.hpp"
 #include "../../include/renderer/Renderer.hpp"
 #include "../../include/utility/ResourceManager.hpp"
 #include "../../include/ecs/systems.hpp"
@@ -14,8 +15,9 @@ DebugSection::DebugSection()
       // VAO(),
       m_camera(glm::vec3(0.f, 0.f, 50.f), ResourceManager::window->getSize()),
       m_mapGrid(5, 5),
+      m_hero(100, std::make_shared<Weapon>(10, 31, 76, 100.f, 0.2)),
       m_registry(),
-      m_hero(m_registry.create())
+      m_heroEntity(m_registry.create())
 {
     m_name = "DebugSection";
 
@@ -95,12 +97,12 @@ DebugSection::DebugSection()
     Renderer::init();
 
     // ecs
-    m_registry.emplace<ecs::component::position>(m_hero);
-    m_registry.emplace<ecs::component::velocity>(m_hero);
-    m_registry.emplace<ecs::component::max_velocity>(m_hero);
-    m_registry.emplace<ecs::component::acceleration>(m_hero);
-    m_registry.emplace<ecs::component::rotation>(m_hero);
-    m_registry.emplace<ecs::component::direction>(m_hero);
+    m_registry.emplace<ecs::component::position>(m_heroEntity);
+    m_registry.emplace<ecs::component::velocity>(m_heroEntity);
+    m_registry.emplace<ecs::component::max_velocity>(m_heroEntity);
+    m_registry.emplace<ecs::component::acceleration>(m_heroEntity);
+    m_registry.emplace<ecs::component::rotation>(m_heroEntity);
+    m_registry.emplace<ecs::component::direction>(m_heroEntity);
 
     m_mapGrid.addTilesToRegistry(m_registry);
 }
@@ -126,8 +128,22 @@ void DebugSection::update() noexcept
         SectionManager::get().popSection();
     }
 
+    if(m_hero.currentItem != nullptr)
+    {
+        if(input.isHeld(GLFW_MOUSE_BUTTON_LEFT))
+        {
+            m_hero.currentItem->use();
+            // get rotation
+            // spawn a bullet
+        }
+        if(input.isPressedOnce(GLFW_KEY_G))
+        {
+            m_hero.dropItem();
+        }
+    }
+
     // process main hero entity
-    if(m_registry.valid(m_hero))
+    if(m_registry.valid(m_heroEntity))
     {
         // clang-format off
 
@@ -138,17 +154,17 @@ void DebugSection::update() noexcept
         if(input.isHeld(GLFW_KEY_W) || input.isPressedOnce(GLFW_KEY_UP)) { move_direction.y += 1.f; }
         if(input.isHeld(GLFW_KEY_S) || input.isPressedOnce(GLFW_KEY_DOWN)) { move_direction.y -= 1.f; }
 
-        ecs::system::collide_with_hero(m_registry, m_hero, move_direction);
+        ecs::system::collide_with_hero(m_registry, m_heroEntity, move_direction);
 
         // make camera follow main hero
-        const glm::vec2& pos = m_registry.get<const ecs::component::position>(m_hero);
+        const glm::vec2& pos = m_registry.get<const ecs::component::position>(m_heroEntity);
         m_camera.setPosition({pos, m_camera.getPosition().z});
         m_camera.setTarget({pos, 0.f});
 
         // calculate main hero rotation after mouse cursor
         const glm::vec2 mouse_screen_pos = ResourceManager::window->getMousePosition();
         const auto mouse_world_pos = this->mouseScreenPosToWorldPos(mouse_screen_pos, m_camera);
-        float& rot = m_registry.get<ecs::component::rotation>(m_hero);
+        float& rot = m_registry.get<ecs::component::rotation>(m_heroEntity);
         rot = glm::degrees(std::atan2(mouse_world_pos.y - pos.y, mouse_world_pos.x - pos.x));
 
         // clang-format on
@@ -170,7 +186,7 @@ void DebugSection::render() noexcept
     // Renderer::drawQuad({1.f, -1.f}, tile_size, 45.f, firstTexture, {1.f, 1.f, 1.f, 1.f});
     // Renderer::drawQuad({-46.f, 0.f}, tile_size, 90.f, firstTexture, {1.f, 1.f, 1.f, 1.f});
 
-    const auto& [pos, rot, vel, acc] = m_registry.get<ecs::component::position, ecs::component::rotation, ecs::component::velocity, ecs::component::acceleration>(m_hero);
+    const auto& [pos, rot, vel, acc] = m_registry.get<ecs::component::position, ecs::component::rotation, ecs::component::velocity, ecs::component::acceleration>(m_heroEntity);
     Renderer::drawQuad({pos.x, pos.y}, hero_size, rot, {1.f, 0.f, 0.f, 1.f});
 
     m_mapGrid.drawObjects({pos.x, pos.y}, draw_bbs);
@@ -202,6 +218,9 @@ void DebugSection::render() noexcept
             ImGui::Text("mouse screen position: (%f, %f)", mouse_screen_pos.x, mouse_screen_pos.y);
             ImGui::Text("mouse world position: (%f, %f)", mouse_world_pos.x, mouse_world_pos.y);
             ImGui::Text("hero: pos(%.2f, %.2f), vel(%.2f), acc(%.2f), rot(%.2f)", pos.x, pos.y, vel.data, acc.data, rot.data);
+            ImGui::Text("health: %d/%d", m_hero.health, m_hero.maxHealth);
+            const auto* weapon = dynamic_cast<Weapon*>(&*(m_hero.currentItem));
+            ImGui::Text("ammo: %u/%u/%u", weapon->ammoCurrent, weapon->ammoMagazineMax, weapon->ammoTotal);
 
             static std::string preview = "Forest Theme";
             bool check = false;

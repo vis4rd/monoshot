@@ -1,6 +1,8 @@
 #include "../../include/section/NewGameSection.hpp"
 
 #include "../../include/utility/ResourceManager.hpp"
+#include "../../include/ui/elements/LowerNavigationBox.hpp"
+#include "../../include/section/DebugSection.hpp"
 
 NewGameSection::NewGameSection()
     : Section(),
