@@ -1,8 +1,9 @@
 #include "../../../include/gameplay/items/Weapon.hpp"
 
 #include <algorithm>
+#include <spdlog/spdlog.h>
 
-Weapon::Weapon(const std::int32_t& damage, const std::uint32_t& magazine_capacity, const std::uint32_t& total_ammo, const float& bullet_velocity, const float& use_delay)
+Weapon::Weapon(const std::int32_t& damage, const std::uint32_t& magazine_capacity, const std::uint32_t& total_ammo, const float& bullet_velocity, const double& use_delay)
     : damage(damage),
       ammoCurrent(0),
       ammoMagazineMax(magazine_capacity),
@@ -14,7 +15,10 @@ Weapon::Weapon(const std::int32_t& damage, const std::uint32_t& magazine_capacit
 
 void Weapon::use()
 {
-    Consumable::use();
+    if(!this->canBeUsed())
+    {
+        return;
+    }
     if(ammoCurrent > 0)
     {
         ammoCurrent--;
@@ -23,6 +27,7 @@ void Weapon::use()
     {
         this->reload();
     }
+    Consumable::use();
 }
 
 void Weapon::reload()

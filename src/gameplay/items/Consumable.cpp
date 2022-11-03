@@ -1,22 +1,18 @@
 #include "../../../include/gameplay/items/Consumable.hpp"
 
 #include "../../include/utility/Timer.hpp"
+#include <spdlog/spdlog.h>
 
 void Consumable::use()
 {
-    if(!this->canBeUsed())
-    {
-        return;
-    }
-
     m_lastUseTimestamp = Timer::getTotalTime();
 }
 
-constexpr bool Consumable::canBeUsed(double timestamp)
+bool Consumable::canBeUsed(double timestamp)
 {
-    if(timestamp == 0.0)
+    if(std::abs(timestamp) < 1.0e-4)
     {
         timestamp = Timer::getTotalTime();
     }
-    return m_lastUseTimestamp + m_useDelay < timestamp;
+    return (m_lastUseTimestamp + m_useDelay) < timestamp;
 }

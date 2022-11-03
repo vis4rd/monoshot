@@ -8,6 +8,10 @@ Food::Food(std::int32_t& entity_health)
 
 void Food::use()
 {
-    Consumable::use();
+    if(!this->canBeUsed())
+    {
+        return;
+    }
     m_entityHealth += m_healingPower;
+    Consumable::use();
 }

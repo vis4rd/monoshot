@@ -11,7 +11,7 @@ class Consumable : public Item
     void use() override = 0;
 
     protected:
-    constexpr bool canBeUsed(double timestamp = 0.0);
+    bool canBeUsed(double timestamp = 0.0);
 
     protected:
     double m_useDelay = 0.1;  // in seconds
