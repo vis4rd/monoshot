@@ -1,17 +1,44 @@
 #include "../../../include/gameplay/items/Food.hpp"
 
-Food::Food(std::int32_t& entity_health)
-    : m_entityHealth(entity_health)
+#include <utility>
+
+Food::Food()
 {
-    m_useDelay = 3.0;
+    this->setUseDelay(3.0);
+}
+
+Food::Food(const Food& copy)
+    : Consumable(copy),
+      m_healingPower(copy.m_healingPower)
+{
+}
+
+Food::Food(Food&& move)
+    : Consumable(std::move(move)),
+      m_healingPower(std::move(move.m_healingPower))
+{
+}
+
+Food& Food::operator=(const Food& copy)
+{
+    m_healingPower = copy.m_healingPower;
+    this->Consumable::operator=(copy);
+    return *this;
+}
+
+Food& Food::operator=(Food&& move)
+{
+    m_healingPower = std::move(move.m_healingPower);
+    this->Consumable::operator=(std::move(move));
+    return *this;
+}
+
+const std::int32_t& Food::getHealingPower() const
+{
+    return m_healingPower;
 }
 
 void Food::use()
 {
-    if(!this->canBeUsed())
-    {
-        return;
-    }
-    m_entityHealth += m_healingPower;
     Consumable::use();
 }
