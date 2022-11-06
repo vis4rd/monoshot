@@ -6,22 +6,29 @@
 namespace ecs::system
 {
 
-void move_based_on_rotation(entt::registry& registry, const float& delta_time) { }
-
-void move(entt::registry& registry, const float& delta_time)
+void move_bullets(entt::registry& registry)
 {
     using namespace ecs::component;
-    auto view = registry.view<position, rotation, velocity, max_velocity, acceleration>();
-    for(const auto& entity : view)
+    const auto& timer = ResourceManager::timer;
+    const float& delta_time = timer->deltaTime();
+    const double timestamp = timer->getTotalTime();
+    auto view = registry.view<const lifetime, const is_bullet, position, const rotation, velocity, const max_velocity, const acceleration>();
+    for(const auto& bullet : view)
     {
-        glm::vec2& pos = view.get<position>(entity);
-        float& rot = view.get<rotation>(entity);
-        float& vel = view.get<velocity>(entity);
-        float& mvel = view.get<max_velocity>(entity);
-        float& acc = view.get<acceleration>(entity);
+        const auto& life = view.get<const lifetime>(bullet);
+        if((life.creation + life.timeTillDeath) <= timestamp)
+        {
+            registry.destroy(bullet);
+            continue;
+        }
+        glm::vec2& pos = view.get<position>(bullet);
+        const float& rot = view.get<const rotation>(bullet);
+        float& vel = view.get<velocity>(bullet);
+        const float& mvel = view.get<const max_velocity>(bullet);
+        const float& acc = view.get<const acceleration>(bullet);
 
-        vel = glm::min(vel + acc * delta_time, mvel * delta_time);
-        auto rad = glm::radians(rot);
+        vel = glm::max(glm::min(vel + acc * delta_time, mvel), 0.f);
+        const auto rad = glm::radians(rot);
         glm::vec2 rot_vec = {glm::cos(rad), glm::sin(rad)};
         pos += (vel * rot_vec * delta_time);
     }
@@ -32,7 +39,7 @@ void collide_with_hero(entt::registry& registry, const entt::entity& hero_id, gl
     const auto is_colliding_with_anything = [&hero_id, &registry](const glm::vec2& next_pos) -> bool
     {
         constexpr glm::vec2 hero_size{0.6f, 0.6f};
-        const auto view = registry.view<const ecs::component::position>();
+        const auto view = registry.view<const ecs::component::position>(entt::exclude<ecs::component::is_bullet>);
         // const float& hero_rot = registry.get<const ecs::component::rotation>(hero_id);
         for(std::int32_t iter = 0; const auto& element : view)
         {

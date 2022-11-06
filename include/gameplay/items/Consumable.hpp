@@ -13,7 +13,7 @@ class Consumable : public Item
     Consumable& operator=(const Consumable& copy);
     Consumable& operator=(Consumable&& move);
 
-    virtual void useDelayed() final;
+    virtual bool useDelayed() final;
 
     protected:
     virtual void use() override;

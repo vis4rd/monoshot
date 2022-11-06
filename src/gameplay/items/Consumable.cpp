@@ -32,14 +32,15 @@ Consumable& Consumable::operator=(Consumable&& move)
     return *this;
 }
 
-void Consumable::useDelayed()
+bool Consumable::useDelayed()
 {
     if(!this->canBeUsed())
     {
-        return;
+        return false;
     }
     this->use();
     m_lastUseTimestamp = Timer::getTotalTime();
+    return true;
 }
 
 void Consumable::use()

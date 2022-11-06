@@ -96,7 +96,8 @@ DebugSection::DebugSection()
 
     Renderer::init();
 
-    m_hero.addItem(std::move(Weapon(10, 31, 76, 100.f, 0.2)));
+    m_hero.addItem(std::move(Weapon(10, 31, 76, 50.f, 0.2)));
+    m_hero.addItem(std::move(Weapon(10, 70, 20000, 3.f, 0.05)));
 
     // ecs
     m_registry.emplace<ecs::component::position>(m_heroEntity);
@@ -130,39 +131,6 @@ void DebugSection::update() noexcept
         SectionManager::get().popSection();
     }
 
-    if(!m_hero.isInventoryEmpty())
-    {
-        if(input.isHeld(GLFW_MOUSE_BUTTON_LEFT))
-        {
-            auto& item = m_hero.getCurrentItem<Consumable>();
-            item.useDelayed();
-            // get rotation
-            // spawn a bullet
-        }
-        if(m_hero.holdsWeapon() && input.isHeld(GLFW_KEY_R))
-        {
-            auto& weapon = m_hero.getCurrentItem<Weapon>();
-            weapon.reload();
-        }
-        if(input.isPressedOnce(GLFW_KEY_G))
-        {
-            m_hero.dropCurrentItem();
-        }
-        if(input.isPressedOnce(GLFW_KEY_1))
-        {
-            m_hero.setCurrentItem(0);
-        }
-        if(input.isPressedOnce(GLFW_KEY_2))
-        {
-            m_hero.setCurrentItem(1);
-        }
-        if(input.isPressedOnce(GLFW_KEY_3))
-        {
-            m_hero.setCurrentItem(2);
-        }
-    }
-
-
     // process main hero entity
     if(m_registry.valid(m_heroEntity))
     {
@@ -174,8 +142,57 @@ void DebugSection::update() noexcept
         if(input.isHeld(GLFW_KEY_D) || input.isPressedOnce(GLFW_KEY_RIGHT)) { move_direction.x += 1.f; }
         if(input.isHeld(GLFW_KEY_W) || input.isPressedOnce(GLFW_KEY_UP)) { move_direction.y += 1.f; }
         if(input.isHeld(GLFW_KEY_S) || input.isPressedOnce(GLFW_KEY_DOWN)) { move_direction.y -= 1.f; }
+            
+        // update inventory logic
+        if(!m_hero.isInventoryEmpty())
+        {
+            if(input.isHeld(GLFW_MOUSE_BUTTON_LEFT))
+            {
+                auto& item = m_hero.getCurrentItem<Consumable>();
+                if(const bool is_used = item.useDelayed(); m_hero.holdsWeapon() && is_used)
+                {
+                    const auto& weapon = m_hero.getCurrentItem<Weapon>();
+                    if(weapon.getAmmoCurrent() > 0)
+                    {
+                        const glm::vec2& pos = m_registry.get<const ecs::component::position>(m_heroEntity);
+                        const float& rot = m_registry.get<const ecs::component::rotation>(m_heroEntity);
+                        auto bullet = m_registry.create();
+                        m_registry.emplace<ecs::component::is_bullet>(bullet);
+                        m_registry.emplace<ecs::component::lifetime>(bullet, ResourceManager::timer->getTotalTime(), 2.0);
+                        m_registry.emplace<ecs::component::position>(bullet, pos);
+                        m_registry.emplace<ecs::component::velocity>(bullet, weapon.getBulletVelocity());
+                        m_registry.emplace<ecs::component::max_velocity>(bullet, weapon.getBulletVelocity());
+                        m_registry.emplace<ecs::component::acceleration>(bullet, -1.f);
+                        m_registry.emplace<ecs::component::rotation>(bullet, rot);
+                    }
+                }
+            }
+            if(m_hero.holdsWeapon() && input.isHeld(GLFW_KEY_R))
+            {
+                auto& weapon = m_hero.getCurrentItem<Weapon>();
+                weapon.reload();
+            }
+            if(input.isPressedOnce(GLFW_KEY_G))
+            {
+                m_hero.dropCurrentItem();
+            }
+            if(input.isPressedOnce(GLFW_KEY_1))
+            {
+                m_hero.setCurrentItem(0);
+            }
+            if(input.isPressedOnce(GLFW_KEY_2))
+            {
+                m_hero.setCurrentItem(1);
+            }
+            if(input.isPressedOnce(GLFW_KEY_3))
+            {
+                m_hero.setCurrentItem(2);
+            }
+        }
 
+        // ecs::system::remove_dead_entities(m_registry);
         ecs::system::collide_with_hero(m_registry, m_heroEntity, move_direction);
+        ecs::system::move_bullets(m_registry);
 
         // make camera follow main hero
         const glm::vec2& pos = m_registry.get<const ecs::component::position>(m_heroEntity);
@@ -187,7 +204,6 @@ void DebugSection::update() noexcept
         const auto mouse_world_pos = this->mouseScreenPosToWorldPos(mouse_screen_pos, m_camera);
         float& rot = m_registry.get<ecs::component::rotation>(m_heroEntity);
         rot = glm::degrees(std::atan2(mouse_world_pos.y - pos.y, mouse_world_pos.x - pos.x));
-
         // clang-format on
     }
 }
@@ -211,6 +227,15 @@ void DebugSection::render() noexcept
     Renderer::drawQuad({pos.x, pos.y}, hero_size, rot, {1.f, 0.f, 0.f, 1.f});
 
     m_mapGrid.drawObjects({pos.x, pos.y}, draw_bbs);
+
+    const auto bullet_view = m_registry.view<const ecs::component::position, const ecs::component::rotation, const ecs::component::is_bullet>();
+    for(const auto& bullet : bullet_view)
+    {
+        const glm::vec2& b_pos = bullet_view.get<const ecs::component::position>(bullet);
+        const float& b_rot = bullet_view.get<const ecs::component::rotation>(bullet);
+        Renderer::drawQuad({b_pos.x, b_pos.y}, {0.2f, 0.2f}, b_rot, {1.f, 0.f, 0.f, 1.f});
+    }
+
     Renderer::endBatch(m_camera.getProjectionMatrix(), m_camera.getViewMatrix());
 
     // auto& triangle_zoom_shader = ShaderManager::useShader("triangle_zoom");
