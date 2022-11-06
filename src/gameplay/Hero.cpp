@@ -1,66 +1,83 @@
 #include "../../include/gameplay/Hero.hpp"
 
-Hero::Hero(const std::int32_t& health, const std::shared_ptr<Weapon>& main_weapon, const std::shared_ptr<Weapon>& secondary_weapon)
+#include <spdlog/spdlog.h>
+
+Hero::Hero(const std::int32_t& health, const std::optional<Weapon>& main_weapon, const std::optional<Weapon>& secondary_weapon)
     : health(health),
       maxHealth(health),
-      m_mainWeapon(main_weapon),
-      m_secondaryWeapon(secondary_weapon)
+      m_items{nullptr, nullptr, nullptr},
+      m_availableItems{false, false, false}
 {
-    this->setCurrentItem();
-}
-
-void Hero::addItem(const Weapon& weapon)
-{
-    if(m_mainWeapon == nullptr)
+    if(main_weapon)
     {
-        m_mainWeapon = std::make_shared<Weapon>(weapon);
-        currentItem = m_mainWeapon;
+        m_items.at(0) = std::make_shared<Weapon>(std::move(main_weapon.value()));
+        m_availableItems.at(0) = true;
     }
-    else if(m_secondaryWeapon == nullptr)
+    if(secondary_weapon)
     {
-        m_secondaryWeapon = std::make_shared<Weapon>(weapon);
+        m_items.at(1) = std::make_shared<Weapon>(std::move(secondary_weapon.value()));
+        m_availableItems.at(1) = true;
     }
+    this->setCurrentItem(1);
+    this->setCurrentItem(0);
 }
 
-void Hero::addItem(const Food& food)
+void Hero::dropCurrentItem()
 {
-    m_foodItems.push_back(food);
-}
-
-void Hero::dropItem()
-{
-    if(!currentItem)
+    if(isInventoryEmpty())
     {
         return;
     }
 
-    if(m_mainWeapon == currentItem)
+    if(m_availableItems.at(m_currentItem))
     {
-        m_mainWeapon.reset();
-        m_mainWeapon = nullptr;
-    }
-    else if(m_secondaryWeapon == currentItem)
-    {
-        m_secondaryWeapon.reset();
-        m_secondaryWeapon = nullptr;
-    }
-    else
-    {
-        m_foodItems.pop_back();
+        m_items.at(m_currentItem).reset();
+        m_items.at(m_currentItem) = nullptr;
+        m_availableItems.at(m_currentItem) = false;
+        m_currentItem = 3;
     }
 
-    currentItem.reset();
-    currentItem = nullptr;
+    // select a new current item
+    if(m_currentItem == 3)
+    {
+        for(std::size_t i = 0; i < 3; i++)
+        {
+            if(m_availableItems.at(i) && (m_items.at(i) != nullptr))
+            {
+                m_currentItem = i;
+                break;
+            }
+        }
+    }
 }
 
-void Hero::setCurrentItem()
+bool Hero::isInventoryEmpty() const
 {
-    if(m_mainWeapon)
+    const auto& v = m_availableItems;  // abbreviation
+    return !(v[0] || v[1] || v[2]);
+}
+
+bool Hero::setCurrentItem(const std::size_t& index)
+{
+    if(m_availableItems.at(index % m_items.size()))
     {
-        currentItem = m_mainWeapon;
+        m_currentItem = (index % m_items.size());
+        return true;
     }
-    else if(m_secondaryWeapon)
-    {
-        currentItem = m_secondaryWeapon;
-    }
+    return false;
+}
+
+const std::size_t& Hero::getCurrentItemIndex() const
+{
+    return m_currentItem;
+}
+
+bool Hero::holdsWeapon() const
+{
+    return (m_currentItem < 2) && m_availableItems[m_currentItem];
+}
+
+bool Hero::holdsFood() const
+{
+    return (m_currentItem == 2) && m_availableItems[m_currentItem];
 }

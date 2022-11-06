@@ -15,7 +15,7 @@ DebugSection::DebugSection()
       // VAO(),
       m_camera(glm::vec3(0.f, 0.f, 50.f), ResourceManager::window->getSize()),
       m_mapGrid(5, 5),
-      m_hero(100, std::make_shared<Weapon>(10, 31, 76, 100.f, 0.2)),
+      m_hero(100),
       m_registry(),
       m_heroEntity(m_registry.create())
 {
@@ -96,6 +96,8 @@ DebugSection::DebugSection()
 
     Renderer::init();
 
+    m_hero.addItem(std::move(Weapon(10, 31, 76, 100.f, 0.2)));
+
     // ecs
     m_registry.emplace<ecs::component::position>(m_heroEntity);
     m_registry.emplace<ecs::component::velocity>(m_heroEntity);
@@ -128,19 +130,38 @@ void DebugSection::update() noexcept
         SectionManager::get().popSection();
     }
 
-    if(m_hero.currentItem != nullptr)
+    if(!m_hero.isInventoryEmpty())
     {
         if(input.isHeld(GLFW_MOUSE_BUTTON_LEFT))
         {
-            m_hero.currentItem->use();
+            auto& item = m_hero.getCurrentItem<Consumable>();
+            item.useDelayed();
             // get rotation
             // spawn a bullet
         }
+        if(m_hero.holdsWeapon() && input.isHeld(GLFW_KEY_R))
+        {
+            auto& weapon = m_hero.getCurrentItem<Weapon>();
+            weapon.reload();
+        }
         if(input.isPressedOnce(GLFW_KEY_G))
         {
-            m_hero.dropItem();
+            m_hero.dropCurrentItem();
+        }
+        if(input.isPressedOnce(GLFW_KEY_1))
+        {
+            m_hero.setCurrentItem(0);
+        }
+        if(input.isPressedOnce(GLFW_KEY_2))
+        {
+            m_hero.setCurrentItem(1);
+        }
+        if(input.isPressedOnce(GLFW_KEY_3))
+        {
+            m_hero.setCurrentItem(2);
         }
     }
+
 
     // process main hero entity
     if(m_registry.valid(m_heroEntity))
@@ -219,8 +240,16 @@ void DebugSection::render() noexcept
             ImGui::Text("mouse world position: (%f, %f)", mouse_world_pos.x, mouse_world_pos.y);
             ImGui::Text("hero: pos(%.2f, %.2f), vel(%.2f), acc(%.2f), rot(%.2f)", pos.x, pos.y, vel.data, acc.data, rot.data);
             ImGui::Text("health: %d/%d", m_hero.health, m_hero.maxHealth);
-            const auto* weapon = dynamic_cast<Weapon*>(&*(m_hero.currentItem));
-            ImGui::Text("ammo: %u/%u/%u", weapon->ammoCurrent, weapon->ammoMagazineMax, weapon->ammoTotal);
+            // const auto* weapon = dynamic_cast<Weapon*>(&*(m_hero.currentItem));
+            if(!m_hero.isInventoryEmpty())
+            {
+                ImGui::Text("Selected item: %llu", m_hero.getCurrentItemIndex());
+                if(m_hero.holdsWeapon())
+                {
+                    const auto& weapon = m_hero.getCurrentItem<Weapon>();
+                    ImGui::Text("ammo: %u/%u/%u", weapon.getAmmoCurrent(), weapon.getAmmoMagazineMax(), weapon.getAmmoTotal());
+                }
+            }
 
             static std::string preview = "Forest Theme";
             bool check = false;
