@@ -101,6 +101,7 @@ DebugSection::DebugSection()
 
     // ecs
     m_registry.emplace<ecs::component::position>(m_heroEntity);
+    m_registry.emplace<ecs::component::size>(m_heroEntity, hero_size);
     m_registry.emplace<ecs::component::velocity>(m_heroEntity);
     m_registry.emplace<ecs::component::max_velocity>(m_heroEntity);
     m_registry.emplace<ecs::component::acceleration>(m_heroEntity);
@@ -160,6 +161,7 @@ void DebugSection::update() noexcept
                         m_registry.emplace<ecs::component::is_bullet>(bullet);
                         m_registry.emplace<ecs::component::lifetime>(bullet, ResourceManager::timer->getTotalTime(), 2.0);
                         m_registry.emplace<ecs::component::position>(bullet, pos);
+                        m_registry.emplace<ecs::component::size>(bullet, glm::vec2{0.2f, 0.2f});
                         m_registry.emplace<ecs::component::velocity>(bullet, weapon.getBulletVelocity());
                         m_registry.emplace<ecs::component::max_velocity>(bullet, weapon.getBulletVelocity());
                         m_registry.emplace<ecs::component::acceleration>(bullet, -1.f);
@@ -228,12 +230,13 @@ void DebugSection::render() noexcept
 
     m_mapGrid.drawObjects({pos.x, pos.y}, draw_bbs);
 
-    const auto bullet_view = m_registry.view<const ecs::component::position, const ecs::component::rotation, const ecs::component::is_bullet>();
+    const auto bullet_view = m_registry.view<const ecs::component::position, const ecs::component::size, const ecs::component::rotation, const ecs::component::is_bullet>();
     for(const auto& bullet : bullet_view)
     {
         const glm::vec2& b_pos = bullet_view.get<const ecs::component::position>(bullet);
         const float& b_rot = bullet_view.get<const ecs::component::rotation>(bullet);
-        Renderer::drawQuad({b_pos.x, b_pos.y}, {0.2f, 0.2f}, b_rot, {1.f, 0.f, 0.f, 1.f});
+        const glm::vec2& b_size = bullet_view.get<const ecs::component::size>(bullet);
+        Renderer::drawQuad({b_pos.x, b_pos.y}, b_size, b_rot, {1.f, 0.f, 0.f, 1.f});
     }
 
     Renderer::endBatch(m_camera.getProjectionMatrix(), m_camera.getViewMatrix());

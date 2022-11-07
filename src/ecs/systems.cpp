@@ -6,6 +6,41 @@
 namespace ecs::system
 {
 
+namespace impl
+{
+
+bool is_colliding_with_anything(entt::registry& registry, const entt::entity& entity, const glm::vec2& next_pos)
+{
+    const auto view = registry.view<const ecs::component::position>(entt::exclude<ecs::component::is_bullet>);
+    const glm::vec2& entity_size = registry.get<const ecs::component::size>(entity);
+    // const float& hero_rot = registry.get<const ecs::component::rotation>(entity);
+    for(std::int32_t iter = 0; const auto& element : view)
+    {
+        if(iter >= 4)
+        {
+            break;
+        }
+        if(element == entity)
+        {
+            continue;
+        }
+        const glm::vec2& tile_pos = view.get<const ecs::component::position>(element);
+        const float& tile_rot = registry.get<const ecs::component::rotation>(element);
+        const glm::vec2& tile_size = registry.get<const ecs::component::size>(element);
+
+        // TODO: unfortunately entity rotation sometimes causes the character to get stuck, pls fix
+        if(OBB::findCollision(next_pos, entity_size, /*entity_rot*/ 0.f, tile_pos, tile_size, tile_rot))
+        {
+            return true;
+        }
+
+        iter++;
+    }
+    return false;
+}
+
+}  // namespace impl
+
 void move_bullets(entt::registry& registry)
 {
     using namespace ecs::component;
@@ -36,41 +71,11 @@ void move_bullets(entt::registry& registry)
 
 void collide_with_hero(entt::registry& registry, const entt::entity& hero_id, glm::vec2& hero_move_direction)
 {
-    const auto is_colliding_with_anything = [&hero_id, &registry](const glm::vec2& next_pos) -> bool
-    {
-        constexpr glm::vec2 hero_size{0.6f, 0.6f};
-        const auto view = registry.view<const ecs::component::position>(entt::exclude<ecs::component::is_bullet>);
-        // const float& hero_rot = registry.get<const ecs::component::rotation>(hero_id);
-        for(std::int32_t iter = 0; const auto& element : view)
-        {
-            if(iter >= 4)
-            {
-                break;
-            }
-            if(element == hero_id)
-            {
-                continue;
-            }
-            const glm::vec2& tile_pos = view.get<const ecs::component::position>(element);
-            const float& tile_rot = registry.get<const ecs::component::rotation>(element);
-            const glm::vec2& tile_size = registry.get<const ecs::component::size>(element);
-
-            // TODO: unfortunately hero rotation sometimes causes the character to get stuck, pls fix
-            if(OBB::findCollision(next_pos, hero_size, /*hero_rot*/ 0.f, tile_pos, tile_size, tile_rot))
-            {
-                return true;
-            }
-
-            iter++;
-        }
-        return false;
-    };
-
-    const auto resolve_collision = [&is_colliding_with_anything](glm::vec2& current_pos, glm::vec2 step) -> void
+    const auto resolve_collision = [&registry](const entt::entity& entity, glm::vec2& current_pos, glm::vec2 step) -> void
     {
         // brute-force checking whther there is a collision in the next step
         std::size_t tries = 1;
-        for(; is_colliding_with_anything(current_pos + step) && tries < 5; tries++)
+        for(; impl::is_colliding_with_anything(registry, entity, current_pos + step) && tries < 5; tries++)
         {
             step /= 2.f;
         }
@@ -120,8 +125,8 @@ void collide_with_hero(entt::registry& registry, const entt::entity& hero_id, gl
     auto shift_y = glm::vec2(0.f, dir.y) * vel * delta_time;
 
     // there should not be much penalty for doing both axes separatly because 99.9% of situations there is no collision on first iteration in either case
-    resolve_collision(pos, shift_x);
-    resolve_collision(pos, shift_y);
+    resolve_collision(hero_id, pos, shift_x);
+    resolve_collision(hero_id, pos, shift_y);
 }
 
 }  // namespace ecs::system
