@@ -27,6 +27,8 @@ struct ResourceManager
     static std::shared_ptr<float> uiTitleFontSize;
     static std::shared_ptr<Font> uiButtonFont;
     static std::shared_ptr<float> uiButtonFontSize;
+    static std::shared_ptr<Font> uiAmmoFont;
+    static std::shared_ptr<float> uiAmmoFontSize;
 
     static std::shared_ptr<entt::entity> heroEntity;
 };

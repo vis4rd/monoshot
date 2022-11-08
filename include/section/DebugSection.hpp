@@ -5,6 +5,7 @@
 #include "../gameplay/Hero.hpp"
 #include "../camera/PerspectiveCamera.hpp"
 #include "../map/Map.hpp"
+#include "../ui/layouts/GameplayLayout.hpp"
 #include "Section.hpp"
 
 #include <entt/entity/registry.hpp>
@@ -34,6 +35,8 @@ class DebugSection final : public Section
     PerspectiveCamera m_camera;
     Map m_mapGrid;
     Hero m_hero;
+
+    UI::GameplayLayout m_layout;
 
     entt::registry m_registry;
     entt::entity m_heroEntity;

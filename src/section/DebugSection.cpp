@@ -1,6 +1,6 @@
 #include "../../include/section/DebugSection.hpp"
 
-#include "../../include/ui/elements/LowerNavigationBox.hpp"
+#include "../../include/ui/elements/GameplayOverlay.hpp"
 #include "../../include/renderer/Renderer.hpp"
 #include "../../include/utility/ResourceManager.hpp"
 #include "../../include/ecs/systems.hpp"
@@ -16,6 +16,7 @@ DebugSection::DebugSection()
       m_camera(glm::vec3(0.f, 0.f, 50.f), ResourceManager::window->getSize()),
       m_mapGrid(5, 5),
       m_hero(100),
+      m_layout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize),
       m_registry(),
       m_heroEntity(m_registry.create())
 {
@@ -133,6 +134,8 @@ void DebugSection::update() noexcept
         SectionManager::get().popSection();
     }
 
+    m_layout.update(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize);
+
     // process main hero entity
     if(m_registry.valid(m_heroEntity))
     {
@@ -248,6 +251,18 @@ void DebugSection::render() noexcept
     // triangle_zoom_shader.uploadMat4("uView", m_camera.getViewMatrix(), 2);
     // VAO.bind();
     // glDrawElements(GL_TRIANGLES, VAO.getElementBuffer().getElementCount(), GL_UNSIGNED_INT, 0);
+
+    {
+        std::uint32_t current_ammo = 1;
+        std::uint32_t total_ammo = 0;
+        if(m_hero.holdsWeapon())
+        {
+            const auto& weapon = m_hero.getCurrentItem<Weapon>();
+            current_ammo = weapon.getAmmoCurrent();
+            total_ammo = weapon.getAmmoTotal();
+        }
+        UI::drawOverlay(m_layout, m_hero.health, m_hero.maxHealth, current_ammo, total_ammo, m_hero.getCurrentItemIndex());
+    }
 
     if constexpr(Flag::DebugMode)
     {
