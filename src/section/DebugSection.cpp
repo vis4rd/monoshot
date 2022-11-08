@@ -100,6 +100,7 @@ DebugSection::DebugSection()
     m_hero.addItem(std::move(Weapon(10, 70, 20000, 3.f, 0.05)));
 
     // ecs
+    ResourceManager::heroEntity = std::make_shared<entt::entity>(m_heroEntity);
     m_registry.emplace<ecs::component::position>(m_heroEntity);
     m_registry.emplace<ecs::component::size>(m_heroEntity, hero_size);
     m_registry.emplace<ecs::component::velocity>(m_heroEntity);

@@ -5,6 +5,7 @@
 #include "../window/Window.hpp"
 
 #include <memory>
+#include <entt/entity/entity.hpp>
 
 struct ResourceManager
 {
@@ -26,4 +27,6 @@ struct ResourceManager
     static std::shared_ptr<float> uiTitleFontSize;
     static std::shared_ptr<Font> uiButtonFont;
     static std::shared_ptr<float> uiButtonFontSize;
+
+    static std::shared_ptr<entt::entity> heroEntity;
 };
