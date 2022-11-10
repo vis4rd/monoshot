@@ -2,6 +2,7 @@
     "recommendations": [
         "aaron-bond.better-comments",
         "jeff-hykin.better-cpp-syntax",
+        "josetr.cmake-language-support-vscode",
         "llvm-vs-code-extensions.vscode-clangd",
         "ms-vscode.cmake-tools",
         "ms-vscode.cpptools",

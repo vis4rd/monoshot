@@ -3,20 +3,27 @@
     "C_Cpp.default.cStandard": "c17",
     "C_Cpp.intelliSenseEngine": "Disabled",
     "C_Cpp.errorSquiggles": "Disabled",
+    //
     "clangd.arguments": [
         "--header-insertion", "never"
     ],
+    //
     "cmake.buildBeforeRun": false,
     "cmake.configureOnEdit": false,
     "cmake.configureOnOpen": false,
     "cmake.statusbar.visibility": "icon",
-    "editor.defaultFormatter": "xaver.clang-format",
-    "editor.formatOnSave": true,
-    "editor.inlayHints.enabled": "off",
-    "git.suggestSmartCommit": false,
+    //
+    "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
+    "editor.inlayHints.enabled": "offUnlessPressed",
+    "editor.renderLineHighlight": "gutter",
+    //
     "files.eol": "\n",
     "files.insertFinalNewline": true,
     "files.trimFinalNewlines": true,
-    "editor.renderLineHighlight": "gutter",
-    "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
+    //
+    "git.suggestSmartCommit": false,
+    //
+    "[cpp]": {
+        "editor.formatOnSave": true,
+    }
 }
