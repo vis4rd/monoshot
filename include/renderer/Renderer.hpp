@@ -1,7 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include <glad/glad.h>
+#include <glad/gl.h>
 
 #include <array>
 #include <numeric>
@@ -10,21 +10,10 @@
 #include <memory>
 
 #include "../utility/VertexArray.hpp"
-#include "../texture/Texture2D.hpp"
+#include "../texture/Texture.hpp"
 
 class Renderer
 {
-    public:
-    template<typename T>
-    using ref = std::shared_ptr<T>;
-
-    private:
-    template<typename T, typename... Args>
-    static constexpr ref<T> make_ref(Args&&... args)
-    {
-        return std::make_shared<T>(args...);
-    }
-
     public:
     static void init();
     static void shutdown();
@@ -33,7 +22,7 @@ class Renderer
     static void endBatch(const glm::mat4& projection, const glm::mat4& view);
 
     static void drawQuad(const glm::vec2& position, const glm::vec2& size, const float& rotation, const glm::vec4& color);
-    static void drawQuad(const glm::vec2& position, const glm::vec2& size, const float& rotation, const ref<Texture2D> texture, const glm::vec4& color = {1.f, 1.f, 1.f, 1.f});
+    static void drawQuad(const glm::vec2& position, const glm::vec2& size, const float& rotation, const Texture::Texture& texture, const glm::vec4& color = {1.f, 1.f, 1.f, 1.f});
 
     static void drawLine(const glm::vec2& pos1, const glm::vec2& pos2, const glm::vec4& color);
     static void drawLine(const glm::vec2& pos1, const glm::vec2& pos2, const glm::vec4& color1, const glm::vec4& color2);
@@ -75,15 +64,15 @@ class Renderer
         static constinit const std::size_t maxIndexCount = maxQuadCount * 6;
         static constinit const std::size_t maxTextures = 32;
 
-        ref<VertexArray> quadVao;
+        std::shared_ptr<VertexArray> quadVao;
         std::vector<QuadVertex> quadBuffer = std::vector<QuadVertex>(maxVertexCount);
         std::vector<QuadVertex>::iterator quadBufferIter{};
 
-        ref<VertexArray> lineVao;
+        std::shared_ptr<VertexArray> lineVao;
         std::vector<LineVertex> lineBuffer = std::vector<LineVertex>(maxLineCount * 2);
         std::vector<LineVertex>::iterator lineBufferIter{};
 
-        std::vector<ref<Texture2D>> textureSlots;  // slot = vec index, unit = tex ID
+        std::vector<Texture::Texture> textureSlots;  // slot = vec index, unit = tex ID
         std::array<std::int32_t, maxTextures> textureSamplers = {0};
         std::uint32_t textureSlotsTakenCount = 0;
 

@@ -2,7 +2,7 @@
 
 #include "../../../include/utility/ResourceManager.hpp"
 
-MapObject::MapObject(const glm::vec2& position, const glm::vec2& size, std::shared_ptr<Texture2D> texture, float rotation, bool has_collision, float opacity_on_collision)
+MapObject::MapObject(const glm::vec2& position, const glm::vec2& size, Texture::Texture texture, float rotation, bool has_collision, float opacity_on_collision)
     : m_position(position),
       m_size(size),
       m_rotation(rotation),
@@ -28,7 +28,7 @@ const float MapObject::getRotation() const
     return m_rotation;
 }
 
-const std::shared_ptr<Texture2D>& MapObject::getTexture() const
+const Texture::Texture& MapObject::getTexture() const
 {
     return m_texture;
 }
@@ -42,7 +42,7 @@ MapObject MapObject::createPredefined(ObjectID id, const glm::vec2& position, fl
 {
     using res = ResourceManager;
 
-    std::shared_ptr<Texture2D> texture;
+    Texture::Texture texture;
     bool has_collision = false;
     glm::vec2 size{};
     float opacity_on_collision = 1.f;  // domain <0; 1>

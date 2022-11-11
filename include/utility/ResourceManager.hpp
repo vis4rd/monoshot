@@ -13,15 +13,15 @@ struct ResourceManager
     static std::shared_ptr<Timer> timer;
     static glm::vec4 mapThemeBackgroundColor;
 
-    static std::shared_ptr<Texture2D> carTexture;
-    static std::shared_ptr<Texture2D> destroyedCarTexture;
-    static std::shared_ptr<Texture2D> chairTexture;
-    static std::shared_ptr<Texture2D> outdoorBenchTexture;
-    static std::shared_ptr<Texture2D> tableTexture;
-    static std::shared_ptr<Texture2D> smallTreeTexture;
-    static std::shared_ptr<Texture2D> largeTreeTexture;
-    static std::shared_ptr<Texture2D> smallBushTexture;
-    static std::shared_ptr<Texture2D> largeBushTexture;
+    static Texture::Texture carTexture;
+    static Texture::Texture destroyedCarTexture;
+    static Texture::Texture chairTexture;
+    static Texture::Texture outdoorBenchTexture;
+    static Texture::Texture tableTexture;
+    static Texture::Texture smallTreeTexture;
+    static Texture::Texture largeTreeTexture;
+    static Texture::Texture smallBushTexture;
+    static Texture::Texture largeBushTexture;
 
     static std::shared_ptr<Font> uiTitleFont;
     static std::shared_ptr<float> uiTitleFontSize;

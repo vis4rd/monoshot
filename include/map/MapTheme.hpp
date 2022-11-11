@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BlockID.hpp"
-#include "../texture/Texture2D.hpp"
+#include "../texture/Texture.hpp"
 
 #include <glm/glm.hpp>
 
@@ -14,8 +14,7 @@
 struct MapTheme
 {
     using Color = glm::vec4;
-    using TexPtr = std::shared_ptr<Texture2D>;
-    using BlockData = std::tuple<BlockID, Color, TexPtr>;
+    using BlockData = std::tuple<BlockID, Color, Texture::Texture>;
 
     Color backgroundColor;
     BlockData wallBlock;

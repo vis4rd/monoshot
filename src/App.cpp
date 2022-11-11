@@ -57,32 +57,15 @@ void App::initLogger() noexcept
 void App::initTextures() noexcept
 {
     using res = ResourceManager;
-    res::largeTreeTexture = std::make_shared<Texture2D>(128, 128);
-    res::largeTreeTexture->load("../res/textures/large_tree.png");
-
-    res::smallTreeTexture = std::make_shared<Texture2D>(64, 64);
-    res::smallTreeTexture->load("../res/textures/small_tree.png");
-
-    res::outdoorBenchTexture = std::make_shared<Texture2D>(48, 16);
-    res::outdoorBenchTexture->load("../res/textures/outdoors_bench.png");
-
-    res::chairTexture = std::make_shared<Texture2D>(16, 16);
-    res::chairTexture->load("../res/textures/chair.png");
-
-    res::tableTexture = std::make_shared<Texture2D>(32, 32);
-    res::tableTexture->load("../res/textures/table.png");
-
-    res::smallBushTexture = std::make_shared<Texture2D>(48, 48);
-    res::smallBushTexture->load("../res/textures/small_bush.png");
-
-    res::largeBushTexture = std::make_shared<Texture2D>(56, 56);
-    res::largeBushTexture->load("../res/textures/large_bush.png");
-
-    res::carTexture = std::make_shared<Texture2D>(32, 64);
-    res::carTexture->load("../res/textures/car.png");
-
-    res::destroyedCarTexture = std::make_shared<Texture2D>(32, 64);
-    res::destroyedCarTexture->load("../res/textures/destroyed_car.png");
+    res::largeTreeTexture = Texture::create("../res/textures/large_tree.png", 128, 128);
+    res::smallTreeTexture = Texture::create("../res/textures/small_tree.png", 64, 64);
+    res::outdoorBenchTexture = Texture::create("../res/textures/outdoors_bench.png", 48, 16);
+    res::chairTexture = Texture::create("../res/textures/chair.png", 16, 16);
+    res::tableTexture = Texture::create("../res/textures/table.png", 32, 32);
+    res::smallBushTexture = Texture::create("../res/textures/small_bush.png", 48, 48);
+    res::largeBushTexture = Texture::create("../res/textures/large_bush.png", 56, 56);
+    res::carTexture = Texture::create("../res/textures/car.png", 32, 64);
+    res::destroyedCarTexture = Texture::create("../res/textures/destroyed_car.png", 32, 64);
 }
 
 void App::initFonts() noexcept

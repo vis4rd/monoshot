@@ -21,6 +21,12 @@ static constexpr std::array<glm::vec2, 4> quadTexturePositions = {
     glm::vec2{0.0f, 1.0f}
 };
 
+template<typename... Args>
+std::array<std::byte, sizeof...(Args)> make_bytes(Args&&... args) noexcept
+{
+    return {std::byte(std::forward<Args>(args))...};
+}
+
 void Renderer::init()
 {
     if(Renderer::m_isInit == true)
@@ -49,7 +55,7 @@ void Renderer::init()
     }
 
     // buffers
-    s_data.quadVao = Renderer::make_ref<VertexArray>();
+    s_data.quadVao = std::make_shared<VertexArray>();
     auto quadVbo = VertexBuffer(s_data.maxVertexCount * sizeof(QuadVertex));
     auto quadEbo = ElementBuffer(quadIndices, s_data.maxIndexCount);
 
@@ -70,7 +76,7 @@ void Renderer::init()
 
     //// Lines
     // buffers
-    s_data.lineVao = Renderer::make_ref<VertexArray>();
+    s_data.lineVao = std::make_shared<VertexArray>();
     auto lineVbo = VertexBuffer(s_data.maxVertexCount * sizeof(LineVertex));
 
     // attributes
@@ -89,9 +95,9 @@ void Renderer::init()
     // textures
     std::iota(s_data.textureSamplers.begin(), s_data.textureSamplers.end(), 0);  // fill textureSamplers with 0, 1, 2, ..., 31
 
-    std::uint32_t color = 0xffffffff;
-    ref<Texture2D> texture = make_ref<Texture2D>(1, 1);
-    texture->load(reinterpret_cast<std::uint8_t*>(&color), sizeof(color));
+    const auto color = make_bytes(0xff, 0xff, 0xff, 0xff);
+    Texture::Texture texture = Texture::create(color.data(), 1, 1);
+    // texture->load(reinterpret_cast<std::uint8_t*>(&color), sizeof(color));
 
     s_data.textureSlots.reserve(32);
     s_data.textureSlots.push_back(texture);
@@ -202,7 +208,7 @@ void Renderer::drawQuad(const glm::vec2& position, const glm::vec2& size, const 
     drawQuad(position, size, rotation, s_data.textureSlots.at(0), color);
 }
 
-static float findSlot(const std::vector<Renderer::ref<Texture2D>>& slots, const std::uint32_t& texture_id)
+static float findSlot(const std::vector<Texture::Texture>& slots, const std::uint32_t& texture_id)
 {
     for(std::size_t slot = 0; slot < s_data.textureSlots.size(); slot++)
     {
@@ -214,7 +220,7 @@ static float findSlot(const std::vector<Renderer::ref<Texture2D>>& slots, const 
     return -1.f;
 }
 
-void Renderer::drawQuad(const glm::vec2& position, const glm::vec2& size, const float& rotation, const ref<Texture2D> texture, const glm::vec4& color)
+void Renderer::drawQuad(const glm::vec2& position, const glm::vec2& size, const float& rotation, const Texture::Texture& texture, const glm::vec4& color)
 {
     // spdlog::trace("Renderer: drawing a Quad, position = ({}, {}), size = ({}, {}), rotation = {}", position.x, position.y, size.x, size.y, rotation);
 
