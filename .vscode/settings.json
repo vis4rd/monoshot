@@ -22,6 +22,15 @@
     "files.trimFinalNewlines": true,
     //
     "git.suggestSmartCommit": false,
+    "git.ignoredRepositories":[
+        "entt",
+        "glad",
+        "glfw",
+        "glm",
+        "imgui",
+        "spdlog",
+        "tinyfiledialogs"
+    ],
     //
     "[cpp]": {
         "editor.formatOnSave": true,
