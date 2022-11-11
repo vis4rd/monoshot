@@ -3,7 +3,7 @@
 #include <random>
 #include <concepts>
 
-namespace random
+namespace util::random
 {
 
 // clang-format off
@@ -28,4 +28,4 @@ T getRandomNumber(T&& min, const T&& max)
 
 // clang-format on
 
-}  // namespace random
+}  // namespace util::random

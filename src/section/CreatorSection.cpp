@@ -9,7 +9,7 @@
 static std::size_t s_selected_map_item = BlockID::Wall;
 static bool s_selected_solid = false;
 static glm::vec2 s_mouse_world_pos = {0.f, 0.f};
-static float s_randomized_rotation = random::getRandomNumber(0.f, 360.f);
+static float s_randomized_rotation = util::random::getRandomNumber(0.f, 360.f);
 
 CreatorSection::CreatorSection()
     : Section(),
@@ -106,7 +106,7 @@ void CreatorSection::update() noexcept
             if(input.isPressedOnce(GLFW_MOUSE_BUTTON_LEFT))
             {
                 m_map.addObject(s_mouse_world_pos, s_randomized_rotation, static_cast<ObjectID>(s_selected_map_item));
-                s_randomized_rotation = random::getRandomNumber(0.f, 360.f);
+                s_randomized_rotation = util::random::getRandomNumber(0.f, 360.f);
             }
         }
         else if(s_selected_map_item > BlockID::FIRST_BLOCK && s_selected_map_item < BlockID::LAST_BLOCK)  // if its a Block
