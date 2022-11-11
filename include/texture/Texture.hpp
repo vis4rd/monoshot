@@ -15,8 +15,8 @@ class Texture final
 {
     public:
     Texture() = default;
-    Texture(const std::string_view& source_path, const std::int32_t& width, const std::int32_t& height, const std::int32_t& channel_count = 0);
-    Texture(const std::byte* data, const std::int32_t& width, const std::int32_t& height, const std::int32_t& channel_count = 0);
+    Texture(const std::string_view& source_path, const std::int32_t& width, const std::int32_t& height, const std::int32_t& channel_count = 4);
+    Texture(const std::byte* data, const std::int32_t& width, const std::int32_t& height, const std::int32_t& channel_count = 4);
     Texture(const Texture& copy);
     Texture(Texture&& move);
     ~Texture();
@@ -30,8 +30,8 @@ class Texture final
     const std::int32_t& getNumberOfChannels() const;
     const std::string& getSourcePath() const;
 
-    void load(const std::string_view& source_path, const std::int32_t& width, const std::int32_t& height, const std::int32_t& channel_count = 0);
-    void load(const std::byte* data, const std::int32_t& width, const std::int32_t& height, const std::int32_t& channel_count = 0);
+    void load(const std::string_view& source_path, const std::int32_t& width, const std::int32_t& height, const std::int32_t& channel_count = 4);
+    void load(const std::byte* data, const std::int32_t& width, const std::int32_t& height, const std::int32_t& channel_count = 4);
 
     private:
     void uploadToGpu();

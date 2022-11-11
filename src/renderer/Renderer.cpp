@@ -21,12 +21,6 @@ static constexpr std::array<glm::vec2, 4> quadTexturePositions = {
     glm::vec2{0.0f, 1.0f}
 };
 
-template<typename... Args>
-std::array<std::byte, sizeof...(Args)> make_bytes(Args&&... args) noexcept
-{
-    return {std::byte(std::forward<Args>(args))...};
-}
-
 void Renderer::init()
 {
     if(Renderer::m_isInit == true)
@@ -95,9 +89,13 @@ void Renderer::init()
     // textures
     std::iota(s_data.textureSamplers.begin(), s_data.textureSamplers.end(), 0);  // fill textureSamplers with 0, 1, 2, ..., 31
 
+    const auto make_bytes = [](auto&&... args) -> std::array<std::byte, sizeof...(args)>
+    {
+        return {std::byte(std::forward<decltype(args)>(args))...};
+    };
+
     const auto color = make_bytes(0xff, 0xff, 0xff, 0xff);
     Texture::Texture texture = Texture::create(color.data(), 1, 1);
-    // texture->load(reinterpret_cast<std::uint8_t*>(&color), sizeof(color));
 
     s_data.textureSlots.reserve(32);
     s_data.textureSlots.push_back(texture);
