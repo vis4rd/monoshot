@@ -1,6 +1,6 @@
 #include "../../include/utility/Logging.hpp"
 
-#include <glad/glad.h>
+#include <glad/gl.h>
 
 static constexpr const char *sources[] = {"API", "Window System", "Shader Compiler", "Third Party", "Application", "Other", "Unknown"};
 static constexpr const char *types[] = {"Error", "Deprecated Behavior", "Undefined Behavior", "Portability", "Performance", "Other", "Unknown"};

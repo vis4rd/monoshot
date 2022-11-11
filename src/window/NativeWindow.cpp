@@ -161,7 +161,8 @@ void NativeWindow::initGL()
 {
     spdlog::debug("Initializing GLAD");
 
-    if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+
+    if(int success = gladLoadGL(glfwGetProcAddress); not success)
     {
         spdlog::critical("Failed to initialize GLAD");
     }

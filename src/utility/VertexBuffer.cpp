@@ -1,6 +1,6 @@
 #include "../../include/utility/VertexBuffer.hpp"
 #include "spdlog/spdlog.h"
-#include <glad/glad.h>
+#include <glad/gl.h>
 
 BufferLayout::BufferLayout(std::initializer_list<BufferElement> elements)
     : m_elements(elements)

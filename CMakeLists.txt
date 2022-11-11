@@ -30,7 +30,11 @@ add_subdirectory("${PROJECT_SOURCE_DIR}/lib/glfw")
 find_package(OpenGL 4.5 REQUIRED)
 
 # GLAD
-add_subdirectory("${PROJECT_SOURCE_DIR}/lib/glad")
+add_subdirectory("${PROJECT_SOURCE_DIR}/lib/glad/cmake")
+glad_add_library(glad STATIC REPRODUCIBLE
+    LANGUAGE C
+    API gl:core=4.5
+)
 
 # GLM
 add_subdirectory("${PROJECT_SOURCE_DIR}/lib/glm")
@@ -90,7 +94,7 @@ add_subdirectory("${PROJECT_SOURCE_DIR}/lib/entt")
 add_subdirectory("${PROJECT_SOURCE_DIR}/lib/tinyfiledialogs")
 
 # Other sources
-file(GLOB_RECURSE SOURCES 
+file(GLOB_RECURSE SOURCES
     "${PROJECT_SOURCE_DIR}/src/*.cpp"
     "${PROJECT_SOURCE_DIR}/include/*.hpp"
 )
@@ -165,7 +169,7 @@ function(target_group_source_files target)
     get_target_property(sources ${target} SOURCES)
     foreach(file ${sources})
         file(RELATIVE_PATH relative_file "${PROJECT_SOURCE_DIR}" ${file})
-    
+
         if("${relative_file}" MATCHES ".*\\.cpp")
             source_group("Source Files" FILES ${relative_file})
         elseif("${relative_file}" MATCHES ".*\\.hpp")
@@ -173,7 +177,7 @@ function(target_group_source_files target)
         else()
             source_group("Other Files" FILES ${relative_file})
         endif()
-    
+
     endforeach()
 endfunction()
 

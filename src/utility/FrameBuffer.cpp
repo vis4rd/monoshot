@@ -1,6 +1,6 @@
 #include "../../include/utility/FrameBuffer.hpp"
 
-#include <glad/glad.h>
+#include <glad/gl.h>
 #include <spdlog/spdlog.h>
 
 FrameBuffer::FrameBuffer(const std::int32_t& width, const std::int32_t& height)
@@ -13,7 +13,7 @@ FrameBuffer::FrameBuffer(const std::int32_t& width, const std::int32_t& height)
 
     // steps to ensure that the framebuffer is complete
     // 1) attach at least one buffer (color, depth or stencil)
-    // 2) at least on color attachment
+    // 2) at least one color attachment
     // 3) all attachments should be complete as well
     // 4) each buffer should have the same number of samples
 

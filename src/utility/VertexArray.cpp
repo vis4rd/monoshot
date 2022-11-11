@@ -1,5 +1,5 @@
 #include "../../include/utility/VertexArray.hpp"
-#include <glad/glad.h>
+#include <glad/gl.h>
 #include <stdexcept>
 #include <spdlog/spdlog.h>
 
