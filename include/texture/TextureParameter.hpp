@@ -289,6 +289,9 @@ enum class TextureWrapR
     REPEAT = GL_REPEAT,
 };
 
+namespace impl
+{
+
 // clang-format off
 // Concepts for each enum plus some helpers
 template<typename T> concept ParameterC = std::convertible_to<T, Parameter>;
@@ -318,41 +321,42 @@ concept ParameterFloatValueC = (ParamName == Parameter::TEXTURE_LOD_BIAS)
     or (ParamName == Parameter::TEXTURE_MIN_LOD)
     or (ParamName == Parameter::TEXTURE_MAX_LOD);
 
-constexpr void setParameterInt(std::unsigned_integral auto&& id, ParameterC auto&& param_name, EnumCompatibleC auto&& param_value)
+}  // namespace impl
+
+constexpr void setParameterInt(std::unsigned_integral auto&& id, impl::ParameterC auto&& param_name, impl::EnumCompatibleC auto&& param_value)
 {
     glTextureParameteri(id, static_cast<ParameterName>(param_name), static_cast<ParameterIntValue>(param_value));
 }
 
-constexpr void setParameterFloat(std::unsigned_integral auto&& id, ParameterC auto&& param_name, EnumCompatibleC auto&& param_value)
+constexpr void setParameterFloat(std::unsigned_integral auto&& id, impl::ParameterC auto&& param_name, impl::EnumCompatibleC auto&& param_value)
 {
     glTextureParameterf(id, static_cast<ParameterName>(param_name), static_cast<ParameterFloatValue>(param_value));
 }
 
-// TODO: change argument names to be more matching
 void setParameter(std::unsigned_integral auto&& id, auto&& mode) = delete;
-void setParameter(std::unsigned_integral auto&& id, DepthStencilTextureModeC auto&& mode) { setParameterInt(std::forward<decltype(id)>(id), Parameter::DEPTH_STENCIL_TEXTURE_MODE, std::forward<decltype(mode)>(mode)); }
-void setParameter(std::unsigned_integral auto&& id, TextureCompareFuncC auto&& func) { setParameterInt(std::forward<decltype(id)>(id), Parameter::TEXTURE_COMPARE_FUNC, std::forward<decltype(func)>(func)); }
-void setParameter(std::unsigned_integral auto&& id, TextureCompareModeC auto&& compare_mode) { setParameterInt(std::forward<decltype(id)>(id), Parameter::TEXTURE_COMPARE_MODE, std::forward<decltype(compare_mode)>(compare_mode)); }
-void setParameter(std::unsigned_integral auto&& id, TextureMinFilterC auto&& filter) { setParameterInt(std::forward<decltype(id)>(id), Parameter::TEXTURE_MIN_FILTER, std::forward<decltype(filter)>(filter)); }
-void setParameter(std::unsigned_integral auto&& id, TextureMagFilterC auto&& filter) { setParameterInt(std::forward<decltype(id)>(id), Parameter::TEXTURE_MAG_FILTER, std::forward<decltype(filter)>(filter)); }
-void setParameter(std::unsigned_integral auto&& id, TextureSwizzleRC auto&& swizzle_channel) { setParameterInt(std::forward<decltype(id)>(id), Parameter::TEXTURE_SWIZZLE_R, std::forward<decltype(swizzle_channel)>(swizzle_channel)); }
-void setParameter(std::unsigned_integral auto&& id, TextureSwizzleGC auto&& swizzle_channel) { setParameterInt(std::forward<decltype(id)>(id), Parameter::TEXTURE_SWIZZLE_G, std::forward<decltype(swizzle_channel)>(swizzle_channel)); }
-void setParameter(std::unsigned_integral auto&& id, TextureSwizzleBC auto&& swizzle_channel) { setParameterInt(std::forward<decltype(id)>(id), Parameter::TEXTURE_SWIZZLE_B, std::forward<decltype(swizzle_channel)>(swizzle_channel)); }
-void setParameter(std::unsigned_integral auto&& id, TextureSwizzleAC auto&& swizzle_channel) { setParameterInt(std::forward<decltype(id)>(id), Parameter::TEXTURE_SWIZZLE_A, std::forward<decltype(swizzle_channel)>(swizzle_channel)); }
-void setParameter(std::unsigned_integral auto&& id, TextureSwizzleRGBAC auto&& swizzle_channel) { setParameterInt(std::forward<decltype(id)>(id), Parameter::TEXTURE_SWIZZLE_RGBA, std::forward<decltype(swizzle_channel)>(swizzle_channel)); }
-void setParameter(std::unsigned_integral auto&& id, TextureWrapSC auto&& wrap_mode) { setParameterInt(std::forward<decltype(id)>(id), Parameter::TEXTURE_WRAP_S, std::forward<decltype(wrap_mode)>(wrap_mode)); }
-void setParameter(std::unsigned_integral auto&& id, TextureWrapTC auto&& wrap_mode) { setParameterInt(std::forward<decltype(id)>(id), Parameter::TEXTURE_WRAP_T, std::forward<decltype(wrap_mode)>(wrap_mode)); }
-void setParameter(std::unsigned_integral auto&& id, TextureWrapRC auto&& wrap_mode) { setParameterInt(std::forward<decltype(id)>(id), Parameter::TEXTURE_WRAP_R, std::forward<decltype(wrap_mode)>(wrap_mode)); }
+void setParameter(std::unsigned_integral auto&& id, impl::DepthStencilTextureModeC auto&& mode) { setParameterInt(std::forward<decltype(id)>(id), Parameter::DEPTH_STENCIL_TEXTURE_MODE, std::forward<decltype(mode)>(mode)); }
+void setParameter(std::unsigned_integral auto&& id, impl::TextureCompareFuncC auto&& func) { setParameterInt(std::forward<decltype(id)>(id), Parameter::TEXTURE_COMPARE_FUNC, std::forward<decltype(func)>(func)); }
+void setParameter(std::unsigned_integral auto&& id, impl::TextureCompareModeC auto&& compare_mode) { setParameterInt(std::forward<decltype(id)>(id), Parameter::TEXTURE_COMPARE_MODE, std::forward<decltype(compare_mode)>(compare_mode)); }
+void setParameter(std::unsigned_integral auto&& id, impl::TextureMinFilterC auto&& filter) { setParameterInt(std::forward<decltype(id)>(id), Parameter::TEXTURE_MIN_FILTER, std::forward<decltype(filter)>(filter)); }
+void setParameter(std::unsigned_integral auto&& id, impl::TextureMagFilterC auto&& filter) { setParameterInt(std::forward<decltype(id)>(id), Parameter::TEXTURE_MAG_FILTER, std::forward<decltype(filter)>(filter)); }
+void setParameter(std::unsigned_integral auto&& id, impl::TextureSwizzleRC auto&& swizzle_channel) { setParameterInt(std::forward<decltype(id)>(id), Parameter::TEXTURE_SWIZZLE_R, std::forward<decltype(swizzle_channel)>(swizzle_channel)); }
+void setParameter(std::unsigned_integral auto&& id, impl::TextureSwizzleGC auto&& swizzle_channel) { setParameterInt(std::forward<decltype(id)>(id), Parameter::TEXTURE_SWIZZLE_G, std::forward<decltype(swizzle_channel)>(swizzle_channel)); }
+void setParameter(std::unsigned_integral auto&& id, impl::TextureSwizzleBC auto&& swizzle_channel) { setParameterInt(std::forward<decltype(id)>(id), Parameter::TEXTURE_SWIZZLE_B, std::forward<decltype(swizzle_channel)>(swizzle_channel)); }
+void setParameter(std::unsigned_integral auto&& id, impl::TextureSwizzleAC auto&& swizzle_channel) { setParameterInt(std::forward<decltype(id)>(id), Parameter::TEXTURE_SWIZZLE_A, std::forward<decltype(swizzle_channel)>(swizzle_channel)); }
+void setParameter(std::unsigned_integral auto&& id, impl::TextureSwizzleRGBAC auto&& swizzle_channel) { setParameterInt(std::forward<decltype(id)>(id), Parameter::TEXTURE_SWIZZLE_RGBA, std::forward<decltype(swizzle_channel)>(swizzle_channel)); }
+void setParameter(std::unsigned_integral auto&& id, impl::TextureWrapSC auto&& wrap_mode) { setParameterInt(std::forward<decltype(id)>(id), Parameter::TEXTURE_WRAP_S, std::forward<decltype(wrap_mode)>(wrap_mode)); }
+void setParameter(std::unsigned_integral auto&& id, impl::TextureWrapTC auto&& wrap_mode) { setParameterInt(std::forward<decltype(id)>(id), Parameter::TEXTURE_WRAP_T, std::forward<decltype(wrap_mode)>(wrap_mode)); }
+void setParameter(std::unsigned_integral auto&& id, impl::TextureWrapRC auto&& wrap_mode) { setParameterInt(std::forward<decltype(id)>(id), Parameter::TEXTURE_WRAP_R, std::forward<decltype(wrap_mode)>(wrap_mode)); }
 
 template <Parameter ParamName>
-requires ParameterIntValueC<ParamName>
+requires impl::ParameterIntValueC<ParamName>
 constexpr void setParameter(std::unsigned_integral auto&& id, std::integral auto&& param_value)
 {
     setParameterInt(std::forward<decltype(id)>(id), ParamName, std::forward<decltype(param_value)>(param_value));
 }
 
 template <Parameter ParamName>
-requires ParameterFloatValueC<ParamName>
+requires impl::ParameterFloatValueC<ParamName>
 constexpr void setParameter(std::unsigned_integral auto&& id, std::floating_point auto&& param_value)
 {
     setParameterFloat(std::forward<decltype(id)>(id), ParamName, std::forward<decltype(param_value)>(param_value));
@@ -360,7 +364,7 @@ constexpr void setParameter(std::unsigned_integral auto&& id, std::floating_poin
 
 // clang-format on
 
-};  // namespace Texture
+}  // namespace Texture
 
 //? Testing suite of compile-time restrictions
 // inline void ble()
