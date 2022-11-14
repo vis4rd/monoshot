@@ -32,6 +32,7 @@ class Texture final
     const std::int32_t& getNumberOfChannels() const;
     const std::string& getSourcePath() const;
     const ::Texture::Data& getTextureData() const;
+    const std::byte* const getData() const;
 
     void load(const std::string_view& source_path, const std::int32_t& width, const std::int32_t& height, const std::int32_t& channel_count = 4);
     void load(const std::byte* data, const std::int32_t& width, const std::int32_t& height, const std::int32_t& channel_count = 4);

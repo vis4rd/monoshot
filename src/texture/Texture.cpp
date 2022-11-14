@@ -31,7 +31,19 @@ Texture::Texture(const std::string_view& file_path, const ::Texture::Data& textu
     : m_textureData(texture_data),
       m_sourcePath(file_path)
 {
-    spdlog::trace("Creating Texture with width = {}, height = {}", m_textureData.widthTotal, m_textureData.heightTotal);
+    spdlog::debug(
+        "Creating Texture with custom Data:\nmipmapsEnabled = {},\nmipmapLevel = {},\ninternalFormat = {:x},\nwidthTotal = {},\nheightTotal = {},\nwidthSub = {},\nheightSub = {},\nnumberOfSubs = {},\nnumberOfSubsInOneRow = {},\npixelDataFormat = {:x},\ndataType = {:x}",
+        m_textureData.mipmapsEnabled,
+        m_textureData.mipmapLevel,
+        m_textureData.internalFormat,
+        m_textureData.widthTotal,
+        m_textureData.heightTotal,
+        m_textureData.widthSub,
+        m_textureData.heightSub,
+        m_textureData.numberOfSubs,
+        m_textureData.numberOfSubsInOneRow,
+        m_textureData.pixelDataFormat,
+        m_textureData.dataType);
     this->load(m_sourcePath, m_textureData.widthTotal, m_textureData.heightTotal, m_numberOfChannels);
     this->uploadToGpu();
 }
@@ -157,6 +169,11 @@ const ::Texture::Data& Texture::getTextureData() const
     return m_textureData;
 }
 
+const std::byte* const Texture::getData() const
+{
+    return m_data;
+}
+
 void Texture::nextSub()
 {
     auto& index = m_textureData.currentSub;
@@ -197,7 +214,7 @@ void Texture::uploadToGpu()
 void Texture::unloadFromGpu()
 {
     spdlog::trace("Unloading Texture data from GPU, deleting ID = {}", m_id);
-    glTextureSubImage2D(m_id, 0, 0, 0, m_textureData.widthTotal, m_textureData.heightTotal, GL_RGB, GL_UNSIGNED_BYTE, m_data);
+    glTextureSubImage2D(m_id, 0, 0, 0, m_textureData.widthTotal, m_textureData.heightTotal, m_textureData.pixelDataFormat, m_textureData.dataType, m_data);
     glDeleteTextures(1, &m_id);
 }
 
