@@ -68,6 +68,15 @@ void App::initTextures() noexcept
     res::largeBushTexture = Texture::create("../res/textures/large_bush.png", 56, 56);
     res::carTexture = Texture::create("../res/textures/car.png", 32, 64);
     res::destroyedCarTexture = Texture::create("../res/textures/destroyed_car.png", 32, 64);
+    res::heroTexture = Texture::create("../res/textures/entities/player.png",
+        Texture::Data{
+            .widthTotal = 128,
+            .heightTotal = 16,
+            .widthSub = 128,
+            .heightSub = 16,
+            .numberOfSubs = 8,
+            .numberOfSubsInOneRow = 8,
+        });
 }
 
 void App::initFonts() noexcept
@@ -126,6 +135,7 @@ void App::destroyTextures() noexcept
     res::largeBushTexture.reset();
     res::carTexture.reset();
     res::destroyedCarTexture.reset();
+    res::heroTexture.reset();
 }
 
 void App::destroyFonts() noexcept

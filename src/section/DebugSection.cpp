@@ -147,7 +147,7 @@ void DebugSection::update() noexcept
         if(input.isHeld(GLFW_KEY_D) || input.isPressedOnce(GLFW_KEY_RIGHT)) { move_direction.x += 1.f; }
         if(input.isHeld(GLFW_KEY_W) || input.isPressedOnce(GLFW_KEY_UP)) { move_direction.y += 1.f; }
         if(input.isHeld(GLFW_KEY_S) || input.isPressedOnce(GLFW_KEY_DOWN)) { move_direction.y -= 1.f; }
-            
+
         // update inventory logic
         if(!m_hero.isInventoryEmpty())
         {
@@ -230,7 +230,7 @@ void DebugSection::render() noexcept
     // Renderer::drawQuad({-46.f, 0.f}, tile_size, 90.f, firstTexture, {1.f, 1.f, 1.f, 1.f});
 
     const auto& [pos, rot, vel, acc] = m_registry.get<ecs::component::position, ecs::component::rotation, ecs::component::velocity, ecs::component::acceleration>(m_heroEntity);
-    Renderer::drawQuad({pos.x, pos.y}, hero_size, rot, {1.f, 0.f, 0.f, 1.f});
+    Renderer::drawQuad({pos.x, pos.y}, hero_size, rot, ResourceManager::heroTexture);
 
     m_mapGrid.drawObjects({pos.x, pos.y}, draw_bbs);
 
