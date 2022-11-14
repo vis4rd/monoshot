@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../traits/Scalar.hpp"
+
 #include <glad/gl.h>
 
 #include <cstdint>
@@ -7,7 +9,6 @@
 #include <type_traits>
 #include <utility>
 
-// TODO: hide unneceessary things in a namespace
 // TODO: change this comment formatting to comply with doxygen
 //! params with predefined values:
 //?     GL_DEPTH_STENCIL_TEXTURE_MODE,
@@ -121,245 +122,340 @@ namespace Texture
 {
 
 // Typedefs for better readability
-using ParameterType = GLuint;
 using ParameterName = GLenum;
 using ParameterIntValue = GLint;
 using ParameterFloatValue = GLfloat;
 
 // List of parameters
-enum class Parameter
+namespace Parameter
 {
-    DEPTH_STENCIL_TEXTURE_MODE = GL_DEPTH_STENCIL_TEXTURE_MODE,
-    TEXTURE_COMPARE_FUNC = GL_TEXTURE_COMPARE_FUNC,
-    TEXTURE_COMPARE_MODE = GL_TEXTURE_COMPARE_MODE,
-    TEXTURE_MIN_FILTER = GL_TEXTURE_MIN_FILTER,
-    TEXTURE_MAG_FILTER = GL_TEXTURE_MAG_FILTER,
-    TEXTURE_SWIZZLE_R = GL_TEXTURE_SWIZZLE_R,
-    TEXTURE_SWIZZLE_G = GL_TEXTURE_SWIZZLE_G,
-    TEXTURE_SWIZZLE_B = GL_TEXTURE_SWIZZLE_B,
-    TEXTURE_SWIZZLE_A = GL_TEXTURE_SWIZZLE_A,
-    TEXTURE_SWIZZLE_RGBA = GL_TEXTURE_SWIZZLE_RGBA,
-    TEXTURE_WRAP_S = GL_TEXTURE_WRAP_S,
-    TEXTURE_WRAP_T = GL_TEXTURE_WRAP_T,
-    TEXTURE_WRAP_R = GL_TEXTURE_WRAP_R,
 
-    TEXTURE_BASE_LEVEL = GL_TEXTURE_BASE_LEVEL,
-    TEXTURE_MAX_LEVEL = GL_TEXTURE_MAX_LEVEL,
+static constexpr ParameterName DEPTH_STENCIL_TEXTURE_MODE = GL_DEPTH_STENCIL_TEXTURE_MODE;
+static constexpr ParameterName TEXTURE_COMPARE_FUNC = GL_TEXTURE_COMPARE_FUNC;
+static constexpr ParameterName TEXTURE_COMPARE_MODE = GL_TEXTURE_COMPARE_MODE;
+static constexpr ParameterName TEXTURE_MIN_FILTER = GL_TEXTURE_MIN_FILTER;
+static constexpr ParameterName TEXTURE_MAG_FILTER = GL_TEXTURE_MAG_FILTER;
+static constexpr ParameterName TEXTURE_SWIZZLE_R = GL_TEXTURE_SWIZZLE_R;
+static constexpr ParameterName TEXTURE_SWIZZLE_G = GL_TEXTURE_SWIZZLE_G;
+static constexpr ParameterName TEXTURE_SWIZZLE_B = GL_TEXTURE_SWIZZLE_B;
+static constexpr ParameterName TEXTURE_SWIZZLE_A = GL_TEXTURE_SWIZZLE_A;
+static constexpr ParameterName TEXTURE_SWIZZLE_RGBA = GL_TEXTURE_SWIZZLE_RGBA;
+static constexpr ParameterName TEXTURE_WRAP_S = GL_TEXTURE_WRAP_S;
+static constexpr ParameterName TEXTURE_WRAP_T = GL_TEXTURE_WRAP_T;
+static constexpr ParameterName TEXTURE_WRAP_R = GL_TEXTURE_WRAP_R;
 
-    TEXTURE_LOD_BIAS = GL_TEXTURE_LOD_BIAS,
-    TEXTURE_MIN_LOD = GL_TEXTURE_MIN_LOD,
-    TEXTURE_MAX_LOD = GL_TEXTURE_MAX_LOD,
-};
+static constexpr ParameterName TEXTURE_BASE_LEVEL = GL_TEXTURE_BASE_LEVEL;
+static constexpr ParameterName TEXTURE_MAX_LEVEL = GL_TEXTURE_MAX_LEVEL;
+
+static constexpr ParameterName TEXTURE_LOD_BIAS = GL_TEXTURE_LOD_BIAS;
+static constexpr ParameterName TEXTURE_MIN_LOD = GL_TEXTURE_MIN_LOD;
+static constexpr ParameterName TEXTURE_MAX_LOD = GL_TEXTURE_MAX_LOD;
+
+};  // namespace Parameter
 
 // Strong typed parameter names with values
-enum class DepthStencilTextureMode
+namespace DepthStencilTextureMode
 {
-    DEFAULT = GL_DEPTH_COMPONENT,
+static constexpr ParameterIntValue DEFAULT = GL_DEPTH_COMPONENT;
 
-    DEPTH_COMPONENT = GL_DEPTH_COMPONENT,
-    STENCIL_INDEX = GL_STENCIL_INDEX,
-};
+static constexpr ParameterIntValue DEPTH_COMPONENT = GL_DEPTH_COMPONENT;
+static constexpr ParameterIntValue STENCIL_INDEX = GL_STENCIL_INDEX;
+};  // namespace DepthStencilTextureMode
 
-enum class TextureCompareFunc
+namespace TextureCompareFunc
 {
-    LEQUAL = GL_LEQUAL,
-    GEQUAL = GL_GEQUAL,
-    LESS = GL_LESS,
-    GREATER = GL_GREATER,
-    EQUAL = GL_EQUAL,
-    NOTEQUAL = GL_NOTEQUAL,
-    ALWAYS = GL_ALWAYS,
-    NEVER = GL_NEVER,
-};
+static constexpr ParameterIntValue LEQUAL = GL_LEQUAL;
+static constexpr ParameterIntValue GEQUAL = GL_GEQUAL;
+static constexpr ParameterIntValue LESS = GL_LESS;
+static constexpr ParameterIntValue GREATER = GL_GREATER;
+static constexpr ParameterIntValue EQUAL = GL_EQUAL;
+static constexpr ParameterIntValue NOTEQUAL = GL_NOTEQUAL;
+static constexpr ParameterIntValue ALWAYS = GL_ALWAYS;
+static constexpr ParameterIntValue NEVER = GL_NEVER;
+};  // namespace TextureCompareFunc
 
-enum class TextureCompareMode
+namespace TextureCompareMode
 {
-    COMPARE_REF_TO_TEXTURE = GL_COMPARE_REF_TO_TEXTURE,
-    NONE = GL_NONE,
-};
+static constexpr ParameterIntValue COMPARE_REF_TO_TEXTURE = GL_COMPARE_REF_TO_TEXTURE;
+static constexpr ParameterIntValue NONE = GL_NONE;
+};  // namespace TextureCompareMode
 
-enum class TextureMinFilter
+namespace TextureMinFilter
 {
-    DEFAULT = GL_NEAREST_MIPMAP_LINEAR,
+static constexpr ParameterIntValue DEFAULT = GL_NEAREST_MIPMAP_LINEAR;
 
-    NEAREST = GL_NEAREST,
-    LINEAR = GL_LINEAR,
-    NEAREST_MIPMAP_NEAREST = GL_NEAREST_MIPMAP_NEAREST,
-    LINEAR_MIPMAP_NEAREST = GL_LINEAR_MIPMAP_NEAREST,
-    NEAREST_MIPMAP_LINEAR = GL_NEAREST_MIPMAP_LINEAR,
-    LINEAR_MIPMAP_LINEAR = GL_LINEAR_MIPMAP_LINEAR,
-};
+static constexpr ParameterIntValue NEAREST = GL_NEAREST;
+static constexpr ParameterIntValue LINEAR = GL_LINEAR;
+static constexpr ParameterIntValue NEAREST_MIPMAP_NEAREST = GL_NEAREST_MIPMAP_NEAREST;
+static constexpr ParameterIntValue LINEAR_MIPMAP_NEAREST = GL_LINEAR_MIPMAP_NEAREST;
+static constexpr ParameterIntValue NEAREST_MIPMAP_LINEAR = GL_NEAREST_MIPMAP_LINEAR;
+static constexpr ParameterIntValue LINEAR_MIPMAP_LINEAR = GL_LINEAR_MIPMAP_LINEAR;
+};  // namespace TextureMinFilter
 
-enum class TextureMagFilter
+namespace TextureMagFilter
 {
-    DEFAULT = GL_LINEAR,
+static constexpr ParameterIntValue DEFAULT = GL_LINEAR;
 
-    NEAREST = GL_NEAREST,
-    LINEAR = GL_LINEAR,
-};
+static constexpr ParameterIntValue NEAREST = GL_NEAREST;
+static constexpr ParameterIntValue LINEAR = GL_LINEAR;
+};  // namespace TextureMagFilter
 
-enum class TextureSwizzleR
+namespace TextureSwizzleR
 {
-    DEFAULT = GL_RED,
+static constexpr ParameterIntValue DEFAULT = GL_RED;
 
-    RED = GL_RED,
-    GREEN = GL_GREEN,
-    BLUE = GL_BLUE,
-    ALPHA = GL_ALPHA,
-    ZERO = GL_ZERO,
-    ONE = GL_ONE,
-};
+static constexpr ParameterIntValue RED = GL_RED;
+static constexpr ParameterIntValue GREEN = GL_GREEN;
+static constexpr ParameterIntValue BLUE = GL_BLUE;
+static constexpr ParameterIntValue ALPHA = GL_ALPHA;
+static constexpr ParameterIntValue ZERO = GL_ZERO;
+static constexpr ParameterIntValue ONE = GL_ONE;
+};  // namespace TextureSwizzleR
 
-enum class TextureSwizzleG
+namespace TextureSwizzleG
 {
-    DEFAULT = GL_GREEN,
+static constexpr ParameterIntValue DEFAULT = GL_GREEN;
 
-    RED = GL_RED,
-    GREEN = GL_GREEN,
-    BLUE = GL_BLUE,
-    ALPHA = GL_ALPHA,
-    ZERO = GL_ZERO,
-    ONE = GL_ONE,
-};
+static constexpr ParameterIntValue RED = GL_RED;
+static constexpr ParameterIntValue GREEN = GL_GREEN;
+static constexpr ParameterIntValue BLUE = GL_BLUE;
+static constexpr ParameterIntValue ALPHA = GL_ALPHA;
+static constexpr ParameterIntValue ZERO = GL_ZERO;
+static constexpr ParameterIntValue ONE = GL_ONE;
+};  // namespace TextureSwizzleG
 
-enum class TextureSwizzleB
+namespace TextureSwizzleB
 {
-    DEFAULT = GL_BLUE,
+static constexpr ParameterIntValue DEFAULT = GL_BLUE;
 
-    RED = GL_RED,
-    GREEN = GL_GREEN,
-    BLUE = GL_BLUE,
-    ALPHA = GL_ALPHA,
-    ZERO = GL_ZERO,
-    ONE = GL_ONE,
-};
+static constexpr ParameterIntValue RED = GL_RED;
+static constexpr ParameterIntValue GREEN = GL_GREEN;
+static constexpr ParameterIntValue BLUE = GL_BLUE;
+static constexpr ParameterIntValue ALPHA = GL_ALPHA;
+static constexpr ParameterIntValue ZERO = GL_ZERO;
+static constexpr ParameterIntValue ONE = GL_ONE;
+};  // namespace TextureSwizzleB
 
-enum class TextureSwizzleA
+namespace TextureSwizzleA
 {
-    DEFAULT = GL_ALPHA,
+static constexpr ParameterIntValue DEFAULT = GL_ALPHA;
 
-    RED = GL_RED,
-    GREEN = GL_GREEN,
-    BLUE = GL_BLUE,
-    ALPHA = GL_ALPHA,
-    ZERO = GL_ZERO,
-    ONE = GL_ONE,
-};
+static constexpr ParameterIntValue RED = GL_RED;
+static constexpr ParameterIntValue GREEN = GL_GREEN;
+static constexpr ParameterIntValue BLUE = GL_BLUE;
+static constexpr ParameterIntValue ALPHA = GL_ALPHA;
+static constexpr ParameterIntValue ZERO = GL_ZERO;
+static constexpr ParameterIntValue ONE = GL_ONE;
+};  // namespace TextureSwizzleA
 
-enum class TextureSwizzleRGBA
+namespace TextureSwizzleRGBA
 {
-    RED = GL_RED,
-    GREEN = GL_GREEN,
-    BLUE = GL_BLUE,
-    ALPHA = GL_ALPHA,
-    ZERO = GL_ZERO,
-    ONE = GL_ONE,
-};
+static constexpr ParameterIntValue RED = GL_RED;
+static constexpr ParameterIntValue GREEN = GL_GREEN;
+static constexpr ParameterIntValue BLUE = GL_BLUE;
+static constexpr ParameterIntValue ALPHA = GL_ALPHA;
+static constexpr ParameterIntValue ZERO = GL_ZERO;
+static constexpr ParameterIntValue ONE = GL_ONE;
+};  // namespace TextureSwizzleRGBA
 
-enum class TextureWrapS
+namespace TextureWrapS
 {
-    DEFAULT = GL_REPEAT,
+static constexpr ParameterIntValue DEFAULT = GL_REPEAT;
 
-    CLAMP_TO_BORDER = GL_CLAMP_TO_BORDER,
-    CLAMP_TO_EDGE = GL_CLAMP_TO_EDGE,
-    MIRROR_CLAMP_TO_EDGE = GL_MIRROR_CLAMP_TO_EDGE,
-    MIRRORED_REPEAT = GL_MIRRORED_REPEAT,
-    REPEAT = GL_REPEAT,
-};
+static constexpr ParameterIntValue CLAMP_TO_BORDER = GL_CLAMP_TO_BORDER;
+static constexpr ParameterIntValue CLAMP_TO_EDGE = GL_CLAMP_TO_EDGE;
+static constexpr ParameterIntValue MIRROR_CLAMP_TO_EDGE = GL_MIRROR_CLAMP_TO_EDGE;
+static constexpr ParameterIntValue MIRRORED_REPEAT = GL_MIRRORED_REPEAT;
+static constexpr ParameterIntValue REPEAT = GL_REPEAT;
+};  // namespace TextureWrapS
 
-enum class TextureWrapT
+namespace TextureWrapT
 {
-    DEFAULT = GL_REPEAT,
+static constexpr ParameterIntValue DEFAULT = GL_REPEAT;
 
-    CLAMP_TO_BORDER = GL_CLAMP_TO_BORDER,
-    CLAMP_TO_EDGE = GL_CLAMP_TO_EDGE,
-    MIRROR_CLAMP_TO_EDGE = GL_MIRROR_CLAMP_TO_EDGE,
-    MIRRORED_REPEAT = GL_MIRRORED_REPEAT,
-    REPEAT = GL_REPEAT,
-};
+static constexpr ParameterIntValue CLAMP_TO_BORDER = GL_CLAMP_TO_BORDER;
+static constexpr ParameterIntValue CLAMP_TO_EDGE = GL_CLAMP_TO_EDGE;
+static constexpr ParameterIntValue MIRROR_CLAMP_TO_EDGE = GL_MIRROR_CLAMP_TO_EDGE;
+static constexpr ParameterIntValue MIRRORED_REPEAT = GL_MIRRORED_REPEAT;
+static constexpr ParameterIntValue REPEAT = GL_REPEAT;
+};  // namespace TextureWrapT
 
-enum class TextureWrapR
+namespace TextureWrapR
 {
-    DEFAULT = GL_REPEAT,
+static constexpr ParameterIntValue DEFAULT = GL_REPEAT;
 
-    CLAMP_TO_BORDER = GL_CLAMP_TO_BORDER,
-    CLAMP_TO_EDGE = GL_CLAMP_TO_EDGE,
-    MIRROR_CLAMP_TO_EDGE = GL_MIRROR_CLAMP_TO_EDGE,
-    MIRRORED_REPEAT = GL_MIRRORED_REPEAT,
-    REPEAT = GL_REPEAT,
-};
+static constexpr ParameterIntValue CLAMP_TO_BORDER = GL_CLAMP_TO_BORDER;
+static constexpr ParameterIntValue CLAMP_TO_EDGE = GL_CLAMP_TO_EDGE;
+static constexpr ParameterIntValue MIRROR_CLAMP_TO_EDGE = GL_MIRROR_CLAMP_TO_EDGE;
+static constexpr ParameterIntValue MIRRORED_REPEAT = GL_MIRRORED_REPEAT;
+static constexpr ParameterIntValue REPEAT = GL_REPEAT;
+};  // namespace TextureWrapR
 
 namespace impl
 {
 
+template<ParameterIntValue LHS, ParameterIntValue... RHS>
+concept ParameterAnyValueOf = ((LHS == RHS) || ...);
+
 // clang-format off
-// Concepts for each enum plus some helpers
-template<typename T> concept ParameterC = std::convertible_to<T, Parameter>;
-template<typename T> concept DepthStencilTextureModeC = std::same_as<T, DepthStencilTextureMode>;
-template<typename T> concept TextureCompareFuncC = std::same_as<T, TextureCompareFunc>;
-template<typename T> concept TextureCompareModeC = std::same_as<T, TextureCompareMode>;
-template<typename T> concept TextureMinFilterC = std::same_as<T, TextureMinFilter>;
-template<typename T> concept TextureMagFilterC = std::same_as<T, TextureMagFilter>;
-template<typename T> concept TextureSwizzleRC = std::same_as<T, TextureSwizzleR>;
-template<typename T> concept TextureSwizzleGC = std::same_as<T, TextureSwizzleG>;
-template<typename T> concept TextureSwizzleBC = std::same_as<T, TextureSwizzleB>;
-template<typename T> concept TextureSwizzleAC = std::same_as<T, TextureSwizzleA>;
-template<typename T> concept TextureSwizzleRGBAC = std::same_as<T, TextureSwizzleRGBA>;
-template<typename T> concept TextureWrapSC = std::same_as<T, TextureWrapS>;
-template<typename T> concept TextureWrapTC = std::same_as<T, TextureWrapT>;
-template<typename T> concept TextureWrapRC = std::same_as<T, TextureWrapR>;
+// Concepts for each parameter name plus some helpers
+template<ParameterName ParamName> concept ParameterC = ParameterAnyValueOf<ParamName,
+    Parameter::DEPTH_STENCIL_TEXTURE_MODE,
+    Parameter::TEXTURE_COMPARE_FUNC,
+    Parameter::TEXTURE_COMPARE_MODE,
+    Parameter::TEXTURE_MIN_FILTER,
+    Parameter::TEXTURE_MAG_FILTER,
+    Parameter::TEXTURE_SWIZZLE_R,
+    Parameter::TEXTURE_SWIZZLE_G,
+    Parameter::TEXTURE_SWIZZLE_B,
+    Parameter::TEXTURE_SWIZZLE_A,
+    Parameter::TEXTURE_SWIZZLE_RGBA,
+    Parameter::TEXTURE_WRAP_S,
+    Parameter::TEXTURE_WRAP_T,
+    Parameter::TEXTURE_WRAP_R,
 
-template<typename T>
-concept EnumCompatibleC = std::integral<T> or std::floating_point<T> or requires { { std::underlying_type_t<T>() } -> std::integral; };
+    Parameter::TEXTURE_BASE_LEVEL,
+    Parameter::TEXTURE_MAX_LEVEL,
 
-template<Parameter ParamName>
-concept ParameterIntValueC = (ParamName == Parameter::TEXTURE_BASE_LEVEL)
-    or (ParamName == Parameter::TEXTURE_MAX_LEVEL);
+    Parameter::TEXTURE_LOD_BIAS,
+    Parameter::TEXTURE_MIN_LOD,
+    Parameter::TEXTURE_MAX_LOD>;
 
-template<Parameter ParamName>
-concept ParameterFloatValueC = (ParamName == Parameter::TEXTURE_LOD_BIAS)
-    or (ParamName == Parameter::TEXTURE_MIN_LOD)
-    or (ParamName == Parameter::TEXTURE_MAX_LOD);
+template<ParameterIntValue T> concept DepthStencilTextureModeC = ParameterAnyValueOf<T,
+    DepthStencilTextureMode::DEFAULT,
+    DepthStencilTextureMode::DEPTH_COMPONENT,
+    DepthStencilTextureMode::STENCIL_INDEX>;
+template<ParameterIntValue T> concept TextureCompareFuncC = ParameterAnyValueOf<T,
+    TextureCompareFunc::LEQUAL,
+    TextureCompareFunc::GEQUAL,
+    TextureCompareFunc::LESS,
+    TextureCompareFunc::GREATER,
+    TextureCompareFunc::EQUAL,
+    TextureCompareFunc::NOTEQUAL,
+    TextureCompareFunc::ALWAYS,
+    TextureCompareFunc::NEVER>;
+template<ParameterIntValue T> concept TextureCompareModeC = ParameterAnyValueOf<T,
+    TextureCompareMode::COMPARE_REF_TO_TEXTURE,
+    TextureCompareMode::NONE>;
+template<ParameterIntValue T> concept TextureMinFilterC = ParameterAnyValueOf<T,
+    TextureMinFilter::DEFAULT,
+    TextureMinFilter::NEAREST,
+    TextureMinFilter::LINEAR,
+    TextureMinFilter::NEAREST_MIPMAP_NEAREST,
+    TextureMinFilter::LINEAR_MIPMAP_NEAREST,
+    TextureMinFilter::NEAREST_MIPMAP_LINEAR,
+    TextureMinFilter::LINEAR_MIPMAP_LINEAR>;
+template<ParameterIntValue T> concept TextureMagFilterC = ParameterAnyValueOf<T,
+    TextureMagFilter::DEFAULT,
+    TextureMagFilter::NEAREST,
+    TextureMagFilter::LINEAR>;
+template<ParameterIntValue T> concept TextureSwizzleRC = ParameterAnyValueOf<T,
+    TextureSwizzleR::DEFAULT,
+    TextureSwizzleR::RED,
+    TextureSwizzleR::GREEN,
+    TextureSwizzleR::BLUE,
+    TextureSwizzleR::ALPHA,
+    TextureSwizzleR::ONE,
+    TextureSwizzleR::ZERO>;
+template<ParameterIntValue T> concept TextureSwizzleGC = ParameterAnyValueOf<T,
+    TextureSwizzleG::DEFAULT,
+    TextureSwizzleG::RED,
+    TextureSwizzleG::GREEN,
+    TextureSwizzleG::BLUE,
+    TextureSwizzleG::ALPHA,
+    TextureSwizzleG::ONE,
+    TextureSwizzleG::ZERO>;
+template<ParameterIntValue T> concept TextureSwizzleBC = ParameterAnyValueOf<T,
+    TextureSwizzleB::DEFAULT,
+    TextureSwizzleB::RED,
+    TextureSwizzleB::GREEN,
+    TextureSwizzleB::BLUE,
+    TextureSwizzleB::ALPHA,
+    TextureSwizzleB::ONE,
+    TextureSwizzleB::ZERO>;
+template<ParameterIntValue T> concept TextureSwizzleAC = ParameterAnyValueOf<T,
+    TextureSwizzleA::DEFAULT,
+    TextureSwizzleA::RED,
+    TextureSwizzleA::GREEN,
+    TextureSwizzleA::BLUE,
+    TextureSwizzleA::ALPHA,
+    TextureSwizzleA::ONE,
+    TextureSwizzleA::ZERO>;
+template<ParameterIntValue T> concept TextureSwizzleRGBAC = ParameterAnyValueOf<T,
+    TextureSwizzleRGBA::RED,
+    TextureSwizzleRGBA::GREEN,
+    TextureSwizzleRGBA::BLUE,
+    TextureSwizzleRGBA::ALPHA,
+    TextureSwizzleRGBA::ONE,
+    TextureSwizzleRGBA::ZERO>;
+template<ParameterIntValue T> concept TextureWrapSC = ParameterAnyValueOf<T,
+    TextureWrapS::DEFAULT,
+    TextureWrapS::CLAMP_TO_BORDER,
+    TextureWrapS::CLAMP_TO_EDGE,
+    TextureWrapS::MIRROR_CLAMP_TO_EDGE,
+    TextureWrapS::MIRRORED_REPEAT,
+    TextureWrapS::REPEAT>;
+template<ParameterIntValue T> concept TextureWrapTC = ParameterAnyValueOf<T,
+    TextureWrapT::DEFAULT,
+    TextureWrapT::CLAMP_TO_BORDER,
+    TextureWrapT::CLAMP_TO_EDGE,
+    TextureWrapT::MIRROR_CLAMP_TO_EDGE,
+    TextureWrapT::MIRRORED_REPEAT,
+    TextureWrapT::REPEAT>;
+template<ParameterIntValue T> concept TextureWrapRC = ParameterAnyValueOf<T,
+    TextureWrapR::DEFAULT,
+    TextureWrapR::CLAMP_TO_BORDER,
+    TextureWrapR::CLAMP_TO_EDGE,
+    TextureWrapR::MIRROR_CLAMP_TO_EDGE,
+    TextureWrapR::MIRRORED_REPEAT,
+    TextureWrapR::REPEAT>;
+
+template<ParameterName ParamName> concept ParameterIntValueC = ParameterAnyValueOf<ParamName, Parameter::TEXTURE_BASE_LEVEL, Parameter::TEXTURE_MAX_LEVEL>;
+template<ParameterName ParamName> concept ParameterFloatValueC = ParameterAnyValueOf<ParamName, Parameter::TEXTURE_LOD_BIAS, Parameter::TEXTURE_MIN_LOD, Parameter::TEXTURE_MAX_LOD>;
+
+template<ParameterName ParamName>
+requires ParameterC<ParamName>
+constexpr void setParameterInt(std::unsigned_integral auto&& id, std::integral auto&& param_value)
+{
+    glTextureParameteri(id, ParamName, param_value);
+}
+
+template<ParameterName ParamName>
+requires ParameterC<ParamName>
+constexpr void setParameterFloat(std::unsigned_integral auto&& id, std::floating_point auto&& param_value)
+{
+    glTextureParameterf(id, ParamName, param_value);
+}
 
 }  // namespace impl
 
-constexpr void setParameterInt(std::unsigned_integral auto&& id, impl::ParameterC auto&& param_name, impl::EnumCompatibleC auto&& param_value)
-{
-    glTextureParameteri(id, static_cast<ParameterName>(param_name), static_cast<ParameterIntValue>(param_value));
-}
+template<ParameterIntValue ParamValue> void setParameter(std::unsigned_integral auto&& id) = delete;
+template<ParameterIntValue ParamValue> requires impl::DepthStencilTextureModeC<ParamValue> void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<Parameter::DEPTH_STENCIL_TEXTURE_MODE>(std::forward<decltype(id)>(id), std::forward<decltype(ParamValue)>(ParamValue)); }
+template<ParameterIntValue ParamValue> requires impl::TextureCompareFuncC<ParamValue> void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<Parameter::TEXTURE_COMPARE_FUNC>(std::forward<decltype(id)>(id), std::forward<decltype(ParamValue)>(ParamValue)); }
+template<ParameterIntValue ParamValue> requires impl::TextureCompareModeC<ParamValue> void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<Parameter::TEXTURE_COMPARE_MODE>(std::forward<decltype(id)>(id), std::forward<decltype(ParamValue)>(ParamValue)); }
+template<ParameterIntValue ParamValue> requires impl::TextureMinFilterC<ParamValue> void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<Parameter::TEXTURE_MIN_FILTER>(std::forward<decltype(id)>(id), std::forward<decltype(ParamValue)>(ParamValue)); }
+template<ParameterIntValue ParamValue> requires impl::TextureMagFilterC<ParamValue> void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<Parameter::TEXTURE_MAG_FILTER>(std::forward<decltype(id)>(id), std::forward<decltype(ParamValue)>(ParamValue)); }
+template<ParameterName ParamName, ParameterIntValue ParamValue> requires impl::TextureSwizzleRC<ParamValue> && (ParamName == Parameter::TEXTURE_SWIZZLE_R) void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<ParamName>(std::forward<decltype(id)>(id), std::forward<decltype(ParamValue)>(ParamValue)); }
+template<ParameterName ParamName, ParameterIntValue ParamValue> requires impl::TextureSwizzleGC<ParamValue> && (ParamName == Parameter::TEXTURE_SWIZZLE_G) void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<ParamName>(std::forward<decltype(id)>(id), std::forward<decltype(ParamValue)>(ParamValue)); }
+template<ParameterName ParamName, ParameterIntValue ParamValue> requires impl::TextureSwizzleBC<ParamValue> && (ParamName == Parameter::TEXTURE_SWIZZLE_B) void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<ParamName>(std::forward<decltype(id)>(id), std::forward<decltype(ParamValue)>(ParamValue)); }
+template<ParameterName ParamName, ParameterIntValue ParamValue> requires impl::TextureSwizzleAC<ParamValue> && (ParamName == Parameter::TEXTURE_SWIZZLE_A) void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<ParamName>(std::forward<decltype(id)>(id), std::forward<decltype(ParamValue)>(ParamValue)); }
+template<ParameterName ParamName, ParameterIntValue ParamValue> requires impl::TextureSwizzleRGBAC<ParamValue> && (ParamName == Parameter::TEXTURE_SWIZZLE_RGBA) void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<ParamName>(std::forward<decltype(id)>(id), std::forward<decltype(ParamValue)>(ParamValue)); }
+template<ParameterName ParamName, ParameterIntValue ParamValue> requires impl::TextureWrapSC<ParamValue> && (ParamName == Parameter::TEXTURE_WRAP_S) void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<ParamName>(std::forward<decltype(id)>(id), std::forward<decltype(ParamValue)>(ParamValue)); }
+template<ParameterName ParamName, ParameterIntValue ParamValue> requires impl::TextureWrapTC<ParamValue> && (ParamName == Parameter::TEXTURE_WRAP_T) void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<ParamName>(std::forward<decltype(id)>(id), std::forward<decltype(ParamValue)>(ParamValue)); }
+template<ParameterName ParamName, ParameterIntValue ParamValue> requires impl::TextureWrapRC<ParamValue> && (ParamName == Parameter::TEXTURE_WRAP_R) void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<ParamName>(std::forward<decltype(id)>(id), std::forward<decltype(ParamValue)>(ParamValue)); }
 
-constexpr void setParameterFloat(std::unsigned_integral auto&& id, impl::ParameterC auto&& param_name, impl::EnumCompatibleC auto&& param_value)
-{
-    glTextureParameterf(id, static_cast<ParameterName>(param_name), static_cast<ParameterFloatValue>(param_value));
-}
-
-void setParameter(std::unsigned_integral auto&& id, auto&& mode) = delete;
-void setParameter(std::unsigned_integral auto&& id, impl::DepthStencilTextureModeC auto&& mode) { setParameterInt(std::forward<decltype(id)>(id), Parameter::DEPTH_STENCIL_TEXTURE_MODE, std::forward<decltype(mode)>(mode)); }
-void setParameter(std::unsigned_integral auto&& id, impl::TextureCompareFuncC auto&& func) { setParameterInt(std::forward<decltype(id)>(id), Parameter::TEXTURE_COMPARE_FUNC, std::forward<decltype(func)>(func)); }
-void setParameter(std::unsigned_integral auto&& id, impl::TextureCompareModeC auto&& compare_mode) { setParameterInt(std::forward<decltype(id)>(id), Parameter::TEXTURE_COMPARE_MODE, std::forward<decltype(compare_mode)>(compare_mode)); }
-void setParameter(std::unsigned_integral auto&& id, impl::TextureMinFilterC auto&& filter) { setParameterInt(std::forward<decltype(id)>(id), Parameter::TEXTURE_MIN_FILTER, std::forward<decltype(filter)>(filter)); }
-void setParameter(std::unsigned_integral auto&& id, impl::TextureMagFilterC auto&& filter) { setParameterInt(std::forward<decltype(id)>(id), Parameter::TEXTURE_MAG_FILTER, std::forward<decltype(filter)>(filter)); }
-void setParameter(std::unsigned_integral auto&& id, impl::TextureSwizzleRC auto&& swizzle_channel) { setParameterInt(std::forward<decltype(id)>(id), Parameter::TEXTURE_SWIZZLE_R, std::forward<decltype(swizzle_channel)>(swizzle_channel)); }
-void setParameter(std::unsigned_integral auto&& id, impl::TextureSwizzleGC auto&& swizzle_channel) { setParameterInt(std::forward<decltype(id)>(id), Parameter::TEXTURE_SWIZZLE_G, std::forward<decltype(swizzle_channel)>(swizzle_channel)); }
-void setParameter(std::unsigned_integral auto&& id, impl::TextureSwizzleBC auto&& swizzle_channel) { setParameterInt(std::forward<decltype(id)>(id), Parameter::TEXTURE_SWIZZLE_B, std::forward<decltype(swizzle_channel)>(swizzle_channel)); }
-void setParameter(std::unsigned_integral auto&& id, impl::TextureSwizzleAC auto&& swizzle_channel) { setParameterInt(std::forward<decltype(id)>(id), Parameter::TEXTURE_SWIZZLE_A, std::forward<decltype(swizzle_channel)>(swizzle_channel)); }
-void setParameter(std::unsigned_integral auto&& id, impl::TextureSwizzleRGBAC auto&& swizzle_channel) { setParameterInt(std::forward<decltype(id)>(id), Parameter::TEXTURE_SWIZZLE_RGBA, std::forward<decltype(swizzle_channel)>(swizzle_channel)); }
-void setParameter(std::unsigned_integral auto&& id, impl::TextureWrapSC auto&& wrap_mode) { setParameterInt(std::forward<decltype(id)>(id), Parameter::TEXTURE_WRAP_S, std::forward<decltype(wrap_mode)>(wrap_mode)); }
-void setParameter(std::unsigned_integral auto&& id, impl::TextureWrapTC auto&& wrap_mode) { setParameterInt(std::forward<decltype(id)>(id), Parameter::TEXTURE_WRAP_T, std::forward<decltype(wrap_mode)>(wrap_mode)); }
-void setParameter(std::unsigned_integral auto&& id, impl::TextureWrapRC auto&& wrap_mode) { setParameterInt(std::forward<decltype(id)>(id), Parameter::TEXTURE_WRAP_R, std::forward<decltype(wrap_mode)>(wrap_mode)); }
-
-template <Parameter ParamName>
+template <ParameterName ParamName>
 requires impl::ParameterIntValueC<ParamName>
 constexpr void setParameter(std::unsigned_integral auto&& id, std::integral auto&& param_value)
 {
-    setParameterInt(std::forward<decltype(id)>(id), ParamName, std::forward<decltype(param_value)>(param_value));
+    impl::setParameterInt<ParamName>(std::forward<decltype(id)>(id), std::forward<decltype(param_value)>(param_value));
 }
 
-template <Parameter ParamName>
+template <ParameterName ParamName>
 requires impl::ParameterFloatValueC<ParamName>
 constexpr void setParameter(std::unsigned_integral auto&& id, std::floating_point auto&& param_value)
 {
-    setParameterFloat(std::forward<decltype(id)>(id), ParamName, std::forward<decltype(param_value)>(param_value));
+    impl::setParameterFloat<ParamName>(std::forward<decltype(id)>(id), std::forward<decltype(param_value)>(param_value));
 }
 
 // clang-format on
@@ -369,9 +465,10 @@ constexpr void setParameter(std::unsigned_integral auto&& id, std::floating_poin
 //? Testing suite of compile-time restrictions
 // inline void ble()
 // {
-//     Texture::setParameter(0u, Texture::DepthStencilTextureMode::DEFAULT);
-//     Texture::setParameter(0u, Texture::TextureCompareFunc::ALWAYS);
-//     Texture::setParameter(0u, Texture::TextureSwizzleA::DEFAULT);
+//     Texture::setParameter<Texture::DepthStencilTextureMode::DEFAULT>(0u);
+//     Texture::setParameter<Texture::TextureCompareFunc::ALWAYS>(0u);
+//     Texture::setParameter<Texture::Parameter::TEXTURE_SWIZZLE_A, Texture::TextureSwizzleA::DEFAULT>(0u);
+//     Texture::setParameter<Texture::Parameter::TEXTURE_SWIZZLE_A, Texture::TextureSwizzleA::DEFAULT>(0u);
 //     Texture::setParameter<Texture::Parameter::TEXTURE_BASE_LEVEL>(0u, 0);
 //     Texture::setParameter<Texture::Parameter::TEXTURE_MAX_LEVEL>(0u, 0);
 //     // Texture::setParameter<Texture::Parameter::TEXTURE_MAX_LEVEL>(0u, 0.f);
