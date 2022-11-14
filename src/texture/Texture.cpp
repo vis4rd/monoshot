@@ -8,49 +8,54 @@
 namespace Texture::impl
 {
 
-Texture::Texture(const std::string_view& source_path, const std::int32_t& width, const std::int32_t& height, const std::int32_t& channel_count)
-    : m_width(width),
-      m_height(height),
+Texture::Texture(const std::string_view& file_path, const std::int32_t& width, const std::int32_t& height, const std::int32_t& channel_count)
+    : m_textureData{.widthTotal = width, .heightTotal = height, .widthSub = width, .heightSub = height},
       m_numberOfChannels(channel_count),
-      m_sourcePath(source_path)
+      m_sourcePath(file_path)
 {
-    spdlog::trace("Creating Texture with width = {}, height = {}", m_width, m_height);
-    this->load(m_sourcePath, m_width, m_height, m_numberOfChannels);
+    spdlog::trace("Creating Texture with width = {}, height = {}", m_textureData.widthTotal, m_textureData.heightTotal);
+    this->load(m_sourcePath, m_textureData.widthTotal, m_textureData.heightTotal, m_numberOfChannels);
     this->uploadToGpu();
 }
 
 Texture::Texture(const std::byte* data, const std::int32_t& width, const std::int32_t& height, const std::int32_t& channel_count)
-    : m_width(width),
-      m_height(height),
+    : m_textureData{.widthTotal = width, .heightTotal = height, .widthSub = width, .heightSub = height},
       m_numberOfChannels(channel_count)
 {
-    spdlog::trace("Creating Texture with width = {}, height = {}", m_width, m_height);
-    this->load(data, m_width, m_height, m_numberOfChannels);
+    spdlog::trace("Creating Texture with width = {}, height = {}", m_textureData.widthTotal, m_textureData.heightTotal);
+    this->load(data, m_textureData.widthTotal, m_textureData.heightTotal, m_numberOfChannels);
+    this->uploadToGpu();
+}
+
+Texture::Texture(const std::string_view& file_path, const ::Texture::Data& texture_data)
+    : m_textureData(texture_data),
+      m_sourcePath(file_path)
+{
+    spdlog::trace("Creating Texture with width = {}, height = {}", m_textureData.widthTotal, m_textureData.heightTotal);
+    this->load(m_sourcePath, m_textureData.widthTotal, m_textureData.heightTotal, m_numberOfChannels);
     this->uploadToGpu();
 }
 
 Texture::Texture(const Texture& copy)
     : m_id(copy.m_id),
-      m_width(copy.m_width),
-      m_height(copy.m_height),
+      m_textureData(copy.m_textureData),
       m_numberOfChannels(copy.m_numberOfChannels),
       m_sourcePath(copy.m_sourcePath)
 {
     spdlog::trace("Copying Texture...");
     this->safeDelete();
-    this->tryCopyExternalMemory(copy.m_data, m_width * m_height * m_numberOfChannels);
+    this->tryCopyExternalMemory(copy.m_data, m_textureData.widthTotal * m_textureData.heightTotal * m_numberOfChannels);
 }
 
 Texture::Texture(Texture&& move)
     : m_id(std::exchange(move.m_id, 0u)),
-      m_width(std::exchange(move.m_width, 0)),
-      m_height(std::exchange(move.m_height, 0)),
+      m_textureData(std::exchange(move.m_textureData, ::Texture::Data())),
       m_numberOfChannels(std::exchange(move.m_numberOfChannels, 0)),
       m_sourcePath(std::exchange(move.m_sourcePath, std::string()))
 {
     spdlog::trace("Moving Texture...");
     this->safeDelete();
-    this->tryCopyExternalMemory(move.m_data, m_width * m_height * m_numberOfChannels);
+    this->tryCopyExternalMemory(move.m_data, m_textureData.widthTotal * m_textureData.heightTotal * m_numberOfChannels);
 }
 
 Texture::~Texture()
@@ -64,13 +69,12 @@ Texture& Texture::operator=(const Texture& copy)
 {
     spdlog::trace("Copying Texture...");
     m_id = copy.m_id;
-    m_width = copy.m_width;
-    m_height = copy.m_height;
+    m_textureData = copy.m_textureData;
     m_numberOfChannels = copy.m_numberOfChannels;
     m_sourcePath = copy.m_sourcePath;
 
     this->safeDelete();
-    this->tryCopyExternalMemory(copy.m_data, m_width * m_height * m_numberOfChannels);
+    this->tryCopyExternalMemory(copy.m_data, m_textureData.widthTotal * m_textureData.heightTotal * m_numberOfChannels);
     return *this;
 }
 
@@ -78,40 +82,39 @@ Texture& Texture::operator=(Texture&& move)
 {
     spdlog::trace("Moving Texture...");
     m_id = std::exchange(move.m_id, 0u);
-    m_width = std::exchange(move.m_width, 0);
-    m_height = std::exchange(move.m_height, 0);
+    m_textureData = std::exchange(move.m_textureData, ::Texture::Data());
     m_numberOfChannels = std::exchange(move.m_numberOfChannels, 0);
     m_sourcePath = std::exchange(move.m_sourcePath, std::string());
 
     this->safeDelete();
-    this->tryCopyExternalMemory(move.m_data, m_width * m_height * m_numberOfChannels);
+    this->tryCopyExternalMemory(move.m_data, m_textureData.widthTotal * m_textureData.heightTotal * m_numberOfChannels);
     return *this;
 }
 
 void Texture::load(const std::string_view& source_path, const std::int32_t& width, const std::int32_t& height, const std::int32_t& channel_count)
 {
-    m_width = width;
-    m_height = height;
+    m_textureData.widthTotal = width;
+    m_textureData.heightTotal = height;
     m_numberOfChannels = channel_count;
     this->safeDelete();
     spdlog::trace("Loading Texture data from a file '{}'", source_path);
     m_sourcePath = source_path;
-    m_data = reinterpret_cast<std::byte*>(stbi_load(m_sourcePath.c_str(), &m_width, &m_height, &m_numberOfChannels, 0));
+    m_data = reinterpret_cast<std::byte*>(stbi_load(m_sourcePath.c_str(), &m_textureData.widthTotal, &m_textureData.heightTotal, &m_numberOfChannels, 0));
     m_isLoadedByStbi = true;
 
     if constexpr(Flag::DebugMode)
     {
-        std::span<std::byte> mem(m_data, m_width * m_height * m_numberOfChannels);  // TODO: remove it when debugging Texture ends
+        std::span<std::byte> mem(m_data, m_textureData.widthTotal * m_textureData.heightTotal * m_numberOfChannels);
         spdlog::trace("Loaded Texture Data = {}", spdlog::to_hex(mem));
     }
 }
 
 void Texture::load(const std::byte* data, const std::int32_t& width, const std::int32_t& height, const std::int32_t& channel_count)
 {
-    m_width = width;
-    m_height = height;
+    m_textureData.widthTotal = width;
+    m_textureData.heightTotal = height;
     m_numberOfChannels = channel_count;
-    const std::size_t size = m_width * m_height * m_numberOfChannels;
+    const std::size_t size = m_textureData.widthTotal * m_textureData.heightTotal * m_numberOfChannels;
     this->safeDelete();
     spdlog::trace("Loading Texture from memory of size {} bytes", size);
     m_sourcePath = fmt::format("In memory texture of size {} bytes", size);
@@ -131,12 +134,12 @@ const std::uint32_t& Texture::getID() const
 
 const std::int32_t& Texture::getWidth() const
 {
-    return m_width;
+    return m_textureData.widthTotal;
 }
 
 const std::int32_t& Texture::getHeight() const
 {
-    return m_height;
+    return m_textureData.heightTotal;
 }
 
 const std::int32_t& Texture::getNumberOfChannels() const
@@ -149,25 +152,52 @@ const std::string& Texture::getSourcePath() const
     return m_sourcePath;
 }
 
+const ::Texture::Data& Texture::getTextureData() const
+{
+    return m_textureData;
+}
+
+void Texture::nextSub()
+{
+    auto& index = m_textureData.currentSub;
+    const auto& max = m_textureData.numberOfSubs;
+    index = (index + 1) % max;
+    ::Texture::Data::IntType index_x = index % m_textureData.numberOfSubsInOneRow;
+    ::Texture::Data::IntType index_y = index / m_textureData.numberOfSubsInOneRow;
+    glTextureSubImage2D(m_id, 0, index_x * m_textureData.widthSub, index_y * m_textureData.heightSub, m_textureData.widthSub, m_textureData.heightSub, m_textureData.pixelDataFormat, m_textureData.dataType, m_data);
+}
+
+void Texture::resetSub()
+{
+    glTextureSubImage2D(m_id, 0, 0, 0, m_textureData.widthSub, m_textureData.heightSub, m_textureData.pixelDataFormat, m_textureData.dataType, m_data);
+}
+
 void Texture::uploadToGpu()
 {
     spdlog::trace("Uploading Texture data to the GPU...");
     glCreateTextures(GL_TEXTURE_2D, 1, &m_id);  // ... this is technically OpenGL 4.5+ DSA
     glBindTexture(GL_TEXTURE_2D, m_id);  // but we have to bind the texture here anyway (glCreate* doesn't do that for some reason)
-    glTextureParameteri(m_id, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-    glTextureParameteri(m_id, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTextureParameteri(m_id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTextureParameteri(m_id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTextureStorage2D(m_id, /*number of tex level(??)*/ 1, /* tex format*/ GL_RGBA8, /*width*/ m_width, /*height*/ m_height);
-    glTextureSubImage2D(m_id, /*mipmap level*/ 0, /*xoffset*/ 0, /*yoffset*/ 0, /*width*/ m_width, /*height*/ m_height, /*data format*/ GL_RGBA, GL_UNSIGNED_BYTE, m_data);
-    glGenerateTextureMipmap(m_id);
+    for(const auto& [param, value] : m_textureData.parameters)
+    {
+        // setParameter<param, value>(m_id);
+        glTextureParameteri(m_id, param, value);
+    }
+
+    // void glTextureStorage2D(id, mipmap_count, internal_texture_format, width_total, height_total);
+    // void glTextureSubImage2D(id, mipmap_level, x_offset, y_offset, subimage_width, subimage_height, pixel_data_format, data_type, data_ptr);
+    glTextureStorage2D(m_id, m_textureData.mipmapLevel, m_textureData.internalFormat, m_textureData.widthTotal, m_textureData.heightTotal);
+    glTextureSubImage2D(m_id, 0, 0, 0, m_textureData.widthSub, m_textureData.heightSub, m_textureData.pixelDataFormat, m_textureData.dataType, m_data);
+    if(m_textureData.mipmapsEnabled)
+    {
+        glGenerateTextureMipmap(m_id);
+    }
     spdlog::trace("Uploading Texture data finished: ID = {}", m_id);
 }
 
 void Texture::unloadFromGpu()
 {
     spdlog::trace("Unloading Texture data from GPU, deleting ID = {}", m_id);
-    glTextureSubImage2D(m_id, /*mipmap level*/ 0, /*xoffset*/ 0, /*yoffset*/ 0, /*width*/ m_width, /*height*/ m_height, /*data format*/ GL_RGB, GL_UNSIGNED_BYTE, m_data);
+    glTextureSubImage2D(m_id, 0, 0, 0, m_textureData.widthTotal, m_textureData.heightTotal, GL_RGB, GL_UNSIGNED_BYTE, m_data);
     glDeleteTextures(1, &m_id);
 }
 

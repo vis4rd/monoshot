@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../utility/Resource.hpp"
+#include "TextureData.hpp"
 
 #include <cstdint>
 #include <string>
@@ -15,8 +16,9 @@ class Texture final
 {
     public:
     Texture() = default;
-    Texture(const std::string_view& source_path, const std::int32_t& width, const std::int32_t& height, const std::int32_t& channel_count = 4);
+    Texture(const std::string_view& file_path, const std::int32_t& width, const std::int32_t& height, const std::int32_t& channel_count = 4);
     Texture(const std::byte* data, const std::int32_t& width, const std::int32_t& height, const std::int32_t& channel_count = 4);
+    Texture(const std::string_view& file_path, const ::Texture::Data& texture_data = ::Texture::Data());
     Texture(const Texture& copy);
     Texture(Texture&& move);
     ~Texture();
@@ -29,9 +31,12 @@ class Texture final
     const std::int32_t& getHeight() const;
     const std::int32_t& getNumberOfChannels() const;
     const std::string& getSourcePath() const;
+    const ::Texture::Data& getTextureData() const;
 
     void load(const std::string_view& source_path, const std::int32_t& width, const std::int32_t& height, const std::int32_t& channel_count = 4);
     void load(const std::byte* data, const std::int32_t& width, const std::int32_t& height, const std::int32_t& channel_count = 4);
+    void nextSub();
+    void resetSub();
 
     private:
     void uploadToGpu();
@@ -41,9 +46,9 @@ class Texture final
 
     private:
     std::uint32_t m_id = 0;
-    std::int32_t m_width = 1;
-    std::int32_t m_height = 1;
-    std::int32_t m_numberOfChannels = 0;
+    ::Texture::Data m_textureData;
+
+    std::int32_t m_numberOfChannels = 4;  // out value of stbi_load indicating number of rgba channels
     std::string m_sourcePath = "";
     bool m_isLoadedByStbi = false;
     std::byte* m_data = nullptr;
