@@ -25,9 +25,10 @@ void main()
     uint frame_index = uFrameCurrentIndex[int(TexIndex)];
     vec2 frame_coords = vec2(frame_index % frame_row_length, frame_index / frame_row_length);
 
+    // TODO: change this math to vector operations: (Input.TexCoord + frame_coords) / vec2(frame_row_length, frame_row_count)
     vec4 texColor = Input.Color * texture(uTextures[int(TexIndex)],
-        vec2((Input.TexCoord.x / frame_row_length) + frame_coords.x * (1.0 / frame_row_length),
-             (Input.TexCoord.y / frame_row_count)  + frame_coords.y * (1.0 / frame_row_count)));
+        vec2((Input.TexCoord.x + frame_coords.x ) / frame_row_length,
+             (Input.TexCoord.y + frame_coords.y) / frame_row_count));
 
     if(texColor.a == 0.0) { discard; }
 
