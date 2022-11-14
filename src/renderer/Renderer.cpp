@@ -90,6 +90,7 @@ void Renderer::init()
     std::iota(s_data.textureSamplers.begin(), s_data.textureSamplers.end(), 0);  // fill textureSamplers with 0, 1, 2, ..., 31
     std::fill(s_data.textureFrameCounts.begin(), s_data.textureFrameCounts.end(), 1);
     std::fill(s_data.textureFrameRowLengths.begin(), s_data.textureFrameRowLengths.end(), 1);
+    std::fill(s_data.textureFrameCurrentIndex.begin(), s_data.textureFrameCurrentIndex.end(), 0);
 
     const auto make_bytes = [](auto&&... args) -> std::array<std::byte, sizeof...(args)>
     {
@@ -170,6 +171,7 @@ void Renderer::endBatch(const glm::mat4& projection, const glm::mat4& view)
         quad_shader.uploadMat4("uView", view, 1);
         quad_shader.uploadArrayUInt("uFrameCount", s_data.textureSlotsTakenCount, s_data.textureFrameCounts.data(), 34);
         quad_shader.uploadArrayUInt("uFrameRowLength", s_data.textureSlotsTakenCount, s_data.textureFrameRowLengths.data(), 66);
+        quad_shader.uploadArrayUInt("uFrameCurrentIndex", s_data.textureSlotsTakenCount, s_data.textureFrameCurrentIndex.data(), 98);
 
         glDisable(GL_BLEND);
 
@@ -259,6 +261,7 @@ void Renderer::drawQuad(const glm::vec2& position, const glm::vec2& size, const 
     }
     s_data.textureFrameCounts[texture_slot] = texture->getTextureData().numberOfSubs;
     s_data.textureFrameRowLengths[texture_slot] = texture->getTextureData().numberOfSubsInOneRow;
+    s_data.textureFrameCurrentIndex[texture_slot] = texture->getTextureData().currentSub;
 
     for(std::size_t i = 0; i < 4; i++)
     {

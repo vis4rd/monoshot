@@ -194,6 +194,10 @@ void DebugSection::update() noexcept
             {
                 m_hero.setCurrentItem(2);
             }
+            if(input.isPressedOnce(GLFW_KEY_N))
+            {
+                ResourceManager::heroTexture->nextSub();
+            }
         }
 
         // ecs::system::remove_dead_entities(m_registry);
