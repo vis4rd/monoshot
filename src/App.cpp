@@ -72,7 +72,7 @@ void App::initTextures() noexcept
         Texture::Data{
             .widthTotal = 128,
             .heightTotal = 16,
-            .widthSub = 128,
+            .widthSub = 16,
             .heightSub = 16,
             .numberOfSubs = 8,
             .numberOfSubsInOneRow = 8,

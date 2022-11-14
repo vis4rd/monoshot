@@ -74,6 +74,8 @@ class Renderer
 
         std::vector<Texture::Texture> textureSlots;  // slot = vec index, unit = tex ID
         std::array<std::int32_t, maxTextures> textureSamplers = {0};
+        std::array<std::uint32_t, maxTextures> textureFrameCounts = {1};
+        std::array<std::uint32_t, maxTextures> textureFrameRowLengths = {1};
         std::uint32_t textureSlotsTakenCount = 0;
 
         glm::mat4 last_projection_matrix{};

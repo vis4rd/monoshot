@@ -179,9 +179,9 @@ void Texture::nextSub()
     auto& index = m_textureData.currentSub;
     const auto& max = m_textureData.numberOfSubs;
     index = (index + 1) % max;
-    ::Texture::Data::IntType index_x = index % m_textureData.numberOfSubsInOneRow;
-    ::Texture::Data::IntType index_y = index / m_textureData.numberOfSubsInOneRow;
-    glTextureSubImage2D(m_id, 0, index_x * m_textureData.widthSub, index_y * m_textureData.heightSub, m_textureData.widthSub, m_textureData.heightSub, m_textureData.pixelDataFormat, m_textureData.dataType, m_data);
+    // ::Texture::Data::IntType index_x = index % m_textureData.numberOfSubsInOneRow;
+    // ::Texture::Data::IntType index_y = index / m_textureData.numberOfSubsInOneRow;
+    // glTextureSubImage2D(m_id, 0, index_x * m_textureData.widthSub, index_y * m_textureData.heightSub, m_textureData.widthSub, m_textureData.heightSub, m_textureData.pixelDataFormat, m_textureData.dataType, m_data);
 }
 
 void Texture::resetSub()
@@ -203,7 +203,7 @@ void Texture::uploadToGpu()
     // void glTextureStorage2D(id, mipmap_count, internal_texture_format, width_total, height_total);
     // void glTextureSubImage2D(id, mipmap_level, x_offset, y_offset, subimage_width, subimage_height, pixel_data_format, data_type, data_ptr);
     glTextureStorage2D(m_id, m_textureData.mipmapLevel, m_textureData.internalFormat, m_textureData.widthTotal, m_textureData.heightTotal);
-    glTextureSubImage2D(m_id, 0, 0, 0, m_textureData.widthSub, m_textureData.heightSub, m_textureData.pixelDataFormat, m_textureData.dataType, m_data);
+    glTextureSubImage2D(m_id, 0, 0, 0, m_textureData.widthTotal, m_textureData.heightTotal, m_textureData.pixelDataFormat, m_textureData.dataType, m_data);
     if(m_textureData.mipmapsEnabled)
     {
         glGenerateTextureMipmap(m_id);

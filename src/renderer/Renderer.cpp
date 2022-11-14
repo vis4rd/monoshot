@@ -88,6 +88,8 @@ void Renderer::init()
 
     // textures
     std::iota(s_data.textureSamplers.begin(), s_data.textureSamplers.end(), 0);  // fill textureSamplers with 0, 1, 2, ..., 31
+    std::fill(s_data.textureFrameCounts.begin(), s_data.textureFrameCounts.end(), 1);
+    std::fill(s_data.textureFrameRowLengths.begin(), s_data.textureFrameRowLengths.end(), 1);
 
     const auto make_bytes = [](auto&&... args) -> std::array<std::byte, sizeof...(args)>
     {
@@ -166,6 +168,8 @@ void Renderer::endBatch(const glm::mat4& projection, const glm::mat4& view)
         quad_shader.uploadArrayInt("uTextures", s_data.textureSlotsTakenCount, s_data.textureSamplers.data(), 2);
         quad_shader.uploadMat4("uProjection", projection, 0);
         quad_shader.uploadMat4("uView", view, 1);
+        quad_shader.uploadArrayUInt("uFrameCount", s_data.textureSlotsTakenCount, s_data.textureFrameCounts.data(), 34);
+        quad_shader.uploadArrayUInt("uFrameRowLength", s_data.textureSlotsTakenCount, s_data.textureFrameRowLengths.data(), 66);
 
         glDisable(GL_BLEND);
 
@@ -206,17 +210,17 @@ void Renderer::drawQuad(const glm::vec2& position, const glm::vec2& size, const 
     drawQuad(position, size, rotation, s_data.textureSlots.at(0), color);
 }
 
-static float findSlot(const std::vector<Texture::Texture>& slots, const std::uint32_t& texture_id)
-{
-    for(std::size_t slot = 0; slot < s_data.textureSlots.size(); slot++)
-    {
-        if(s_data.textureSlots[slot]->getID() == texture_id)
-        {
-            return static_cast<float>(slot);
-        }
-    }
-    return -1.f;
-}
+// static float findSlot(const std::vector<Texture::Texture>& slots, const std::uint32_t& texture_id)
+// {
+//     for(std::size_t slot = 0; slot < s_data.textureSlots.size(); slot++)
+//     {
+//         if(s_data.textureSlots[slot]->getID() == texture_id)
+//         {
+//             return static_cast<float>(slot);
+//         }
+//     }
+//     return -1.f;
+// }
 
 void Renderer::drawQuad(const glm::vec2& position, const glm::vec2& size, const float& rotation, const Texture::Texture& texture, const glm::vec4& color)
 {
@@ -232,7 +236,19 @@ void Renderer::drawQuad(const glm::vec2& position, const glm::vec2& size, const 
     glm::mat4 model_matrix = glm::translate(identity, glm::vec3(position, 0.f)) * glm::rotate(identity, glm::radians(rotation), {0.f, 0.f, 1.f}) * glm::scale(identity, glm::vec3(size, 1.f));
     // spdlog::trace("Renderer: model_matrix:\n{}", util::mat4str(model_matrix));
 
-    float texture_slot = findSlot(s_data.textureSlots, texture->getID());
+    constexpr auto find_slot = [](const std::vector<Texture::Texture>& slots, const std::uint32_t& texture_id) -> float
+    {
+        for(std::size_t slot = 0; slot < s_data.textureSlots.size(); slot++)
+        {
+            if(s_data.textureSlots[slot]->getID() == texture_id)
+            {
+                return static_cast<float>(slot);
+            }
+        }
+        return -1.f;
+    };
+
+    float texture_slot = find_slot(s_data.textureSlots, texture->getID());
     // spdlog::trace("texture_slot = {} of texture_id {}", texture_slot, texture->getID());
 
     if(texture_slot == -1.f)
@@ -241,6 +257,8 @@ void Renderer::drawQuad(const glm::vec2& position, const glm::vec2& size, const 
         s_data.textureSlots.push_back(texture);
         s_data.textureSlotsTakenCount++;
     }
+    s_data.textureFrameCounts[texture_slot] = texture->getTextureData().numberOfSubs;
+    s_data.textureFrameRowLengths[texture_slot] = texture->getTextureData().numberOfSubsInOneRow;
 
     for(std::size_t i = 0; i < 4; i++)
     {

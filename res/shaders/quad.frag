@@ -11,6 +11,8 @@ layout (location = 0) in VertexOutput Input;
 layout (location = 2) in flat float TexIndex;
 
 layout (location = 2) uniform sampler2D uTextures[32];
+layout (location = 34) uniform uint uFrameCount[32];
+layout (location = 66) uniform uint uFrameRowLength[32];
 
 out vec4 FragColor;
 
