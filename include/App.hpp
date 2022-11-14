@@ -22,6 +22,8 @@ class App
 
     private:
     void terminate(int code = 0) noexcept;
+    void destroyTextures() noexcept;
+    void destroyFonts() noexcept;
 
     private:
     std::shared_ptr<Window> m_window;

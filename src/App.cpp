@@ -32,6 +32,8 @@ App::App(const std::string& window_title, uint32_t width, uint32_t height)
 
 App::~App() noexcept
 {
+    this->destroyFonts();
+    this->destroyTextures();
     this->terminate(EXIT_SUCCESS);
 }
 
@@ -110,4 +112,32 @@ void App::terminate(int code) noexcept
 {
     spdlog::info("Closing the application");
     std::exit(code);
+}
+
+void App::destroyTextures() noexcept
+{
+    using res = ResourceManager;
+    res::largeTreeTexture.reset();
+    res::smallTreeTexture.reset();
+    res::outdoorBenchTexture.reset();
+    res::chairTexture.reset();
+    res::tableTexture.reset();
+    res::smallBushTexture.reset();
+    res::largeBushTexture.reset();
+    res::carTexture.reset();
+    res::destroyedCarTexture.reset();
+}
+
+void App::destroyFonts() noexcept
+{
+    using res = ResourceManager;
+
+    res::uiTitleFontSize.reset();
+    res::uiTitleFont.reset();
+    // res::uiButtonFontSize.reset();
+    // res::uiButtonFont.reset();
+    res::uiButtonFontSize.reset();
+    res::uiButtonFont.reset();
+    res::uiAmmoFontSize.reset();
+    res::uiAmmoFont.reset();
 }
