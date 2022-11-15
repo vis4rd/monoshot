@@ -69,6 +69,7 @@ void App::initTextures() noexcept
     res::carTexture = Resource::create<Texture::impl::Texture>("../res/textures/car.png", 32, 64);
     res::destroyedCarTexture = Resource::create<Texture::impl::Texture>("../res/textures/destroyed_car.png", 32, 64);
     res::heroTexture = Resource::create<Texture::impl::Animation>("../res/textures/entities/player.png",
+        0.1,
         TextureData{
             .widthTotal = 128,
             .heightTotal = 16,

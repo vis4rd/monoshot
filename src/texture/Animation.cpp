@@ -10,8 +10,9 @@ Animation::Animation()
 {
 }
 
-Animation::Animation(const std::string_view& texture_file_path, const TextureData& texture_data)
-    : Texture(texture_file_path, texture_data)
+Animation::Animation(const std::string_view& texture_file_path, const double& frame_duration, const TextureData& texture_data)
+    : Texture(texture_file_path, texture_data),
+      m_frameDuration(frame_duration)
 {
 }
 

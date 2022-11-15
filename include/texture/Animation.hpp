@@ -12,7 +12,7 @@ class Animation : public Texture
 {
     public:
     Animation();
-    Animation(const std::string_view& texture_file_path, const TextureData& texture_data = TextureData());
+    Animation(const std::string_view& texture_file_path, const double& frame_duration, const TextureData& texture_data = TextureData());
     Animation(const Animation& copy);
     Animation(Animation&& move);
     ~Animation();
@@ -31,7 +31,7 @@ class Animation : public Texture
     bool canChangeFrame();
 
     private:
-    double m_frameDuration = 0.4;  // in seconds
+    double m_frameDuration = 0.1;  // in seconds
     double m_lastFrameChangeTimestamp = 0.0;  // if m_lastFrameChangeTimestamp + m_useDelay < Timer::getTotalTime() then it can be used again
 };
 
