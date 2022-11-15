@@ -3,6 +3,7 @@
 #include "../ui/fonts/Font.hpp"
 #include "../utility/Timer.hpp"
 #include "../window/Window.hpp"
+#include "../texture/Animation.hpp"
 
 #include <memory>
 #include <entt/entity/entity.hpp>
@@ -22,7 +23,7 @@ struct ResourceManager
     static Texture::Texture largeTreeTexture;
     static Texture::Texture smallBushTexture;
     static Texture::Texture largeBushTexture;
-    static Texture::Texture heroTexture;
+    static Texture::Animation heroTexture;
 
     static std::shared_ptr<Font> uiTitleFont;
     static std::shared_ptr<float> uiTitleFontSize;

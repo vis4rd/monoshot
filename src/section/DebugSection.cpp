@@ -147,6 +147,10 @@ void DebugSection::update() noexcept
         if(input.isHeld(GLFW_KEY_D) || input.isPressedOnce(GLFW_KEY_RIGHT)) { move_direction.x += 1.f; }
         if(input.isHeld(GLFW_KEY_W) || input.isPressedOnce(GLFW_KEY_UP)) { move_direction.y += 1.f; }
         if(input.isHeld(GLFW_KEY_S) || input.isPressedOnce(GLFW_KEY_DOWN)) { move_direction.y -= 1.f; }
+        if(move_direction.x != 0.f || move_direction.y != 0.f)
+        {
+            ResourceManager::heroTexture->nextFrame();
+        }
 
         // update inventory logic
         if(!m_hero.isInventoryEmpty())
@@ -193,10 +197,6 @@ void DebugSection::update() noexcept
             if(input.isPressedOnce(GLFW_KEY_3))
             {
                 m_hero.setCurrentItem(2);
-            }
-            if(input.isPressedOnce(GLFW_KEY_N))
-            {
-                ResourceManager::heroTexture->nextSub();
             }
         }
 

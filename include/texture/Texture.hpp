@@ -12,16 +12,16 @@ namespace Texture
 namespace impl
 {
 
-class Texture final
+class Texture
 {
     public:
     Texture() = default;
     Texture(const std::string_view& file_path, const std::int32_t& width, const std::int32_t& height, const std::int32_t& channel_count = 4);
     Texture(const std::byte* data, const std::int32_t& width, const std::int32_t& height, const std::int32_t& channel_count = 4);
-    Texture(const std::string_view& file_path, const ::Texture::Data& texture_data = ::Texture::Data());
+    Texture(const std::string_view& file_path, const TextureData& texture_data = TextureData());
     Texture(const Texture& copy);
     Texture(Texture&& move);
-    ~Texture();
+    virtual ~Texture();
 
     Texture& operator=(const Texture& copy);
     Texture& operator=(Texture&& move);
@@ -31,7 +31,7 @@ class Texture final
     const std::int32_t& getHeight() const;
     const std::int32_t& getNumberOfChannels() const;
     const std::string& getSourcePath() const;
-    const ::Texture::Data& getTextureData() const;
+    const TextureData& getTextureData() const;
     const std::byte* const getData() const;
 
     void load(const std::string_view& source_path, const std::int32_t& width, const std::int32_t& height, const std::int32_t& channel_count = 4);
@@ -45,10 +45,11 @@ class Texture final
     void safeDelete();
     void tryCopyExternalMemory(const std::byte* memory, const std::size_t& size);
 
+    protected:
+    TextureData m_textureData;
+
     private:
     std::uint32_t m_id = 0;
-    ::Texture::Data m_textureData;
-
     std::int32_t m_numberOfChannels = 4;  // out value of stbi_load indicating number of rgba channels
     std::string m_sourcePath = "";
     bool m_isLoadedByStbi = false;
@@ -58,11 +59,5 @@ class Texture final
 }  // namespace impl
 
 using Texture = std::shared_ptr<impl::Texture>;
-
-template<typename... Args>
-Texture create(Args&&... args)
-{
-    return Resource::create<impl::Texture>(std::forward<Args>(args)...);
-}
 
 }  // namespace Texture

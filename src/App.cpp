@@ -59,17 +59,17 @@ void App::initLogger() noexcept
 void App::initTextures() noexcept
 {
     using res = ResourceManager;
-    res::largeTreeTexture = Texture::create("../res/textures/large_tree.png", 128, 128);
-    res::smallTreeTexture = Texture::create("../res/textures/small_tree.png", 64, 64);
-    res::outdoorBenchTexture = Texture::create("../res/textures/outdoors_bench.png", 48, 16);
-    res::chairTexture = Texture::create("../res/textures/chair.png", 16, 16);
-    res::tableTexture = Texture::create("../res/textures/table.png", 32, 32);
-    res::smallBushTexture = Texture::create("../res/textures/small_bush.png", 48, 48);
-    res::largeBushTexture = Texture::create("../res/textures/large_bush.png", 56, 56);
-    res::carTexture = Texture::create("../res/textures/car.png", 32, 64);
-    res::destroyedCarTexture = Texture::create("../res/textures/destroyed_car.png", 32, 64);
-    res::heroTexture = Texture::create("../res/textures/entities/player.png",
-        Texture::Data{
+    res::largeTreeTexture = Resource::create<Texture::impl::Texture>("../res/textures/large_tree.png", 128, 128);
+    res::smallTreeTexture = Resource::create<Texture::impl::Texture>("../res/textures/small_tree.png", 64, 64);
+    res::outdoorBenchTexture = Resource::create<Texture::impl::Texture>("../res/textures/outdoors_bench.png", 48, 16);
+    res::chairTexture = Resource::create<Texture::impl::Texture>("../res/textures/chair.png", 16, 16);
+    res::tableTexture = Resource::create<Texture::impl::Texture>("../res/textures/table.png", 32, 32);
+    res::smallBushTexture = Resource::create<Texture::impl::Texture>("../res/textures/small_bush.png", 48, 48);
+    res::largeBushTexture = Resource::create<Texture::impl::Texture>("../res/textures/large_bush.png", 56, 56);
+    res::carTexture = Resource::create<Texture::impl::Texture>("../res/textures/car.png", 32, 64);
+    res::destroyedCarTexture = Resource::create<Texture::impl::Texture>("../res/textures/destroyed_car.png", 32, 64);
+    res::heroTexture = Resource::create<Texture::impl::Animation>("../res/textures/entities/player.png",
+        TextureData{
             .widthTotal = 128,
             .heightTotal = 16,
             .widthSub = 16,
