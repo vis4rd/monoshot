@@ -27,7 +27,7 @@ Texture::Texture(const std::byte* data, const std::int32_t& width, const std::in
     this->uploadToGpu();
 }
 
-Texture::Texture(const std::string_view& file_path, const ::Texture::Data& texture_data)
+Texture::Texture(const std::string_view& file_path, const TextureData& texture_data)
     : m_textureData(texture_data),
       m_sourcePath(file_path)
 {
@@ -61,7 +61,7 @@ Texture::Texture(const Texture& copy)
 
 Texture::Texture(Texture&& move)
     : m_id(std::exchange(move.m_id, 0u)),
-      m_textureData(std::exchange(move.m_textureData, ::Texture::Data())),
+      m_textureData(std::exchange(move.m_textureData, TextureData())),
       m_numberOfChannels(std::exchange(move.m_numberOfChannels, 0)),
       m_sourcePath(std::exchange(move.m_sourcePath, std::string()))
 {
@@ -94,7 +94,7 @@ Texture& Texture::operator=(Texture&& move)
 {
     spdlog::trace("Moving Texture...");
     m_id = std::exchange(move.m_id, 0u);
-    m_textureData = std::exchange(move.m_textureData, ::Texture::Data());
+    m_textureData = std::exchange(move.m_textureData, TextureData());
     m_numberOfChannels = std::exchange(move.m_numberOfChannels, 0);
     m_sourcePath = std::exchange(move.m_sourcePath, std::string());
 
@@ -164,7 +164,7 @@ const std::string& Texture::getSourcePath() const
     return m_sourcePath;
 }
 
-const ::Texture::Data& Texture::getTextureData() const
+const TextureData& Texture::getTextureData() const
 {
     return m_textureData;
 }
@@ -179,14 +179,14 @@ void Texture::nextSub()
     auto& index = m_textureData.currentSub;
     const auto& max = m_textureData.numberOfSubs;
     index = (index + 1) % max;
-    // ::Texture::Data::IntType index_x = index % m_textureData.numberOfSubsInOneRow;
-    // ::Texture::Data::IntType index_y = index / m_textureData.numberOfSubsInOneRow;
+    // TextureData::IntType index_x = index % m_textureData.numberOfSubsInOneRow;
+    // TextureData::IntType index_y = index / m_textureData.numberOfSubsInOneRow;
     // glTextureSubImage2D(m_id, 0, index_x * m_textureData.widthSub, index_y * m_textureData.heightSub, m_textureData.widthSub, m_textureData.heightSub, m_textureData.pixelDataFormat, m_textureData.dataType, m_data);
 }
 
 void Texture::resetSub()
 {
-    glTextureSubImage2D(m_id, 0, 0, 0, m_textureData.widthSub, m_textureData.heightSub, m_textureData.pixelDataFormat, m_textureData.dataType, m_data);
+    m_textureData.currentSub = 0;
 }
 
 void Texture::uploadToGpu()

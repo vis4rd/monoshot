@@ -98,7 +98,7 @@ void Renderer::init()
     };
 
     const auto color = make_bytes(0xff, 0xff, 0xff, 0xff);
-    Texture::Texture texture = Texture::create(color.data(), 1, 1);
+    Texture::Texture texture = Resource::create<Texture::impl::Texture>(color.data(), 1, 1);
 
     s_data.textureSlots.reserve(32);
     s_data.textureSlots.push_back(texture);

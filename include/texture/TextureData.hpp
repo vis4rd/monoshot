@@ -6,10 +6,7 @@
 
 #include <glad/gl.h>
 
-namespace Texture
-{
-
-struct Data
+struct TextureData
 {
     using TextureIdType = GLuint;
     using FormatType = GLenum;
@@ -27,12 +24,10 @@ struct Data
     FormatType pixelDataFormat = GL_RGBA;
     FormatType dataType = GL_UNSIGNED_BYTE;
     std::vector<std::pair<Texture::ParameterName, Texture::ParameterIntValue>> parameters = {
-        {Parameter::TEXTURE_MIN_FILTER, TextureMinFilter::NEAREST_MIPMAP_NEAREST},
-        {Parameter::TEXTURE_MAG_FILTER, TextureMagFilter::NEAREST               },
-        {Parameter::TEXTURE_WRAP_S,     TextureWrapS::CLAMP_TO_EDGE             },
-        {Parameter::TEXTURE_WRAP_T,     TextureWrapT::CLAMP_TO_EDGE             },
+        {Texture::Parameter::TEXTURE_MIN_FILTER, Texture::TextureMinFilter::NEAREST_MIPMAP_NEAREST},
+        {Texture::Parameter::TEXTURE_MAG_FILTER, Texture::TextureMagFilter::NEAREST               },
+        {Texture::Parameter::TEXTURE_WRAP_S,     Texture::TextureWrapS::CLAMP_TO_EDGE             },
+        {Texture::Parameter::TEXTURE_WRAP_T,     Texture::TextureWrapT::CLAMP_TO_EDGE             },
     };
     IntType currentSub = 0;
 };
-
-}  // namespace Texture
