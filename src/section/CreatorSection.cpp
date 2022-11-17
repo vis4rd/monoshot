@@ -220,6 +220,16 @@ void CreatorSection::render() noexcept
                 m_map.saveToFile(file_path);
             }
         }
+        ImGui::SameLine();
+        if(ImGui::Button("Load from file"))
+        {
+            std::array<const char*, 2> patterns = {"*.msmap", "*.map"};
+            const char* file_path = tinyfd_openFileDialog("Load a map...", "./", patterns.size(), patterns.data(), nullptr, 0);
+            if(nullptr != file_path)
+            {
+                m_map.loadFromFile(file_path);
+            }
+        }
 
         ImGui::SliderFloat("Object rotation", &s_randomized_rotation, 0.f, 360.f);
     }
