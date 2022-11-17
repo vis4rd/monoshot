@@ -20,6 +20,8 @@ class Animation : public Texture
     Animation& operator=(const Animation& copy);
     Animation& operator=(Animation&& move);
 
+    void setFrameDuration(const double& frame_duration);
+
     bool nextFrame();
     void resetFrame();
 

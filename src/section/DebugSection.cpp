@@ -8,7 +8,7 @@
 
 #include <stb_image.h>
 
-constexpr glm::vec2 hero_size = {0.6f, 0.6f};
+constexpr glm::vec2 hero_size = {1.f, 1.f};
 
 DebugSection::DebugSection()
     : Section(),
@@ -100,6 +100,8 @@ DebugSection::DebugSection()
     m_hero.addItem(std::move(Weapon(10, 31, 76, 50.f, 0.2)));
     m_hero.addItem(std::move(Weapon(10, 70, 20000, 3.f, 0.05)));
 
+    ResourceManager::heroTexture->setFrameDuration(0.06);
+
     // ecs
     ResourceManager::heroEntity = std::make_shared<entt::entity>(m_heroEntity);
     m_registry.emplace<ecs::component::position>(m_heroEntity);
@@ -150,6 +152,10 @@ void DebugSection::update() noexcept
         if(move_direction.x != 0.f || move_direction.y != 0.f)
         {
             ResourceManager::heroTexture->nextFrame();
+        }
+        else
+        {
+            ResourceManager::heroTexture->resetFrame();
         }
 
         // update inventory logic

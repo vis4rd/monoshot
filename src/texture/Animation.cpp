@@ -40,6 +40,15 @@ Animation& Animation::operator=(Animation&& move)
     return *this;
 }
 
+void Animation::setFrameDuration(const double& frame_duration)
+{
+    if(frame_duration <= 0.0)
+    {
+        return;
+    }
+    m_frameDuration = frame_duration;
+}
+
 bool Animation::nextFrame()
 {
     if(this->canChangeFrame())
