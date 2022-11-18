@@ -23,13 +23,13 @@
     //
     "git.suggestSmartCommit": false,
     "git.ignoredRepositories":[
-        "entt",
-        "glad",
-        "glfw",
-        "glm",
-        "imgui",
-        "spdlog",
-        "tinyfiledialogs"
+        "lib/entt",
+        "lib/glad",
+        "lib/glfw",
+        "lib/glm",
+        "lib/imgui/imgui",
+        "lib/spdlog",
+        "lib/tinyfiledialogs/tinyfiledialogs"
     ],
     //
     "[cpp]": {
