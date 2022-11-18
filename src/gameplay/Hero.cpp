@@ -81,3 +81,15 @@ bool Hero::holdsFood() const
 {
     return (m_currentItem == 2) && m_availableItems[m_currentItem];
 }
+
+bool Hero::hasItem(const std::size_t& id) const
+{
+    for(std::size_t i = 0; i < m_availableItems.size(); i++)
+    {
+        if(m_availableItems.at(i) && (m_items.at(i)->ID == id))
+        {
+            return true;
+        }
+    }
+    return false;
+}

@@ -37,6 +37,8 @@ class Hero
     bool holdsWeapon() const;
     bool holdsFood() const;
 
+    bool hasItem(const std::size_t& id) const;
+
     public:
     std::int32_t health;
     const std::int32_t maxHealth;
