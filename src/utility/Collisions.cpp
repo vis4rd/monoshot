@@ -11,7 +11,8 @@ namespace OBB
 
 Polygon::Polygon(const glm::vec2& center, const glm::vec2& size, const float& rotation)
     : points(4),
-      position(center)
+      position(center),
+      size(size)
 {
     //? possibly this matrix operation can be simplified if this path becomes too hot
     glm::mat4 model = glm::translate(glm::mat4(1.f), glm::vec3(center, 0.f));

@@ -11,6 +11,7 @@ struct Polygon
     Polygon(const glm::vec2& center, const glm::vec2& size, const float& rotation);
     std::vector<glm::vec2> points;
     glm::vec2 position;
+    glm::vec2 size;
 };
 
 // clang-format off
