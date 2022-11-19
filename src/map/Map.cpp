@@ -2,7 +2,6 @@
 #include "../../include/renderer/Renderer.hpp"
 #include "../../include/ecs/systems.hpp"
 #include "../../include/utility/ResourceManager.hpp"
-#include "../../include/utility/Collisions.hpp"
 
 #include <numeric>
 
@@ -10,7 +9,8 @@ Map::Map(const std::size_t& width, const std::size_t& height)
     : m_width(width),
       m_height(height),
       m_tiles(),
-      m_objects()
+      m_objects(),
+      m_endArea(nullptr)
 {
     m_tiles.reserve(width * height);
 
@@ -250,13 +250,32 @@ void Map::setTheme(const MapTheme& new_theme)
     glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a);
 }
 
+void Map::setEndArea(const glm::vec2& pos, const glm::vec2& size)
+{
+    m_endArea = std::make_unique<OBB::Polygon>(pos, size, 0.f);
+}
+
+bool Map::isInEndArea(const glm::vec2& pos, const glm::vec2& size) const
+{
+    if(m_endArea == nullptr)
+    {
+        return false;
+    }
+
+    return OBB::findCollision(m_endArea->position, m_endArea->size, 0.f, pos, size, 0.f);
+}
+
 void Map::update() noexcept { }
 
-void Map::render(const glm::mat4& projection, const glm::mat4& view, bool area, bool show_solid) noexcept
+void Map::render(const glm::mat4& projection, const glm::mat4& view, bool area, bool show_solid, bool show_end_area) noexcept
 {
     Renderer::beginBatch();
     this->drawTiles(area, show_solid);
     this->drawObjects({}, show_solid);
+    if(show_end_area)
+    {
+        this->drawEndArea();
+    }
     Renderer::endBatch(projection, view);
 }
 
@@ -302,6 +321,16 @@ void Map::drawObjects(const glm::vec2& hero_pos, bool show_solid)
         {
             Renderer::drawRect(object.getPosition(), object.getSize(), object.getRotation(), {1.f, 1.f, 1.f, 1.f});
         }
+    }
+}
+
+void Map::drawEndArea()
+{
+    if(m_endArea)
+    {
+        spdlog::trace("Drawing Map end area...");
+        const auto& [wall_block, wall_color, wall_texture] = m_theme.wallBlock;
+        Renderer::drawRect(m_endArea->position, m_endArea->size, 0.f, wall_color);
     }
 }
 

@@ -10,6 +10,7 @@ static std::size_t s_selected_map_item = BlockID::Wall;
 static bool s_selected_solid = false;
 static glm::vec2 s_mouse_world_pos = {0.f, 0.f};
 static float s_randomized_rotation = util::random::getRandomNumber(0.f, 360.f);
+static glm::vec2 s_end_area_size = {10.f, 10.f};
 
 CreatorSection::CreatorSection()
     : Section(),
@@ -116,16 +117,44 @@ void CreatorSection::update() noexcept
                 m_map.setTile(s_mouse_world_pos.x, s_mouse_world_pos.y, 0.f, static_cast<BlockID>(s_selected_map_item), s_selected_solid);
             }
         }
+        else if(s_selected_map_item == 9999)
+        {
+            if(input.isPressedOnce(GLFW_MOUSE_BUTTON_LEFT))
+            {
+                m_map.setEndArea(s_mouse_world_pos, s_end_area_size);
+            }
+        }
     }
+    if(constexpr float size_vel = 5.f; s_selected_map_item == 9999)
+    {
+        if(input.isHeld(GLFW_KEY_UP))
+        {
+            s_end_area_size.y += (delta_time * size_vel);
+        }
+        if(input.isHeld(GLFW_KEY_DOWN))
+        {
+            s_end_area_size.y -= (delta_time * size_vel);
+        }
+        if(input.isHeld(GLFW_KEY_RIGHT))
+        {
+            s_end_area_size.x += (delta_time * size_vel);
+        }
+        if(input.isHeld(GLFW_KEY_LEFT))
+        {
+            s_end_area_size.x -= (delta_time * size_vel);
+        }
+    }
+    s_end_area_size = glm::max(s_end_area_size, 1.f);
 }
 
 void CreatorSection::render() noexcept
 {
     static bool draw_area = true;
     static bool draw_bbs = true;
+    static bool draw_end_area = true;
 
     // map rendering
-    m_map.render(m_camera.getProjectionMatrix(), m_camera.getViewMatrix(), draw_area, draw_bbs);
+    m_map.render(m_camera.getProjectionMatrix(), m_camera.getViewMatrix(), draw_area, draw_bbs, draw_end_area);
 
     Renderer::beginBatch();
     if(s_selected_map_item > ObjectID::FIRST_OBJECT && s_selected_map_item < ObjectID::LAST_OBJECT)
@@ -141,6 +170,10 @@ void CreatorSection::render() noexcept
     {
         // hovered tile highlight
         Renderer::drawQuad({std::round(s_mouse_world_pos.x), std::round(s_mouse_world_pos.y)}, {1.f, 1.f}, 0.f, {0.9f, 0.9f, 1.f, 0.2f});
+    }
+    else if(s_selected_map_item == 9999)
+    {
+        Renderer::drawRect({s_mouse_world_pos.x, s_mouse_world_pos.y}, s_end_area_size, 0.f, {1.f, 1.f, 1.f, 1.f});
     }
     // Renderer::drawRect({std::round(s_mouse_world_pos.x), std::round(s_mouse_world_pos.y)}, {1.f, 1.f}, 0.f, {1.f, 1.f, 1.f, 1.f});
     // Renderer::drawRect({-5.f, 5.f}, {5.f, 5.f}, {5.f, -5.f}, {-5.f, -5.f}, {0.f, 1.f, 0.f, 1.f});
@@ -184,12 +217,12 @@ void CreatorSection::render() noexcept
 
         ImGui::Separator();
         static std::string preview = "Wall";
-        bool check = false;
+        std::array<bool, static_cast<std::size_t>(BlockID::BLOCK_COUNT) + static_cast<std::size_t>(ObjectID::OBJECT_COUNT) + 1> checks = {0};
         if(ImGui::BeginCombo("Blocks", preview.c_str()))
         {
             for(std::size_t block_id = BlockID::FIRST_BLOCK + 1; block_id < BlockID::LAST_BLOCK; block_id++)
             {
-                if(ImGui::Selectable((blockToString(block_id) + std::string("##unique_id")).c_str(), &check))
+                if(ImGui::Selectable((blockToString(block_id) + std::string("##unique_id")).c_str(), &(checks[block_id - BlockID::FIRST_BLOCK - 1])))
                 {
                     spdlog::debug("Selected Block '{}'", blockToString(block_id));
                     s_selected_map_item = block_id;
@@ -198,12 +231,18 @@ void CreatorSection::render() noexcept
             }
             for(std::size_t object_id = ObjectID::FIRST_OBJECT + 1; object_id < ObjectID::LAST_OBJECT; object_id++)
             {
-                if(ImGui::Selectable((objectIdToString(object_id) + std::string("##unique_id")).c_str(), &check))
+                if(ImGui::Selectable((objectIdToString(object_id) + std::string("##unique_id")).c_str(), &(checks[BlockID::BLOCK_COUNT + object_id - ObjectID::FIRST_OBJECT - 1])))
                 {
                     spdlog::debug("Selected MapObject '{}'", objectIdToString(object_id));
                     s_selected_map_item = object_id;
                     preview = objectIdToString(object_id);
                 }
+            }
+            if(ImGui::Selectable("EndArea##unique_id", &(checks[static_cast<std::size_t>(BlockID::BLOCK_COUNT) + static_cast<std::size_t>(ObjectID::OBJECT_COUNT)])))
+            {
+                spdlog::debug("Selected End Area");
+                s_selected_map_item = 9999;
+                preview = "End Area";
             }
             ImGui::EndCombo();
         }
