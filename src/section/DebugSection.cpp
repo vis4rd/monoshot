@@ -158,10 +158,13 @@ void DebugSection::update() noexcept
             ResourceManager::heroTexture->resetFrame();
         }
 
+        const glm::vec2& pos = m_registry.get<const ecs::component::position>(m_heroEntity);
+        float& rot = m_registry.get<ecs::component::rotation>(m_heroEntity);
+
         // update inventory logic
         if(!m_hero.isInventoryEmpty())
         {
-            if(input.isHeld(GLFW_MOUSE_BUTTON_LEFT))
+            if(!ImGui::GetIO().WantCaptureMouse && input.isHeld(GLFW_MOUSE_BUTTON_LEFT))
             {
                 auto& item = m_hero.getCurrentItem<Consumable>();
                 if(const bool is_used = item.useDelayed(); m_hero.holdsWeapon() && is_used)
@@ -169,8 +172,6 @@ void DebugSection::update() noexcept
                     const auto& weapon = m_hero.getCurrentItem<Weapon>();
                     if(weapon.getAmmoCurrent() > 0)
                     {
-                        const glm::vec2& pos = m_registry.get<const ecs::component::position>(m_heroEntity);
-                        const float& rot = m_registry.get<const ecs::component::rotation>(m_heroEntity);
                         auto bullet = m_registry.create();
                         m_registry.emplace<ecs::component::is_bullet>(bullet);
                         m_registry.emplace<ecs::component::lifetime>(bullet, ResourceManager::timer->getTotalTime(), 2.0);
@@ -206,20 +207,24 @@ void DebugSection::update() noexcept
             }
         }
 
+        // calculate main hero rotation after mouse cursor
+        const glm::vec2 mouse_screen_pos = ResourceManager::window->getMousePosition();
+        const auto mouse_world_pos = this->mouseScreenPosToWorldPos(mouse_screen_pos, m_camera);
+        rot = glm::degrees(std::atan2(mouse_world_pos.y - pos.y, mouse_world_pos.x - pos.x));
+
+        // make camera follow main hero
+        m_camera.setPosition({pos, m_camera.getPosition().z});
+        m_camera.setTarget({pos, 0.f});
+
         // ecs::system::remove_dead_entities(m_registry);
         ecs::system::collide_with_hero(m_registry, m_heroEntity, move_direction);
         ecs::system::move_bullets(m_registry);
 
-        // make camera follow main hero
-        const glm::vec2& pos = m_registry.get<const ecs::component::position>(m_heroEntity);
-        m_camera.setPosition({pos, m_camera.getPosition().z});
-        m_camera.setTarget({pos, 0.f});
-
-        // calculate main hero rotation after mouse cursor
-        const glm::vec2 mouse_screen_pos = ResourceManager::window->getMousePosition();
-        const auto mouse_world_pos = this->mouseScreenPosToWorldPos(mouse_screen_pos, m_camera);
-        float& rot = m_registry.get<ecs::component::rotation>(m_heroEntity);
-        rot = glm::degrees(std::atan2(mouse_world_pos.y - pos.y, mouse_world_pos.x - pos.x));
+        // finish the level if hero gets to the end area
+        if(m_mapGrid.isInEndArea(pos, hero_size))
+        {
+            SectionManager::get().popSection();
+        }
         // clang-format on
     }
 }

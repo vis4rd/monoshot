@@ -184,6 +184,11 @@ void Map::loadFromFile(const std::string& filename)
     std::size_t object_id = 2000;
     while(file_buffer >> object_pos_x >> object_pos_y >> object_size_x >> object_size_y >> object_rotation >> object_solid >> object_id)
     {
+        if(object_id == 9999)
+        {
+            m_endArea = std::make_unique<OBB::Polygon>(glm::vec2(object_pos_x, object_pos_y), glm::vec2(object_size_x, object_size_y), object_rotation);
+            continue;
+        }
         this->addObject({object_pos_x, object_pos_y}, object_rotation, static_cast<ObjectID>(object_id));
         spdlog::debug("Loading MapObject: pos = ({}, {}), size = ({}, {}), rot = {}, solid = {}, ID = '{}'", object_pos_x, object_pos_y, object_size_x, object_size_y, object_rotation, object_solid, objectIdToString(object_id));
     }
@@ -194,13 +199,6 @@ void Map::loadFromFile(const std::string& filename)
 void Map::saveToFile(const std::string& filename)
 {
     spdlog::debug("Saving map to file '{}'...", filename);
-
-    // check if all tiles are filled
-    // if(m_tiles.size() < m_width * m_height)
-    // {
-    //     spdlog::error("The map is not entirely filled, can not save it to the file '{}'. Ignoring...", filename);
-    //     return;
-    // }
 
     // clang-format off
     std::sort(m_tiles.begin(), m_tiles.end(), [](const Tile& tile1, const Tile& tile2)
@@ -227,6 +225,11 @@ void Map::saveToFile(const std::string& filename)
         const auto& size = object.getSize();
         file_buffer << pos.x << ' ' << pos.y << ' ' << size.x << ' ' << size.y << ' ' << object.getRotation() << ' ' << object.hasCollision << ' ' << object.id << '\n';
         spdlog::debug("Saving MapObject: pos = ({}, {}), size = ({}, {}), rot = {}, solid = {}, ID = '{}'", pos.x, pos.y, size.x, size.y, object.getRotation(), object.hasCollision, objectIdToString(object.id));
+    }
+
+    if(m_endArea)
+    {
+        file_buffer << m_endArea->position.x << ' ' << m_endArea->position.y << ' ' << m_endArea->size.x << ' ' << m_endArea->size.y << ' ' << 0.f << ' ' << 0 << ' ' << 9999 << '\n';
     }
 
     // dump buffer to the file
