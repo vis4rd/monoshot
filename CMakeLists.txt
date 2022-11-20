@@ -13,7 +13,9 @@ endif()
 set(EXECUTABLE_NAME "Monoshot")
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-option(CMAKE_BUILD_TYPE "Build type of the binary (Release/Debug/RelWithDebInfo/MinSizeRel" "Debug")
+if(CMAKE_BUILD_TYPE EQUAL "")
+    set(CMAKE_BUILD_TYPE "Release")
+endif()
 
 string(COMPARE EQUAL ${CMAKE_BUILD_TYPE} "Debug" DEBUG_MODE)
 
