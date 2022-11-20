@@ -46,4 +46,6 @@ class DebugSection final : public Section
     bool m_onLeaveStarted = false;
     const double m_entranceDuration = 5.0;
     double m_enterFinishTimestamp = Timer::getTotalTime() + m_entranceDuration;
+    const double m_leaveDuration = 5.0;
+    double m_leaveStartTimestamp = 0.0;
 };

@@ -126,7 +126,11 @@ void DebugSection::update() noexcept
     {
         return;
     }
-    if(const bool is_during_leave = this->onLeave(); is_during_leave) { }
+    if(const bool is_leave_finished = this->onLeave(); is_leave_finished)
+    {
+        SectionManager::get().popSection();
+        return;
+    }
 
     // model_matrix = glm::translate(glm::mat4(1.f), position);
     // model_matrix = glm::rotate(model_matrix, glm::radians(rotation), glm::vec3(0.f, 0.f, 1.f));
@@ -214,10 +218,10 @@ void DebugSection::update() noexcept
     ecs::system::move_bullets(m_registry);
 
     // finish the level if hero gets to the end area
-    if(m_map.isInEndArea(pos, m_hero.size))
+    if(m_map.isInEndArea(pos, m_hero.size) && (not m_onLeaveStarted))
     {
-        SectionManager::get().popSection();
-        return;
+        m_leaveStartTimestamp = Timer::getTotalTime();
+        m_onLeaveStarted = true;
     }
     // clang-format on
 }
@@ -264,7 +268,7 @@ void DebugSection::render() noexcept
     // VAO.bind();
     // glDrawElements(GL_TRIANGLES, VAO.getElementBuffer().getElementCount(), GL_UNSIGNED_INT, 0);
 
-    if(m_onEnterFinished)
+    if(m_onEnterFinished && (not m_onLeaveStarted))
     {
         std::uint32_t current_ammo = 1;
         std::uint32_t total_ammo = 0;
@@ -275,6 +279,27 @@ void DebugSection::render() noexcept
             total_ammo = weapon.getAmmoTotal();
         }
         UI::drawOverlay(m_layout, m_hero.health, m_hero.maxHealth, current_ammo, total_ammo, m_hero.getCurrentItemIndex());
+    }
+    if(m_onLeaveStarted)
+    {
+        const auto TextCentered = [](const char* text, auto&&... args)
+        {
+            float font_size = ImGui::GetFontSize() * strlen(text) / 2;
+            ImGui::SameLine(ImGui::GetWindowSize().x / 2 - font_size + (font_size / 2));
+
+            ImGui::Text("%s", text, args...);
+        };
+        using res = ResourceManager;
+        const auto& font = res::uiTitleFont;
+        auto font_guard = font->use();
+        const auto text_pos = res::window->getSize() / 2;
+        ImGui::SetNextWindowPos({static_cast<float>(text_pos.x), static_cast<float>(text_pos.y)}, ImGuiCond_Always, {0.5f, 0.5f});
+        ImGui::Begin("Win message", nullptr, m_layout.window_flags | ImGuiWindowFlags_NoBackground);
+        {
+            TextCentered("You won");
+        }
+        ImGui::End();
+        font_guard.popFont();
     }
 
     this->showDebugUI();
@@ -322,7 +347,6 @@ bool DebugSection::onEnter()
 {
     if(not m_onEnterFinished)
     {
-        // move camera
         const double current_time = Timer::getTotalTime();
         const double diff = m_enterFinishTimestamp - current_time;
         const double diff_multiplier = diff / m_entranceDuration;
@@ -333,7 +357,6 @@ bool DebugSection::onEnter()
 
         const auto& camera_pos = m_camera.getPosition();
         m_camera.setPosition({camera_pos.x, camera_pos.y, starting_zoom + (zoom_diff * (1.0 - diff_multiplier))});
-
 
         if(diff <= 0.0)
         {
@@ -352,6 +375,22 @@ bool DebugSection::onEnter()
  */
 bool DebugSection::onLeave()
 {
+    if(m_onLeaveStarted)
+    {
+        const double current_time = Timer::getTotalTime();
+        const double diff = current_time - m_leaveStartTimestamp;
+        const double diff_multiplier = diff / m_leaveDuration;
+
+        const float starting_zoom = 20.f;
+        const float target_zoom = 50.f;
+        const float zoom_diff = target_zoom - starting_zoom;
+
+        const auto& camera_pos = m_camera.getPosition();
+        m_camera.setPosition({camera_pos.x, camera_pos.y, starting_zoom + (zoom_diff * diff_multiplier)});
+
+        return diff > m_leaveDuration;
+    }
+
     return false;
 }
 
