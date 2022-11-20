@@ -23,7 +23,6 @@ struct ResourceManager
     static Texture::Texture largeTreeTexture;
     static Texture::Texture smallBushTexture;
     static Texture::Texture largeBushTexture;
-    static Texture::Animation heroTexture;
 
     static std::shared_ptr<Font> uiTitleFont;
     static std::shared_ptr<float> uiTitleFontSize;
@@ -31,6 +30,4 @@ struct ResourceManager
     static std::shared_ptr<float> uiButtonFontSize;
     static std::shared_ptr<Font> uiAmmoFont;
     static std::shared_ptr<float> uiAmmoFontSize;
-
-    static std::shared_ptr<entt::entity> heroEntity;
 };

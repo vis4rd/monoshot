@@ -17,8 +17,7 @@ DebugSection::DebugSection()
       m_mapGrid(5, 5),
       m_hero(100),
       m_layout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize),
-      m_registry(),
-      m_heroEntity(m_registry.create())
+      m_registry()
 {
     m_name = "DebugSection";
 
@@ -100,18 +99,9 @@ DebugSection::DebugSection()
     m_hero.addItem(std::move(Weapon(10, 31, 76, 50.f, 0.2)));
     m_hero.addItem(std::move(Weapon(10, 70, 20000, 3.f, 0.05)));
 
-    ResourceManager::heroTexture->setFrameDuration(0.06);
+    m_hero.getTexture()->setFrameDuration(0.06);
 
     // ecs
-    ResourceManager::heroEntity = std::make_shared<entt::entity>(m_heroEntity);
-    m_registry.emplace<ecs::component::position>(m_heroEntity);
-    m_registry.emplace<ecs::component::size>(m_heroEntity, hero_size);
-    m_registry.emplace<ecs::component::velocity>(m_heroEntity);
-    m_registry.emplace<ecs::component::max_velocity>(m_heroEntity);
-    m_registry.emplace<ecs::component::acceleration>(m_heroEntity);
-    m_registry.emplace<ecs::component::rotation>(m_heroEntity);
-    m_registry.emplace<ecs::component::direction>(m_heroEntity);
-
     m_mapGrid.addTilesToRegistry(m_registry);
 }
 
@@ -134,99 +124,99 @@ void DebugSection::update() noexcept
     if(input.isPressedOnce(GLFW_KEY_ESCAPE))
     {
         SectionManager::get().popSection();
+        return;
     }
 
     m_layout.update(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize);
 
     // process main hero entity
-    if(m_registry.valid(m_heroEntity))
+    // clang-format off
+
+    // poll next move events
+    glm::vec2 move_direction = {0.f, 0.f};
+    move_direction.x -= bool(input.isHeld(GLFW_KEY_A) + input.isPressedOnce(GLFW_KEY_LEFT));
+    move_direction.x += bool(input.isHeld(GLFW_KEY_D) + input.isPressedOnce(GLFW_KEY_RIGHT));
+    move_direction.y -= bool(input.isHeld(GLFW_KEY_S) + input.isPressedOnce(GLFW_KEY_DOWN));
+    move_direction.y += bool(input.isHeld(GLFW_KEY_W) + input.isPressedOnce(GLFW_KEY_UP));
+    const bool does_move = bool((move_direction.x != 0.f) + (move_direction.y != 0.f));
+    if(does_move)
     {
-        // clang-format off
+        m_hero.getTexture()->nextFrame();
+    }
+    else
+    {
+        m_hero.getTexture()->resetFrame();
+    }
 
-        // poll next move events
-        glm::vec2 move_direction = {0.f, 0.f};
-        if(input.isHeld(GLFW_KEY_A) || input.isPressedOnce(GLFW_KEY_LEFT)) { move_direction.x -= 1.f; }
-        if(input.isHeld(GLFW_KEY_D) || input.isPressedOnce(GLFW_KEY_RIGHT)) { move_direction.x += 1.f; }
-        if(input.isHeld(GLFW_KEY_W) || input.isPressedOnce(GLFW_KEY_UP)) { move_direction.y += 1.f; }
-        if(input.isHeld(GLFW_KEY_S) || input.isPressedOnce(GLFW_KEY_DOWN)) { move_direction.y -= 1.f; }
-        if(move_direction.x != 0.f || move_direction.y != 0.f)
-        {
-            ResourceManager::heroTexture->nextFrame();
-        }
-        else
-        {
-            ResourceManager::heroTexture->resetFrame();
-        }
+    const glm::vec2& pos = m_hero.position;
+    float& rot = m_hero.rotation;
 
-        const glm::vec2& pos = m_registry.get<const ecs::component::position>(m_heroEntity);
-        float& rot = m_registry.get<ecs::component::rotation>(m_heroEntity);
-
-        // update inventory logic
-        if(!m_hero.isInventoryEmpty())
+    // update inventory logic
+    if(!m_hero.isInventoryEmpty())
+    {
+        if(!ImGui::GetIO().WantCaptureMouse && input.isHeld(GLFW_MOUSE_BUTTON_LEFT))
         {
-            if(!ImGui::GetIO().WantCaptureMouse && input.isHeld(GLFW_MOUSE_BUTTON_LEFT))
+            auto& item = m_hero.getCurrentItem<Consumable>();
+            if(const bool is_used = item.useDelayed(); m_hero.holdsWeapon() && is_used)
             {
-                auto& item = m_hero.getCurrentItem<Consumable>();
-                if(const bool is_used = item.useDelayed(); m_hero.holdsWeapon() && is_used)
+                const auto& weapon = m_hero.getCurrentItem<Weapon>();
+                if(weapon.getAmmoCurrent() > 0)
                 {
-                    const auto& weapon = m_hero.getCurrentItem<Weapon>();
-                    if(weapon.getAmmoCurrent() > 0)
-                    {
-                        auto bullet = m_registry.create();
-                        m_registry.emplace<ecs::component::is_bullet>(bullet);
-                        m_registry.emplace<ecs::component::lifetime>(bullet, ResourceManager::timer->getTotalTime(), 2.0);
-                        m_registry.emplace<ecs::component::position>(bullet, pos);
-                        m_registry.emplace<ecs::component::size>(bullet, glm::vec2{0.2f, 0.2f});
-                        m_registry.emplace<ecs::component::velocity>(bullet, weapon.getBulletVelocity());
-                        m_registry.emplace<ecs::component::max_velocity>(bullet, weapon.getBulletVelocity());
-                        m_registry.emplace<ecs::component::acceleration>(bullet, -1.f);
-                        m_registry.emplace<ecs::component::rotation>(bullet, rot);
-                    }
+                    auto bullet = m_registry.create();
+                    m_registry.emplace<ecs::component::is_bullet>(bullet);
+                    m_registry.emplace<ecs::component::lifetime>(bullet, ResourceManager::timer->getTotalTime(), 2.0);
+                    m_registry.emplace<ecs::component::position>(bullet, pos);
+                    m_registry.emplace<ecs::component::size>(bullet, glm::vec2{0.2f, 0.2f});
+                    m_registry.emplace<ecs::component::velocity>(bullet, weapon.getBulletVelocity());
+                    m_registry.emplace<ecs::component::max_velocity>(bullet, weapon.getBulletVelocity());
+                    m_registry.emplace<ecs::component::acceleration>(bullet, -1.f);
+                    m_registry.emplace<ecs::component::rotation>(bullet, rot);
                 }
             }
-            if(m_hero.holdsWeapon() && input.isHeld(GLFW_KEY_R))
-            {
-                auto& weapon = m_hero.getCurrentItem<Weapon>();
-                weapon.reload();
-            }
-            if(input.isPressedOnce(GLFW_KEY_G))
-            {
-                m_hero.dropCurrentItem();
-            }
-            if(input.isPressedOnce(GLFW_KEY_1))
-            {
-                m_hero.setCurrentItem(0);
-            }
-            if(input.isPressedOnce(GLFW_KEY_2))
-            {
-                m_hero.setCurrentItem(1);
-            }
-            if(input.isPressedOnce(GLFW_KEY_3))
-            {
-                m_hero.setCurrentItem(2);
-            }
         }
-
-        // calculate main hero rotation after mouse cursor
-        const glm::vec2 mouse_screen_pos = ResourceManager::window->getMousePosition();
-        const auto mouse_world_pos = this->mouseScreenPosToWorldPos(mouse_screen_pos, m_camera);
-        rot = glm::degrees(std::atan2(mouse_world_pos.y - pos.y, mouse_world_pos.x - pos.x));
-
-        // make camera follow main hero
-        m_camera.setPosition({pos, m_camera.getPosition().z});
-        m_camera.setTarget({pos, 0.f});
-
-        // ecs::system::remove_dead_entities(m_registry);
-        ecs::system::collide_with_hero(m_registry, m_heroEntity, move_direction);
-        ecs::system::move_bullets(m_registry);
-
-        // finish the level if hero gets to the end area
-        if(m_mapGrid.isInEndArea(pos, hero_size))
+        if(m_hero.holdsWeapon() && input.isHeld(GLFW_KEY_R))
         {
-            SectionManager::get().popSection();
+            auto& weapon = m_hero.getCurrentItem<Weapon>();
+            weapon.reload();
         }
-        // clang-format on
+        if(input.isPressedOnce(GLFW_KEY_G))
+        {
+            m_hero.dropCurrentItem();
+        }
+        if(input.isPressedOnce(GLFW_KEY_1))
+        {
+            m_hero.setCurrentItem(0);
+        }
+        if(input.isPressedOnce(GLFW_KEY_2))
+        {
+            m_hero.setCurrentItem(1);
+        }
+        if(input.isPressedOnce(GLFW_KEY_3))
+        {
+            m_hero.setCurrentItem(2);
+        }
     }
+
+    // calculate main hero rotation after mouse cursor
+    const glm::vec2 mouse_screen_pos = ResourceManager::window->getMousePosition();
+    const auto mouse_world_pos = this->mouseScreenPosToWorldPos(mouse_screen_pos, m_camera);
+    rot = glm::degrees(std::atan2(mouse_world_pos.y - pos.y, mouse_world_pos.x - pos.x));
+
+    // make camera follow main hero
+    m_camera.setPosition({pos, m_camera.getPosition().z});
+    m_camera.setTarget({pos, 0.f});
+
+    // ecs::system::remove_dead_entities(m_registry);
+    ecs::system::collide_with_hero(m_registry, m_hero, move_direction);
+    ecs::system::move_bullets(m_registry);
+
+    // finish the level if hero gets to the end area
+    if(m_mapGrid.isInEndArea(pos, hero_size))
+    {
+        SectionManager::get().popSection();
+        return;
+    }
+    // clang-format on
 }
 
 void DebugSection::render() noexcept
@@ -244,8 +234,11 @@ void DebugSection::render() noexcept
     // Renderer::drawQuad({1.f, -1.f}, tile_size, 45.f, firstTexture, {1.f, 1.f, 1.f, 1.f});
     // Renderer::drawQuad({-46.f, 0.f}, tile_size, 90.f, firstTexture, {1.f, 1.f, 1.f, 1.f});
 
-    const auto& [pos, rot, vel, acc] = m_registry.get<ecs::component::position, ecs::component::rotation, ecs::component::velocity, ecs::component::acceleration>(m_heroEntity);
-    Renderer::drawQuad({pos.x, pos.y}, hero_size, rot, ResourceManager::heroTexture);
+    glm::vec2& pos = m_hero.position;
+    float& rot = m_hero.rotation;
+    float& vel = m_hero.velocity;
+    const float& acc = m_hero.acceleration;
+    Renderer::drawQuad({pos.x, pos.y}, hero_size, rot, m_hero.getTexture());
 
     m_mapGrid.drawObjects({pos.x, pos.y}, draw_bbs);
 
@@ -297,7 +290,7 @@ void DebugSection::render() noexcept
             const auto mouse_world_pos = this->mouseScreenPosToWorldPos(mouse_screen_pos, m_camera);
             ImGui::Text("mouse screen position: (%f, %f)", mouse_screen_pos.x, mouse_screen_pos.y);
             ImGui::Text("mouse world position: (%f, %f)", mouse_world_pos.x, mouse_world_pos.y);
-            ImGui::Text("hero: pos(%.2f, %.2f), vel(%.2f), acc(%.2f), rot(%.2f)", pos.x, pos.y, vel.data, acc.data, rot.data);
+            ImGui::Text("hero: pos(%.2f, %.2f), vel(%.2f), acc(%.2f), rot(%.2f)", pos.x, pos.y, vel, acc, rot);
             ImGui::Text("health: %d/%d", m_hero.health, m_hero.maxHealth);
             // const auto* weapon = dynamic_cast<Weapon*>(&*(m_hero.currentItem));
             if(!m_hero.isInventoryEmpty())

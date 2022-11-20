@@ -13,7 +13,6 @@ Texture::Texture ResourceManager::smallTreeTexture;
 Texture::Texture ResourceManager::largeTreeTexture;
 Texture::Texture ResourceManager::smallBushTexture;
 Texture::Texture ResourceManager::largeBushTexture;
-Texture::Animation ResourceManager::heroTexture;
 
 std::shared_ptr<Font> ResourceManager::uiTitleFont;
 std::shared_ptr<float> ResourceManager::uiTitleFontSize;
@@ -21,4 +20,3 @@ std::shared_ptr<Font> ResourceManager::uiButtonFont;
 std::shared_ptr<float> ResourceManager::uiButtonFontSize;
 std::shared_ptr<Font> ResourceManager::uiAmmoFont;
 std::shared_ptr<float> ResourceManager::uiAmmoFontSize;
-std::shared_ptr<entt::entity> ResourceManager::heroEntity;

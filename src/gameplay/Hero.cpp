@@ -6,7 +6,17 @@ Hero::Hero(const std::int32_t& health, const std::optional<Weapon>& main_weapon,
     : health(health),
       maxHealth(health),
       m_items{nullptr, nullptr, nullptr},
-      m_availableItems{false, false, false}
+      m_availableItems{false, false, false},
+      m_texture{Resource::create<Texture::impl::Animation>("../res/textures/entities/player.png",
+          0.1,
+          TextureData{
+              .widthTotal = 128,
+              .heightTotal = 16,
+              .widthSub = 16,
+              .heightSub = 16,
+              .numberOfSubs = 8,
+              .numberOfSubsInOneRow = 8,
+          })}
 {
     if(main_weapon)
     {
@@ -21,6 +31,8 @@ Hero::Hero(const std::int32_t& health, const std::optional<Weapon>& main_weapon,
     this->setCurrentItem(1);
     this->setCurrentItem(0);
 }
+
+Hero::~Hero() { }
 
 void Hero::dropCurrentItem()
 {
@@ -92,4 +104,9 @@ bool Hero::hasItem(const std::size_t& id) const
         }
     }
     return false;
+}
+
+Texture::Animation& Hero::getTexture()
+{
+    return m_texture;
 }

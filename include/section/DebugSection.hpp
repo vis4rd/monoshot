@@ -39,5 +39,4 @@ class DebugSection final : public Section
     UI::GameplayLayout m_layout;
 
     entt::registry m_registry;
-    entt::entity m_heroEntity;
 };

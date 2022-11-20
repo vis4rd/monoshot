@@ -2,12 +2,15 @@
 
 #include "items/Food.hpp"
 #include "items/Weapon.hpp"
+#include "../texture/Animation.hpp"
 
 #include <cstdint>
 #include <memory>
 #include <array>
 #include <optional>
 #include <concepts>
+
+#include <glm/glm.hpp>
 
 namespace impl
 {
@@ -17,36 +20,44 @@ concept IsConsumableC = std::derived_from<T, Consumable>;
 
 }
 
-class Hero
+class Hero final
 {
     public:
     Hero(const std::int32_t& health, const std::optional<Weapon>& main_weapon = std::nullopt, const std::optional<Weapon>& secondary_weapon = std::nullopt);
+    ~Hero();
 
     template<impl::IsConsumableC T>
     void addItem(T&& item);
-
     void dropCurrentItem();
-
     template<impl::IsConsumableC T>
     T& getCurrentItem();
-
     bool setCurrentItem(const std::size_t& index);
     const std::size_t& getCurrentItemIndex() const;
-
     bool isInventoryEmpty() const;
     bool holdsWeapon() const;
     bool holdsFood() const;
-
     bool hasItem(const std::size_t& id) const;
 
+    Texture::Animation& getTexture();
+
     public:
-    std::int32_t health;
     const std::int32_t maxHealth;
+    const float maxVelocity = 7.f;
+    const glm::vec2 size = {1.f, 1.f};
+    const float acceleration = 70.f;
+
+    std::int32_t health;
+    glm::vec2 position = {0.f, 0.f};
+    float velocity = 0.f;
+    float rotation = 0.f;
+    glm::vec2 walkingDirection = {0.f, 0.f};
 
     private:
     std::array<std::shared_ptr<Consumable>, 3> m_items;
     std::array<bool, 3> m_availableItems;
     std::size_t m_currentItem = 3;
+
+    Texture::Animation m_texture;
 };
 
 template<impl::IsConsumableC T>
