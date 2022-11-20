@@ -7,6 +7,7 @@
 #include "../map/Map.hpp"
 #include "../ui/layouts/GameplayLayout.hpp"
 #include "Section.hpp"
+#include "../utility/Timer.hpp"
 
 #include <entt/entity/registry.hpp>
 
@@ -21,6 +22,9 @@ class DebugSection final : public Section
 
     private:
     glm::vec2 mouseScreenPosToWorldPos(const glm::vec2& mouse_pos, Camera& camera);
+    bool onEnter();
+    bool onLeave();
+    void showDebugUI();
 
     private:
     // VertexArray VAO;
@@ -33,10 +37,13 @@ class DebugSection final : public Section
     // std::shared_ptr<Texture2D> firstTexture;
 
     PerspectiveCamera m_camera;
-    Map m_mapGrid;
+    Map m_map;
     Hero m_hero;
-
     UI::GameplayLayout m_layout;
-
     entt::registry m_registry;
+
+    bool m_onEnterFinished = false;
+    bool m_onLeaveStarted = false;
+    const double m_entranceDuration = 5.0;
+    double m_enterFinishTimestamp = Timer::getTotalTime() + m_entranceDuration;
 };

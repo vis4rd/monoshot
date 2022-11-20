@@ -8,13 +8,11 @@
 
 #include <stb_image.h>
 
-constexpr glm::vec2 hero_size = {1.f, 1.f};
-
 DebugSection::DebugSection()
     : Section(),
       // VAO(),
       m_camera(glm::vec3(0.f, 0.f, 50.f), ResourceManager::window->getSize()),
-      m_mapGrid(5, 5),
+      m_map(5, 5),
       m_hero(100),
       m_layout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize),
       m_registry()
@@ -67,7 +65,7 @@ DebugSection::DebugSection()
 
     // ShaderManager::addShaderProgram("../res/shaders", "triangle_zoom");
 
-    m_mapGrid.loadFromFile("testMap.map");
+    m_map.loadFromFile("testMap.map");
 
     // firstTexture = std::make_shared<Texture2D>(16, 16);
     // firstTexture->load("../res/textures/first_texture.png");
@@ -102,7 +100,7 @@ DebugSection::DebugSection()
     m_hero.getTexture()->setFrameDuration(0.06);
 
     // ecs
-    m_mapGrid.addTilesToRegistry(m_registry);
+    m_map.addTilesToRegistry(m_registry);
 }
 
 DebugSection::~DebugSection()
@@ -116,6 +114,20 @@ DebugSection::~DebugSection()
 void DebugSection::update() noexcept
 {
     spdlog::trace("Updating DebugSection");
+    const glm::vec2& pos = m_hero.position;
+    float& rot = m_hero.rotation;
+
+    // calculate main hero rotation after mouse cursor
+    const glm::vec2 mouse_screen_pos = ResourceManager::window->getMousePosition();
+    const auto mouse_world_pos = this->mouseScreenPosToWorldPos(mouse_screen_pos, m_camera);
+    rot = glm::degrees(std::atan2(mouse_world_pos.y - pos.y, mouse_world_pos.x - pos.x));
+
+    if(const bool is_during_entrance = this->onEnter(); is_during_entrance)
+    {
+        return;
+    }
+    if(const bool is_during_leave = this->onLeave(); is_during_leave) { }
+
     // model_matrix = glm::translate(glm::mat4(1.f), position);
     // model_matrix = glm::rotate(model_matrix, glm::radians(rotation), glm::vec3(0.f, 0.f, 1.f));
     // model_matrix = glm::scale(model_matrix, scale);
@@ -129,7 +141,6 @@ void DebugSection::update() noexcept
 
     m_layout.update(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize);
 
-    // process main hero entity
     // clang-format off
 
     // poll next move events
@@ -147,9 +158,6 @@ void DebugSection::update() noexcept
     {
         m_hero.getTexture()->resetFrame();
     }
-
-    const glm::vec2& pos = m_hero.position;
-    float& rot = m_hero.rotation;
 
     // update inventory logic
     if(!m_hero.isInventoryEmpty())
@@ -197,11 +205,6 @@ void DebugSection::update() noexcept
         }
     }
 
-    // calculate main hero rotation after mouse cursor
-    const glm::vec2 mouse_screen_pos = ResourceManager::window->getMousePosition();
-    const auto mouse_world_pos = this->mouseScreenPosToWorldPos(mouse_screen_pos, m_camera);
-    rot = glm::degrees(std::atan2(mouse_world_pos.y - pos.y, mouse_world_pos.x - pos.x));
-
     // make camera follow main hero
     m_camera.setPosition({pos, m_camera.getPosition().z});
     m_camera.setTarget({pos, 0.f});
@@ -211,7 +214,7 @@ void DebugSection::update() noexcept
     ecs::system::move_bullets(m_registry);
 
     // finish the level if hero gets to the end area
-    if(m_mapGrid.isInEndArea(pos, hero_size))
+    if(m_map.isInEndArea(pos, m_hero.size))
     {
         SectionManager::get().popSection();
         return;
@@ -219,14 +222,15 @@ void DebugSection::update() noexcept
     // clang-format on
 }
 
+static bool s_draw_area = false;
+static bool s_draw_bbs = false;
+
 void DebugSection::render() noexcept
 {
     spdlog::trace("Rendering DebugSection");
-    static bool draw_area = false;
-    static bool draw_bbs = false;
 
     Renderer::beginBatch();
-    m_mapGrid.drawTiles(draw_area, draw_bbs);
+    m_map.drawTiles(s_draw_area, s_draw_bbs);
 
     // Renderer::drawQuad({0.f, 10.f}, tile_size, 0.f, {1.f, 0.5f, 0.5f, 1.f});
     // Renderer::drawQuad({0.f, 8.f}, tile_size, 0.f, {1.f, 0.5f, 0.5f, 1.f});
@@ -238,9 +242,9 @@ void DebugSection::render() noexcept
     float& rot = m_hero.rotation;
     float& vel = m_hero.velocity;
     const float& acc = m_hero.acceleration;
-    Renderer::drawQuad({pos.x, pos.y}, hero_size, rot, m_hero.getTexture());
+    Renderer::drawQuad({pos.x, pos.y}, m_hero.size, rot, m_hero.getTexture());
 
-    m_mapGrid.drawObjects({pos.x, pos.y}, draw_bbs);
+    m_map.drawObjects({pos.x, pos.y}, s_draw_bbs);
 
     const auto bullet_view = m_registry.view<const ecs::component::position, const ecs::component::size, const ecs::component::rotation, const ecs::component::is_bullet>();
     for(const auto& bullet : bullet_view)
@@ -260,6 +264,7 @@ void DebugSection::render() noexcept
     // VAO.bind();
     // glDrawElements(GL_TRIANGLES, VAO.getElementBuffer().getElementCount(), GL_UNSIGNED_INT, 0);
 
+    if(m_onEnterFinished)
     {
         std::uint32_t current_ammo = 1;
         std::uint32_t total_ammo = 0;
@@ -272,8 +277,93 @@ void DebugSection::render() noexcept
         UI::drawOverlay(m_layout, m_hero.health, m_hero.maxHealth, current_ammo, total_ammo, m_hero.getCurrentItemIndex());
     }
 
+    this->showDebugUI();
+}
+
+// returns world coordinates at 0 height
+glm::vec2 DebugSection::mouseScreenPosToWorldPos(const glm::vec2& mouse_pos, Camera& camera)
+{
+    const auto& inverse_projection_matrix = camera.getInverseProjectionMatrix();
+    const auto& inverse_view_matrix = camera.getInverseViewMatrix();
+    // spdlog::trace("Inverse projection matrix = {}", util::mat4str(inverse_projection_matrix));
+    // spdlog::trace("Inverse view matrix = {}", util::mat4str(inverse_view_matrix));
+
+    const auto& mouse_x = mouse_pos.x;
+    const auto& mouse_y = mouse_pos.y;
+    const auto& window_size = ResourceManager::window->getSize();
+    const auto& window_w = window_size.x;
+    const auto& window_h = window_size.y;
+    // spdlog::trace("Window size = ({}, {})", window_w, window_h);
+
+    const float norm_mouse_x = (2.f * mouse_x / window_w) - 1.f;
+    const float norm_mouse_y = 1.f - (2.f * mouse_y / window_h);
+    // spdlog::trace("Normalized mouse position = ({}, {})", norm_mouse_x, norm_mouse_y);
+
+    glm::vec3 norm_mouse_vector = glm::vec3(norm_mouse_x, norm_mouse_y, 1.f);
+    glm::vec4 ray_clip = glm::vec4(norm_mouse_vector.x, norm_mouse_vector.y, -1.f, 1.f);
+    glm::vec4 ray_eye = inverse_projection_matrix * ray_clip;
+    ray_eye = glm::vec4(ray_eye.x, ray_eye.y, -1.f, 0.f);
+    glm::vec3 ray_world = glm::vec3((inverse_view_matrix * ray_eye));
+    ray_world = glm::normalize(ray_world);
+    // spdlog::trace("Ray world = {}", util::vec3str(ray_world));
+
+    float l = -(camera.getPosition().z / ray_world.z);
+    // spdlog::trace("L = {}", l);
+
+    return {camera.getPosition().x + l * ray_world.x, camera.getPosition().y + l * ray_world.y};
+}
+
+/**
+ * @brief Function executed when entering this section
+ *
+ * @return true when entrance sequence is not finished, false otherwise
+ */
+bool DebugSection::onEnter()
+{
+    if(not m_onEnterFinished)
+    {
+        // move camera
+        const double current_time = Timer::getTotalTime();
+        const double diff = m_enterFinishTimestamp - current_time;
+        const double diff_multiplier = diff / m_entranceDuration;
+
+        const float starting_zoom = 50.f;
+        const float target_zoom = 20.f;
+        const float zoom_diff = target_zoom - starting_zoom;
+
+        const auto& camera_pos = m_camera.getPosition();
+        m_camera.setPosition({camera_pos.x, camera_pos.y, starting_zoom + (zoom_diff * (1.0 - diff_multiplier))});
+
+
+        if(diff <= 0.0)
+        {
+            m_onEnterFinished = true;
+            m_camera.setPosition({camera_pos.x, camera_pos.y, target_zoom});
+        }
+        return true;
+    }
+    return false;
+}
+
+/**
+ * @brief Function executed when leaving this section
+ *
+ * @return true when leave sequence is not finished, false otherwise
+ */
+bool DebugSection::onLeave()
+{
+    return false;
+}
+
+void DebugSection::showDebugUI()
+{
     if constexpr(Flag::DebugMode)
     {
+        const glm::vec2& pos = m_hero.position;
+        float& rot = m_hero.rotation;
+        float& vel = m_hero.velocity;
+        const float& acc = m_hero.acceleration;
+
         ImGui::Begin("Section options");
         {
             static float zoom = 50.f;
@@ -283,8 +373,8 @@ void DebugSection::render() noexcept
             if(ImGui::SliderFloat("camera zoom", &zoom, 0.1f, 200.f, "x%.1f"))
             {
                 // m_camera.setZoom(zoom);
-                const auto& pos = m_camera.getPosition();
-                m_camera.setPosition({pos.x, pos.y, zoom});
+                const auto& camera_pos = m_camera.getPosition();
+                m_camera.setPosition({camera_pos.x, camera_pos.y, zoom});
             }
             const glm::vec2 mouse_screen_pos = ResourceManager::window->getMousePosition();
             const auto mouse_world_pos = this->mouseScreenPosToWorldPos(mouse_screen_pos, m_camera);
@@ -311,24 +401,24 @@ void DebugSection::render() noexcept
                 {
                     preview = "Tutorial Theme";
                     spdlog::debug("Switching MapTheme to '{}'", preview);
-                    m_mapGrid.setTheme(MapThemes::TUTORIAL_THEME);
+                    m_map.setTheme(MapThemes::TUTORIAL_THEME);
                 }
                 if(ImGui::Selectable("Forest Theme##unique_id", &check))
                 {
                     preview = "Forest Theme";
                     spdlog::debug("Switching MapTheme to '{}'", preview);
-                    m_mapGrid.setTheme(MapThemes::FOREST_THEME);
+                    m_map.setTheme(MapThemes::FOREST_THEME);
                 }
                 if(ImGui::Selectable("Winter Theme##unique_id", &check))
                 {
                     preview = "Winter Theme";
                     spdlog::debug("Switching MapTheme to '{}'", preview);
-                    m_mapGrid.setTheme(MapThemes::WINTER_THEME);
+                    m_map.setTheme(MapThemes::WINTER_THEME);
                 }
                 ImGui::EndCombo();
             }
-            ImGui::Checkbox("Draw map area", &draw_area);
-            ImGui::Checkbox("Draw bounding boxes", &draw_bbs);
+            ImGui::Checkbox("Draw map area", &s_draw_area);
+            ImGui::Checkbox("Draw bounding boxes", &s_draw_bbs);
 
             auto& clear_color = ResourceManager::mapThemeBackgroundColor;
             float* cc = reinterpret_cast<float*>(&clear_color);
@@ -339,37 +429,4 @@ void DebugSection::render() noexcept
         }
         ImGui::End();
     }
-}
-
-// returns world coordinates at 0 height
-glm::vec2 DebugSection::mouseScreenPosToWorldPos(const glm::vec2& mouse_pos, Camera& camera)
-{
-    const auto& inverse_projection_matrix = camera.getInverseProjectionMatrix();
-    const auto& inverse_view_matrix = camera.getInverseViewMatrix();
-    spdlog::trace("Inverse projection matrix = {}", util::mat4str(inverse_projection_matrix));
-    spdlog::trace("Inverse view matrix = {}", util::mat4str(inverse_view_matrix));
-
-    const auto& mouse_x = mouse_pos.x;
-    const auto& mouse_y = mouse_pos.y;
-    const auto& window_size = ResourceManager::window->getSize();
-    const auto& window_w = window_size.x;
-    const auto& window_h = window_size.y;
-    spdlog::trace("Window size = ({}, {})", window_w, window_h);
-
-    const float norm_mouse_x = (2.f * mouse_x / window_w) - 1.f;
-    const float norm_mouse_y = 1.f - (2.f * mouse_y / window_h);
-    spdlog::trace("Normalized mouse position = ({}, {})", norm_mouse_x, norm_mouse_y);
-
-    glm::vec3 norm_mouse_vector = glm::vec3(norm_mouse_x, norm_mouse_y, 1.f);
-    glm::vec4 ray_clip = glm::vec4(norm_mouse_vector.x, norm_mouse_vector.y, -1.f, 1.f);
-    glm::vec4 ray_eye = inverse_projection_matrix * ray_clip;
-    ray_eye = glm::vec4(ray_eye.x, ray_eye.y, -1.f, 0.f);
-    glm::vec3 ray_world = glm::vec3((inverse_view_matrix * ray_eye));
-    ray_world = glm::normalize(ray_world);
-    spdlog::trace("Ray world = {}", util::vec3str(ray_world));
-
-    float l = -(camera.getPosition().z / ray_world.z);
-    spdlog::trace("L = {}", l);
-
-    return {camera.getPosition().x + l * ray_world.x, camera.getPosition().y + l * ray_world.y};
 }
