@@ -10,6 +10,7 @@
 #include "../utility/Timer.hpp"
 
 #include <entt/entity/registry.hpp>
+#include <raudio.h>
 
 class DebugSection final : public Section
 {
@@ -41,6 +42,7 @@ class DebugSection final : public Section
     Hero m_hero;
     UI::GameplayLayout m_layout;
     entt::registry m_registry;
+    std::unordered_map<std::string, Sound> m_sounds;
 
     bool m_onEnterFinished = false;
     bool m_onLeaveStarted = false;

@@ -3,6 +3,8 @@
 #include "../include/ui/fonts/Font.hpp"
 #include "../include/utility/ResourceManager.hpp"
 
+#include <raudio.h>
+
 App::App(const std::string& window_title, uint32_t width, uint32_t height)
     : m_input(InputManager::get()),
       m_sectionManager(SectionManager::get())
@@ -24,6 +26,7 @@ App::App(const std::string& window_title, uint32_t width, uint32_t height)
 
     this->initFonts();
     this->initTextures();
+    this->initAudio();
 
     MainMenuStyle();
 
@@ -34,6 +37,7 @@ App::~App() noexcept
 {
     this->destroyFonts();
     this->destroyTextures();
+    this->destroyAudio();
     this->terminate(EXIT_SUCCESS);
 }
 
@@ -85,6 +89,11 @@ void App::initFonts() noexcept
     res::uiButtonFont = std::make_shared<Font>("../res/fonts/brass-mono/regular_comfortable.otf", *res::uiButtonFontSize);
     res::uiAmmoFontSize = std::make_shared<float>(40.f * window_width / 1920.f);
     res::uiAmmoFont = std::make_shared<Font>("../res/fonts/gunplay/GUNPLAY_.ttf", *res::uiAmmoFontSize);
+}
+
+void App::initAudio() noexcept
+{
+    InitAudioDevice();
 }
 
 Window& App::getWindow()
@@ -140,4 +149,9 @@ void App::destroyFonts() noexcept
     res::uiButtonFont.reset();
     res::uiAmmoFontSize.reset();
     res::uiAmmoFont.reset();
+}
+
+void App::destroyAudio() noexcept
+{
+    CloseAudioDevice();
 }

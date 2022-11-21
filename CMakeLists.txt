@@ -95,6 +95,11 @@ add_subdirectory("${PROJECT_SOURCE_DIR}/lib/entt")
 # tinyfiledialogs
 add_subdirectory("${PROJECT_SOURCE_DIR}/lib/tinyfiledialogs")
 
+# raudio
+set(RAUDIO_SUPPORT_WAV ON CACHE BOOL "" FORCE)
+set(RAUDIO_SUPPORT_MP3 ON CACHE BOOL "" FORCE)
+add_subdirectory("${PROJECT_SOURCE_DIR}/lib/raudio")
+
 # Other sources
 file(GLOB_RECURSE SOURCES
     "${PROJECT_SOURCE_DIR}/src/*.cpp"
@@ -136,6 +141,7 @@ target_link_libraries(${EXECUTABLE_NAME}
            stbi
            EnTT::EnTT
            tinyfd::tinyfd
+           raylib::audio
 )
 
 target_precompile_headers(${EXECUTABLE_NAME}
