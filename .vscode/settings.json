@@ -29,7 +29,8 @@
         "lib/glm",
         "lib/imgui/imgui",
         "lib/spdlog",
-        "lib/tinyfiledialogs/tinyfiledialogs"
+        "lib/tinyfiledialogs/tinyfiledialogs",
+        "lib/raudio/raudio"
     ],
     //
     "[cpp]": {
