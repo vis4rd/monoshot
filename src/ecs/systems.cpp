@@ -96,14 +96,14 @@ void collide_with_hero(entt::registry& registry, Hero& hero, glm::vec2& hero_mov
         hero.walkingDirection = hero_move_direction;
         hero.velocity += hero.acceleration * delta_time;
         hero.velocity = std::min(hero.velocity, hero.maxVelocity);
-        spdlog::debug("Hero moves");
+        // spdlog::trace("Hero moves");
     }
     else  // hero does not additionally move in this frame/tick
     {
         hero.velocity -= hero.acceleration * delta_time;
         hero.velocity = std::max(hero.velocity, 0.f);
         hero.walkingDirection *= bool(hero.velocity != 0.f);
-        spdlog::debug("Hero does not move: vel = {}, calced = {:d}", hero.velocity, ((hero.walkingDirection.x != 0.f) | (hero.walkingDirection.y != 0.f)));
+        // spdlog::trace("Hero does not move: vel = {}, calced = {:d}", hero.velocity, ((hero.walkingDirection.x != 0.f) | (hero.walkingDirection.y != 0.f)));
     }
 
     // prepare next step shifts

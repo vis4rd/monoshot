@@ -14,6 +14,7 @@ class App
     static void initLogger() noexcept;
     void initTextures() noexcept;
     void initFonts() noexcept;
+    void initAudio() noexcept;
 
     Window& getWindow();
     const Window& getWindow() const;
@@ -24,6 +25,7 @@ class App
     void terminate(int code = 0) noexcept;
     void destroyTextures() noexcept;
     void destroyFonts() noexcept;
+    void destroyAudio() noexcept;
 
     private:
     std::shared_ptr<Window> m_window;

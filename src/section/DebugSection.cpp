@@ -15,7 +15,8 @@ DebugSection::DebugSection()
       m_map(5, 5),
       m_hero(100),
       m_layout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize),
-      m_registry()
+      m_registry(),
+      m_sounds{}
 {
     m_name = "DebugSection";
 
@@ -101,6 +102,10 @@ DebugSection::DebugSection()
 
     // ecs
     m_map.addTilesToRegistry(m_registry);
+
+    // sounds
+    m_sounds["pop"] = LoadSound("../res/audio/pop.mp3");
+    m_sounds["click"] = LoadSound("../res/audio/mouse_click.mp3");
 }
 
 DebugSection::~DebugSection()
@@ -183,6 +188,7 @@ void DebugSection::update() noexcept
                     m_registry.emplace<ecs::component::max_velocity>(bullet, weapon.getBulletVelocity());
                     m_registry.emplace<ecs::component::acceleration>(bullet, -1.f);
                     m_registry.emplace<ecs::component::rotation>(bullet, rot);
+                    PlaySoundMulti(m_sounds["pop"]);
                 }
             }
         }
@@ -197,14 +203,17 @@ void DebugSection::update() noexcept
         }
         if(input.isPressedOnce(GLFW_KEY_1))
         {
+            PlaySoundMulti(m_sounds["click"]);
             m_hero.setCurrentItem(0);
         }
         if(input.isPressedOnce(GLFW_KEY_2))
         {
+            PlaySoundMulti(m_sounds["click"]);
             m_hero.setCurrentItem(1);
         }
         if(input.isPressedOnce(GLFW_KEY_3))
         {
+            PlaySoundMulti(m_sounds["click"]);
             m_hero.setCurrentItem(2);
         }
     }
