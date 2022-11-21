@@ -2,7 +2,7 @@
 
 #include "../../include/Root.hpp"
 
-#include <stb_image.h>
+#include <stbi/stb_image.h>
 #include <spdlog/fmt/bin_to_hex.h>
 
 namespace Texture::impl

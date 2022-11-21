@@ -50,44 +50,7 @@ set(SPDLOG_ENABLE_PCH ON CACHE BOOL "" FORCE)
 add_subdirectory("${PROJECT_SOURCE_DIR}/lib/spdlog")
 
 # stb_image
-set(STB_IMAGE_SOURCE_DIR "${PROJECT_SOURCE_DIR}/lib/stb_image")
-set(STB_IMAGE_SOURCE_PATH "${STB_IMAGE_SOURCE_DIR}/stb_image.h")
-file(MAKE_DIRECTORY ${STB_IMAGE_SOURCE_DIR})
-
-if(NOT EXISTS ${STB_IMAGE_SOURCE_PATH})
-    file(DOWNLOAD
-        "https://raw.githubusercontent.com/nothings/stb/dev/stb_image.h"
-        ${STB_IMAGE_SOURCE_PATH}
-        INACTIVITY_TIMEOUT 5
-        TIMEOUT 10
-        STATUS STB_IMAGE_DOWNLOAD_STATUS
-    )
-    list(GET STB_IMAGE_DOWNLOAD_STATUS 0 STB_IMAGE_NOT_FOUND)
-    list(GET STB_IMAGE_DOWNLOAD_STATUS 1 STB_IMAGE_DOWNLOAD_ERROR_MESSAGE)
-    if(STB_IMAGE_NOT_FOUND)
-        message(SEND_ERROR ${STB_IMAGE_DOWNLOAD_ERROR_MESSAGE})
-    else()
-        message(STATUS "Library stb_image fetched from https://raw.githubusercontent.com/nothings/stb/dev/stb_image.h")
-    endif()
-else()
-    message(STATUS "Library stb_image found at ${STB_IMAGE_SOURCE_PATH}")
-    set(STB_IMAGE_NOT_FOUND FALSE)
-endif()
-
-set(STB_IMAGE_FOUND (NOT STB_IMAGE_NOT_FOUND))
-
-
-set(STB_IMAGE_FILE_SOURCE "${STB_IMAGE_SOURCE_DIR}/stb_image.c")
-if(NOT EXISTS ${STB_IMAGE_FILE_SOURCE})
-    file(WRITE ${STB_IMAGE_FILE_SOURCE}
-"#define STB_IMAGE_IMPLEMENTATION
-#include \"stb_image.h\"
-    ")
-endif()
-
-add_library(stbi OBJECT STATIC)
-target_include_directories(stbi INTERFACE ${STB_IMAGE_SOURCE_DIR})
-target_sources(stbi PRIVATE ${STB_IMAGE_FILE_SOURCE})
+add_subdirectory("${PROJECT_SOURCE_DIR}/lib/stb_image")
 
 # EnTT
 add_subdirectory("${PROJECT_SOURCE_DIR}/lib/entt")
@@ -138,7 +101,7 @@ target_link_libraries(${EXECUTABLE_NAME}
            imgui::imgui
            imgui::backend_glfw
            spdlog::spdlog
-           stbi
+           stb::image
            EnTT::EnTT
            tinyfd::tinyfd
            raylib::audio

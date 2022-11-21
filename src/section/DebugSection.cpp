@@ -6,7 +6,7 @@
 #include "../../include/ecs/systems.hpp"
 #include "../../include/utility/Collisions.hpp"
 
-#include <stb_image.h>
+#include <stbi/stb_image.h>
 
 DebugSection::DebugSection()
     : Section(),

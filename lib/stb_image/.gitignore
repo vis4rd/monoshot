@@ -1,0 +1,6 @@
+# Fetched sources
+*.c
+*.h
+
+# Fetched license
+LICENSE*
