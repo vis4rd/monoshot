@@ -98,8 +98,6 @@ DebugSection::DebugSection()
     m_hero.addItem(std::move(Weapon(10, 31, 76, 50.f, 0.2)));
     m_hero.addItem(std::move(Weapon(10, 70, 20000, 3.f, 0.05)));
 
-    m_hero.getTexture()->setFrameDuration(0.06);
-
     // ecs
     m_map.addTilesToRegistry(m_registry);
 
@@ -255,7 +253,7 @@ void DebugSection::render() noexcept
     float& rot = m_hero.rotation;
     float& vel = m_hero.velocity;
     const float& acc = m_hero.acceleration;
-    Renderer::drawQuad({pos.x, pos.y}, m_hero.size, rot, m_hero.getTexture());
+    Renderer::drawQuad({pos.x, pos.y}, m_hero.size, rot, m_hero.getTexture(), std::get<1>(m_map.getCurrentTheme().wallBlock));
 
     m_map.drawObjects({pos.x, pos.y}, s_draw_bbs);
 

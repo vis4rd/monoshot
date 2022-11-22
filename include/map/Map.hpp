@@ -40,6 +40,7 @@ class Map final
     void saveToFile(const std::string& filename);
 
     void setTheme(const MapTheme& new_theme);
+    const MapTheme& getCurrentTheme() const;
 
     void setEndArea(const glm::vec2& pos, const glm::vec2& size);
     bool isInEndArea(const glm::vec2& pos, const glm::vec2& size) const;

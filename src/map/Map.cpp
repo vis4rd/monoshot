@@ -253,6 +253,11 @@ void Map::setTheme(const MapTheme& new_theme)
     glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a);
 }
 
+const MapTheme& Map::getCurrentTheme() const
+{
+    return m_theme;
+}
+
 void Map::setEndArea(const glm::vec2& pos, const glm::vec2& size)
 {
     m_endArea = std::make_unique<OBB::Polygon>(pos, size, 0.f);

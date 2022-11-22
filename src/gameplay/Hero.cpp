@@ -8,14 +8,14 @@ Hero::Hero(const std::int32_t& health, const std::optional<Weapon>& main_weapon,
       m_items{nullptr, nullptr, nullptr},
       m_availableItems{false, false, false},
       m_texture{Resource::create<Texture::impl::Animation>("../res/textures/entities/player.png",
-          0.1,
+          0.03,
           TextureData{
-              .widthTotal = 128,
+              .widthTotal = 192,
               .heightTotal = 16,
               .widthSub = 16,
               .heightSub = 16,
-              .numberOfSubs = 8,
-              .numberOfSubsInOneRow = 8,
+              .numberOfSubs = 12,
+              .numberOfSubsInOneRow = 12,
           })}
 {
     if(main_weapon)
