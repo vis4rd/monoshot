@@ -104,6 +104,7 @@ DebugSection::DebugSection()
     // sounds
     m_sounds["pop"] = LoadSound("../res/audio/pop.mp3");
     m_sounds["click"] = LoadSound("../res/audio/mouse_click.mp3");
+    m_sounds["footstep"] = LoadSound("../res/audio/footstep.mp3");
 }
 
 DebugSection::~DebugSection()
@@ -156,14 +157,22 @@ void DebugSection::update() noexcept
     move_direction.x += bool(input.isHeld(GLFW_KEY_D) + input.isPressedOnce(GLFW_KEY_RIGHT));
     move_direction.y -= bool(input.isHeld(GLFW_KEY_S) + input.isPressedOnce(GLFW_KEY_DOWN));
     move_direction.y += bool(input.isHeld(GLFW_KEY_W) + input.isPressedOnce(GLFW_KEY_UP));
-    const bool does_move = bool((move_direction.x != 0.f) + (move_direction.y != 0.f));
-    if(does_move)
     {
-        m_hero.getTexture()->nextFrame();
-    }
-    else
-    {
-        m_hero.getTexture()->resetFrame();
+        const bool does_move = bool((move_direction.x != 0.f) + (move_direction.y != 0.f));
+        static std::size_t footstep_sound_trigger;
+        if(does_move)
+        {
+            const std::int32_t is_next_frame = m_hero.getTexture()->nextFrame();
+            footstep_sound_trigger = (footstep_sound_trigger + is_next_frame) % (m_hero.getTexture()->getTextureData().numberOfSubs / 2);
+            if(footstep_sound_trigger == 0)
+            {
+                PlaySound(m_sounds["footstep"]);
+            }
+        }
+        else
+        {
+            m_hero.getTexture()->resetFrame();
+        }
     }
 
     // update inventory logic

@@ -54,7 +54,10 @@ bool Animation::nextFrame()
     if(this->canChangeFrame())
     {
         this->nextSub();
-        m_lastFrameChangeTimestamp = Timer::getTotalTime();
+        while(this->canChangeFrame())
+        {
+            m_lastFrameChangeTimestamp += m_frameDuration;
+        }
         return true;
     }
     return false;
