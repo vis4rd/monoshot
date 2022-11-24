@@ -105,6 +105,9 @@ DebugSection::DebugSection()
     m_sounds["pop"] = LoadSound("../res/audio/pop.mp3");
     m_sounds["click"] = LoadSound("../res/audio/mouse_click.mp3");
     m_sounds["footstep"] = LoadSound("../res/audio/footstep.mp3");
+    m_sounds["gunshot"] = LoadSound("../res/audio/gunshot.mp3");
+    m_sounds["grunt"] = LoadSound("../res/audio/grunt.mp3");
+    m_sounds["handgun_click"] = LoadSound("../res/audio/handgun_click.mp3");
 }
 
 DebugSection::~DebugSection()
@@ -195,7 +198,7 @@ void DebugSection::update() noexcept
                     m_registry.emplace<ecs::component::max_velocity>(bullet, weapon.getBulletVelocity());
                     m_registry.emplace<ecs::component::acceleration>(bullet, -1.f);
                     m_registry.emplace<ecs::component::rotation>(bullet, rot);
-                    PlaySoundMulti(m_sounds["pop"]);
+                    PlaySoundMulti(m_sounds["gunshot"]);
                 }
             }
         }
@@ -210,17 +213,17 @@ void DebugSection::update() noexcept
         }
         if(input.isPressedOnce(GLFW_KEY_1))
         {
-            PlaySoundMulti(m_sounds["click"]);
+            PlaySoundMulti(m_sounds["handgun_click"]);
             m_hero.setCurrentItem(0);
         }
         if(input.isPressedOnce(GLFW_KEY_2))
         {
-            PlaySoundMulti(m_sounds["click"]);
+            PlaySoundMulti(m_sounds["handgun_click"]);
             m_hero.setCurrentItem(1);
         }
         if(input.isPressedOnce(GLFW_KEY_3))
         {
-            PlaySoundMulti(m_sounds["click"]);
+            PlaySoundMulti(m_sounds["handgun_click"]);
             m_hero.setCurrentItem(2);
         }
     }
