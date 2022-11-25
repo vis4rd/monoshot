@@ -51,6 +51,7 @@ void move_bullets(entt::registry& registry)
             registry.destroy(bullet);
             continue;
         }
+        // TODO: optimize calls below with structured binding instead of loop iterator?
         glm::vec2& pos = view.get<position>(bullet);
         const float& rot = view.get<const rotation>(bullet);
         float& vel = view.get<velocity>(bullet);

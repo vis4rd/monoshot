@@ -120,7 +120,7 @@ DebugSection::~DebugSection()
 
 void DebugSection::update() noexcept
 {
-    spdlog::trace("Updating DebugSection");
+    // spdlog::trace("Updating DebugSection");
     const glm::vec2& pos = m_hero.position;
     float& rot = m_hero.rotation;
 

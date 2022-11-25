@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.19 FATAL_ERROR)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/build")
 
-project(MONOSHOT)
+project(MONOSHOT LANGUAGES CXX C)
 
 if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
     message(FATAL_ERROR "In-source builds are forbidden.")
@@ -16,8 +16,23 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 if(CMAKE_BUILD_TYPE EQUAL "")
     set(CMAKE_BUILD_TYPE "Release")
 endif()
-
 string(COMPARE EQUAL ${CMAKE_BUILD_TYPE} "Debug" DEBUG_MODE)
+
+option(MOLD_LINKER_PATH "Path to the mold linker executable" "")
+
+# Use mold linker if present in the system (to speed up linking time)
+find_program(MOLD_LINKER
+    NAMES "mold" "mold.exe"
+    HINTS "/usr/bin"
+          "/usr/libexec/mold"
+          "/usr/local/libexec/mold"
+          "${MOLD_LINKER_PATH}"
+    DOC "Tells if mold linker has been found in the system"
+)
+
+if(MOLD_LINKER)
+    cmake_path(GET MOLD_LINKER ROOT_PATH MOLD_LINKER_PATH)
+endif()
 
 include(FetchContent)
 
@@ -108,7 +123,22 @@ target_link_libraries(${EXECUTABLE_NAME}
 )
 
 target_precompile_headers(${EXECUTABLE_NAME}
-    PRIVATE "${PROJECT_SOURCE_DIR}/include/Root.hpp")
+    PRIVATE "${PROJECT_SOURCE_DIR}/include/Root.hpp"
+)
+
+if(MOLD_LINKER)
+    if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+        message(STATUS "Found mold linker at '${MOLD_LINKER}', replacing default linker for clang...")
+        target_link_options(${EXECUTABLE_NAME}
+            PRIVATE "-fuse-ld=${MOLD_LINKER}"
+        )
+    elseif ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
+        message(STATUS "Found mold linker at '${MOLD_LINKER}', replacing default linker for GNU...")
+        target_link_options(${EXECUTABLE_NAME}
+            PRIVATE "-fuse-ld=mold"
+        )
+    endif()
+endif()
 
 if(CMAKE_HOST_WIN32)
     target_link_libraries(${EXECUTABLE_NAME}

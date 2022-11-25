@@ -77,10 +77,10 @@ bool Window::update(UPDATEABLES &&...updateables) noexcept
         return false;
     }
 
-    spdlog::trace("Polling GLFW events");
+    // spdlog::trace("Polling GLFW events");
     glfwPollEvents();
 
-    spdlog::trace("Handling inputs");
+    // spdlog::trace("Handling inputs");
 
     auto &input = InputManager::get();
     if(input.isPressedOnce(GLFW_KEY_F11))
@@ -107,7 +107,7 @@ bool Window::update(UPDATEABLES &&...updateables) noexcept
         }
     }
 
-    spdlog::trace("Updating updateables passed to Window::update()");
+    // spdlog::trace("Updating updateables passed to Window::update()");
     if constexpr(sizeof...(updateables) > 0)
     {
         (updateables.update(), ...);
