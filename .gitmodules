@@ -25,3 +25,6 @@
 [submodule "RAUDIO"]
 	path = lib/raudio/raudio
 	url = https://github.com/raysan5/raudio.git
+[submodule "MINIAUDIO"]
+	path = lib/miniaudio/miniaudio
+	url = https://github.com/mackron/miniaudio.git
