@@ -1,5 +1,8 @@
 #include "../../include/section/SectionManager.hpp"
 
+#include "../../include/utility/ResourceManager.hpp"
+#include "../../include/audio/AudioDevice.hpp"
+
 SectionManager& SectionManager::get()
 {
     static SectionManager instance;
@@ -40,8 +43,18 @@ void SectionManager::clear() noexcept
 
 void SectionManager::update() noexcept
 {
+    // UpdateMusicStream(m_music);
     if(!m_sections.empty())
     {
+        if((m_sections.top()->name() != "DebugSection") && (m_sections.top()->name() != "CreatorSection"))
+        {
+            m_music.resume();
+            m_music.update();
+        }
+        else
+        {
+            m_music.pause();
+        }
         m_sections.top()->update();
     }
 }
@@ -52,4 +65,19 @@ void SectionManager::render() noexcept
     {
         m_sections.top()->render();
     }
+}
+
+SectionManager::SectionManager()
+{
+    // InitAudioDevice();
+    // m_music = LoadMusicStream("../res/audio/music/Fragments_ambient.mp3");
+    // PlayMusicStream(m_music);
+
+    // m_music = Music("../res/audio/music/Fragments_ambient.mp3");
+    m_music.play();
+}
+
+SectionManager::~SectionManager()
+{
+    // UnloadMusicStream(m_music);
 }

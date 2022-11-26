@@ -26,7 +26,6 @@ App::App(const std::string& window_title, uint32_t width, uint32_t height)
 
     this->initFonts();
     this->initTextures();
-    this->initAudio();
 
     MainMenuStyle();
 
@@ -60,6 +59,15 @@ void App::initLogger() noexcept
     spdlog::debug("Logging initialized");
 }
 
+void App::initAudio() noexcept
+{
+    raudio::InitAudioDevice();
+    // if(not ResourceManager::audioDevice)
+    // {
+    //     ResourceManager::audioDevice = std::make_shared<AudioDevice>();
+    // }
+}
+
 void App::initTextures() noexcept
 {
     using res = ResourceManager;
@@ -89,11 +97,6 @@ void App::initFonts() noexcept
     res::uiButtonFont = std::make_shared<Font>("../res/fonts/brass-mono/regular_comfortable.otf", *res::uiButtonFontSize);
     res::uiAmmoFontSize = std::make_shared<float>(40.f * window_width / 1920.f);
     res::uiAmmoFont = std::make_shared<Font>("../res/fonts/gunplay/GUNPLAY_.ttf", *res::uiAmmoFontSize);
-}
-
-void App::initAudio() noexcept
-{
-    InitAudioDevice();
 }
 
 Window& App::getWindow()
@@ -153,5 +156,6 @@ void App::destroyFonts() noexcept
 
 void App::destroyAudio() noexcept
 {
-    CloseAudioDevice();
+    raudio::CloseAudioDevice();
+    // ResourceManager::audioDevice.reset();
 }

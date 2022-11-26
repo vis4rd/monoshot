@@ -209,7 +209,7 @@ void CreatorSection::render() noexcept
     {
         const std::size_t i = std::llroundf(s_mouse_world_pos.x);
         const std::size_t j = std::llroundf(s_mouse_world_pos.y);
-        ImGui::Text("Hovered tile: (%lld, %lld)", i, j);
+        ImGui::Text("Hovered tile: (%ld, %ld)", i, j);
         ImGui::Text("Mouse screen position: (%.2f, %.2f)", mouse_screen_pos.x, mouse_screen_pos.y);
         ImGui::Text("Mouse world position: (%.2f, %.2f)", s_mouse_world_pos.x, s_mouse_world_pos.y);
         ImGui::Text("Time since app start: %lf", ResourceManager::timer->getTotalTime());

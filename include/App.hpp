@@ -12,9 +12,9 @@ class App
     virtual ~App() noexcept;
 
     static void initLogger() noexcept;
+    static void initAudio() noexcept;
     void initTextures() noexcept;
     void initFonts() noexcept;
-    void initAudio() noexcept;
 
     Window& getWindow();
     const Window& getWindow() const;

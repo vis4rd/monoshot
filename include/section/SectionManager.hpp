@@ -2,6 +2,8 @@
 
 #include "Section.hpp"
 
+#include "../audio/Music.hpp"
+
 class SectionManager final : public Renderable, public Updateable
 {
     public:
@@ -9,6 +11,7 @@ class SectionManager final : public Renderable, public Updateable
     SectionManager(SectionManager&&) = delete;
     SectionManager& operator=(const SectionManager&) = delete;
     SectionManager& operator=(SectionManager&&) = delete;
+    ~SectionManager();
     static SectionManager& get();
 
     template<CSection SECTION, typename... ARGS>
@@ -23,10 +26,11 @@ class SectionManager final : public Renderable, public Updateable
     void render() noexcept override;
 
     private:
-    SectionManager() = default;
+    SectionManager();
 
     private:
     std::stack<std::unique_ptr<Section>> m_sections{};
+    Music m_music{"../res/audio/music/Fragments_ambient.mp3"};
 };
 
 template<CSection SECTION, typename... ARGS>

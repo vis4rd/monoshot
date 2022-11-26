@@ -15,8 +15,7 @@ DebugSection::DebugSection()
       m_map(5, 5),
       m_hero(100),
       m_layout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize),
-      m_registry(),
-      m_sounds{}
+      m_registry()
 {
     m_name = "DebugSection";
 
@@ -101,19 +100,26 @@ DebugSection::DebugSection()
     // ecs
     m_map.addTilesToRegistry(m_registry);
 
-    // sounds
-    m_sounds["pop"] = LoadSound("../res/audio/pop.mp3");
-    m_sounds["click"] = LoadSound("../res/audio/mouse_click.mp3");
-    m_sounds["footstep"] = LoadSound("../res/audio/footstep.mp3");
-    m_sounds["gunshot"] = LoadSound("../res/audio/gunshot.mp3");
-    m_sounds["grunt"] = LoadSound("../res/audio/grunt.mp3");
-    m_sounds["handgun_click"] = LoadSound("../res/audio/handgun_click.mp3");
+    // sounds and music
+    m_sounds["pop"] = Sound("../res/audio/pop.mp3");
+    m_sounds["click"] = Sound("../res/audio/mouse_click.mp3");
+    m_sounds["footstep"] = Sound("../res/audio/footstep.mp3");
+    m_sounds["gunshot"] = Sound("../res/audio/gunshot.mp3");
+    m_sounds["grunt"] = Sound("../res/audio/grunt.mp3");
+    m_sounds["handgun_click"] = Sound("../res/audio/handgun_click.mp3");
+    // PlayMusicStream(m_music);
+    // m_music.play();
 }
 
 DebugSection::~DebugSection()
 {
     spdlog::trace("Destroying DebugSection");
     Renderer::shutdown();
+    // for(const auto& [name, sound] : m_sounds)
+    // {
+    //     UnloadSound(sound);
+    // }
+    // UnloadMusicStream(m_music);
     // firstTexture->destroy();
     m_registry.clear();
 }
@@ -123,6 +129,10 @@ void DebugSection::update() noexcept
     // spdlog::trace("Updating DebugSection");
     const glm::vec2& pos = m_hero.position;
     float& rot = m_hero.rotation;
+
+    // update music
+    // UpdateMusicStream(m_music);
+    // m_music.update();
 
     // calculate main hero rotation after mouse cursor
     const glm::vec2 mouse_screen_pos = ResourceManager::window->getMousePosition();
@@ -169,7 +179,8 @@ void DebugSection::update() noexcept
             footstep_sound_trigger = (footstep_sound_trigger + is_next_frame) % (m_hero.getTexture()->getTextureData().numberOfSubs / 2);
             if(footstep_sound_trigger == 0)
             {
-                PlaySound(m_sounds["footstep"]);
+                // PlaySound(m_sounds["footstep"]);
+                m_sounds["footstep"].playMulti();
             }
         }
         else
@@ -198,7 +209,8 @@ void DebugSection::update() noexcept
                     m_registry.emplace<ecs::component::max_velocity>(bullet, weapon.getBulletVelocity());
                     m_registry.emplace<ecs::component::acceleration>(bullet, -1.f);
                     m_registry.emplace<ecs::component::rotation>(bullet, rot);
-                    PlaySoundMulti(m_sounds["gunshot"]);
+                    // PlaySoundMulti(m_sounds["gunshot"]);
+                    //! m_sounds["gunshot"].playMulti();
                 }
             }
         }
@@ -213,17 +225,20 @@ void DebugSection::update() noexcept
         }
         if(input.isPressedOnce(GLFW_KEY_1))
         {
-            PlaySoundMulti(m_sounds["handgun_click"]);
+            // PlaySoundMulti(m_sounds["handgun_click"]);
+            //! m_sounds["handgun_click"].playMulti();
             m_hero.setCurrentItem(0);
         }
         if(input.isPressedOnce(GLFW_KEY_2))
         {
-            PlaySoundMulti(m_sounds["handgun_click"]);
+            // PlaySoundMulti(m_sounds["handgun_click"]);
+            //! m_sounds["handgun_click"].playMulti();
             m_hero.setCurrentItem(1);
         }
         if(input.isPressedOnce(GLFW_KEY_3))
         {
-            PlaySoundMulti(m_sounds["handgun_click"]);
+            // PlaySoundMulti(m_sounds["handgun_click"]);
+            //! m_sounds["handgun_click"].playMulti();
             m_hero.setCurrentItem(2);
         }
     }
@@ -443,7 +458,7 @@ void DebugSection::showDebugUI()
             // const auto* weapon = dynamic_cast<Weapon*>(&*(m_hero.currentItem));
             if(!m_hero.isInventoryEmpty())
             {
-                ImGui::Text("Selected item: %llu", m_hero.getCurrentItemIndex());
+                ImGui::Text("Selected item: %lu", m_hero.getCurrentItemIndex());
                 if(m_hero.holdsWeapon())
                 {
                     const auto& weapon = m_hero.getCurrentItem<Weapon>();
