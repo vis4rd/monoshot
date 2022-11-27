@@ -3,8 +3,6 @@
 #include "../include/ui/fonts/Font.hpp"
 #include "../include/utility/ResourceManager.hpp"
 
-#include <raudio.h>
-
 App::App(const std::string& window_title, uint32_t width, uint32_t height)
     : m_input(InputManager::get()),
       m_sectionManager(SectionManager::get())
@@ -36,7 +34,6 @@ App::~App() noexcept
 {
     this->destroyFonts();
     this->destroyTextures();
-    this->destroyAudio();
     this->terminate(EXIT_SUCCESS);
 }
 
@@ -57,15 +54,6 @@ void App::initLogger() noexcept
     spdlog::set_default_logger(std::make_shared<spdlog::logger>(multisink_logger));
 
     spdlog::debug("Logging initialized");
-}
-
-void App::initAudio() noexcept
-{
-    raudio::InitAudioDevice();
-    // if(not ResourceManager::audioDevice)
-    // {
-    //     ResourceManager::audioDevice = std::make_shared<AudioDevice>();
-    // }
 }
 
 void App::initTextures() noexcept
@@ -152,10 +140,4 @@ void App::destroyFonts() noexcept
     res::uiButtonFont.reset();
     res::uiAmmoFontSize.reset();
     res::uiAmmoFont.reset();
-}
-
-void App::destroyAudio() noexcept
-{
-    raudio::CloseAudioDevice();
-    // ResourceManager::audioDevice.reset();
 }

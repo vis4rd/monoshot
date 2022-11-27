@@ -7,7 +7,6 @@
 int main(int, char**)
 {
     App::initLogger();
-    App::initAudio();
 
     App app("MONOSHOT", 1280, 720);
     app.run();

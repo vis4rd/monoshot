@@ -1,7 +1,6 @@
 #include "../../include/section/SectionManager.hpp"
 
 #include "../../include/utility/ResourceManager.hpp"
-#include "../../include/audio/AudioDevice.hpp"
 
 SectionManager& SectionManager::get()
 {
@@ -48,12 +47,14 @@ void SectionManager::update() noexcept
     {
         if((m_sections.top()->name() != "DebugSection") && (m_sections.top()->name() != "CreatorSection"))
         {
-            m_music.resume();
-            m_music.update();
+            if(m_menuMusic.getStatus() != sf::Music::Playing)
+            {
+                m_menuMusic.play();
+            }
         }
         else
         {
-            m_music.pause();
+            m_menuMusic.pause();
         }
         m_sections.top()->update();
     }
@@ -69,15 +70,12 @@ void SectionManager::render() noexcept
 
 SectionManager::SectionManager()
 {
-    // InitAudioDevice();
-    // m_music = LoadMusicStream("../res/audio/music/Fragments_ambient.mp3");
-    // PlayMusicStream(m_music);
-
-    // m_music = Music("../res/audio/music/Fragments_ambient.mp3");
-    m_music.play();
+    if(bool success = m_menuMusic.openFromFile("../res/audio/music/Fragments_ambient.mp3"); not success)
+    {
+        spdlog::debug("Could not load music from file 'res/audio/music/Fragments_ambient.mp3'");
+        throw std::runtime_error("Could not load music from file 'res/audio/music/Fragments_ambient.mp3'");
+    }
+    m_menuMusic.play();
 }
 
-SectionManager::~SectionManager()
-{
-    // UnloadMusicStream(m_music);
-}
+SectionManager::~SectionManager() { }

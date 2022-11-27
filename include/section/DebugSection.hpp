@@ -8,10 +8,9 @@
 #include "../ui/layouts/GameplayLayout.hpp"
 #include "Section.hpp"
 #include "../utility/Timer.hpp"
-#include "../audio/Music.hpp"
-#include "../audio/Sound.hpp"
 
 #include <entt/entity/registry.hpp>
+#include <SFML/Audio.hpp>
 
 class DebugSection final : public Section
 {
@@ -43,8 +42,8 @@ class DebugSection final : public Section
     Hero m_hero;
     UI::GameplayLayout m_layout;
     entt::registry m_registry;
-    std::unordered_map<std::string, Sound> m_sounds;
-    // Music m_music = Music("../res/audio/music/Fragments_ambient.mp3");
+    std::unordered_map<std::string, sf::SoundBuffer> m_soundBuffers;
+    std::unordered_map<std::string, sf::Sound> m_sounds;
 
     bool m_onEnterFinished = false;
     bool m_onLeaveStarted = false;

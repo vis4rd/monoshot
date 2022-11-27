@@ -2,7 +2,7 @@
 
 #include "Section.hpp"
 
-#include "../audio/Music.hpp"
+#include <SFML/Audio/Music.hpp>
 
 class SectionManager final : public Renderable, public Updateable
 {
@@ -30,7 +30,7 @@ class SectionManager final : public Renderable, public Updateable
 
     private:
     std::stack<std::unique_ptr<Section>> m_sections{};
-    Music m_music{"../res/audio/music/Fragments_ambient.mp3"};
+    sf::Music m_menuMusic{};
 };
 
 template<CSection SECTION, typename... ARGS>

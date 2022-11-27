@@ -101,25 +101,30 @@ DebugSection::DebugSection()
     m_map.addTilesToRegistry(m_registry);
 
     // sounds and music
-    m_sounds["pop"] = Sound("../res/audio/pop.mp3");
-    m_sounds["click"] = Sound("../res/audio/mouse_click.mp3");
-    m_sounds["footstep"] = Sound("../res/audio/footstep.mp3");
-    m_sounds["gunshot"] = Sound("../res/audio/gunshot.mp3");
-    m_sounds["grunt"] = Sound("../res/audio/grunt.mp3");
-    m_sounds["handgun_click"] = Sound("../res/audio/handgun_click.mp3");
-    // PlayMusicStream(m_music);
-    // m_music.play();
+    const auto setupSound = [&buffers = m_soundBuffers, &sounds = m_sounds](const std::string& name, const std::string& filename) -> void
+    {
+        sf::SoundBuffer buffer{};
+        if(bool success = buffer.loadFromFile(filename); not success)
+        {
+            spdlog::error("Could not load sound from '{}' file", filename);
+            throw std::runtime_error("Could not load sound from '" + filename + "' file");
+        }
+        buffers[name] = std::move(buffer);
+
+        sf::Sound sound{};
+        sound.setBuffer(buffers[name]);
+        sounds[name] = std::move(sound);
+    };
+    setupSound("pop", "../res/audio/pop.mp3");
+    setupSound("gunshot", "../res/audio/gunshot.mp3");
+    setupSound("footstep", "../res/audio/footstep.mp3");
+    setupSound("handgun_click", "../res/audio/handgun_click.mp3");
 }
 
 DebugSection::~DebugSection()
 {
     spdlog::trace("Destroying DebugSection");
     Renderer::shutdown();
-    // for(const auto& [name, sound] : m_sounds)
-    // {
-    //     UnloadSound(sound);
-    // }
-    // UnloadMusicStream(m_music);
     // firstTexture->destroy();
     m_registry.clear();
 }
@@ -179,8 +184,7 @@ void DebugSection::update() noexcept
             footstep_sound_trigger = (footstep_sound_trigger + is_next_frame) % (m_hero.getTexture()->getTextureData().numberOfSubs / 2);
             if(footstep_sound_trigger == 0)
             {
-                // PlaySound(m_sounds["footstep"]);
-                m_sounds["footstep"].playMulti();
+                m_sounds["footstep"].play();
             }
         }
         else
@@ -209,8 +213,7 @@ void DebugSection::update() noexcept
                     m_registry.emplace<ecs::component::max_velocity>(bullet, weapon.getBulletVelocity());
                     m_registry.emplace<ecs::component::acceleration>(bullet, -1.f);
                     m_registry.emplace<ecs::component::rotation>(bullet, rot);
-                    // PlaySoundMulti(m_sounds["gunshot"]);
-                    //! m_sounds["gunshot"].playMulti();
+                    m_sounds["gunshot"].play();
                 }
             }
         }
@@ -225,20 +228,17 @@ void DebugSection::update() noexcept
         }
         if(input.isPressedOnce(GLFW_KEY_1))
         {
-            // PlaySoundMulti(m_sounds["handgun_click"]);
-            //! m_sounds["handgun_click"].playMulti();
+            m_sounds["handgun_click"].play();
             m_hero.setCurrentItem(0);
         }
         if(input.isPressedOnce(GLFW_KEY_2))
         {
-            // PlaySoundMulti(m_sounds["handgun_click"]);
-            //! m_sounds["handgun_click"].playMulti();
+            m_sounds["handgun_click"].play();
             m_hero.setCurrentItem(1);
         }
         if(input.isPressedOnce(GLFW_KEY_3))
         {
-            // PlaySoundMulti(m_sounds["handgun_click"]);
-            //! m_sounds["handgun_click"].playMulti();
+            m_sounds["handgun_click"].play();
             m_hero.setCurrentItem(2);
         }
     }

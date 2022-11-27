@@ -78,6 +78,25 @@ set(RAUDIO_SUPPORT_WAV ON CACHE BOOL "" FORCE)
 set(RAUDIO_SUPPORT_MP3 ON CACHE BOOL "" FORCE)
 add_subdirectory("${PROJECT_SOURCE_DIR}/lib/raudio")
 
+# miniaudio
+# set(MA_DEBUG_OUTPUT ON CACHE BOOL "" FORCE)
+add_subdirectory("${PROJECT_SOURCE_DIR}/lib/miniaudio")
+
+# SFML
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+set(SFML_USE_STATIC_STD_LIBS ON CACHE BOOL "" FORCE)
+set(SFML_BUILD_WINDOW OFF CACHE BOOL "" FORCE)
+set(SFML_BUILD_GRAPHICS OFF CACHE BOOL "" FORCE)
+set(SFML_BUILD_AUDIO ON CACHE BOOL "" FORCE)
+set(SFML_BUILD_NETWORK OFF CACHE BOOL "" FORCE)
+set(SFML_BUILD_DOC OFF CACHE BOOL "" FORCE)
+set(SFML_BUILD_TEST_SUITE OFF CACHE BOOL "" FORCE)
+set(SFML_ENABLE_COVERAGE OFF CACHE BOOL "" FORCE)
+set(SFML_INSTALL_PKGCONFIG_FILES OFF CACHE BOOL "" FORCE)
+set(SFML_ENABLE_PCH ON CACHE BOOL "" FORCE)
+
+add_subdirectory("${PROJECT_SOURCE_DIR}/lib/sfml")
+
 # Other sources
 file(GLOB_RECURSE SOURCES
     "${PROJECT_SOURCE_DIR}/src/*.cpp"
@@ -120,6 +139,8 @@ target_link_libraries(${EXECUTABLE_NAME}
            EnTT::EnTT
            tinyfd::tinyfd
            raylib::audio
+           miniaudio::miniaudio
+           sfml-audio
 )
 
 target_precompile_headers(${EXECUTABLE_NAME}

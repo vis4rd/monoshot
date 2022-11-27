@@ -9,16 +9,8 @@ option(MA_NO_RUNTIME_LINKING "Disables runtime linking" OFF)
 option(MA_DEBUG_OUTPUT "Enable `printf()` output of debug logs (`MA_LOG_LEVEL_DEBUG`)" OFF)
 
 # Generate dummy source to compile into library
-set(MINIAUDIO_SOURCE_DIR "${PROJECT_SOURCE_DIR}/src")
-set(MINIAUDIO_SOURCE_FILE "${MINIAUDIO_SOURCE_DIR}/miniaudio_implementation.c")
-if(NOT EXISTS ${MINIAUDIO_SOURCE_FILE})
-    file(WRITE ${MINIAUDIO_SOURCE_FILE}
-"
-#define MINIAUDIO_IMPLEMENTATION
-#include <miniaudio.h>
-"
-    )
-endif()
+set(MINIAUDIO_SOURCE_DIR "${PROJECT_SOURCE_DIR}/miniaudio/extras/miniaudio_split")
+set(MINIAUDIO_SOURCE_FILE "${MINIAUDIO_SOURCE_DIR}/miniaudio.c")
 
 add_library(miniaudio STATIC)
 add_library(miniaudio::miniaudio ALIAS miniaudio)
@@ -32,8 +24,7 @@ target_sources(miniaudio
 )
 
 target_include_directories(miniaudio
-    PRIVATE "${PROJECT_SOURCE_DIR}/miniaudio"
-    INTERFACE "${PROJECT_SOURCE_DIR}"
+    INTERFACE "${MINIAUDIO_SOURCE_DIR}"
 )
 
 target_compile_definitions(miniaudio
