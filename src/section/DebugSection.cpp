@@ -119,6 +119,13 @@ DebugSection::DebugSection()
     setupSound("gunshot", "../res/audio/gunshot.mp3");
     setupSound("footstep", "../res/audio/footstep.mp3");
     setupSound("handgun_click", "../res/audio/handgun_click.mp3");
+
+    if(bool success = m_music.openFromFile("../res/audio/music/Ancient Jungle Ruins - HeatleyBros.mp3"); not success)
+    {
+        spdlog::debug("Could not load music from file 'res/audio/music/Ancient Jungle Ruins - HeatleyBros.mp3'");
+        throw std::runtime_error("Could not load music from file 'res/audio/music/Ancient Jungle Ruins - HeatleyBros.mp3'");
+    }
+    m_music.play();
 }
 
 DebugSection::~DebugSection()
