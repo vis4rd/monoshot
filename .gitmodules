@@ -22,12 +22,6 @@
 [submodule "TINYFILEDIALOGS"]
 	path = lib/tinyfiledialogs/tinyfiledialogs
 	url = https://git.code.sf.net/p/tinyfiledialogs/code
-[submodule "RAUDIO"]
-	path = lib/raudio/raudio
-	url = https://github.com/raysan5/raudio.git
-[submodule "MINIAUDIO"]
-	path = lib/miniaudio/miniaudio
-	url = https://github.com/mackron/miniaudio.git
 [submodule "SFML"]
 	path = lib/sfml
 	url = https://github.com/SFML/SFML.git

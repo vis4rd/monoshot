@@ -59,4 +59,4 @@ All libraries are fetched either by git submodules or by CMake and their use is 
 - [spdlog](https://github.com/gabime/spdlog) - Logging library (MIT)
 - [stbi](https://github.com/nothings/stb) - Image loading/decoding from file/memory (Public Domain or MIT)
 - [tinyfiledialogs](https://sourceforge.net/projects/tinyfiledialogs/) - Native window dialogs and popups (zlib)
-- [raudio](https://github.com/raysan5/raudio) - Sound and music playing (zlib/libpng)
+- [SFML](https://github.com/SFML/SFML) - Sound and music playing (zlib)

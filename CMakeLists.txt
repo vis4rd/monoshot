@@ -73,15 +73,6 @@ add_subdirectory("${PROJECT_SOURCE_DIR}/lib/entt")
 # tinyfiledialogs
 add_subdirectory("${PROJECT_SOURCE_DIR}/lib/tinyfiledialogs")
 
-# raudio
-set(RAUDIO_SUPPORT_WAV ON CACHE BOOL "" FORCE)
-set(RAUDIO_SUPPORT_MP3 ON CACHE BOOL "" FORCE)
-add_subdirectory("${PROJECT_SOURCE_DIR}/lib/raudio")
-
-# miniaudio
-# set(MA_DEBUG_OUTPUT ON CACHE BOOL "" FORCE)
-add_subdirectory("${PROJECT_SOURCE_DIR}/lib/miniaudio")
-
 # SFML
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 set(SFML_USE_STATIC_STD_LIBS ON CACHE BOOL "" FORCE)
@@ -138,8 +129,6 @@ target_link_libraries(${EXECUTABLE_NAME}
            stb::image
            EnTT::EnTT
            tinyfd::tinyfd
-           raylib::audio
-           miniaudio::miniaudio
            sfml-audio
 )
 
