@@ -16,6 +16,6 @@ bool is_colliding_with_anything(entt::registry &registry, const glm::vec2 &entit
 }
 
 void move_bullets(entt::registry &registry);
-void collide_with_hero(entt::registry &registry, Hero &hero, glm::vec2 &hero_move_direction);
+void move_hero_with_collisions(entt::registry &registry, Hero &hero, glm::vec2 &hero_move_direction);
 
 }  // namespace ecs::system

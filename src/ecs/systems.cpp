@@ -11,7 +11,7 @@ namespace impl
 
 bool is_colliding_with_anything(entt::registry& registry, const glm::vec2& entity_size, const glm::vec2& next_pos)
 {
-    const auto view = registry.view<const ecs::component::position>(entt::exclude<ecs::component::is_bullet>);
+    const auto view = registry.view<const ecs::component::position>();
     // const float& hero_rot = registry.get<const ecs::component::rotation>(entity);
     for(std::int32_t iter = 0; const auto& element : view)
     {
@@ -42,40 +42,34 @@ void move_bullets(entt::registry& registry)
     const auto& timer = ResourceManager::timer;
     const float& delta_time = timer->deltaTime();
     const double timestamp = timer->getTotalTime();
-    auto view = registry.view<const lifetime, const is_bullet, position, const rotation, velocity, const max_velocity, const acceleration>();
-    for(const auto& bullet : view)
+    auto view = registry.view<const lifetime, position, const rotation, velocity, const max_velocity, const acceleration>();
+    for(const auto&& [bullet, life, pos, rot, vel, mvel, acc] : view.each())
     {
-        const auto& life = view.get<const lifetime>(bullet);
         if((life.creation + life.timeTillDeath) <= timestamp)
         {
             registry.destroy(bullet);
             continue;
         }
-        // TODO: optimize calls below with structured binding instead of loop iterator?
-        glm::vec2& pos = view.get<position>(bullet);
-        const float& rot = view.get<const rotation>(bullet);
-        float& vel = view.get<velocity>(bullet);
-        const float& mvel = view.get<const max_velocity>(bullet);
-        const float& acc = view.get<const acceleration>(bullet);
 
-        vel = glm::max(glm::min(vel + acc * delta_time, mvel), 0.f);
-        const auto rad = glm::radians(rot);
+        vel.data = glm::max(glm::min(vel.data + acc * delta_time, mvel.data), 0.f);
+        const auto rad = glm::radians(rot.data);
         glm::vec2 rot_vec = {glm::cos(rad), glm::sin(rad)};
-        pos += (vel * rot_vec * delta_time);
+        pos += (vel.data * rot_vec * delta_time);
     }
 }
 
-void collide_with_hero(entt::registry& registry, Hero& hero, glm::vec2& hero_move_direction)
+void move_hero_with_collisions(entt::registry& registry, Hero& hero, glm::vec2& hero_move_direction)
 {
     const auto resolve_collision = [&registry](glm::vec2& current_pos, const glm::vec2& size, glm::vec2 step) -> void
     {
-        // brute-force checking whther there is a collision in the next step
+        // brute-force checking whether there is a collision in the next step
+        constexpr std::size_t max_tries = 3;
         std::size_t tries = 1;
-        for(; impl::is_colliding_with_anything(registry, size, current_pos + step) && tries < 5; tries++)
+        for(; impl::is_colliding_with_anything(registry, size, current_pos + step) && tries < max_tries; tries++)
         {
             step /= 2.f;
         }
-        if(tries < 5)
+        if(tries < max_tries)
         {
             current_pos += step;
         }

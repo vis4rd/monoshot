@@ -15,7 +15,7 @@ DebugSection::DebugSection()
       m_map(5, 5),
       m_hero(100),
       m_layout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize),
-      m_registry()
+      m_mapElementsRegistry()
 {
     m_name = "DebugSection";
 
@@ -98,7 +98,7 @@ DebugSection::DebugSection()
     m_hero.addItem(std::move(Weapon(10, 70, 20000, 3.f, 0.05)));
 
     // ecs
-    m_map.addTilesToRegistry(m_registry);
+    m_map.addTilesToRegistry(m_mapElementsRegistry);
 
     // sounds and music
     const auto setupSound = [&buffers = m_soundBuffers, &sounds = m_sounds](const std::string& name, const std::string& filename) -> void
@@ -133,7 +133,7 @@ DebugSection::~DebugSection()
     spdlog::trace("Destroying DebugSection");
     Renderer::shutdown();
     // firstTexture->destroy();
-    m_registry.clear();
+    m_mapElementsRegistry.clear();
 }
 
 void DebugSection::update() noexcept
@@ -211,15 +211,14 @@ void DebugSection::update() noexcept
                 const auto& weapon = m_hero.getCurrentItem<Weapon>();
                 if(weapon.getAmmoCurrent() > 0)
                 {
-                    auto bullet = m_registry.create();
-                    m_registry.emplace<ecs::component::is_bullet>(bullet);
-                    m_registry.emplace<ecs::component::lifetime>(bullet, ResourceManager::timer->getTotalTime(), 2.0);
-                    m_registry.emplace<ecs::component::position>(bullet, pos);
-                    m_registry.emplace<ecs::component::size>(bullet, glm::vec2{0.2f, 0.2f});
-                    m_registry.emplace<ecs::component::velocity>(bullet, weapon.getBulletVelocity());
-                    m_registry.emplace<ecs::component::max_velocity>(bullet, weapon.getBulletVelocity());
-                    m_registry.emplace<ecs::component::acceleration>(bullet, -1.f);
-                    m_registry.emplace<ecs::component::rotation>(bullet, rot);
+                    auto bullet = m_bulletRegistry.create();
+                    m_bulletRegistry.emplace<ecs::component::lifetime>(bullet, ResourceManager::timer->getTotalTime(), 2.0);
+                    m_bulletRegistry.emplace<ecs::component::position>(bullet, pos);
+                    m_bulletRegistry.emplace<ecs::component::size>(bullet, glm::vec2{0.2f, 0.2f});
+                    m_bulletRegistry.emplace<ecs::component::velocity>(bullet, weapon.getBulletVelocity());
+                    m_bulletRegistry.emplace<ecs::component::max_velocity>(bullet, weapon.getBulletVelocity());
+                    m_bulletRegistry.emplace<ecs::component::acceleration>(bullet, -1.f);
+                    m_bulletRegistry.emplace<ecs::component::rotation>(bullet, rot);
                     m_sounds["gunshot"].play();
                 }
             }
@@ -255,8 +254,8 @@ void DebugSection::update() noexcept
     m_camera.setTarget({pos, 0.f});
 
     // ecs::system::remove_dead_entities(m_registry);
-    ecs::system::collide_with_hero(m_registry, m_hero, move_direction);
-    ecs::system::move_bullets(m_registry);
+    ecs::system::move_hero_with_collisions(m_mapElementsRegistry, m_hero, move_direction);
+    ecs::system::move_bullets(m_bulletRegistry);
 
     // finish the level if hero gets to the end area
     if(m_map.isInEndArea(pos, m_hero.size) && (not m_onLeaveStarted))
@@ -291,14 +290,12 @@ void DebugSection::render() noexcept
 
     m_map.drawObjects({pos.x, pos.y}, s_draw_bbs);
 
-    const auto bullet_view = m_registry.view<const ecs::component::position, const ecs::component::size, const ecs::component::rotation, const ecs::component::is_bullet>();
-    for(const auto& bullet : bullet_view)
-    {
-        const glm::vec2& b_pos = bullet_view.get<const ecs::component::position>(bullet);
-        const float& b_rot = bullet_view.get<const ecs::component::rotation>(bullet);
-        const glm::vec2& b_size = bullet_view.get<const ecs::component::size>(bullet);
-        Renderer::drawQuad({b_pos.x, b_pos.y}, b_size, b_rot, {1.f, 0.f, 0.f, 1.f});
-    }
+    const auto bullet_view = m_bulletRegistry.view<const ecs::component::position, const ecs::component::size, const ecs::component::rotation>();
+    bullet_view.each(
+        [](const auto& b_pos, const auto& b_size, const auto& b_rot)
+        {
+            Renderer::drawQuad({b_pos.x, b_pos.y}, b_size, b_rot, {1.f, 0.f, 0.f, 1.f});
+        });
 
     Renderer::endBatch(m_camera.getProjectionMatrix(), m_camera.getViewMatrix());
 

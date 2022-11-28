@@ -17,7 +17,6 @@ struct direction : public glm::vec2 { };  // direction of movement in degrees
 struct collision : public Scalar<bool> { };
 struct max_velocity : public Scalar<float> { max_velocity(float val = 7.f) : Scalar<float>(val) { } };
 struct acceleration : public Scalar<float> { acceleration(float val = 100.f) : Scalar<float>(val) { } };
-struct is_bullet{};
 struct lifetime
 {
     lifetime(double timestamp, double life_duration = 1.0) : creation(timestamp), timeTillDeath(life_duration) {}

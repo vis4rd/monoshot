@@ -41,7 +41,8 @@ class DebugSection final : public Section
     Map m_map;
     Hero m_hero;
     UI::GameplayLayout m_layout;
-    entt::registry m_registry;
+    entt::registry m_mapElementsRegistry;
+    entt::registry m_bulletRegistry;
     std::unordered_map<std::string, sf::SoundBuffer> m_soundBuffers;
     std::unordered_map<std::string, sf::Sound> m_sounds;
 
