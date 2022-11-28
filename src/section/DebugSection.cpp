@@ -3,7 +3,6 @@
 #include "../../include/ui/elements/GameplayOverlay.hpp"
 #include "../../include/renderer/Renderer.hpp"
 #include "../../include/utility/ResourceManager.hpp"
-#include "../../include/ecs/systems.hpp"
 #include "../../include/utility/Collisions.hpp"
 
 #include <stbi/stb_image.h>
@@ -14,8 +13,7 @@ DebugSection::DebugSection()
       m_camera(glm::vec3(0.f, 0.f, 50.f), ResourceManager::window->getSize()),
       m_map(5, 5),
       m_hero(100),
-      m_layout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize),
-      m_mapElementsRegistry()
+      m_layout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize)
 {
     m_name = "DebugSection";
 
@@ -255,6 +253,7 @@ void DebugSection::update() noexcept
 
     // ecs::system::remove_dead_entities(m_registry);
     ecs::system::move_hero_with_collisions(m_mapElementsRegistry, m_hero, move_direction);
+    ecs::system::destroy_bullets(m_bulletRegistry);
     ecs::system::move_bullets(m_bulletRegistry);
 
     // finish the level if hero gets to the end area

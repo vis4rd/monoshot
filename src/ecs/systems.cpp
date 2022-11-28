@@ -39,22 +39,37 @@ bool is_colliding_with_anything(entt::registry& registry, const glm::vec2& entit
 void move_bullets(entt::registry& registry)
 {
     using namespace ecs::component;
-    const auto& timer = ResourceManager::timer;
-    const float& delta_time = timer->deltaTime();
-    const double timestamp = timer->getTotalTime();
-    auto view = registry.view<const lifetime, position, const rotation, velocity, const max_velocity, const acceleration>();
-    for(const auto&& [bullet, life, pos, rot, vel, mvel, acc] : view.each())
+    const float& delta_time = ResourceManager::timer->deltaTime();
+    auto view = registry.view<const rotation, const max_velocity, const acceleration>();
+    for(auto&& [bullet, rot, mvel, acc] : view.each())
+    {
+        const auto& vel = registry.patch<velocity>(bullet,
+            [&acc = acc.data, &mvel = mvel.data, delta_time](float& vel)
+            {
+                vel = glm::max(glm::min(vel + acc * delta_time, mvel), 0.f);
+            });
+
+        const auto rad = glm::radians(rot.data);
+        glm::vec2 rot_vec = {glm::cos(rad), glm::sin(rad)};
+        registry.patch<position>(bullet,
+            [&vel, rot_vec, delta_time](glm::vec2& pos)
+            {
+                pos += (vel.data * rot_vec * delta_time);
+            });
+    }
+}
+
+void destroy_bullets(entt::registry& registry)
+{
+    const double timestamp = ResourceManager::timer->getTotalTime();
+    auto view = registry.view<const ecs::component::lifetime>();
+    for(auto&& [bullet, life] : view.each())
     {
         if((life.creation + life.timeTillDeath) <= timestamp)
         {
             registry.destroy(bullet);
             continue;
         }
-
-        vel.data = glm::max(glm::min(vel.data + acc * delta_time, mvel.data), 0.f);
-        const auto rad = glm::radians(rot.data);
-        glm::vec2 rot_vec = {glm::cos(rad), glm::sin(rad)};
-        pos += (vel.data * rot_vec * delta_time);
     }
 }
 

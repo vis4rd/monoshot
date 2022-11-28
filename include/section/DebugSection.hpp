@@ -8,8 +8,10 @@
 #include "../ui/layouts/GameplayLayout.hpp"
 #include "Section.hpp"
 #include "../utility/Timer.hpp"
+#include "../ecs/systems.hpp"
 
 #include <entt/entity/registry.hpp>
+#include <entt/entity/observer.hpp>
 #include <SFML/Audio.hpp>
 
 class DebugSection final : public Section
@@ -41,8 +43,9 @@ class DebugSection final : public Section
     Map m_map;
     Hero m_hero;
     UI::GameplayLayout m_layout;
-    entt::registry m_mapElementsRegistry;
-    entt::registry m_bulletRegistry;
+    entt::registry m_mapElementsRegistry{};
+    entt::registry m_bulletRegistry{};
+    entt::observer m_bulletObserver{m_bulletRegistry, entt::collector.update<ecs::component::position>()};
     std::unordered_map<std::string, sf::SoundBuffer> m_soundBuffers;
     std::unordered_map<std::string, sf::Sound> m_sounds;
 
