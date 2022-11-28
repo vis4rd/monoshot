@@ -66,7 +66,6 @@ void check_alive_bullets(entt::registry& registry)
         if((life.creation + life.timeTillDeath) <= timestamp)
         {
             registry.emplace<ecs::component::destroyed>(bullet);
-            // registry.destroy(bullet);
             continue;
         }
     }
@@ -74,15 +73,7 @@ void check_alive_bullets(entt::registry& registry)
 
 void collide_bullets(entt::registry& bullet_registry, entt::registry& map_registry)
 {
-    constexpr auto bullet_sorter = [](const auto& lhs, const auto& rhs)
-    {
-        return (lhs.x < rhs.x) || (lhs.y < rhs.y);
-    };
     namespace ec = ecs::component;
-    if(bullet_registry.alive() < 2)
-    {
-        return;
-    }
 
     auto bullet_view = bullet_registry.view<ec::position, ec::size>(entt::exclude<ec::destroyed>).use<ec::position>();
     auto map_view = map_registry.view<ec::position, ec::size, ec::rotation>().use<ec::position>();
