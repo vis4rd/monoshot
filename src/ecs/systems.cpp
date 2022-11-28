@@ -11,20 +11,18 @@ namespace impl
 
 bool is_colliding_with_anything(entt::registry& registry, const glm::vec2& entity_size, const glm::vec2& next_pos)
 {
-    const auto view = registry.view<const ecs::component::position>();
-    // const float& hero_rot = registry.get<const ecs::component::rotation>(entity);
-    for(std::int32_t iter = 0; const auto& element : view)
+    using namespace ecs::component;
+    const auto view = registry.view<const position, const rotation, const size>().use<const position>();
+    // const float& hero_rot = registry.get<const rotation>(entity);
+    for(std::int32_t iter = 0; auto&& [element, el_pos, el_rot, el_size] : view.each())
     {
         if(iter >= 4)
         {
             break;
         }
-        const glm::vec2& tile_pos = view.get<const ecs::component::position>(element);
-        const float& tile_rot = registry.get<const ecs::component::rotation>(element);
-        const glm::vec2& tile_size = registry.get<const ecs::component::size>(element);
 
         // TODO: unfortunately entity rotation sometimes causes the character to get stuck, pls fix
-        if(OBB::findCollision(next_pos, entity_size, /*entity_rot*/ 0.f, tile_pos, tile_size, tile_rot))
+        if(OBB::findCollision(next_pos, entity_size, /*entity_rot*/ 0.f, el_pos, el_size, el_rot))
         {
             return true;
         }
@@ -40,7 +38,7 @@ void move_bullets(entt::registry& registry)
 {
     using namespace ecs::component;
     const float& delta_time = ResourceManager::timer->deltaTime();
-    auto view = registry.view<const rotation, const max_velocity, const acceleration>();
+    auto view = registry.view<const rotation, const max_velocity, const acceleration>(entt::exclude<ecs::component::destroyed>);
     for(auto&& [bullet, rot, mvel, acc] : view.each())
     {
         const auto& vel = registry.patch<velocity>(bullet,
@@ -59,18 +57,65 @@ void move_bullets(entt::registry& registry)
     }
 }
 
-void destroy_bullets(entt::registry& registry)
+void check_alive_bullets(entt::registry& registry)
 {
     const double timestamp = ResourceManager::timer->getTotalTime();
-    auto view = registry.view<const ecs::component::lifetime>();
+    auto view = registry.view<const ecs::component::lifetime>(entt::exclude<ecs::component::destroyed>);
     for(auto&& [bullet, life] : view.each())
     {
         if((life.creation + life.timeTillDeath) <= timestamp)
         {
-            registry.destroy(bullet);
+            registry.emplace<ecs::component::destroyed>(bullet);
+            // registry.destroy(bullet);
             continue;
         }
     }
+}
+
+void collide_bullets(entt::registry& bullet_registry, entt::registry& map_registry)
+{
+    constexpr auto bullet_sorter = [](const auto& lhs, const auto& rhs)
+    {
+        return (lhs.x < rhs.x) || (lhs.y < rhs.y);
+    };
+    namespace ec = ecs::component;
+    if(bullet_registry.alive() < 2)
+    {
+        return;
+    }
+
+    auto bullet_view = bullet_registry.view<ec::position, ec::size>(entt::exclude<ec::destroyed>).use<ec::position>();
+    auto map_view = map_registry.view<ec::position, ec::size, ec::rotation>().use<ec::position>();
+
+    // go through every bullet
+    for(auto&& [bullet_entity, b_pos, b_size] : bullet_view.each())
+    {
+        if(not bullet_registry.valid(bullet_entity))
+        {
+            continue;
+        }
+
+        // sort map elements in similar order to bullets, hoping that most swaps will be skipped (when bullets have similar positions)
+        const auto element_sorter = [&b_pos = b_pos](const auto& lhs, const auto& rhs)
+        {
+            return glm::abs(glm::length(lhs - b_pos)) < glm::abs(glm::length(rhs - b_pos));
+        };
+        map_registry.sort<ec::position>(element_sorter);
+
+        // go through closest map elements
+        const auto& el_entity = map_view.front();
+        if(OBB::findCollision(b_pos, b_size, 0.f, map_view.get<ec::position>(el_entity), map_view.get<ec::size>(el_entity), map_view.get<ec::rotation>(el_entity)))
+        {
+            bullet_registry.emplace_or_replace<ec::destroyed>(bullet_entity);
+        }
+    }
+}
+
+void destroy_bullets(entt::registry& registry)
+{
+    namespace ec = ecs::component;
+    const auto view = registry.view<ec::destroyed>();
+    registry.destroy(view.begin(), view.end());
 }
 
 void move_hero_with_collisions(entt::registry& registry, Hero& hero, glm::vec2& hero_move_direction)

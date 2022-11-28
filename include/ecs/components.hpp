@@ -23,6 +23,7 @@ struct lifetime
     double creation;
     double timeTillDeath;
 };
+struct destroyed{};
 
 // clang-format on
 }  // namespace ecs::component

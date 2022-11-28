@@ -253,8 +253,10 @@ void DebugSection::update() noexcept
 
     // ecs::system::remove_dead_entities(m_registry);
     ecs::system::move_hero_with_collisions(m_mapElementsRegistry, m_hero, move_direction);
-    ecs::system::destroy_bullets(m_bulletRegistry);
     ecs::system::move_bullets(m_bulletRegistry);
+    ecs::system::collide_bullets(m_bulletRegistry, m_mapElementsRegistry);
+    ecs::system::check_alive_bullets(m_bulletRegistry);
+    ecs::system::destroy_bullets(m_bulletRegistry);
 
     // finish the level if hero gets to the end area
     if(m_map.isInEndArea(pos, m_hero.size) && (not m_onLeaveStarted))
@@ -289,7 +291,7 @@ void DebugSection::render() noexcept
 
     m_map.drawObjects({pos.x, pos.y}, s_draw_bbs);
 
-    const auto bullet_view = m_bulletRegistry.view<const ecs::component::position, const ecs::component::size, const ecs::component::rotation>();
+    const auto bullet_view = m_bulletRegistry.view<const ecs::component::position, const ecs::component::size, const ecs::component::rotation>(entt::exclude<ecs::component::destroyed>);
     bullet_view.each(
         [](const auto& b_pos, const auto& b_size, const auto& b_rot)
         {
@@ -468,6 +470,9 @@ void DebugSection::showDebugUI()
                     ImGui::Text("ammo: %u/%u/%u", weapon.getAmmoCurrent(), weapon.getAmmoMagazineMax(), weapon.getAmmoTotal());
                 }
             }
+            ImGui::Separator();
+            ImGui::Text("Map elements count: %ld/%ld", m_mapElementsRegistry.alive(), m_mapElementsRegistry.size());
+            ImGui::Text("Bullet count: %ld/%ld", m_bulletRegistry.alive(), m_bulletRegistry.size());
 
             static std::string preview = "Forest Theme";
             bool check = false;
@@ -502,6 +507,15 @@ void DebugSection::showDebugUI()
             {
                 glClearColor(clear_color.r * clear_color.a, clear_color.g * clear_color.a, clear_color.b * clear_color.a, clear_color.a);
             }
+        }
+        ImGui::End();
+    }
+    else
+    {
+        ImGui::Begin("Release Mode Statistics");
+        {
+            ImGui::Text("Performance: [%.2fms] [%.0ffps]", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+            ImGui::Text("Mouse Position: Screen[%.2fx, %.2fy]", ImGui::GetMousePos().x, ImGui::GetMousePos().y);
         }
         ImGui::End();
     }
