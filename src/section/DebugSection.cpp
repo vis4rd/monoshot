@@ -92,8 +92,8 @@ DebugSection::DebugSection()
 
     Renderer::init();
 
-    m_hero.addItem(std::move(Weapon(10, 31, 76, 50.f, 0.2)));
-    m_hero.addItem(std::move(Weapon(10, 70, 20000, 3.f, 0.05)));
+    m_hero.addItem(std::move(Weapon(10, 31, 76, 35.f, 0.3)));
+    m_hero.addItem(std::move(Weapon(10, 70, 20000, 10.f, 0.05)));
 
     // ecs
     m_map.addTilesToRegistry(m_mapElementsRegistry);
@@ -212,7 +212,7 @@ void DebugSection::update() noexcept
                     auto bullet = m_bulletRegistry.create();
                     m_bulletRegistry.emplace<ecs::component::lifetime>(bullet, ResourceManager::timer->getTotalTime(), 2.0);
                     m_bulletRegistry.emplace<ecs::component::position>(bullet, pos);
-                    m_bulletRegistry.emplace<ecs::component::size>(bullet, glm::vec2{0.2f, 0.2f});
+                    m_bulletRegistry.emplace<ecs::component::size>(bullet, glm::vec2{0.1f, 0.1f});
                     m_bulletRegistry.emplace<ecs::component::velocity>(bullet, weapon.getBulletVelocity());
                     m_bulletRegistry.emplace<ecs::component::max_velocity>(bullet, weapon.getBulletVelocity());
                     m_bulletRegistry.emplace<ecs::component::acceleration>(bullet, -1.f);
@@ -287,15 +287,16 @@ void DebugSection::render() noexcept
     float& rot = m_hero.rotation;
     float& vel = m_hero.velocity;
     const float& acc = m_hero.acceleration;
-    Renderer::drawQuad({pos.x, pos.y}, m_hero.size, rot, m_hero.getTexture(), std::get<1>(m_map.getCurrentTheme().wallBlock));
+    const auto& theme_color = std::get<1>(m_map.getCurrentTheme().wallBlock);
+    Renderer::drawQuad({pos.x, pos.y}, m_hero.size, rot, m_hero.getTexture(), theme_color);
 
     m_map.drawObjects({pos.x, pos.y}, s_draw_bbs);
 
     const auto bullet_view = m_bulletRegistry.view<const ecs::component::position, const ecs::component::size, const ecs::component::rotation>(entt::exclude<ecs::component::destroyed>);
     bullet_view.each(
-        [](const auto& b_pos, const auto& b_size, const auto& b_rot)
+        [&theme_color](const auto& b_pos, const auto& b_size, const auto& b_rot)
         {
-            Renderer::drawQuad({b_pos.x, b_pos.y}, b_size, b_rot, {1.f, 0.f, 0.f, 1.f});
+            Renderer::drawQuad({b_pos.x, b_pos.y}, b_size, b_rot, theme_color);
         });
 
     Renderer::endBatch(m_camera.getProjectionMatrix(), m_camera.getViewMatrix());
