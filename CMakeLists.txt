@@ -22,7 +22,7 @@ option(MOLD_LINKER_PATH "Path to the mold linker executable" "")
 
 # Use mold linker if present in the system (to speed up linking time)
 find_program(MOLD_LINKER
-    NAMES "mold" "mold.exe"
+    NAMES "mold"
     HINTS "/usr/bin"
           "/usr/libexec/mold"
           "/usr/local/libexec/mold"
@@ -81,11 +81,14 @@ set(SFML_BUILD_GRAPHICS OFF CACHE BOOL "" FORCE)
 set(SFML_BUILD_AUDIO ON CACHE BOOL "" FORCE)
 set(SFML_BUILD_NETWORK OFF CACHE BOOL "" FORCE)
 set(SFML_BUILD_DOC OFF CACHE BOOL "" FORCE)
+set(SFML_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(SFML_BUILD_TEST_SUITE OFF CACHE BOOL "" FORCE)
 set(SFML_ENABLE_COVERAGE OFF CACHE BOOL "" FORCE)
 set(SFML_INSTALL_PKGCONFIG_FILES OFF CACHE BOOL "" FORCE)
 set(SFML_ENABLE_PCH ON CACHE BOOL "" FORCE)
-
+set(SFML_USE_SYSTEM_DEPS OFF CACHE BOOL "" FORCE)
+set(SFML_BUILD_FRAMEWORKS OFF CACHE BOOL "" FORCE)
+set(SFML_STATIC_LIBRARIES ON CACHE BOOL "" FORCE)
 add_subdirectory("${PROJECT_SOURCE_DIR}/lib/sfml")
 
 # Other sources
@@ -136,7 +139,7 @@ target_precompile_headers(${EXECUTABLE_NAME}
     PRIVATE "${PROJECT_SOURCE_DIR}/include/Root.hpp"
 )
 
-if(MOLD_LINKER)
+if(MOLD_LINKER AND CMAKE_HOST_UNIX)
     if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
         message(STATUS "Found mold linker at '${MOLD_LINKER}', replacing default linker for clang...")
         target_link_options(${EXECUTABLE_NAME}
@@ -167,6 +170,18 @@ elseif(CMAKE_HOST_UNIX)
     message(STATUS "UNIX system detected.")
 else()
     message(STATUS "Unknown system detected.")
+endif()
+
+# Copy dynamic libraries (they are SFML's dependencies and it's dynamic because of LGPL2 license)
+if(MINGW AND CMAKE_HOST_WIN32) # I hate SFML's CMake files
+    set(COMPILER_DIR "$<PATH:REMOVE_FILENAME,${CMAKE_CXX_COMPILER}>")
+
+    add_custom_command(TARGET ${EXECUTABLE_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy "${PROJECT_SOURCE_DIR}/lib/sfml/extlibs/bin/x86/openal32.dll" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/"
+        COMMAND ${CMAKE_COMMAND} -E copy "${COMPILER_DIR}/libgcc_s_seh-1.dll" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/"
+        COMMAND ${CMAKE_COMMAND} -E copy "${COMPILER_DIR}/libstdc++-6.dll" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/"
+        COMMAND ${CMAKE_COMMAND} -E copy "${COMPILER_DIR}/libwinpthread-1.dll" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/"
+    )
 endif()
 
 # Versioning

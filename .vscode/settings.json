@@ -30,7 +30,8 @@
         "lib/imgui/imgui",
         "lib/spdlog",
         "lib/tinyfiledialogs/tinyfiledialogs",
-        "lib/raudio/raudio"
+        "lib/raudio/raudio",
+        "lib/sfml"
     ],
     //
     "[cpp]": {
