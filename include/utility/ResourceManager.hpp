@@ -24,6 +24,9 @@ struct ResourceManager
     static Texture::Texture smallBushTexture;
     static Texture::Texture largeBushTexture;
 
+    static Texture::Texture rifleInventoryTexture;
+    static Texture::Texture pistolInventoryTexture;
+
     static std::shared_ptr<Font> uiTitleFont;
     static std::shared_ptr<float> uiTitleFontSize;
     static std::shared_ptr<Font> uiButtonFont;

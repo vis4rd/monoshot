@@ -68,6 +68,9 @@ void App::initTextures() noexcept
     res::largeBushTexture = Resource::create<Texture::impl::Texture>("../res/textures/large_bush.png", 56, 56);
     res::carTexture = Resource::create<Texture::impl::Texture>("../res/textures/car.png", 32, 64);
     res::destroyedCarTexture = Resource::create<Texture::impl::Texture>("../res/textures/destroyed_car.png", 32, 64);
+
+    res::rifleInventoryTexture = Resource::create<Texture::impl::Texture>("../res/textures/gun_inventory.png", 256, 128);
+    res::pistolInventoryTexture = Resource::create<Texture::impl::Texture>("../res/textures/pistol_inventory.png", 256, 128);
 }
 
 void App::initFonts() noexcept
@@ -83,7 +86,7 @@ void App::initFonts() noexcept
     // res::uiButtonFont = std::make_shared<Font>("../res/fonts/abandoned/Abandoned-Bold.ttf", *res::uiButtonFontSize);
     res::uiButtonFontSize = std::make_shared<float>(20.f * window_width / 1920.f);
     res::uiButtonFont = std::make_shared<Font>("../res/fonts/brass-mono/regular_comfortable.otf", *res::uiButtonFontSize);
-    res::uiAmmoFontSize = std::make_shared<float>(40.f * window_width / 1920.f);
+    res::uiAmmoFontSize = std::make_shared<float>(25.f * window_width / 1920.f);
     res::uiAmmoFont = std::make_shared<Font>("../res/fonts/gunplay/GUNPLAY_.ttf", *res::uiAmmoFontSize);
 }
 
@@ -126,6 +129,9 @@ void App::destroyTextures() noexcept
     res::largeBushTexture.reset();
     res::carTexture.reset();
     res::destroyedCarTexture.reset();
+
+    res::rifleInventoryTexture.reset();
+    res::pistolInventoryTexture.reset();
 }
 
 void App::destroyFonts() noexcept

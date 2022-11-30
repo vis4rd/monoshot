@@ -334,6 +334,7 @@ void DebugSection::render() noexcept
         auto font_guard = font->use();
         const auto text_pos = res::window->getSize() / 2;
         ImGui::SetNextWindowPos({static_cast<float>(text_pos.x), static_cast<float>(text_pos.y)}, ImGuiCond_Always, {0.5f, 0.5f});
+        ImGui::SetNextWindowSize({static_cast<float>(text_pos.x), static_cast<float>(text_pos.y) / 1.5f});
         ImGui::Begin("Win message", nullptr, m_layout.window_flags | ImGuiWindowFlags_NoBackground);
         {
             TextCentered("You won");

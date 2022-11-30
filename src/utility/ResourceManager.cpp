@@ -14,6 +14,9 @@ Texture::Texture ResourceManager::largeTreeTexture;
 Texture::Texture ResourceManager::smallBushTexture;
 Texture::Texture ResourceManager::largeBushTexture;
 
+Texture::Texture ResourceManager::rifleInventoryTexture;
+Texture::Texture ResourceManager::pistolInventoryTexture;
+
 std::shared_ptr<Font> ResourceManager::uiTitleFont;
 std::shared_ptr<float> ResourceManager::uiTitleFontSize;
 std::shared_ptr<Font> ResourceManager::uiButtonFont;
