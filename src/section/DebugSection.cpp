@@ -98,6 +98,14 @@ DebugSection::DebugSection()
     // ecs
     m_map.addTilesToRegistry(m_mapElementsRegistry);
 
+    const auto spawn_enemy = [](entt::registry& registry, const glm::vec2& pos, const glm::vec2& rot)
+    {
+        auto bullet = registry.create();
+        registry.emplace<ecs::component::position>(bullet, pos);
+        registry.emplace<ecs::component::size>(bullet, glm::vec2{0.1f, 0.1f});
+        registry.emplace<ecs::component::rotation>(bullet, rot);
+    };
+
     // sounds and music
     const auto setupSound = [&buffers = m_soundBuffers, &sounds = m_sounds](const std::string& name, const std::string& filename) -> void
     {
@@ -198,6 +206,18 @@ void DebugSection::update() noexcept
         }
     }
 
+    const auto spawn_bullet = [&pos, &rot](entt::registry& registry, const Weapon& weapon)
+    {
+        auto bullet = registry.create();
+        registry.emplace<ecs::component::lifetime>(bullet, ResourceManager::timer->getTotalTime(), 2.0);
+        registry.emplace<ecs::component::position>(bullet, pos);
+        registry.emplace<ecs::component::size>(bullet, glm::vec2{0.1f, 0.1f});
+        registry.emplace<ecs::component::velocity>(bullet, weapon.getBulletVelocity());
+        registry.emplace<ecs::component::max_velocity>(bullet, weapon.getBulletVelocity());
+        registry.emplace<ecs::component::acceleration>(bullet, -1.f);
+        registry.emplace<ecs::component::rotation>(bullet, rot);
+    };
+
     // update inventory logic
     if(!m_hero.isInventoryEmpty())
     {
@@ -209,14 +229,7 @@ void DebugSection::update() noexcept
                 const auto& weapon = m_hero.getCurrentItem<Weapon>();
                 if(weapon.getAmmoCurrent() > 0)
                 {
-                    auto bullet = m_bulletRegistry.create();
-                    m_bulletRegistry.emplace<ecs::component::lifetime>(bullet, ResourceManager::timer->getTotalTime(), 2.0);
-                    m_bulletRegistry.emplace<ecs::component::position>(bullet, pos);
-                    m_bulletRegistry.emplace<ecs::component::size>(bullet, glm::vec2{0.1f, 0.1f});
-                    m_bulletRegistry.emplace<ecs::component::velocity>(bullet, weapon.getBulletVelocity());
-                    m_bulletRegistry.emplace<ecs::component::max_velocity>(bullet, weapon.getBulletVelocity());
-                    m_bulletRegistry.emplace<ecs::component::acceleration>(bullet, -1.f);
-                    m_bulletRegistry.emplace<ecs::component::rotation>(bullet, rot);
+                    spawn_bullet(m_bulletRegistry, weapon);
                     m_sounds["gunshot"].play();
                 }
             }
