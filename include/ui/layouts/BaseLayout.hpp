@@ -55,7 +55,7 @@ BaseLayout::BaseLayout(const ImVec2& workpos, const ImVec2& worksize)
       viewport_x(workpos.x),
       viewport_y(workpos.y)
 {
-    if constexpr(Flag::DebugMode)
+    if constexpr(not Flag::DebugMode)
     {
         window_flags |= ImGuiWindowFlags_NoBackground;
     }
