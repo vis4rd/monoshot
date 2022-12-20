@@ -71,12 +71,13 @@ void check_alive_bullets(entt::registry& registry)
     }
 }
 
-void collide_bullets(entt::registry& bullet_registry, entt::registry& map_registry)
+void collide_bullets(entt::registry& bullet_registry, entt::registry& map_registry, entt::registry& enemy_registry)
 {
     namespace ec = ecs::component;
 
     auto bullet_view = bullet_registry.view<ec::position, ec::size>(entt::exclude<ec::destroyed>).use<ec::position>();
     auto map_view = map_registry.view<ec::position, ec::size, ec::rotation>().use<ec::position>();
+    auto enemy_view = enemy_registry.view<ec::position, ec::size, ec::rotation, ec::health>().use<ec::position>();
 
     // go through every bullet
     for(auto&& [bullet_entity, b_pos, b_size] : bullet_view.each())
@@ -86,11 +87,33 @@ void collide_bullets(entt::registry& bullet_registry, entt::registry& map_regist
             continue;
         }
 
-        // sort map elements in similar order to bullets, hoping that most swaps will be skipped (when bullets have similar positions)
         const auto element_sorter = [&b_pos = b_pos](const auto& lhs, const auto& rhs)
         {
             return glm::abs(glm::length(lhs - b_pos)) < glm::abs(glm::length(rhs - b_pos));
         };
+
+        // ENEMIES RESOLUTION
+        // sort enemies in similar order to bullets, hoping that most swaps will be skipped (when bullets have similar positions)
+        enemy_registry.sort<ec::position>(element_sorter);
+
+        // go through closest enemies
+        const auto& en_entity = enemy_view.front();
+        if(en_entity != entt::null)
+        {
+            if(OBB::findCollision(b_pos, b_size, 0.f, enemy_view.get<ec::position>(en_entity), enemy_view.get<ec::size>(en_entity), enemy_view.get<ec::rotation>(en_entity)))
+            {
+                std::int32_t& enemy_health = enemy_view.get<ec::health>(en_entity);
+                enemy_health -= 20;
+                if(enemy_health <= 0)
+                {
+                    enemy_registry.emplace_or_replace<ec::destroyed>(en_entity);
+                }
+                bullet_registry.emplace_or_replace<ec::destroyed>(bullet_entity);
+            }
+        }
+
+        // MAP RESOLUTION
+        // sort map elements in similar order to bullets, hoping that most swaps will be skipped (when bullets have similar positions)
         map_registry.sort<ec::position>(element_sorter);
 
         // go through closest map elements
@@ -102,7 +125,7 @@ void collide_bullets(entt::registry& bullet_registry, entt::registry& map_regist
     }
 }
 
-void destroy_bullets(entt::registry& registry)
+void destroy_entities(entt::registry& registry)
 {
     namespace ec = ecs::component;
     const auto view = registry.view<ec::destroyed>();

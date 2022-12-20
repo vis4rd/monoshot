@@ -24,6 +24,7 @@ struct lifetime
     double timeTillDeath;
 };
 struct destroyed{};
+struct health : public Scalar<std::int32_t> { health(float val = 100) : Scalar<std::int32_t>(val) { } };
 
 // clang-format on
 }  // namespace ecs::component

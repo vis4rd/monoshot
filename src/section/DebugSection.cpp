@@ -98,13 +98,16 @@ DebugSection::DebugSection()
     // ecs
     m_map.addTilesToRegistry(m_mapElementsRegistry);
 
-    const auto spawn_enemy = [](entt::registry& registry, const glm::vec2& pos, const glm::vec2& rot)
+    const auto spawn_enemy = [](entt::registry& registry, const glm::vec2& pos, const float& rot)
     {
-        auto bullet = registry.create();
-        registry.emplace<ecs::component::position>(bullet, pos);
-        registry.emplace<ecs::component::size>(bullet, glm::vec2{0.1f, 0.1f});
-        registry.emplace<ecs::component::rotation>(bullet, rot);
+        auto enemy = registry.create();
+        registry.emplace<ecs::component::position>(enemy, pos);
+        registry.emplace<ecs::component::size>(enemy, glm::vec2{1.f, 1.f});
+        registry.emplace<ecs::component::rotation>(enemy, rot);
+        registry.emplace<ecs::component::health>(enemy, 100);
     };
+
+    spawn_enemy(m_enemyRegistry, {4.f, 0.f}, 0.f);
 
     // sounds and music
     const auto setupSound = [&buffers = m_soundBuffers, &sounds = m_sounds](const std::string& name, const std::string& filename) -> void
@@ -267,9 +270,10 @@ void DebugSection::update() noexcept
     // ecs::system::remove_dead_entities(m_registry);
     ecs::system::move_hero_with_collisions(m_mapElementsRegistry, m_hero, move_direction);
     ecs::system::move_bullets(m_bulletRegistry);
-    ecs::system::collide_bullets(m_bulletRegistry, m_mapElementsRegistry);
+    ecs::system::collide_bullets(m_bulletRegistry, m_mapElementsRegistry, m_enemyRegistry);
     ecs::system::check_alive_bullets(m_bulletRegistry);
-    ecs::system::destroy_bullets(m_bulletRegistry);
+    ecs::system::destroy_entities(m_bulletRegistry);
+    ecs::system::destroy_entities(m_enemyRegistry);
 
     // finish the level if hero gets to the end area
     if(m_map.isInEndArea(pos, m_hero.size) && (not m_onLeaveStarted))
@@ -310,6 +314,14 @@ void DebugSection::render() noexcept
         [&theme_color](const auto& b_pos, const auto& b_size, const auto& b_rot)
         {
             Renderer::drawQuad({b_pos.x, b_pos.y}, b_size, b_rot, theme_color);
+        });
+
+    const auto& enemy_texture = ResourceManager::chairTexture;
+    const auto enemy_view = m_enemyRegistry.view<const ecs::component::position, const ecs::component::size, const ecs::component::rotation>();
+    enemy_view.each(
+        [&enemy_texture](const auto& e_pos, const auto& e_size, const auto& e_rot)
+        {
+            Renderer::drawQuad({e_pos.x, e_pos.y}, e_size, e_rot, enemy_texture, {1.f, 0.4f, 0.4f, 1.f});
         });
 
     Renderer::endBatch(m_camera.getProjectionMatrix(), m_camera.getViewMatrix());
