@@ -4,6 +4,7 @@
 #include "../../include/renderer/Renderer.hpp"
 #include "../../include/utility/ResourceManager.hpp"
 #include "../../include/utility/Collisions.hpp"
+#include "../../include/ecs/actions.hpp"
 
 #include <stbi/stb_image.h>
 
@@ -98,16 +99,7 @@ DebugSection::DebugSection()
     // ecs
     m_map.addTilesToRegistry(m_mapElementsRegistry);
 
-    const auto spawn_enemy = [](entt::registry& registry, const glm::vec2& pos, const float& rot)
-    {
-        auto enemy = registry.create();
-        registry.emplace<ecs::component::position>(enemy, pos);
-        registry.emplace<ecs::component::size>(enemy, glm::vec2{1.f, 1.f});
-        registry.emplace<ecs::component::rotation>(enemy, rot);
-        registry.emplace<ecs::component::health>(enemy, 100);
-    };
-
-    spawn_enemy(m_enemyRegistry, {4.f, 0.f}, 0.f);
+    ecs::action::spawn_enemy(m_enemyRegistry, {4.f, 0.f});
 
     // sounds and music
     const auto setupSound = [&buffers = m_soundBuffers, &sounds = m_sounds](const std::string& name, const std::string& filename) -> void
@@ -150,10 +142,6 @@ void DebugSection::update() noexcept
     // spdlog::trace("Updating DebugSection");
     const glm::vec2& pos = m_hero.position;
     float& rot = m_hero.rotation;
-
-    // update music
-    // UpdateMusicStream(m_music);
-    // m_music.update();
 
     // calculate main hero rotation after mouse cursor
     const glm::vec2 mouse_screen_pos = ResourceManager::window->getMousePosition();
@@ -209,18 +197,6 @@ void DebugSection::update() noexcept
         }
     }
 
-    const auto spawn_bullet = [&pos, &rot](entt::registry& registry, const Weapon& weapon)
-    {
-        auto bullet = registry.create();
-        registry.emplace<ecs::component::lifetime>(bullet, ResourceManager::timer->getTotalTime(), 2.0);
-        registry.emplace<ecs::component::position>(bullet, pos);
-        registry.emplace<ecs::component::size>(bullet, glm::vec2{0.1f, 0.1f});
-        registry.emplace<ecs::component::velocity>(bullet, weapon.getBulletVelocity());
-        registry.emplace<ecs::component::max_velocity>(bullet, weapon.getBulletVelocity());
-        registry.emplace<ecs::component::acceleration>(bullet, -1.f);
-        registry.emplace<ecs::component::rotation>(bullet, rot);
-    };
-
     // update inventory logic
     if(!m_hero.isInventoryEmpty())
     {
@@ -232,7 +208,7 @@ void DebugSection::update() noexcept
                 const auto& weapon = m_hero.getCurrentItem<Weapon>();
                 if(weapon.getAmmoCurrent() > 0)
                 {
-                    spawn_bullet(m_bulletRegistry, weapon);
+                    ecs::action::spawn_bullet(m_bulletRegistry, pos, rot, weapon.getBulletVelocity());
                     m_sounds["gunshot"].play();
                 }
             }
