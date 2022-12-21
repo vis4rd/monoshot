@@ -20,4 +20,5 @@ class CreatorSection final : public Section
     private:
     Map m_map;
     PerspectiveCamera m_camera;
+    entt::registry m_entities{};
 };

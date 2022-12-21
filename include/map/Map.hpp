@@ -36,8 +36,8 @@ class Map final
     std::vector<Tile>::iterator findTile(const float& x, const float& y);
     void addTilesToRegistry(entt::registry& registry) const;
 
-    void loadFromFile(const std::string& filename);
-    void saveToFile(const std::string& filename);
+    void loadFromFile(const std::string& filename, entt::registry& enemy_registry);
+    void saveToFile(const std::string& filename, const entt::registry& enemy_registry);
 
     void setTheme(const MapTheme& new_theme);
     const MapTheme& getCurrentTheme() const;

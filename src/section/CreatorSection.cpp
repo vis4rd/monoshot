@@ -3,6 +3,9 @@
 #include "../../include/renderer/Renderer.hpp"
 #include "../../include/utility/RandomNumber.hpp"
 #include "../../include/utility/ResourceManager.hpp"
+#include "../../include/ecs/components.hpp"
+#include "../../include/ecs/actions.hpp"
+
 #include <tinyfiledialogs/tinyfiledialogs.h>
 
 // globals
@@ -99,6 +102,14 @@ void CreatorSection::update() noexcept
     {
         m_map.removeTile(s_mouse_world_pos.x, s_mouse_world_pos.y);
         m_map.removeObject(s_mouse_world_pos);
+        for(auto&& [enemy, pos] : m_entities.view<const ecs::component::position>().each())
+        {
+            const bool col = AABB::isColliding(s_mouse_world_pos, {0.01f, 0.01f}, pos, {1.f, 1.f});
+            if(col)
+            {
+                m_entities.destroy(enemy);
+            }
+        }
     }
     if(!ImGui::GetIO().WantCaptureMouse)
     {
@@ -122,6 +133,14 @@ void CreatorSection::update() noexcept
             if(input.isPressedOnce(GLFW_MOUSE_BUTTON_LEFT))
             {
                 m_map.setEndArea(s_mouse_world_pos, s_end_area_size);
+            }
+        }
+        else if(s_selected_map_item == 10000)
+        {
+            if(input.isPressedOnce(GLFW_MOUSE_BUTTON_LEFT))
+            {
+                ecs::action::spawn_enemy(m_entities, s_mouse_world_pos, {1.f, 1.f}, s_randomized_rotation);
+                spdlog::debug("Map: Placing an enemy with coords ({}, {})", s_mouse_world_pos.x, s_mouse_world_pos.y);
             }
         }
     }
@@ -175,6 +194,16 @@ void CreatorSection::render() noexcept
     {
         Renderer::drawRect({s_mouse_world_pos.x, s_mouse_world_pos.y}, s_end_area_size, 0.f, {1.f, 1.f, 1.f, 1.f});
     }
+    else if(s_selected_map_item == 10000)
+    {
+        Renderer::drawQuad({s_mouse_world_pos.x, s_mouse_world_pos.y}, {1.f, 1.f}, s_randomized_rotation, ResourceManager::enemyTexture, {1.f, 0.4f, 0.4f, 0.2f});
+    }
+
+    auto view = m_entities.view<const ecs::component::position, const ecs::component::rotation>();
+    for(auto&& [enemy, pos, rot] : view.each())
+    {
+        Renderer::drawQuad(pos, {1.f, 1.f}, rot.data, ResourceManager::enemyTexture, {1.f, 0.4f, 0.4f, 1.f});
+    }
     // Renderer::drawRect({std::round(s_mouse_world_pos.x), std::round(s_mouse_world_pos.y)}, {1.f, 1.f}, 0.f, {1.f, 1.f, 1.f, 1.f});
     // Renderer::drawRect({-5.f, 5.f}, {5.f, 5.f}, {5.f, -5.f}, {-5.f, -5.f}, {0.f, 1.f, 0.f, 1.f});
     // Renderer::drawRect({-3.f, 3.f}, {3.f, -3.f}, {0.f, 1.f, 0.f, 1.f});
@@ -217,7 +246,7 @@ void CreatorSection::render() noexcept
 
         ImGui::Separator();
         static std::string preview = "Wall";
-        std::array<bool, static_cast<std::size_t>(BlockID::BLOCK_COUNT) + static_cast<std::size_t>(ObjectID::OBJECT_COUNT) + 1> checks = {0};
+        std::array<bool, static_cast<std::size_t>(BlockID::BLOCK_COUNT) + static_cast<std::size_t>(ObjectID::OBJECT_COUNT) + 1 + 1> checks = {0};
         if(ImGui::BeginCombo("Blocks", preview.c_str()))
         {
             for(std::size_t block_id = BlockID::FIRST_BLOCK + 1; block_id < BlockID::LAST_BLOCK; block_id++)
@@ -244,6 +273,12 @@ void CreatorSection::render() noexcept
                 s_selected_map_item = 9999;
                 preview = "End Area";
             }
+            if(ImGui::Selectable("Enemy##unique_id", &(checks.back())))
+            {
+                spdlog::debug("Selected Enemy");
+                s_selected_map_item = 10000;
+                preview = "Enemy";
+            }
             ImGui::EndCombo();
         }
 
@@ -256,7 +291,7 @@ void CreatorSection::render() noexcept
             const char* file_path = tinyfd_saveFileDialog("Choose save location...", "./", patterns.size(), patterns.data(), "*.msmap - Monoshot map savefile");
             if(nullptr != file_path)
             {
-                m_map.saveToFile(file_path);
+                m_map.saveToFile(file_path, m_entities);
             }
         }
         ImGui::SameLine();
@@ -266,7 +301,7 @@ void CreatorSection::render() noexcept
             const char* file_path = tinyfd_openFileDialog("Load a map...", "./", patterns.size(), patterns.data(), nullptr, 0);
             if(nullptr != file_path)
             {
-                m_map.loadFromFile(file_path);
+                m_map.loadFromFile(file_path, m_entities);
             }
         }
 

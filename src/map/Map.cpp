@@ -1,6 +1,7 @@
 #include "../../include/map/Map.hpp"
 #include "../../include/renderer/Renderer.hpp"
 #include "../../include/ecs/systems.hpp"
+#include "../../include/ecs/actions.hpp"
 #include "../../include/utility/ResourceManager.hpp"
 
 #include <numeric>
@@ -141,7 +142,7 @@ void Map::addTilesToRegistry(entt::registry& registry) const
     }
 }
 
-void Map::loadFromFile(const std::string& filename)
+void Map::loadFromFile(const std::string& filename, entt::registry& enemy_registry)
 {
     spdlog::debug("Loading map from file '{}'...", filename);
 
@@ -182,8 +183,14 @@ void Map::loadFromFile(const std::string& filename)
     float object_rotation = 0.f;
     bool object_solid = false;
     std::size_t object_id = 2000;
-    while(file_buffer >> object_pos_x >> object_pos_y >> object_size_x >> object_size_y >> object_rotation >> object_solid >> object_id)
+    while(std::getline(file_buffer, line))
     {
+        if(line.empty())
+        {
+            break;
+        }
+        std::stringstream line_buffer(line);
+        line_buffer >> object_pos_x >> object_pos_y >> object_size_x >> object_size_y >> object_rotation >> object_solid >> object_id;
         if(object_id == 9999)
         {
             m_endArea = std::make_unique<OBB::Polygon>(glm::vec2(object_pos_x, object_pos_y), glm::vec2(object_size_x, object_size_y), object_rotation);
@@ -193,10 +200,21 @@ void Map::loadFromFile(const std::string& filename)
         spdlog::debug("Loading MapObject: pos = ({}, {}), size = ({}, {}), rot = {}, solid = {}, ID = '{}'", object_pos_x, object_pos_y, object_size_x, object_size_y, object_rotation, object_solid, objectIdToString(object_id));
     }
 
+    float enemy_pos_x = 0.f;
+    float enemy_pos_y = 0.f;
+    float enemy_rotation = 0.f;
+    while(std::getline(file_buffer, line))
+    {
+        std::stringstream line_buffer(line);
+        line_buffer >> enemy_pos_x >> enemy_pos_y >> enemy_rotation;
+        ecs::action::spawn_enemy(enemy_registry, {enemy_pos_x, enemy_pos_y}, {1.f, 1.f}, enemy_rotation);
+        spdlog::debug("Loading Enemy: pos = ({}, {})", enemy_pos_x, enemy_pos_y);
+    }
+
     spdlog::debug("Map loaded from file successfully");
 }
 
-void Map::saveToFile(const std::string& filename)
+void Map::saveToFile(const std::string& filename, const entt::registry& enemy_registry)
 {
     spdlog::debug("Saving map to file '{}'...", filename);
 
@@ -230,6 +248,16 @@ void Map::saveToFile(const std::string& filename)
     if(m_endArea)
     {
         file_buffer << m_endArea->position.x << ' ' << m_endArea->position.y << ' ' << m_endArea->size.x << ' ' << m_endArea->size.y << ' ' << 0.f << ' ' << 0 << ' ' << 9999 << '\n';
+        spdlog::debug("Saving EndArea: pos = ({}, {}), size = ({}, {})", m_endArea->position.x, m_endArea->position.y, m_endArea->size.x, m_endArea->size.y);
+    }
+
+    file_buffer << "\n";  // create an empty line between objects and enemies in a file
+
+    auto view = enemy_registry.view<const ecs::component::position, const ecs::component::rotation>();
+    for(auto&& [enemy, pos, rot] : view.each())
+    {
+        file_buffer << pos.x << ' ' << pos.y << ' ' << rot.data << '\n';
+        spdlog::debug("Saving Enemy: pos = ({}, {}), rot = {}", pos.x, pos.y, rot.data);
     }
 
     // dump buffer to the file

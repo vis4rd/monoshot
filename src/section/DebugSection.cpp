@@ -64,7 +64,7 @@ DebugSection::DebugSection()
 
     // ShaderManager::addShaderProgram("../res/shaders", "triangle_zoom");
 
-    m_map.loadFromFile("testMap.map");
+    m_map.loadFromFile("testMap.map", m_enemyRegistry);
 
     // firstTexture = std::make_shared<Texture2D>(16, 16);
     // firstTexture->load("../res/textures/first_texture.png");
@@ -99,7 +99,7 @@ DebugSection::DebugSection()
     // ecs
     m_map.addTilesToRegistry(m_mapElementsRegistry);
 
-    ecs::action::spawn_enemy(m_enemyRegistry, {4.f, 0.f});
+    // ecs::action::spawn_enemy(m_enemyRegistry, {4.f, 0.f});
 
     // sounds and music
     const auto setupSound = [&buffers = m_soundBuffers, &sounds = m_sounds](const std::string& name, const std::string& filename) -> void
