@@ -244,6 +244,7 @@ void DebugSection::update() noexcept
     m_camera.setTarget({pos, 0.f});
 
     // ecs::system::remove_dead_entities(m_registry);
+    ecs::system::update_ais(m_enemyRegistry, m_hero.position, m_bulletRegistry);
     ecs::system::move_hero_with_collisions(m_mapElementsRegistry, m_hero, move_direction);
     ecs::system::move_bullets(m_bulletRegistry);
     ecs::system::collide_bullets(m_bulletRegistry, m_mapElementsRegistry, m_enemyRegistry);
@@ -292,7 +293,7 @@ void DebugSection::render() noexcept
             Renderer::drawQuad({b_pos.x, b_pos.y}, b_size, b_rot, theme_color);
         });
 
-    const auto& enemy_texture = ResourceManager::chairTexture;
+    const auto& enemy_texture = ResourceManager::enemyTexture;
     const auto enemy_view = m_enemyRegistry.view<const ecs::component::position, const ecs::component::size, const ecs::component::rotation>();
     enemy_view.each(
         [&enemy_texture](const auto& e_pos, const auto& e_size, const auto& e_rot)

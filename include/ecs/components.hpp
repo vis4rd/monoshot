@@ -4,6 +4,7 @@
 
 #include "../utility/ResourceManager.hpp"
 #include "../traits/Scalar.hpp"
+#include "../gameplay/items/Weapon.hpp"
 
 namespace ecs::component
 {
@@ -25,6 +26,15 @@ struct lifetime
 };
 struct destroyed{};
 struct health : public Scalar<std::int32_t> { health(float val = 100) : Scalar<std::int32_t>(val) { } };
+struct ai_state : public Scalar<std::int32_t> {
+    enum{
+        IDLE = 0,
+        AWARE = 1
+    };
+    ai_state() : Scalar<std::int32_t>(IDLE) { }
+};
+struct ai_aware_range : public Scalar<float>{ ai_aware_range(float val = 10.f): Scalar<float>(val) { } };
+using ai_weapon = Weapon;
 
 // clang-format on
 }  // namespace ecs::component

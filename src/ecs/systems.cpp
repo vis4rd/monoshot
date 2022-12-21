@@ -2,6 +2,7 @@
 
 #include "../../include/utility/Collisions.hpp"
 #include "../../include/utility/ResourceManager.hpp"
+#include "../../include/ecs/actions.hpp"
 
 namespace ecs::system
 {
@@ -182,6 +183,54 @@ void move_hero_with_collisions(entt::registry& registry, Hero& hero, glm::vec2& 
     // there should not be much penalty for doing both axes separatly because 99.9% of situations there is no collision on first iteration in either case
     resolve_collision(hero.position, hero.size, shift_x);
     resolve_collision(hero.position, hero.size, shift_y);
+}
+
+void update_ais(entt::registry& enemy_registry, const glm::vec2& hero_pos, entt::registry& bullet_registry)
+{
+    namespace ec = ecs::component;
+    constexpr auto distance = [](const glm::vec2& pos1, const glm::vec2& pos2) -> float
+    {
+        return glm::length(pos1 - pos2);
+    };
+
+    auto view = enemy_registry.view<ec::position, ec::rotation, ec::ai_state, ec::ai_aware_range, ec::ai_weapon>();
+    for(auto&& [enemy, pos, rot, state, range, weapon] : view.each())
+    {
+        const auto dist = distance(pos, hero_pos);
+        // state update
+        switch(state)
+        {
+            case ec::ai_state::IDLE:
+            {
+                if(dist < range)
+                {
+                    state.data = ec::ai_state::AWARE;
+                }
+                break;
+            }
+            case ec::ai_state::AWARE:
+            {
+                if(dist > range)
+                {
+                    state.data = ec::ai_state::IDLE;
+                    break;
+                }
+                const auto diff = hero_pos - pos;
+                rot.data = glm::degrees(std::atan2(diff.y, diff.x));
+
+                // spawn some bullets
+                if(const bool is_used = weapon.useDelayed(); is_used)
+                {
+                    if(weapon.getAmmoCurrent() > 0)
+                    {
+                        ecs::action::spawn_bullet(bullet_registry, pos, rot, weapon.getBulletVelocity());
+                    }
+                }
+                break;
+            }
+            default: break;
+        }
+    }
 }
 
 }  // namespace ecs::system

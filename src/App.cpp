@@ -71,6 +71,16 @@ void App::initTextures() noexcept
 
     res::rifleInventoryTexture = Resource::create<Texture::impl::Texture>("../res/textures/gun_inventory.png", 256, 128);
     res::pistolInventoryTexture = Resource::create<Texture::impl::Texture>("../res/textures/pistol_inventory.png", 256, 128);
+
+    res::enemyTexture = Resource::create<Texture::impl::Texture>("../res/textures/entities/player.png",
+        TextureData{
+            .widthTotal = 192,
+            .heightTotal = 16,
+            .widthSub = 16,
+            .heightSub = 16,
+            .numberOfSubs = 12,
+            .numberOfSubsInOneRow = 12,
+        });
 }
 
 void App::initFonts() noexcept
@@ -132,6 +142,8 @@ void App::destroyTextures() noexcept
 
     res::rifleInventoryTexture.reset();
     res::pistolInventoryTexture.reset();
+
+    res::enemyTexture.reset();
 }
 
 void App::destroyFonts() noexcept

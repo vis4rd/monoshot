@@ -25,5 +25,6 @@ void collide_bullets(entt::registry &bullet_registry, entt::registry &map_regist
  */
 void destroy_entities(entt::registry &registry);
 void move_hero_with_collisions(entt::registry &registry, Hero &hero, glm::vec2 &hero_move_direction);
+void update_ais(entt::registry &enemy_registry, const glm::vec2 &hero_pos, entt::registry &bullet_registry);
 
 }  // namespace ecs::system
