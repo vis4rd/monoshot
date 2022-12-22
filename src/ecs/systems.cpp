@@ -150,6 +150,11 @@ void move_hero_with_collisions(entt::registry& registry, Hero& hero, glm::vec2& 
         }
     };
 
+    constexpr auto is_opposite_direction_vector = [](const glm::vec2& one, const glm::vec2& two) -> bool
+    {
+        return (one.x > 0.f && two.x < 0.f) || (one.x < 0.f && two.x > 0.f) || (one.y > 0.f && two.y < 0.f) || (one.y < 0.f && two.y > 0.f);
+    };
+
     const float& delta_time = ResourceManager::timer->deltaTime();
 
     // sort map tiles by distance to the hero
@@ -163,9 +168,10 @@ void move_hero_with_collisions(entt::registry& registry, Hero& hero, glm::vec2& 
     const bool does_hero_move = ((hero_move_direction.x != 0.f) | (hero_move_direction.y != 0.f));
     if(does_hero_move)  // TODO: this branch can be most probably removed
     {
-        hero.walkingDirection = hero_move_direction;
-        hero.velocity += hero.acceleration * delta_time;
+        hero_move_direction = glm::normalize(hero_move_direction);
+        hero.velocity = (hero.velocity + hero.acceleration * delta_time) * (not is_opposite_direction_vector(hero_move_direction, hero.walkingDirection));
         hero.velocity = std::min(hero.velocity, hero.maxVelocity);
+        hero.walkingDirection = hero_move_direction;
         // spdlog::trace("Hero moves");
     }
     else  // hero does not additionally move in this frame/tick
