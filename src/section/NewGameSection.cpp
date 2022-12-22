@@ -3,6 +3,7 @@
 #include "../../include/utility/ResourceManager.hpp"
 #include "../../include/ui/elements/LowerNavigationBox.hpp"
 #include "../../include/section/DebugSection.hpp"
+#include "../../include/section/TutorialMapSection.hpp"
 
 NewGameSection::NewGameSection()
     : Section(),
@@ -53,6 +54,13 @@ void NewGameSection::render() noexcept
     ImGui::Begin("NewGameMenu", nullptr, m_layout.window_flags);
     {
         ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s, m_layout.menu_y + m_layout.button_h_s});
+        if(ImGui::Button("Tutorial", {m_layout.button_w, m_layout.button_h}))
+        {
+            spdlog::debug("Clicking 'Tutorial'");
+            auto& sm = SectionManager::get();
+            sm.emplaceSection<TutorialMapSection>();
+        }
+        ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s, m_layout.menu_y + m_layout.button_h_s * 2 + m_layout.button_h});
         if(ImGui::Button("Debug Level", {m_layout.button_w, m_layout.button_h}))
         {
             spdlog::debug("Clicking 'Debug Level'");

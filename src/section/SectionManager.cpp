@@ -42,10 +42,9 @@ void SectionManager::clear() noexcept
 
 void SectionManager::update() noexcept
 {
-    // UpdateMusicStream(m_music);
     if(!m_sections.empty())
     {
-        if((m_sections.top()->name() != "DebugSection") && (m_sections.top()->name() != "CreatorSection"))
+        if((m_sections.top()->name() != "DebugSection") && (m_sections.top()->name() != "CreatorSection") && (m_sections.top()->name() != "TutorialMapSection"))
         {
             if(m_menuMusic.getStatus() != sf::Music::Playing)
             {
