@@ -15,7 +15,7 @@ App::App(const std::string& window_title, uint32_t width, uint32_t height)
     }
     else  // Release Build
     {
-        m_window = std::make_shared<Window>(window_title, width, height);  // fullscreen, vsync
+        m_window = std::make_shared<Window>(window_title, width, height, true, false);  // fullscreen, no-vsync
     }
     ResourceManager::window = m_window;
 
