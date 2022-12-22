@@ -196,15 +196,6 @@ void GameplaySection::render() noexcept
     const auto& theme_color = std::get<1>(m_map.getCurrentTheme().wallBlock);
     Renderer::drawQuad({pos.x, pos.y}, m_hero.size, rot, m_hero.getTexture(), theme_color);
 
-    m_map.drawObjects({pos.x, pos.y});
-
-    const auto bullet_view = m_bulletRegistry.view<const ecs::component::position, const ecs::component::size, const ecs::component::rotation>(entt::exclude<ecs::component::destroyed>);
-    bullet_view.each(
-        [&theme_color](const auto& b_pos, const auto& b_size, const auto& b_rot)
-        {
-            Renderer::drawQuad({b_pos.x, b_pos.y}, b_size, b_rot, theme_color);
-        });
-
     const auto& enemy_texture = ResourceManager::enemyTexture;
     const auto enemy_view = m_enemyRegistry.view<const ecs::component::position, const ecs::component::size, const ecs::component::rotation>();
     enemy_view.each(
@@ -213,6 +204,14 @@ void GameplaySection::render() noexcept
             Renderer::drawQuad({e_pos.x, e_pos.y}, e_size, e_rot, enemy_texture, {1.f, 0.4f, 0.4f, 1.f});
         });
 
+    const auto bullet_view = m_bulletRegistry.view<const ecs::component::position, const ecs::component::size, const ecs::component::rotation>(entt::exclude<ecs::component::destroyed>);
+    bullet_view.each(
+        [&theme_color](const auto& b_pos, const auto& b_size, const auto& b_rot)
+        {
+            Renderer::drawQuad({b_pos.x, b_pos.y}, b_size, b_rot, theme_color);
+        });
+
+    m_map.drawObjects({pos.x, pos.y});
     Renderer::endBatch(m_camera.getProjectionMatrix(), m_camera.getViewMatrix());
 
     if(m_onEnterFinished && (not m_onLeaveStarted))
