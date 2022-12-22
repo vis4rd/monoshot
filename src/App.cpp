@@ -22,6 +22,10 @@ App::App(const std::string& window_title, uint32_t width, uint32_t height)
     m_timer = std::make_shared<Timer>();
     ResourceManager::timer = m_timer;
 
+    m_limiter = std::make_shared<FramerateLimiter>();
+    m_limiter->setLimit(300);
+    ResourceManager::framerateLimiter = m_limiter;
+
     this->initFonts();
     this->initTextures();
 
@@ -116,6 +120,7 @@ void App::run() noexcept
     while(m_window->update(m_sectionManager))
     {
         m_timer->update();
+        ResourceManager::framerateLimiter->wait();
         m_window->render(m_sectionManager);
     }
     spdlog::info("Halted main application loop");

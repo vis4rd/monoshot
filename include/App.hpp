@@ -4,6 +4,7 @@
 #include "../meta/Version.hpp"
 #include "ui/styles/MainMenuStyle.hpp"
 #include "utility/Timer.hpp"
+#include "utility/FramerateLimiter.hpp"
 
 class App
 {
@@ -28,6 +29,7 @@ class App
     private:
     std::shared_ptr<Window> m_window;
     std::shared_ptr<Timer> m_timer;
+    std::shared_ptr<FramerateLimiter> m_limiter;
     InputManager& m_input;
     SectionManager& m_sectionManager;
 };

@@ -4,6 +4,7 @@
 #include "../utility/Timer.hpp"
 #include "../window/Window.hpp"
 #include "../texture/Animation.hpp"
+#include "FramerateLimiter.hpp"
 
 #include <memory>
 #include <entt/entity/entity.hpp>
@@ -35,4 +36,6 @@ struct ResourceManager
     static std::shared_ptr<float> uiButtonFontSize;
     static std::shared_ptr<Font> uiAmmoFont;
     static std::shared_ptr<float> uiAmmoFontSize;
+
+    static std::shared_ptr<FramerateLimiter> framerateLimiter;
 };

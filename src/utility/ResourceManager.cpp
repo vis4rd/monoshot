@@ -25,3 +25,5 @@ std::shared_ptr<Font> ResourceManager::uiButtonFont;
 std::shared_ptr<float> ResourceManager::uiButtonFontSize;
 std::shared_ptr<Font> ResourceManager::uiAmmoFont;
 std::shared_ptr<float> ResourceManager::uiAmmoFontSize;
+
+std::shared_ptr<FramerateLimiter> ResourceManager::framerateLimiter;
