@@ -6,6 +6,8 @@
 #include "../../include/section/TutorialMapSection.hpp"
 #include "../../include/section/ForestMapSection.hpp"
 
+static bool s_show_debug_level = false;
+
 NewGameSection::NewGameSection()
     : Section(),
       m_layout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize),
@@ -24,6 +26,10 @@ void NewGameSection::update() noexcept
     if(input.isPressedOnce(GLFW_KEY_ESCAPE))
     {
         SectionManager::get().popSection();
+    }
+    if(input.isPressedOnce(GLFW_KEY_F10))
+    {
+        s_show_debug_level = !s_show_debug_level;
     }
 }
 
@@ -68,12 +74,15 @@ void NewGameSection::render() noexcept
             auto& sm = SectionManager::get();
             sm.emplaceSection<ForestMapSection>();
         }
-        ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s, m_layout.menu_y + m_layout.button_h_s * 3 + m_layout.button_h * 2});
-        if(ImGui::Button("Debug Level", {m_layout.button_w, m_layout.button_h}))
+        if(s_show_debug_level)
         {
-            spdlog::debug("Clicking 'Debug Level'");
-            auto& sm = SectionManager::get();
-            sm.emplaceSection<DebugSection>();
+            ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s, m_layout.menu_y + m_layout.button_h_s * 3 + m_layout.button_h * 2});
+            if(ImGui::Button("Debug Level", {m_layout.button_w, m_layout.button_h}))
+            {
+                spdlog::debug("Clicking 'Debug Level'");
+                auto& sm = SectionManager::get();
+                sm.emplaceSection<DebugSection>();
+            }
         }
     }
     ImGui::End();

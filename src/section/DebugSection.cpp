@@ -439,88 +439,78 @@ bool DebugSection::onLeave()
 
 void DebugSection::showDebugUI()
 {
-    if constexpr(Flag::DebugMode)
+    const glm::vec2& pos = m_hero.position;
+    float& rot = m_hero.rotation;
+    float& vel = m_hero.velocity;
+    const float& acc = m_hero.acceleration;
+
+    ImGui::Begin("Section options");
     {
-        const glm::vec2& pos = m_hero.position;
-        float& rot = m_hero.rotation;
-        float& vel = m_hero.velocity;
-        const float& acc = m_hero.acceleration;
-
-        ImGui::Begin("Section options");
+        static float zoom = 50.f;
+        // ImGui::SliderFloat("rotation", &rotation, -360.f, 360.f, "%.0f degrees");
+        // ImGui::SliderFloat2("scale", reinterpret_cast<float*>(&scale), 0.01f, 5.f);
+        // ImGui::SliderFloat2("position", reinterpret_cast<float*>(&position), -10.f, 10.f);
+        if(ImGui::SliderFloat("camera zoom", &zoom, 0.1f, 200.f, "x%.1f"))
         {
-            static float zoom = 50.f;
-            // ImGui::SliderFloat("rotation", &rotation, -360.f, 360.f, "%.0f degrees");
-            // ImGui::SliderFloat2("scale", reinterpret_cast<float*>(&scale), 0.01f, 5.f);
-            // ImGui::SliderFloat2("position", reinterpret_cast<float*>(&position), -10.f, 10.f);
-            if(ImGui::SliderFloat("camera zoom", &zoom, 0.1f, 200.f, "x%.1f"))
+            // m_camera.setZoom(zoom);
+            const auto& camera_pos = m_camera.getPosition();
+            m_camera.setPosition({camera_pos.x, camera_pos.y, zoom});
+        }
+        ImGui::Text("Performance: [%.2fms] [%.0ffps]", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+        ImGui::Text("Mouse Position: Screen[%.2fx, %.2fy]", ImGui::GetMousePos().x, ImGui::GetMousePos().y);
+        const glm::vec2 mouse_screen_pos = ResourceManager::window->getMousePosition();
+        const auto mouse_world_pos = this->mouseScreenPosToWorldPos(mouse_screen_pos, m_camera);
+        ImGui::Text("mouse screen position: (%f, %f)", mouse_screen_pos.x, mouse_screen_pos.y);
+        ImGui::Text("mouse world position: (%f, %f)", mouse_world_pos.x, mouse_world_pos.y);
+        ImGui::Text("hero: pos(%.2f, %.2f), vel(%.2f), acc(%.2f), rot(%.2f)", pos.x, pos.y, vel, acc, rot);
+        ImGui::Text("health: %d/%d", m_hero.health, m_hero.maxHealth);
+        // const auto* weapon = dynamic_cast<Weapon*>(&*(m_hero.currentItem));
+        if(!m_hero.isInventoryEmpty())
+        {
+            ImGui::Text("Selected item: %lu", m_hero.getCurrentItemIndex());
+            if(m_hero.holdsWeapon())
             {
-                // m_camera.setZoom(zoom);
-                const auto& camera_pos = m_camera.getPosition();
-                m_camera.setPosition({camera_pos.x, camera_pos.y, zoom});
-            }
-            const glm::vec2 mouse_screen_pos = ResourceManager::window->getMousePosition();
-            const auto mouse_world_pos = this->mouseScreenPosToWorldPos(mouse_screen_pos, m_camera);
-            ImGui::Text("mouse screen position: (%f, %f)", mouse_screen_pos.x, mouse_screen_pos.y);
-            ImGui::Text("mouse world position: (%f, %f)", mouse_world_pos.x, mouse_world_pos.y);
-            ImGui::Text("hero: pos(%.2f, %.2f), vel(%.2f), acc(%.2f), rot(%.2f)", pos.x, pos.y, vel, acc, rot);
-            ImGui::Text("health: %d/%d", m_hero.health, m_hero.maxHealth);
-            // const auto* weapon = dynamic_cast<Weapon*>(&*(m_hero.currentItem));
-            if(!m_hero.isInventoryEmpty())
-            {
-                ImGui::Text("Selected item: %lu", m_hero.getCurrentItemIndex());
-                if(m_hero.holdsWeapon())
-                {
-                    const auto& weapon = m_hero.getCurrentItem<Weapon>();
-                    ImGui::Text("ammo: %u/%u/%u", weapon.getAmmoCurrent(), weapon.getAmmoMagazineMax(), weapon.getAmmoTotal());
-                }
-            }
-            ImGui::Separator();
-            ImGui::Text("Map elements count: %ld/%ld", m_mapElementsRegistry.alive(), m_mapElementsRegistry.size());
-            ImGui::Text("Bullet count: %ld/%ld", m_bulletRegistry.alive(), m_bulletRegistry.size());
-
-            static std::string preview = "Forest Theme";
-            bool check = false;
-            if(ImGui::BeginCombo("map_theme", preview.c_str()))
-            {
-                if(ImGui::Selectable("Tutorial Theme##unique_id", &check))
-                {
-                    preview = "Tutorial Theme";
-                    spdlog::debug("Switching MapTheme to '{}'", preview);
-                    m_map.setTheme(MapThemes::TUTORIAL_THEME);
-                }
-                if(ImGui::Selectable("Forest Theme##unique_id", &check))
-                {
-                    preview = "Forest Theme";
-                    spdlog::debug("Switching MapTheme to '{}'", preview);
-                    m_map.setTheme(MapThemes::FOREST_THEME);
-                }
-                if(ImGui::Selectable("Winter Theme##unique_id", &check))
-                {
-                    preview = "Winter Theme";
-                    spdlog::debug("Switching MapTheme to '{}'", preview);
-                    m_map.setTheme(MapThemes::WINTER_THEME);
-                }
-                ImGui::EndCombo();
-            }
-            ImGui::Checkbox("Draw map area", &s_draw_area);
-            ImGui::Checkbox("Draw bounding boxes", &s_draw_bbs);
-
-            auto& clear_color = ResourceManager::mapThemeBackgroundColor;
-            float* cc = reinterpret_cast<float*>(&clear_color);
-            if(ImGui::ColorEdit3("clear color", cc))
-            {
-                glClearColor(clear_color.r * clear_color.a, clear_color.g * clear_color.a, clear_color.b * clear_color.a, clear_color.a);
+                const auto& weapon = m_hero.getCurrentItem<Weapon>();
+                ImGui::Text("ammo: %u/%u/%u", weapon.getAmmoCurrent(), weapon.getAmmoMagazineMax(), weapon.getAmmoTotal());
             }
         }
-        ImGui::End();
-    }
-    else
-    {
-        ImGui::Begin("Release Mode Statistics");
+        ImGui::Separator();
+        ImGui::Text("Map elements count: %ld/%ld", m_mapElementsRegistry.alive(), m_mapElementsRegistry.size());
+        ImGui::Text("Bullet count: %ld/%ld", m_bulletRegistry.alive(), m_bulletRegistry.size());
+
+        static std::string preview = "Forest Theme";
+        bool check = false;
+        if(ImGui::BeginCombo("map_theme", preview.c_str()))
         {
-            ImGui::Text("Performance: [%.2fms] [%.0ffps]", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-            ImGui::Text("Mouse Position: Screen[%.2fx, %.2fy]", ImGui::GetMousePos().x, ImGui::GetMousePos().y);
+            if(ImGui::Selectable("Tutorial Theme##unique_id", &check))
+            {
+                preview = "Tutorial Theme";
+                spdlog::debug("Switching MapTheme to '{}'", preview);
+                m_map.setTheme(MapThemes::TUTORIAL_THEME);
+            }
+            if(ImGui::Selectable("Forest Theme##unique_id", &check))
+            {
+                preview = "Forest Theme";
+                spdlog::debug("Switching MapTheme to '{}'", preview);
+                m_map.setTheme(MapThemes::FOREST_THEME);
+            }
+            if(ImGui::Selectable("Winter Theme##unique_id", &check))
+            {
+                preview = "Winter Theme";
+                spdlog::debug("Switching MapTheme to '{}'", preview);
+                m_map.setTheme(MapThemes::WINTER_THEME);
+            }
+            ImGui::EndCombo();
         }
-        ImGui::End();
+        ImGui::Checkbox("Draw map area", &s_draw_area);
+        ImGui::Checkbox("Draw bounding boxes", &s_draw_bbs);
+
+        auto& clear_color = ResourceManager::mapThemeBackgroundColor;
+        float* cc = reinterpret_cast<float*>(&clear_color);
+        if(ImGui::ColorEdit3("clear color", cc))
+        {
+            glClearColor(clear_color.r * clear_color.a, clear_color.g * clear_color.a, clear_color.b * clear_color.a, clear_color.a);
+        }
     }
+    ImGui::End();
 }
