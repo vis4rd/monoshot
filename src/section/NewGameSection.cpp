@@ -4,6 +4,7 @@
 #include "../../include/ui/elements/LowerNavigationBox.hpp"
 #include "../../include/section/DebugSection.hpp"
 #include "../../include/section/TutorialMapSection.hpp"
+#include "../../include/section/ForestMapSection.hpp"
 
 NewGameSection::NewGameSection()
     : Section(),
@@ -61,6 +62,13 @@ void NewGameSection::render() noexcept
             sm.emplaceSection<TutorialMapSection>();
         }
         ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s, m_layout.menu_y + m_layout.button_h_s * 2 + m_layout.button_h});
+        if(ImGui::Button("Forest", {m_layout.button_w, m_layout.button_h}))
+        {
+            spdlog::debug("Clicking 'Forest'");
+            auto& sm = SectionManager::get();
+            sm.emplaceSection<ForestMapSection>();
+        }
+        ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s, m_layout.menu_y + m_layout.button_h_s * 3 + m_layout.button_h * 2});
         if(ImGui::Button("Debug Level", {m_layout.button_w, m_layout.button_h}))
         {
             spdlog::debug("Clicking 'Debug Level'");
