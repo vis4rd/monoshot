@@ -3,6 +3,7 @@
 #include "../section/SectionManager.hpp"
 #include "../utility/VertexArray.hpp"
 #include "../utility/FrameBuffer.hpp"
+#include "../input/InputManager.hpp"
 #include "NativeWindow.hpp"
 
 class Window final : public NativeWindow
