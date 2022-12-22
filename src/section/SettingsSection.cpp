@@ -125,6 +125,20 @@ void SettingsSection::render() noexcept
             }
             ImGui::EndCombo();
         }
+
+        // Max FPS Limit
+        std::string current_max_fps_limit = window->isVerticalSyncEnabled() ? "Enabled" : "Disabled";
+        next_y = ImGui::GetCursorScreenPos().y;
+        ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s, next_y});
+        ImGui::SetNextItemWidth(m_layout.button_w);
+        auto& limiter = res::framerateLimiter;
+        static std::int32_t local_limit = limiter->getLimit();
+        ImGui::BeginDisabled(window->isVerticalSyncEnabled());
+        if(ImGui::SliderInt("Max FPS Limit", &local_limit, 60, 1000, "%d FPS"))
+        {
+            limiter->setLimit(local_limit);
+        }
+        ImGui::EndDisabled();
     }
     ImGui::End();
     ImGui::PopStyleVar();
