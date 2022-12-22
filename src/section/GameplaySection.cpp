@@ -9,6 +9,8 @@
 
 #include <stbi/stb_image.h>
 
+static bool s_show_debug_info = false;
+
 GameplaySection::GameplaySection()
     : Section(),
       m_camera(glm::vec3(0.f, 0.f, 50.f), ResourceManager::window->getSize()),
@@ -82,6 +84,10 @@ void GameplaySection::update() noexcept
     {
         SectionManager::get().popSection();
         return;
+    }
+    if(input.isPressedOnce(GLFW_KEY_F10))
+    {
+        s_show_debug_info = !s_show_debug_info;
     }
 
     m_layout.update(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize);
@@ -242,6 +248,23 @@ void GameplaySection::render() noexcept
         }
         ImGui::End();
         font_guard.popFont();
+    }
+
+    if constexpr(not Flag::DebugMode)
+    {
+        if(s_show_debug_info)
+        {
+            ImGui::Begin("Release Mode Statistics");
+            {
+                ImGui::Text("Performance: [%.2fms] [%.0ffps]", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+                ImGui::Text("Mouse Position: Screen[%.2fx, %.2fy]", ImGui::GetMousePos().x, ImGui::GetMousePos().y);
+                ImGui::Text("Quad count: %d", Renderer::getStats().quadCount);
+                ImGui::Text("Line count: %d", Renderer::getStats().lineCount);
+                ImGui::Text("Draw calls: %d", Renderer::getStats().drawCount);
+                ImGui::Text("Indices: %d", Renderer::getStats().indexCount);
+            }
+            ImGui::End();
+        }
     }
 }
 

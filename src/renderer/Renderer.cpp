@@ -127,6 +127,7 @@ void Renderer::beginBatch()
 {
     spdlog::trace("Renderer: beginning a new batch, index_count = {}", s_data.stats.indexCount);
     s_data.stats.indexCount = 0;
+    s_data.stats.quadCount = 0;
     s_data.stats.lineCount = 0;
     s_data.quadBufferIter = s_data.quadBuffer.begin();
     s_data.lineBufferIter = s_data.lineBuffer.begin();
@@ -327,8 +328,7 @@ void Renderer::drawRect(const glm::vec2& center, const glm::vec2& size, const fl
 
 Renderer::Stats& Renderer::getStats()
 {
-    static Renderer::Stats stats;
-    return stats;
+    return s_data.stats;
 }
 
 constexpr void Renderer::resetStats() { }
