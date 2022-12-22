@@ -223,7 +223,8 @@ void update_ais(entt::registry& enemy_registry, const glm::vec2& hero_pos, entt:
                 {
                     if(weapon.getAmmoCurrent() > 0)
                     {
-                        ecs::action::spawn_bullet(bullet_registry, pos, rot, weapon.getBulletVelocity());
+                        const auto bullet_pos = pos + glm::normalize(diff) * 1.f;
+                        ecs::action::spawn_bullet(bullet_registry, bullet_pos, rot, weapon.getBulletVelocity());
                     }
                 }
                 break;
