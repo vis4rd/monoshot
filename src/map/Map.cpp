@@ -305,6 +305,10 @@ void Map::update() noexcept { }
 
 void Map::render(const glm::mat4& projection, const glm::mat4& view, bool area, bool show_solid, bool show_end_area) noexcept
 {
+    if(show_solid)
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    }
     Renderer::beginBatch();
     this->drawTiles(area, show_solid);
     this->drawObjects({}, show_solid);
@@ -313,6 +317,10 @@ void Map::render(const glm::mat4& projection, const glm::mat4& view, bool area, 
         this->drawEndArea();
     }
     Renderer::endBatch(projection, view);
+    if(show_solid)
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
 }
 
 void Map::drawTiles(bool area, bool show_solid)
@@ -336,10 +344,6 @@ void Map::drawTiles(bool area, bool show_solid)
                 Renderer::drawQuad({tile.x, tile.y}, {1.f, 1.f}, tile.rotation, wall_color);
             }
         }
-        if(show_solid && tile.solid)
-        {
-            Renderer::drawRect({tile.x, tile.y}, {1.f, 1.f}, tile.rotation, {1.f, 1.f, 1.f, 1.f});
-        }
     }
 }
 
@@ -353,10 +357,6 @@ void Map::drawObjects(const glm::vec2& hero_pos, bool show_solid)
         glm::vec4 collision_color = {1.f, 1.f, 1.f, col ? object.opacityOnCollision : 1.f};
         // spdlog::trace("OID = {}, collision_color = ({}, {}, {}, {})", objectIdToString(object.id), collision_color.x, collision_color.y, collision_color.z, collision_color.w);
         Renderer::drawQuad(object.getPosition(), object.getSize(), object.getRotation(), object.getTexture(), wall_color * collision_color);
-        if(show_solid && object.hasCollision)
-        {
-            Renderer::drawRect(object.getPosition(), object.getSize(), object.getRotation(), {1.f, 1.f, 1.f, 1.f});
-        }
     }
 }
 

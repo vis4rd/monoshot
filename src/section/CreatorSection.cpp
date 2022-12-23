@@ -169,7 +169,7 @@ void CreatorSection::update() noexcept
 void CreatorSection::render() noexcept
 {
     static bool draw_area = true;
-    static bool draw_bbs = true;
+    static bool draw_bbs = false;
     static bool draw_end_area = true;
 
     // map rendering
@@ -209,7 +209,15 @@ void CreatorSection::render() noexcept
     // Renderer::drawRect({-3.f, 3.f}, {3.f, -3.f}, {0.f, 1.f, 0.f, 1.f});
     // Renderer::drawLine({0.f, 0.f}, {std::round(s_mouse_world_pos.x), std::round(s_mouse_world_pos.y)}, {1.f, 0.f, 0.f, 1.f});
     // Renderer::drawLine({7.f, 7.f}, {7.f, -7.f}, {0.f, 0.f, 1.f, 1.f}, {1.f, 1.f, 1.f, 1.f});
+    if(draw_bbs)
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    }
     Renderer::endBatch(m_camera.getProjectionMatrix(), m_camera.getViewMatrix());
+    if(draw_bbs)
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
 
     const auto& camera_pos = m_camera.getPosition();
     const auto& camera_target = m_camera.getTargetPosition();
