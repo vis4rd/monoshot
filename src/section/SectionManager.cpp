@@ -44,7 +44,8 @@ void SectionManager::update() noexcept
 {
     if(!m_sections.empty())
     {
-        if((m_sections.top()->name() != "DebugSection") && (m_sections.top()->name() != "CreatorSection") && (m_sections.top()->name() != "TutorialMapSection") && (m_sections.top()->name() != "ForestMapSection"))
+        if((m_sections.top()->name() != "DebugSection") && (m_sections.top()->name() != "CreatorSection") && (m_sections.top()->name() != "TutorialMapSection") && (m_sections.top()->name() != "ForestMapSection")
+            && (m_sections.top()->name() != "WinterMapSection"))
         {
             if(m_menuMusic.getStatus() != sf::Music::Playing)
             {
