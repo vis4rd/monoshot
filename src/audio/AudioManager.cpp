@@ -2,6 +2,8 @@
 
 #include <spdlog/spdlog.h>
 
+static constexpr float base_volume = 100.f;
+
 AudioManager& AudioManager::get()
 {
     static AudioManager instance;
@@ -38,8 +40,6 @@ void AudioManager::playSound(const std::string& name)
 
     const auto& index = m_soundNames.at(name);
     auto& queue = m_soundQueues.at(index);
-    const auto& init_volume = m_soundInitialVolumes.at(index);
-    const auto& user_volume = m_soundUserVolumes.at(index);
 
     auto iter = queue.begin();
     while(iter != queue.end())
@@ -55,8 +55,8 @@ void AudioManager::playSound(const std::string& name)
     // all sounds are still playing, but we need another one
     sf::Sound new_sound;
     new_sound.setBuffer(m_soundBuffers.at(index));
-    new_sound.setVolume(100.f * init_volume * user_volume);
     queue.push_back(std::move(new_sound));
+    this->updateSoundVolume(index, queue.size() - 1);
 
     queue.back().play();
 }
@@ -71,13 +71,7 @@ bool AudioManager::setSoundUserVolume(const std::string& name, const float& new_
 
     const auto& index = m_soundNames.at(name);
     m_soundUserVolumes.at(index) = new_user_volume;
-
-    // update all existing sounds
-    const auto& init_volume = m_soundInitialVolumes.at(index);
-    for(const auto volume = 100.f * init_volume * new_user_volume; auto& sound : m_soundQueues[index])
-    {
-        sound.setVolume(volume);
-    }
+    this->updateSoundQueueVolume(index);
 
     return true;
 }
@@ -91,9 +85,13 @@ const float& AudioManager::getSoundUserVolume(const std::string& name) const
 float AudioManager::getSoundVolume(const std::string& name) const
 {
     const auto& index = m_soundNames.at(name);
-    const auto& init_volume = m_soundInitialVolumes.at(index);
-    const auto& user_volume = m_soundUserVolumes.at(index);
-    return 100.f * init_volume * user_volume;
+    const auto& queue = m_soundQueues.at(index);
+    float retval = 1.f;
+    if(queue.size() > 0)
+    {
+        retval = queue.at(0).getVolume();
+    }
+    return retval;
 }
 
 bool AudioManager::addMusic(const std::string& name, const std::filesystem::path& path, const float& volume)
@@ -110,7 +108,7 @@ bool AudioManager::addMusic(const std::string& name, const std::filesystem::path
         m_musicNames[name] = getNextFreeMusicIndex();
         auto& init_volume = m_musicInitialVolumes.emplace_back(volume);
         auto& user_volume = m_musicUserVolumes.emplace_back(1.f);
-        music->setVolume(100.f * init_volume * user_volume);
+        music->setVolume(base_volume * init_volume * user_volume * m_mixerMaster * m_mixerMusic);
         m_musics.push_back(std::move(music));
     }
 
@@ -167,7 +165,7 @@ bool AudioManager::setMusicUserVolume(const std::string& name, const float& new_
     const auto& index = m_musicNames.at(name);
     m_musicUserVolumes.at(index) = new_user_volume;
     const auto& init_volume = m_musicInitialVolumes.at(index);
-    m_musics.at(index)->setVolume(100.f * init_volume * new_user_volume);
+    m_musics.at(index)->setVolume(base_volume * init_volume * new_user_volume * m_mixerMaster * m_mixerMusic);
 
     return true;
 }
@@ -183,7 +181,40 @@ float AudioManager::getMusicVolume(const std::string& name) const
     const auto& index = m_musicNames.at(name);
     const auto& init_volume = m_musicInitialVolumes.at(index);
     const auto& user_volume = m_musicUserVolumes.at(index);
-    return 100.f * init_volume * user_volume;
+    return base_volume * init_volume * user_volume * m_mixerMaster * m_mixerMusic;
+}
+
+void AudioManager::setMixerMasterVolume(const float& new_volume)
+{
+    m_mixerMaster = std::clamp(new_volume, 0.f, 1.f);
+    this->updateAllVolumes();
+}
+
+void AudioManager::setMixerSfxVolume(const float& new_volume)
+{
+    m_mixerSfx = std::clamp(new_volume, 0.f, 1.f);
+    this->updateSfxVolumes();
+}
+
+void AudioManager::setMixerMusicVolume(const float& new_volume)
+{
+    m_mixerMusic = std::clamp(new_volume, 0.f, 1.f);
+    this->updateMusicVolumes();
+}
+
+const float& AudioManager::getMixerMasterVolume()
+{
+    return m_mixerMaster;
+}
+
+const float& AudioManager::getMixerSfxVolume()
+{
+    return m_mixerSfx;
+}
+
+const float& AudioManager::getMixerMusicVolume()
+{
+    return m_mixerMusic;
 }
 
 std::size_t AudioManager::getNextFreeSoundIndex() const
@@ -204,4 +235,47 @@ bool AudioManager::doesSoundNameExist(const std::string& name) const
 bool AudioManager::doesMusicNameExist(const std::string& name) const
 {
     return m_musicNames.contains(name);
+}
+
+void AudioManager::updateSoundVolume(const std::size_t& queue_index, const std::size_t& sound_index)
+{
+    // spdlog::trace("    Updating SFX sound {} in queue {}:", sound_index, queue_index);
+    const auto& init_volume = m_soundInitialVolumes.at(queue_index);
+    const auto& user_volume = m_soundUserVolumes.at(queue_index);
+    m_soundQueues.at(queue_index).at(sound_index).setVolume(base_volume * m_mixerMaster * m_mixerSfx * init_volume * user_volume);
+}
+
+void AudioManager::updateSoundQueueVolume(const std::size_t& queue_index)
+{
+    // spdlog::trace("  Updating SFX queue {}:", queue_index);
+    for(std::size_t sound_index{0}; sound_index < m_soundQueues.at(queue_index).size(); sound_index++)
+    {
+        this->updateSoundVolume(queue_index, sound_index);
+    }
+}
+
+void AudioManager::updateSfxVolumes()
+{
+    // spdlog::trace("Updating all SFX volumes:");
+    for(const auto& [name, index] : m_soundNames)
+    {
+        this->updateSoundQueueVolume(index);
+    }
+}
+
+void AudioManager::updateMusicVolumes()
+{
+    for(const auto& [name, index] : m_musicNames)
+    {
+        const auto& music = m_musics.at(index);
+        const auto& init_volume = m_musicInitialVolumes.at(index);
+        const auto& user_volume = m_musicUserVolumes.at(index);
+        music->setVolume(base_volume * init_volume * user_volume * m_mixerMaster * m_mixerMusic);
+    }
+}
+
+void AudioManager::updateAllVolumes()
+{
+    this->updateSfxVolumes();
+    this->updateMusicVolumes();
 }

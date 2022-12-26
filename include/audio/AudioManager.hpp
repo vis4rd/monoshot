@@ -30,12 +30,25 @@ class AudioManager final
     const float& getMusicUserVolume(const std::string& name) const;
     float getMusicVolume(const std::string& name) const;
 
+    void setMixerMasterVolume(const float& new_volume = 1.f);
+    void setMixerSfxVolume(const float& new_volume = 1.f);
+    void setMixerMusicVolume(const float& new_volume = 1.f);
+
+    const float& getMixerMasterVolume();
+    const float& getMixerSfxVolume();
+    const float& getMixerMusicVolume();
+
     private:
     AudioManager() = default;
     std::size_t getNextFreeSoundIndex() const;
     std::size_t getNextFreeMusicIndex() const;
     bool doesSoundNameExist(const std::string& name) const;
     bool doesMusicNameExist(const std::string& name) const;
+    void updateSoundVolume(const std::size_t& queue_index, const std::size_t& sound_index);
+    void updateSoundQueueVolume(const std::size_t& queue_index);
+    void updateSfxVolumes();
+    void updateMusicVolumes();
+    void updateAllVolumes();
 
     private:
     std::unordered_map<std::string, std::size_t> m_soundNames;
@@ -48,4 +61,8 @@ class AudioManager final
     std::vector<std::unique_ptr<sf::Music>> m_musics;
     std::vector<float> m_musicInitialVolumes;
     std::vector<float> m_musicUserVolumes;
+
+    float m_mixerMaster = 1.f;
+    float m_mixerSfx = 1.f;
+    float m_mixerMusic = 1.f;
 };
