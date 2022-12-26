@@ -18,7 +18,7 @@
     "editor.renderLineHighlight": "gutter",
     //
     "files.eol": "\n",
-    "files.insertFinalNewline": true,
+    "files.insertFinalNewline": false,
     "files.trimFinalNewlines": true,
     //
     "git.suggestSmartCommit": false,
@@ -36,5 +36,6 @@
     //
     "[cpp]": {
         "editor.formatOnSave": true,
+        "files.insertFinalNewline": true,
     }
 }

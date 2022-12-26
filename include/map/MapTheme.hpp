@@ -38,8 +38,8 @@ static MapTheme FOREST_THEME{
 };
 
 static MapTheme WINTER_THEME{
-    .backgroundColor = {215.f / 256.f, 220.f / 256.f, 221.f / 256.f, 1.f},  // 215, 220, 221
-    .wallBlock = std::make_tuple(BlockID::Wall, glm::vec4{0.2f, 0.2f, 0.2f, 1.f}, nullptr),
+    .backgroundColor = {200.f / 256.f, 205.f / 256.f, 206.f / 256.f, 1.f},  // 215, 220, 221
+    .wallBlock = std::make_tuple(BlockID::Wall, glm::vec4{0.35f, 0.35f, 0.35f, 1.f}, nullptr),
     .invisibleWallBlock = std::make_tuple(BlockID::Wall, glm::vec4{0.f, 0.f, 0.f, 0.f}, nullptr),
 };
 // clang-format on
