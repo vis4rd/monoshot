@@ -6,6 +6,7 @@
 #include "../../include/utility/Collisions.hpp"
 #include "../../include/ecs/systems.hpp"
 #include "../../include/ecs/actions.hpp"
+#include "../../include/audio/AudioManager.hpp"
 
 #include <stbi/stb_image.h>
 
@@ -24,24 +25,11 @@ GameplaySection::GameplaySection()
     Renderer::init();
 
     // sounds and music
-    const auto setupSound = [&buffers = m_soundBuffers, &sounds = m_sounds](const std::string& name, const std::string& filename) -> void
-    {
-        sf::SoundBuffer buffer{};
-        if(bool success = buffer.loadFromFile(filename); not success)
-        {
-            spdlog::error("Could not load sound from '{}' file", filename);
-            throw std::runtime_error("Could not load sound from '" + filename + "' file");
-        }
-        buffers[name] = std::move(buffer);
-
-        sf::Sound sound{};
-        sound.setBuffer(buffers[name]);
-        sounds[name] = std::move(sound);
-    };
-    setupSound("pop", "../res/audio/pop.mp3");
-    setupSound("gunshot", "../res/audio/gunshot.mp3");
-    setupSound("footstep", "../res/audio/footstep.mp3");
-    setupSound("handgun_click", "../res/audio/handgun_click.mp3");
+    auto& audio = AudioManager::get();
+    audio.addSound("pop", "../res/audio/pop.mp3");
+    audio.addSound("gunshot", "../res/audio/gunshot.mp3");
+    audio.addSound("footstep", "../res/audio/footstep.mp3");
+    audio.addSound("handgun_click", "../res/audio/handgun_click.mp3");
 
     if(bool success = m_music.openFromFile("../res/audio/music/Ancient Jungle Ruins - HeatleyBros.mp3"); not success)
     {
@@ -77,6 +65,7 @@ void GameplaySection::update() noexcept
         SectionManager::get().popSection();
         return;
     }
+    auto& audio = AudioManager::get();
 
     // press escape to leave
     auto& input = InputManager::get();
@@ -109,7 +98,7 @@ void GameplaySection::update() noexcept
             footstep_sound_trigger = (footstep_sound_trigger + is_next_frame) % (m_hero.getTexture()->getTextureData().numberOfSubs / 2);
             if(footstep_sound_trigger == 0)
             {
-                m_sounds["footstep"].play();
+                audio.playSound("footstep");
             }
         }
         else
@@ -130,7 +119,7 @@ void GameplaySection::update() noexcept
                 if(weapon.getAmmoCurrent() > 0)
                 {
                     ecs::action::spawn_bullet(m_bulletRegistry, pos, rot, weapon.getBulletVelocity());
-                    m_sounds["gunshot"].play();
+                    audio.playSound("gunshot");
                 }
             }
         }
@@ -145,17 +134,17 @@ void GameplaySection::update() noexcept
         }
         if(input.isPressedOnce(GLFW_KEY_1))
         {
-            m_sounds["handgun_click"].play();
+            audio.playSound("handgun_click");
             m_hero.setCurrentItem(0);
         }
         if(input.isPressedOnce(GLFW_KEY_2))
         {
-            m_sounds["handgun_click"].play();
+            audio.playSound("handgun_click");
             m_hero.setCurrentItem(1);
         }
         if(input.isPressedOnce(GLFW_KEY_3))
         {
-            m_sounds["handgun_click"].play();
+            audio.playSound("handgun_click");
             m_hero.setCurrentItem(2);
         }
     }

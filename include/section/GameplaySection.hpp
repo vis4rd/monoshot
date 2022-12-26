@@ -32,8 +32,6 @@ class GameplaySection : public Section
     entt::registry m_mapElementsRegistry{};
     entt::registry m_bulletRegistry{};
     entt::registry m_enemyRegistry{};
-    std::unordered_map<std::string, sf::SoundBuffer> m_soundBuffers;
-    std::unordered_map<std::string, sf::Sound> m_sounds;
 
     bool m_onEnterFinished = false;
     bool m_onLeaveStarted = false;
