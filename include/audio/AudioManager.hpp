@@ -24,6 +24,7 @@ class AudioManager final
     bool addMusic(const std::string& name, const std::filesystem::path& path, const float& volume = 1.f);
     void playMusic(const std::string& name);
     void pauseMusic(const std::string& name);
+    void stopMusic(const std::string& name);
     const std::unique_ptr<sf::Music>& getMusic(const std::string& name);
     bool setMusicUserVolume(const std::string& name, const float& new_volume);
     const float& getMusicUserVolume(const std::string& name) const;

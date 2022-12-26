@@ -139,6 +139,17 @@ void AudioManager::pauseMusic(const std::string& name)
     m_musics.at(index)->pause();
 }
 
+void AudioManager::stopMusic(const std::string& name)
+{
+    if(not this->doesMusicNameExist(name))
+    {
+        return;
+    }
+
+    const auto& index = m_musicNames.at(name);
+    m_musics.at(index)->stop();
+}
+
 const std::unique_ptr<sf::Music>& AudioManager::getMusic(const std::string& name)
 {
     const auto& index = m_musicNames.at(name);

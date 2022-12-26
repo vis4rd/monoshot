@@ -33,7 +33,7 @@ GameplaySection::~GameplaySection()
     spdlog::trace("Destroying {}", m_name);
     Renderer::shutdown();
     m_mapElementsRegistry.clear();
-    AudioManager::get().pauseMusic("gameplay_music");
+    AudioManager::get().stopMusic("gameplay_music");
 }
 
 void GameplaySection::update() noexcept
