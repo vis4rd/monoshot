@@ -46,15 +46,36 @@ void App::initLogger() noexcept
     fs::create_directory("../logs");
 
     auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-    console_sink->set_level(spdlog::level::debug);  // TODO: set this to debug/info depending on build type
     console_sink->set_pattern("%^%l%$ | %v");
+    if constexpr(Flag::DebugMode)
+    {
+        console_sink->set_level(spdlog::level::debug);
+    }
+    else
+    {
+        console_sink->set_level(spdlog::level::info);
+    }
 
     auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("../logs/latest.log", true);
-    file_sink->set_level(spdlog::level::debug);
     file_sink->set_pattern("[%^%l%$] %v");
+    if constexpr(Flag::DebugMode)
+    {
+        file_sink->set_level(spdlog::level::debug);
+    }
+    else
+    {
+        file_sink->set_level(spdlog::level::info);
+    }
 
     spdlog::logger multisink_logger("logger", {console_sink, file_sink});
-    multisink_logger.set_level(spdlog::level::debug);
+    if constexpr(Flag::DebugMode)
+    {
+        multisink_logger.set_level(spdlog::level::debug);
+    }
+    else
+    {
+        multisink_logger.set_level(spdlog::level::info);
+    }
     spdlog::set_default_logger(std::make_shared<spdlog::logger>(multisink_logger));
 
     spdlog::debug("Logging initialized");
