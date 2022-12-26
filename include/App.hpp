@@ -15,6 +15,7 @@ class App
     static void initLogger() noexcept;
     void initTextures() noexcept;
     void initFonts() noexcept;
+    void initAudio() noexcept;
 
     Window& getWindow();
     const Window& getWindow() const;

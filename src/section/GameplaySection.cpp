@@ -24,13 +24,6 @@ GameplaySection::GameplaySection()
     // renderer module
     Renderer::init();
 
-    // sounds and music
-    auto& audio = AudioManager::get();
-    // audio.addSound("pop", "../res/audio/pop.mp3");
-    audio.addSound("gunshot", "../res/audio/gunshot.mp3", 0.5f);
-    audio.addSound("footstep", "../res/audio/footstep.mp3");
-    audio.addSound("handgun_click", "../res/audio/handgun_click.mp3");
-
     if(bool success = m_music.openFromFile("../res/audio/music/Ancient Jungle Ruins - HeatleyBros.mp3"); not success)
     {
         spdlog::debug("Could not load music from file 'res/audio/music/Ancient Jungle Ruins - HeatleyBros.mp3'");

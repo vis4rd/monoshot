@@ -2,6 +2,7 @@
 
 #include "../include/ui/fonts/Font.hpp"
 #include "../include/utility/ResourceManager.hpp"
+#include "../include/audio/AudioManager.hpp"
 
 App::App(const std::string& window_title, uint32_t width, uint32_t height)
     : m_input(InputManager::get()),
@@ -28,6 +29,7 @@ App::App(const std::string& window_title, uint32_t width, uint32_t height)
 
     this->initFonts();
     this->initTextures();
+    this->initAudio();
 
     MainMenuStyle();
 
@@ -123,6 +125,14 @@ void App::initFonts() noexcept
     res::uiButtonFont = std::make_shared<Font>("../res/fonts/brass-mono/regular_comfortable.otf", *res::uiButtonFontSize);
     res::uiAmmoFontSize = std::make_shared<float>(25.f * window_width / 1920.f);
     res::uiAmmoFont = std::make_shared<Font>("../res/fonts/gunplay/GUNPLAY_.ttf", *res::uiAmmoFontSize);
+}
+
+void App::initAudio() noexcept
+{
+    auto& audio = AudioManager::get();
+    audio.addSound("gunshot", "../res/audio/gunshot.mp3", 0.5f);
+    audio.addSound("footstep", "../res/audio/footstep.mp3");
+    audio.addSound("handgun_click", "../res/audio/handgun_click.mp3");
 }
 
 Window& App::getWindow()
