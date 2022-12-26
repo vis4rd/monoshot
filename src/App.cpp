@@ -133,6 +133,9 @@ void App::initAudio() noexcept
     audio.addSound("gunshot", "../res/audio/gunshot.mp3", 0.5f);
     audio.addSound("footstep", "../res/audio/footstep.mp3");
     audio.addSound("handgun_click", "../res/audio/handgun_click.mp3");
+
+    audio.addMusic("gameplay_music", "../res/audio/music/Ancient Jungle Ruins - HeatleyBros.mp3", 0.3f);
+    audio.addMusic("menu_music", "../res/audio/music/Fragments_ambient.mp3", 0.4f);
 }
 
 Window& App::getWindow()

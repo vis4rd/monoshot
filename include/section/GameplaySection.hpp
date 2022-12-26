@@ -8,7 +8,6 @@
 #include "../utility/Timer.hpp"
 
 #include <entt/entity/registry.hpp>
-#include <SFML/Audio.hpp>
 
 class GameplaySection : public Section
 {
@@ -39,6 +38,4 @@ class GameplaySection : public Section
     double m_enterFinishTimestamp = Timer::getTotalTime() + m_entranceDuration;
     const double m_leaveDuration = 5.0;
     double m_leaveStartTimestamp = 0.0;
-
-    sf::Music m_music;
 };

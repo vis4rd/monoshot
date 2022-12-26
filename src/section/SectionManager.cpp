@@ -1,6 +1,7 @@
 #include "../../include/section/SectionManager.hpp"
 
 #include "../../include/utility/ResourceManager.hpp"
+#include "../../include/audio/AudioManager.hpp"
 
 SectionManager& SectionManager::get()
 {
@@ -44,17 +45,19 @@ void SectionManager::update() noexcept
 {
     if(!m_sections.empty())
     {
+        auto& audio = AudioManager::get();
+        auto& menu_music = audio.getMusic("menu_music");
         if((m_sections.top()->name() != "DebugSection") && (m_sections.top()->name() != "CreatorSection") && (m_sections.top()->name() != "TutorialMapSection") && (m_sections.top()->name() != "ForestMapSection")
             && (m_sections.top()->name() != "WinterMapSection"))
         {
-            if(m_menuMusic.getStatus() != sf::Music::Playing)
+            if(menu_music->getStatus() != sf::Music::Playing)
             {
-                m_menuMusic.play();
+                menu_music->play();
             }
         }
         else
         {
-            m_menuMusic.pause();
+            menu_music->pause();
         }
         m_sections.top()->update();
     }
@@ -70,12 +73,10 @@ void SectionManager::render() noexcept
 
 SectionManager::SectionManager()
 {
-    if(bool success = m_menuMusic.openFromFile("../res/audio/music/Fragments_ambient.mp3"); not success)
-    {
-        spdlog::debug("Could not load music from file 'res/audio/music/Fragments_ambient.mp3'");
-        throw std::runtime_error("Could not load music from file 'res/audio/music/Fragments_ambient.mp3'");
-    }
-    m_menuMusic.play();
+    AudioManager::get().playMusic("menu_music");
 }
 
-SectionManager::~SectionManager() { }
+SectionManager::~SectionManager()
+{
+    AudioManager::get().pauseMusic("menu_music");
+}

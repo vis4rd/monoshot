@@ -24,12 +24,8 @@ GameplaySection::GameplaySection()
     // renderer module
     Renderer::init();
 
-    if(bool success = m_music.openFromFile("../res/audio/music/Ancient Jungle Ruins - HeatleyBros.mp3"); not success)
-    {
-        spdlog::debug("Could not load music from file 'res/audio/music/Ancient Jungle Ruins - HeatleyBros.mp3'");
-        throw std::runtime_error("Could not load music from file 'res/audio/music/Ancient Jungle Ruins - HeatleyBros.mp3'");
-    }
-    m_music.play();
+    // audio module
+    AudioManager::get().playMusic("gameplay_music");
 }
 
 GameplaySection::~GameplaySection()
@@ -37,6 +33,7 @@ GameplaySection::~GameplaySection()
     spdlog::trace("Destroying {}", m_name);
     Renderer::shutdown();
     m_mapElementsRegistry.clear();
+    AudioManager::get().pauseMusic("gameplay_music");
 }
 
 void GameplaySection::update() noexcept
