@@ -43,11 +43,7 @@ $ mingw32-make
 $ ninja
 ```
 
-Build with C++20 capable compiler such as GCC 12+ or Clang 14+.
-
-#### Known issues
-- Sometimes the build fails randomly on Visual Studio, probably due to dynamically generated Glad headers
-- Ninja builds have to be repeated a couple times in order to work, sometimes clearing cache helps
+Build with C++20 capable compiler such as GCC 12.1+ or Clang 14+ with MSVCRT runtime library[^1].
 
 ## Dependencies
 All libraries are fetched either by git submodules or by CMake and their use is compliant with their respective licences:
@@ -60,3 +56,5 @@ All libraries are fetched either by git submodules or by CMake and their use is 
 - [stbi](https://github.com/nothings/stb) - Image loading/decoding from file/memory (Public Domain or MIT)
 - [tinyfiledialogs](https://sourceforge.net/projects/tinyfiledialogs/) - Native window dialogs and popups (zlib)
 - [SFML](https://github.com/SFML/SFML) - Sound and music playing (zlib)
+
+[^1]: MSVCRT is required only because of SFML, which precompiles libFLAC (and other dependencies) with the mentioned runtime library.
