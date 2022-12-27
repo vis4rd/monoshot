@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.19 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.25 FATAL_ERROR)
 
 # Project setup
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
@@ -177,7 +177,7 @@ if(MINGW AND CMAKE_HOST_WIN32) # I hate SFML's CMake files
     set(COMPILER_DIR "$<PATH:REMOVE_FILENAME,${CMAKE_CXX_COMPILER}>")
 
     add_custom_command(TARGET ${EXECUTABLE_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy "${PROJECT_SOURCE_DIR}/lib/sfml/extlibs/bin/x86/openal32.dll" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/"
+        COMMAND ${CMAKE_COMMAND} -E copy "${PROJECT_SOURCE_DIR}/lib/sfml/extlibs/bin/x64/openal32.dll" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/"
         COMMAND ${CMAKE_COMMAND} -E copy "${COMPILER_DIR}/libgcc_s_seh-1.dll" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/"
         COMMAND ${CMAKE_COMMAND} -E copy "${COMPILER_DIR}/libstdc++-6.dll" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/"
         COMMAND ${CMAKE_COMMAND} -E copy "${COMPILER_DIR}/libwinpthread-1.dll" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/"
