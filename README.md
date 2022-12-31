@@ -57,4 +57,10 @@ All libraries are fetched either by git submodules or by CMake and their use is 
 - [tinyfiledialogs](https://sourceforge.net/projects/tinyfiledialogs/) - Native window dialogs and popups (zlib)
 - [SFML](https://github.com/SFML/SFML) - Sound and music playing (zlib)
 
+## License
+The [thesis branch](https://github.com/vis4rd/monoshot/tree/thesis) is protected under [EULA](EULA.md). This application is free for you to compile and modify for your own personal use, but it is not free to distribute any binary copies (paid or free).
+
+In case of any questions, please reach out to me through GitHub or email provided in the [EULA](EULA.md).
+
+
 [^1]: MSVCRT is required only because of SFML, which precompiles libFLAC (and other dependencies) with the mentioned runtime library.
