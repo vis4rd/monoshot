@@ -84,6 +84,7 @@ add_subdirectory("${PROJECT_SOURCE_DIR}/lib/sfml")
 
 # Modules
 add_subdirectory("${PROJECT_SOURCE_DIR}/module/input")
+add_subdirectory("${PROJECT_SOURCE_DIR}/module/cstring")
 
 # Other sources
 file(GLOB_RECURSE GAME_SOURCES
