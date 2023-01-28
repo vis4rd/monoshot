@@ -92,14 +92,14 @@ BraceWrapping:
   SplitEmptyNamespace: true
 
 # BreakAfterAttributes: Always # clang-format 16
-# BreakBeforeBinaryOperators: NonAssignment
-# BreakBeforeTernaryOperators: true
-# BreakConstructorInitializers: BeforeColon
-# BreakInheritanceList: BeforeColon
-# BreakStringLiterals: false
-# AlwaysBreakAfterReturnType: None
-# AlwaysBreakBeforeMultilineStrings: false
-# AlwaysBreakTemplateDeclarations: 'Yes'
+BreakBeforeBinaryOperators: NonAssignment
+BreakBeforeTernaryOperators: true
+BreakConstructorInitializers: BeforeComma
+BreakInheritanceList: BeforeColon
+BreakStringLiterals: false
+AlwaysBreakAfterReturnType: None
+AlwaysBreakBeforeMultilineStrings: false
+AlwaysBreakTemplateDeclarations: 'Yes'
 
 
 ########## Alignment
