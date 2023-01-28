@@ -1,15 +1,17 @@
 #pragma once
 
 #include "KeyState.hpp"
+#include <functional>
+#include <cstdint>
 
 class Keybind
 {
     public:
     Keybind() = default;
-    Keybind(int32_t key, KeyState state, std::function<void()> callback);
+    Keybind(std::int32_t key, KeyState state, std::function<void()> callback);
 
     public:
-    int32_t key;
+    std::int32_t key;
     KeyState state;
     std::function<void()> callback;
 };

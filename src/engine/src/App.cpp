@@ -3,20 +3,27 @@
 #include "../include/ui/fonts/Font.hpp"
 #include "../include/utility/ResourceManager.hpp"
 #include "../include/audio/AudioManager.hpp"
+#include <filesystem>
 
 App::App(const std::string& window_title, uint32_t width, uint32_t height)
-    : m_input(InputManager::get()),
-      m_sectionManager(SectionManager::get())
+    : m_input(InputManager::get())
+    , m_sectionManager(SectionManager::get())
 {
-    spdlog::info("App version: {}.{}.{} (build {})", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, BUILD_NUMBER);
+    spdlog::info("App version: {}.{}.{} (build {})",
+        VERSION_MAJOR,
+        VERSION_MINOR,
+        VERSION_PATCH,
+        BUILD_NUMBER);
 
     if constexpr(Flag::DebugMode)  // Debug Build
     {
-        m_window = std::make_shared<Window>(window_title, width, height, false, true);  // windowed, vsync
+        // windowed, vsync
+        m_window = std::make_shared<Window>(window_title, width, height, false, true);
     }
     else  // Release Build
     {
-        m_window = std::make_shared<Window>(window_title, width, height, true, false);  // fullscreen, no-vsync
+        // fullscreen, no-vsync
+        m_window = std::make_shared<Window>(window_title, width, height, true, false);
     }
     ResourceManager::window = m_window;
 
@@ -45,6 +52,7 @@ App::~App() noexcept
 
 void App::initLogger() noexcept
 {
+    namespace fs = std::filesystem;
     fs::create_directory("../logs");
 
     auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
@@ -58,7 +66,8 @@ void App::initLogger() noexcept
         console_sink->set_level(spdlog::level::info);
     }
 
-    auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("../logs/latest.log", true);
+    auto file_sink =
+        std::make_shared<spdlog::sinks::basic_file_sink_mt>("../logs/latest.log", true);
     file_sink->set_pattern("[%^%l%$] %v");
     if constexpr(Flag::DebugMode)
     {
@@ -86,28 +95,39 @@ void App::initLogger() noexcept
 void App::initTextures() noexcept
 {
     using res = ResourceManager;
-    res::largeTreeTexture = Resource::create<Texture::impl::Texture>("../res/textures/large_tree.png", 128, 128);
-    res::smallTreeTexture = Resource::create<Texture::impl::Texture>("../res/textures/small_tree.png", 64, 64);
-    res::outdoorBenchTexture = Resource::create<Texture::impl::Texture>("../res/textures/outdoors_bench.png", 48, 16);
-    res::chairTexture = Resource::create<Texture::impl::Texture>("../res/textures/chair.png", 16, 16);
-    res::tableTexture = Resource::create<Texture::impl::Texture>("../res/textures/table.png", 32, 32);
-    res::smallBushTexture = Resource::create<Texture::impl::Texture>("../res/textures/small_bush.png", 48, 48);
-    res::largeBushTexture = Resource::create<Texture::impl::Texture>("../res/textures/large_bush.png", 56, 56);
+    res::largeTreeTexture =
+        Resource::create<Texture::impl::Texture>("../res/textures/large_tree.png", 128, 128);
+    res::smallTreeTexture =
+        Resource::create<Texture::impl::Texture>("../res/textures/small_tree.png", 64, 64);
+    res::outdoorBenchTexture =
+        Resource::create<Texture::impl::Texture>("../res/textures/outdoors_bench.png", 48, 16);
+    res::chairTexture =
+        Resource::create<Texture::impl::Texture>("../res/textures/chair.png", 16, 16);
+    res::tableTexture =
+        Resource::create<Texture::impl::Texture>("../res/textures/table.png", 32, 32);
+    res::smallBushTexture =
+        Resource::create<Texture::impl::Texture>("../res/textures/small_bush.png", 48, 48);
+    res::largeBushTexture =
+        Resource::create<Texture::impl::Texture>("../res/textures/large_bush.png", 56, 56);
     res::carTexture = Resource::create<Texture::impl::Texture>("../res/textures/car.png", 32, 64);
-    res::destroyedCarTexture = Resource::create<Texture::impl::Texture>("../res/textures/destroyed_car.png", 32, 64);
+    res::destroyedCarTexture =
+        Resource::create<Texture::impl::Texture>("../res/textures/destroyed_car.png", 32, 64);
 
-    res::rifleInventoryTexture = Resource::create<Texture::impl::Texture>("../res/textures/gun_inventory.png", 256, 128);
-    res::pistolInventoryTexture = Resource::create<Texture::impl::Texture>("../res/textures/pistol_inventory.png", 256, 128);
+    res::rifleInventoryTexture =
+        Resource::create<Texture::impl::Texture>("../res/textures/gun_inventory.png", 256, 128);
+    res::pistolInventoryTexture =
+        Resource::create<Texture::impl::Texture>("../res/textures/pistol_inventory.png", 256, 128);
 
-    res::enemyTexture = Resource::create<Texture::impl::Texture>("../res/textures/entities/player.png",
-        TextureData{
-            .widthTotal = 192,
-            .heightTotal = 16,
-            .widthSub = 16,
-            .heightSub = 16,
-            .numberOfSubs = 12,
-            .numberOfSubsInOneRow = 12,
-        });
+    res::enemyTexture =
+        Resource::create<Texture::impl::Texture>("../res/textures/entities/player.png",
+            TextureData{
+                .widthTotal = 192,
+                .heightTotal = 16,
+                .widthSub = 16,
+                .heightSub = 16,
+                .numberOfSubs = 12,
+                .numberOfSubsInOneRow = 12,
+            });
 }
 
 void App::initFonts() noexcept
@@ -118,13 +138,17 @@ void App::initFonts() noexcept
 
     // TODO: change title font size to resize dynamically or set it up just for fullscreen
     res::uiTitleFontSize = std::make_shared<float>(100.f * window_width / 1920.f);
-    res::uiTitleFont = std::make_shared<Font>("../res/fonts/prisma/Prisma.ttf", *res::uiTitleFontSize);
+    res::uiTitleFont =
+        std::make_shared<Font>("../res/fonts/prisma/Prisma.ttf", *res::uiTitleFontSize);
     // res::uiButtonFontSize = std::make_shared<float>(20.f * window_width / 1920.f);
-    // res::uiButtonFont = std::make_shared<Font>("../res/fonts/abandoned/Abandoned-Bold.ttf", *res::uiButtonFontSize);
+    // res::uiButtonFont = std::make_shared<Font>("../res/fonts/abandoned/Abandoned-Bold.ttf",
+    // *res::uiButtonFontSize);
     res::uiButtonFontSize = std::make_shared<float>(20.f * window_width / 1920.f);
-    res::uiButtonFont = std::make_shared<Font>("../res/fonts/brass-mono/regular_comfortable.otf", *res::uiButtonFontSize);
+    res::uiButtonFont = std::make_shared<Font>("../res/fonts/brass-mono/regular_comfortable.otf",
+        *res::uiButtonFontSize);
     res::uiAmmoFontSize = std::make_shared<float>(25.f * window_width / 1920.f);
-    res::uiAmmoFont = std::make_shared<Font>("../res/fonts/gunplay/GUNPLAY_.ttf", *res::uiAmmoFontSize);
+    res::uiAmmoFont =
+        std::make_shared<Font>("../res/fonts/gunplay/GUNPLAY_.ttf", *res::uiAmmoFontSize);
 }
 
 void App::initAudio() noexcept
@@ -134,7 +158,9 @@ void App::initAudio() noexcept
     audio.addSound("footstep", "../res/audio/footstep.mp3");
     audio.addSound("handgun_click", "../res/audio/handgun_click.mp3");
 
-    audio.addMusic("gameplay_music", "../res/audio/music/Ancient Jungle Ruins - HeatleyBros.mp3", 0.3f);
+    audio.addMusic("gameplay_music",
+        "../res/audio/music/Ancient Jungle Ruins - HeatleyBros.mp3",
+        0.3f);
     audio.addMusic("menu_music", "../res/audio/music/Fragments_ambient.mp3", 0.4f);
 }
 

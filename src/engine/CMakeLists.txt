@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.19 FATAL_ERROR)
 project(MONOSHOT_GAME LANGUAGES CXX C)
 
 set(GAME_NAME "Monoshot")
+set(GLOBAL_BINARY_DIR "${PROJECT_SOURCE_DIR}/../../build/engine/lib")
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 if(CMAKE_BUILD_TYPE EQUAL "")
@@ -81,6 +82,9 @@ set(SFML_BUILD_FRAMEWORKS OFF CACHE BOOL "" FORCE)
 set(SFML_STATIC_LIBRARIES ON CACHE BOOL "" FORCE)
 add_subdirectory("${PROJECT_SOURCE_DIR}/lib/sfml")
 
+# Modules
+add_subdirectory("${PROJECT_SOURCE_DIR}/module/input")
+
 # Other sources
 file(GLOB_RECURSE GAME_SOURCES
     "${PROJECT_SOURCE_DIR}/src/*.cpp"
@@ -121,6 +125,7 @@ target_link_libraries(${GAME_NAME}
            EnTT::EnTT
            tinyfd::tinyfd
            sfml-audio
+           vis::input
 )
 
 target_precompile_headers(${GAME_NAME}

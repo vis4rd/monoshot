@@ -3,14 +3,19 @@
 #include "../section/SectionManager.hpp"
 #include "../utility/VertexArray.hpp"
 #include "../utility/FrameBuffer.hpp"
-#include "../input/InputManager.hpp"
+#include "../shader/ShaderManager.hpp"
 #include "NativeWindow.hpp"
+#include <input/InputManager.hpp>
 
 class Window final : public NativeWindow
 {
     public:
     Window();
-    Window(const std::string &title, std::uint32_t width, std::uint32_t height, bool fullscreen = true, bool vsync = true);
+    Window(const std::string &title,
+        std::uint32_t width,
+        std::uint32_t height,
+        bool fullscreen = true,
+        bool vsync = true);
     ~Window();
 
     const ImGuiIO &getImGuiIo() const;
@@ -32,8 +37,8 @@ class Window final : public NativeWindow
     void setRefreshRate(std::uint32_t hz);
 
     template<typename... UPDATEABLES>
-    requires CUpdateablePack<UPDATEABLES...>
-    bool update(UPDATEABLES &&...updateables) noexcept;
+    requires CUpdateablePack<UPDATEABLES...> bool
+    update(UPDATEABLES &&...updateables) noexcept;
 
     template<typename... RENDERABLES>
     requires CRenderablePack<RENDERABLES...>
@@ -56,9 +61,8 @@ class Window final : public NativeWindow
 };
 
 template<typename... UPDATEABLES>
-requires CUpdateablePack<UPDATEABLES...>
-
-bool Window::update(UPDATEABLES &&...updateables) noexcept
+requires CUpdateablePack<UPDATEABLES...> bool
+Window::update(UPDATEABLES &&...updateables) noexcept
 {
     if(m_sectionManager.size() == 0)
     {
@@ -87,10 +91,14 @@ bool Window::update(UPDATEABLES &&...updateables) noexcept
     if(input.isPressedOnce(GLFW_KEY_F11))
     {
         spdlog::debug("on F11: window size = {}x{}", m_width, m_height);
-        spdlog::debug("on F11: framebuffer size = {}x{}", screenFB.getSize().x, screenFB.getSize().y);
+        spdlog::debug("on F11: framebuffer size = {}x{}",
+            screenFB.getSize().x,
+            screenFB.getSize().y);
         this->toggleFullscreen();
         spdlog::debug("after F11: window size = {}x{}", m_width, m_height);
-        spdlog::debug("after F11: framebuffer size = {}x{}", screenFB.getSize().x, screenFB.getSize().y);
+        spdlog::debug("after F11: framebuffer size = {}x{}",
+            screenFB.getSize().x,
+            screenFB.getSize().y);
     }
     if constexpr(Flag::DebugMode)
     {
@@ -119,7 +127,6 @@ bool Window::update(UPDATEABLES &&...updateables) noexcept
 
 template<typename... RENDERABLES>
 requires CRenderablePack<RENDERABLES...>
-
 void Window::render(RENDERABLES &&...renderables) noexcept
 {
     if(m_isMinimized)
@@ -135,9 +142,9 @@ void Window::render(RENDERABLES &&...renderables) noexcept
     // Clear previous frame
     screenFB.bind();
     glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-    glViewport(0, 0, screenFB.getSize().x, screenFB.getSize().y);  // set framebuffer viewport to its size
+    // set framebuffer viewport to its size
+    glViewport(0, 0, screenFB.getSize().x, screenFB.getSize().y);
 
     // Render
     /// Render my own stuff
@@ -174,9 +181,15 @@ void Window::render(RENDERABLES &&...renderables) noexcept
                 }
 
                 ImGui::Text("Window size: (%d, %d)", m_width, m_height);
-                ImGui::Text("Framebuffer size: (%d, %d)", screenFB.getSize().x, screenFB.getSize().y);
-                ImGui::Text("Performance: [%.2fms] [%.0ffps]", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-                ImGui::Text("Mouse Position: Screen[%.2fx, %.2fy]", ImGui::GetMousePos().x, ImGui::GetMousePos().y);
+                ImGui::Text("Framebuffer size: (%d, %d)",
+                    screenFB.getSize().x,
+                    screenFB.getSize().y);
+                ImGui::Text("Performance: [%.2fms] [%.0ffps]",
+                    1000.0f / ImGui::GetIO().Framerate,
+                    ImGui::GetIO().Framerate);
+                ImGui::Text("Mouse Position: Screen[%.2fx, %.2fy]",
+                    ImGui::GetMousePos().x,
+                    ImGui::GetMousePos().y);
             }
             ImGui::End();
         }

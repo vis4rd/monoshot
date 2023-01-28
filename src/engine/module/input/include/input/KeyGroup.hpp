@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Keybind.hpp"
+#include <string>
 
 class KeyGroup
 {
@@ -10,5 +11,5 @@ class KeyGroup
 
     public:
     std::string name{};
-    std::unordered_map<int32_t, Keybind> keybinds{};
+    std::unordered_map<std::int32_t, Keybind> keybinds{};
 };
