@@ -117,6 +117,17 @@ QualifierAlignment: Leave
 ReferenceAlignment: Left
 
 
+########## Include sorting
+# IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex: '^<'
+    Priority: 1
+  - Regex: '^"'
+    Priority: 2
+SortIncludes: CaseSensitive
+SortUsingDeclarations: false
+
+
 ########## Other
 AllowAllArgumentsOnNextLine: false
 AllowAllConstructorInitializersOnNextLine: false
@@ -138,7 +149,6 @@ DeriveLineEnding: true
 EmptyLineAfterAccessModifier: Leave
 EmptyLineBeforeAccessModifier: Always
 FixNamespaceComments: true
-IncludeBlocks: Regroup
 # IntegerLiteralSeparator: # clang-format 16
 #   Binary: 8
 #   Decimal: 3
@@ -147,6 +157,4 @@ KeepEmptyLinesAtTheStartOfBlocks: false
 PackConstructorInitializers: Never
 ReflowComments: true
 SeparateDefinitionBlocks: Always
-SortIncludes: false
-SortUsingDeclarations: false
 ...

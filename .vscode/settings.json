@@ -1,12 +1,12 @@
 {
-    "C_Cpp.default.cppStandard": "c++20",
+    "C_Cpp.clang_format_style": "file",
     "C_Cpp.default.cStandard": "c17",
-    "C_Cpp.intelliSenseEngine": "Disabled",
-    "C_Cpp.errorSquiggles": "Disabled",
-    //
-    "clangd.arguments": [
-        "--header-insertion", "never"
-    ],
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "C_Cpp.default.cppStandard": "c++20",
+    "C_Cpp.doxygen.generatedStyle": "/**",
+    "C_Cpp.formatting": "clangFormat",
+    "C_Cpp.intelliSenseEngine": "default",
+    "C_Cpp.preferredPathSeparator": "Forward Slash",
     //
     "cmake.buildBeforeRun": false,
     "cmake.configureOnEdit": false,
@@ -14,6 +14,9 @@
     "cmake.statusbar.visibility": "icon",
     //
     "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": true,
+    },
     "editor.inlayHints.enabled": "offUnlessPressed",
     "editor.renderLineHighlight": "gutter",
     //
@@ -21,21 +24,12 @@
     "files.insertFinalNewline": false,
     "files.trimFinalNewlines": true,
     //
+    "git.ignoreSubmodules": true,
     "git.suggestSmartCommit": false,
-    "git.ignoredRepositories":[
-        "lib/entt",
-        "lib/glad",
-        "lib/glfw",
-        "lib/glm",
-        "lib/imgui/imgui",
-        "lib/spdlog",
-        "lib/tinyfiledialogs/tinyfiledialogs",
-        "lib/raudio/raudio",
-        "lib/sfml"
-    ],
     //
     "[cpp]": {
+        "editor.defaultFormatter": "ms-vscode.cpptools",
         "editor.formatOnSave": true,
         "files.insertFinalNewline": true,
-    }
+    },
 }
