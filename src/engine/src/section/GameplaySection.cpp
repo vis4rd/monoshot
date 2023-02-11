@@ -1,23 +1,23 @@
 #include "../../include/section/GameplaySection.hpp"
 
-#include "../../include/ui/elements/GameplayOverlay.hpp"
-#include "../../include/renderer/Renderer.hpp"
-#include "../../include/utility/ResourceManager.hpp"
-#include "../../include/utility/Collisions.hpp"
-#include "../../include/ecs/systems.hpp"
-#include "../../include/ecs/actions.hpp"
-#include "../../include/audio/AudioManager.hpp"
-
+#include <audio/AudioManager.hpp>
 #include <stbi/stb_image.h>
+
+#include "../../include/ecs/actions.hpp"
+#include "../../include/ecs/systems.hpp"
+#include "../../include/renderer/Renderer.hpp"
+#include "../../include/ui/elements/GameplayOverlay.hpp"
+#include "../../include/utility/Collisions.hpp"
+#include "../../include/utility/ResourceManager.hpp"
 
 static bool s_show_debug_info = false;
 
 GameplaySection::GameplaySection()
-    : Section(),
-      m_camera(glm::vec3(0.f, 0.f, 50.f), ResourceManager::window->getSize()),
-      m_map(5, 5),
-      m_hero(100),
-      m_layout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize)
+    : Section()
+    , m_camera(glm::vec3(0.f, 0.f, 50.f), ResourceManager::window->getSize())
+    , m_map(5, 5)
+    , m_hero(100)
+    , m_layout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize)
 {
     m_name = "GameplaySection";
 
@@ -176,19 +176,23 @@ void GameplaySection::render() noexcept
     Renderer::drawQuad({pos.x, pos.y}, m_hero.size, rot, m_hero.getTexture(), theme_color);
 
     const auto& enemy_texture = ResourceManager::enemyTexture;
-    const auto enemy_view = m_enemyRegistry.view<const ecs::component::position, const ecs::component::size, const ecs::component::rotation>();
-    enemy_view.each(
-        [&enemy_texture](const auto& e_pos, const auto& e_size, const auto& e_rot)
-        {
-            Renderer::drawQuad({e_pos.x, e_pos.y}, e_size, e_rot, enemy_texture, {1.f, 0.4f, 0.4f, 1.f});
-        });
+    const auto enemy_view = m_enemyRegistry.view<const ecs::component::position,
+        const ecs::component::size,
+        const ecs::component::rotation>();
+    enemy_view.each([&enemy_texture](const auto& e_pos, const auto& e_size, const auto& e_rot) {
+        Renderer::drawQuad({e_pos.x, e_pos.y},
+            e_size,
+            e_rot,
+            enemy_texture,
+            {1.f, 0.4f, 0.4f, 1.f});
+    });
 
-    const auto bullet_view = m_bulletRegistry.view<const ecs::component::position, const ecs::component::size, const ecs::component::rotation>(entt::exclude<ecs::component::destroyed>);
-    bullet_view.each(
-        [&theme_color](const auto& b_pos, const auto& b_size, const auto& b_rot)
-        {
-            Renderer::drawQuad({b_pos.x, b_pos.y}, b_size, b_rot, theme_color);
-        });
+    const auto bullet_view = m_bulletRegistry.view<const ecs::component::position,
+        const ecs::component::size,
+        const ecs::component::rotation>(entt::exclude<ecs::component::destroyed>);
+    bullet_view.each([&theme_color](const auto& b_pos, const auto& b_size, const auto& b_rot) {
+        Renderer::drawQuad({b_pos.x, b_pos.y}, b_size, b_rot, theme_color);
+    });
 
     m_map.drawObjects({pos.x, pos.y});
     Renderer::endBatch(m_camera.getProjectionMatrix(), m_camera.getViewMatrix());
@@ -203,12 +207,16 @@ void GameplaySection::render() noexcept
             current_ammo = weapon.getAmmoCurrent();
             total_ammo = weapon.getAmmoTotal();
         }
-        UI::drawOverlay(m_layout, m_hero.health, m_hero.maxHealth, current_ammo, total_ammo, m_hero.getCurrentItemIndex());
+        UI::drawOverlay(m_layout,
+            m_hero.health,
+            m_hero.maxHealth,
+            current_ammo,
+            total_ammo,
+            m_hero.getCurrentItemIndex());
     }
     if(m_onLeaveStarted)
     {
-        const auto TextCentered = [](const char* text, auto&&... args)
-        {
+        const auto TextCentered = [](const char* text, auto&&... args) {
             float font_size = ImGui::GetFontSize() * strlen(text) / 2;
             ImGui::SameLine(ImGui::GetWindowSize().x / 2 - font_size + (font_size / 2));
 
@@ -218,8 +226,11 @@ void GameplaySection::render() noexcept
         const auto& font = res::uiTitleFont;
         auto font_guard = font->use();
         const auto text_pos = res::window->getSize() / 2;
-        ImGui::SetNextWindowPos({static_cast<float>(text_pos.x), static_cast<float>(text_pos.y)}, ImGuiCond_Always, {0.5f, 0.5f});
-        ImGui::SetNextWindowSize({static_cast<float>(text_pos.x), static_cast<float>(text_pos.y) / 1.5f});
+        ImGui::SetNextWindowPos({static_cast<float>(text_pos.x), static_cast<float>(text_pos.y)},
+            ImGuiCond_Always,
+            {0.5f, 0.5f});
+        ImGui::SetNextWindowSize(
+            {static_cast<float>(text_pos.x), static_cast<float>(text_pos.y) / 1.5f});
         ImGui::Begin("Win message", nullptr, m_layout.window_flags | ImGuiWindowFlags_NoBackground);
         {
             TextCentered("You won");
@@ -234,8 +245,12 @@ void GameplaySection::render() noexcept
         {
             ImGui::Begin("Release Mode Statistics");
             {
-                ImGui::Text("Performance: [%.2fms] [%.0ffps]", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-                ImGui::Text("Mouse Position: Screen[%.2fx, %.2fy]", ImGui::GetMousePos().x, ImGui::GetMousePos().y);
+                ImGui::Text("Performance: [%.2fms] [%.0ffps]",
+                    1000.0f / ImGui::GetIO().Framerate,
+                    ImGui::GetIO().Framerate);
+                ImGui::Text("Mouse Position: Screen[%.2fx, %.2fy]",
+                    ImGui::GetMousePos().x,
+                    ImGui::GetMousePos().y);
                 ImGui::Text("Quad count: %d", Renderer::getStats().quadCount);
                 ImGui::Text("Line count: %d", Renderer::getStats().lineCount);
                 ImGui::Text("Draw calls: %d", Renderer::getStats().drawCount);
@@ -291,7 +306,8 @@ bool GameplaySection::onEnter()
         const float zoom_diff = target_zoom - starting_zoom;
 
         const auto& camera_pos = m_camera.getPosition();
-        m_camera.setPosition({camera_pos.x, camera_pos.y, starting_zoom + (zoom_diff * (1.0 - diff_multiplier))});
+        m_camera.setPosition(
+            {camera_pos.x, camera_pos.y, starting_zoom + (zoom_diff * (1.0 - diff_multiplier))});
 
         if(diff <= 0.0)
         {
@@ -321,7 +337,8 @@ bool GameplaySection::onLeave()
         const float zoom_diff = target_zoom - starting_zoom;
 
         const auto& camera_pos = m_camera.getPosition();
-        m_camera.setPosition({camera_pos.x, camera_pos.y, starting_zoom + (zoom_diff * diff_multiplier)});
+        m_camera.setPosition(
+            {camera_pos.x, camera_pos.y, starting_zoom + (zoom_diff * diff_multiplier)});
 
         return diff > m_leaveDuration;
     }

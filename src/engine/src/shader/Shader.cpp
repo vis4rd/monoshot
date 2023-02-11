@@ -1,13 +1,20 @@
 #include "../../include/shader/Shader.hpp"
 
-Shader::Shader() : m_source(), m_name(), m_location(), m_id() { }
+Shader::Shader()
+    : m_source()
+    , m_name()
+    , m_location()
+    , m_id()
+{ }
 
 Shader::Shader(const fs::path& location, const std::string& name, const int8_t type)
-    : m_name(name), m_location(location)
+    : m_name(name)
+    , m_location(location)
 {
     if(!fs::exists(m_location) || !fs::is_regular_file(m_location))
     {
-        throw std::runtime_error("The given directory entry does not exist or is not a shader file.");
+        throw std::runtime_error(
+            "The directory '" + m_location.string() + "' does not exist or is not a shader file.");
     }
 
     std::ifstream source(location);

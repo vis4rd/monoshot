@@ -4,13 +4,16 @@
 
 Window::Window()
     : Window("MONOSHOT", 1280, 720, false, true)
-{
-}
+{ }
 
-Window::Window(const std::string &title, std::uint32_t width, std::uint32_t height, bool fullscreen, bool vsync)
-    : NativeWindow(title, width, height),
-      screenVA(),
-      screenFB(m_width, m_height)
+Window::Window(const std::string &title,
+    std::uint32_t width,
+    std::uint32_t height,
+    bool fullscreen,
+    bool vsync)
+    : NativeWindow(title, width, height)
+    , screenVA()
+    , screenFB(m_width, m_height)
 {
     spdlog::info("Creating window instance");
 
@@ -20,7 +23,8 @@ Window::Window(const std::string &title, std::uint32_t width, std::uint32_t heig
     this->setVerticalSync(vsync);
     m_isMaximized = static_cast<bool>(glfwGetWindowAttrib(m_window, GLFW_MAXIMIZED));
 
-    constexpr float screen_vertex_buffer[16] = {-1.f, -1.f, 0.f, 0.f, 1.f, -1.f, 1.f, 0.f, 1.f, 1.f, 1.f, 1.f, -1.f, 1.f, 0.f, 1.f};
+    constexpr float screen_vertex_buffer[16] =
+        {-1.f, -1.f, 0.f, 0.f, 1.f, -1.f, 1.f, 0.f, 1.f, 1.f, 1.f, 1.f, -1.f, 1.f, 0.f, 1.f};
     constexpr std::uint32_t screen_element_buffer[6] = {0, 1, 2, 2, 3, 0};
 
     VertexBuffer screenVB(screen_vertex_buffer, sizeof(screen_vertex_buffer));
@@ -38,8 +42,7 @@ Window::Window(const std::string &title, std::uint32_t width, std::uint32_t heig
 
     // update internal size tracking for UI and framebuffer size when user resizes the window
     glfwSetWindowSizeCallback(m_window,
-        [](GLFWwindow *window, int new_width, int new_height) -> void
-        {
+        [](GLFWwindow *window, int new_width, int new_height) -> void {
             spdlog::debug("New window size = {}x{} in screen coordinates", new_width, new_height);
             auto &_this = ResourceManager::window;
             _this->m_width = new_width;
@@ -47,35 +50,31 @@ Window::Window(const std::string &title, std::uint32_t width, std::uint32_t heig
             _this->setFramebufferSize({new_width, new_height});
         });
 
-    glfwSetWindowMaximizeCallback(m_window,
-        [](GLFWwindow *window, int maximized) -> void
+    glfwSetWindowMaximizeCallback(m_window, [](GLFWwindow *window, int maximized) -> void {
+        auto &_this = ResourceManager::window;
+        _this->m_isMaximized = static_cast<bool>(maximized);
+        if(_this->m_isMaximized)
         {
-            auto &_this = ResourceManager::window;
-            _this->m_isMaximized = static_cast<bool>(maximized);
-            if(_this->m_isMaximized)
-            {
-                spdlog::debug("Window has been maximized");
-            }
-            else
-            {
-                spdlog::debug("Window has been restored");
-            }
-        });
+            spdlog::debug("Window has been maximized");
+        }
+        else
+        {
+            spdlog::debug("Window has been restored");
+        }
+    });
 
-    glfwSetWindowIconifyCallback(m_window,
-        [](GLFWwindow *window, int minimized) -> void
+    glfwSetWindowIconifyCallback(m_window, [](GLFWwindow *window, int minimized) -> void {
+        auto &_this = ResourceManager::window;
+        _this->m_isMinimized = static_cast<bool>(minimized);
+        if(_this->m_isMinimized)
         {
-            auto &_this = ResourceManager::window;
-            _this->m_isMinimized = static_cast<bool>(minimized);
-            if(_this->m_isMinimized)
-            {
-                spdlog::debug("Window has been minimized");
-            }
-            else
-            {
-                spdlog::debug("Window has been restored");
-            }
-        });
+            spdlog::debug("Window has been minimized");
+        }
+        else
+        {
+            spdlog::debug("Window has been restored");
+        }
+    });
 
     glm::vec4 clear_color = glm::vec4(0.f, 0.f, 0.f, 1.f);
     glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a);
@@ -164,7 +163,13 @@ void Window::setFullscreen(bool fullscreen)
     }
     else
     {
-        glfwSetWindowMonitor(m_window, nullptr, (lr.x - sr.x) / 2.f, (lr.y - sr.y) / 2.f, sr.x, sr.y, GLFW_DONT_CARE);
+        glfwSetWindowMonitor(m_window,
+            nullptr,
+            (lr.x - sr.x) / 2.f,
+            (lr.y - sr.y) / 2.f,
+            sr.x,
+            sr.y,
+            GLFW_DONT_CARE);
         this->setFramebufferSize({sr.x, sr.y});  // update framebuffer size when leaving fullscreen
         m_width = sr.x;  // update internal size indicator
         m_height = sr.y;
@@ -226,7 +231,13 @@ void Window::setRefreshRate(std::uint32_t hz)
     if(this->isFullscreen())
     {
         const auto monitor = NativeWindow::getCurrentMonitor();
-        glfwSetWindowMonitor(m_window, monitor, GLFW_DONT_CARE, GLFW_DONT_CARE, m_width, m_height, hz);
+        glfwSetWindowMonitor(m_window,
+            monitor,
+            GLFW_DONT_CARE,
+            GLFW_DONT_CARE,
+            m_width,
+            m_height,
+            hz);
         this->setVerticalSync(m_isVSyncEnabled);
     }
 }

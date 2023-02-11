@@ -1,4 +1,4 @@
-#include "../../include/audio/AudioManager.hpp"
+#include "../include/audio/AudioManager.hpp"
 
 #include <spdlog/spdlog.h>
 
@@ -10,7 +10,9 @@ AudioManager& AudioManager::get()
     return instance;
 }
 
-bool AudioManager::addSound(const std::string& name, const std::filesystem::path& path, const float& volume)
+bool AudioManager::addSound(const std::string& name,
+    const std::filesystem::path& path,
+    const float& volume)
 {
     if(this->doesSoundNameExist(name))
     {
@@ -94,7 +96,9 @@ float AudioManager::getSoundVolume(const std::string& name) const
     return retval;
 }
 
-bool AudioManager::addMusic(const std::string& name, const std::filesystem::path& path, const float& volume)
+bool AudioManager::addMusic(const std::string& name,
+    const std::filesystem::path& path,
+    const float& volume)
 {
     if(this->doesMusicNameExist(name))
     {
@@ -165,7 +169,8 @@ bool AudioManager::setMusicUserVolume(const std::string& name, const float& new_
     const auto& index = m_musicNames.at(name);
     m_musicUserVolumes.at(index) = new_user_volume;
     const auto& init_volume = m_musicInitialVolumes.at(index);
-    m_musics.at(index)->setVolume(base_volume * init_volume * new_user_volume * m_mixerMaster * m_mixerMusic);
+    m_musics.at(index)->setVolume(
+        base_volume * init_volume * new_user_volume * m_mixerMaster * m_mixerMusic);
 
     return true;
 }
@@ -242,13 +247,16 @@ void AudioManager::updateSoundVolume(const std::size_t& queue_index, const std::
     // spdlog::trace("    Updating SFX sound {} in queue {}:", sound_index, queue_index);
     const auto& init_volume = m_soundInitialVolumes.at(queue_index);
     const auto& user_volume = m_soundUserVolumes.at(queue_index);
-    m_soundQueues.at(queue_index).at(sound_index).setVolume(base_volume * m_mixerMaster * m_mixerSfx * init_volume * user_volume);
+    m_soundQueues.at(queue_index)
+        .at(sound_index)
+        .setVolume(base_volume * m_mixerMaster * m_mixerSfx * init_volume * user_volume);
 }
 
 void AudioManager::updateSoundQueueVolume(const std::size_t& queue_index)
 {
     // spdlog::trace("  Updating SFX queue {}:", queue_index);
-    for(std::size_t sound_index{0}; sound_index < m_soundQueues.at(queue_index).size(); sound_index++)
+    for(std::size_t sound_index{0}; sound_index < m_soundQueues.at(queue_index).size();
+        sound_index++)
     {
         this->updateSoundVolume(queue_index, sound_index);
     }

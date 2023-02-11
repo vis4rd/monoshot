@@ -2,16 +2,16 @@
 
 // #include "../utility/VertexArray.hpp"
 // #include "../texture/Texture2D.hpp"
-#include "../gameplay/Hero.hpp"
+#include <audio/AudioManager.hpp>
+#include <entt/entity/registry.hpp>
+
 #include "../camera/PerspectiveCamera.hpp"
+#include "../ecs/systems.hpp"
+#include "../gameplay/Hero.hpp"
 #include "../map/Map.hpp"
 #include "../ui/layouts/GameplayLayout.hpp"
-#include "Section.hpp"
 #include "../utility/Timer.hpp"
-#include "../ecs/systems.hpp"
-
-#include <entt/entity/registry.hpp>
-#include <SFML/Audio.hpp>
+#include "Section.hpp"
 
 class DebugSection final : public Section
 {

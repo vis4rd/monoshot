@@ -1,14 +1,15 @@
 #include "../../include/section/SettingsSection.hpp"
 
-#include "../../include/utility/ResourceManager.hpp"
-#include "../../include/ui/elements/external/BeginCombo.hpp"
+#include <audio/AudioManager.hpp>
+
 #include "../../include/ui/elements/LowerNavigationBox.hpp"
-#include "../../include/audio/AudioManager.hpp"
+#include "../../include/ui/elements/external/BeginCombo.hpp"
+#include "../../include/utility/ResourceManager.hpp"
 
 SettingsSection::SettingsSection()
-    : Section(),
-      m_layout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize),
-      m_navLayout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize)
+    : Section()
+    , m_layout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize)
+    , m_navLayout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize)
 {
     m_name = "SettingsSection";
 }
@@ -43,8 +44,11 @@ void SettingsSection::render() noexcept
         const auto& window_w = window_size.x;
         const auto& window_h = window_size.y;
         std::string current_resolution = std::to_string(window_w) + "x" + std::to_string(window_h);
-        ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s, m_layout.menu_y + m_layout.button_h_s});
-        if(Custom::ImGui::BeginCombo("Resolution", current_resolution.c_str(), {m_layout.button_w, m_layout.button_h}))
+        ImGui::SetCursorScreenPos(
+            {m_layout.menu_x + m_layout.button_w_s, m_layout.menu_y + m_layout.button_h_s});
+        if(Custom::ImGui::BeginCombo("Resolution",
+               current_resolution.c_str(),
+               {m_layout.button_w, m_layout.button_h}))
         {
             const auto resolutions = window->queryMonitorResolutions();
             const int32_t mode_count = resolutions.size();
@@ -69,7 +73,9 @@ void SettingsSection::render() noexcept
         std::string current_refresh_rate = std::to_string(window->getRefreshRate()) + "Hz";
         auto next_y = ImGui::GetCursorScreenPos().y;
         ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s, next_y});
-        if(Custom::ImGui::BeginCombo("Rate ", current_refresh_rate.c_str(), {m_layout.button_w, m_layout.button_h}))
+        if(Custom::ImGui::BeginCombo("Rate ",
+               current_refresh_rate.c_str(),
+               {m_layout.button_w, m_layout.button_h}))
         {
             const auto refresh_rates = window->queryMonitorRefreshRates();
             const int32_t mode_count = refresh_rates.size();
@@ -93,7 +99,9 @@ void SettingsSection::render() noexcept
         std::string current_window_mode = window->isFullscreen() ? "Fullscreen" : "Windowed";
         next_y = ImGui::GetCursorScreenPos().y;
         ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s, next_y});
-        if(Custom::ImGui::BeginCombo("Window Mode", current_window_mode.c_str(), {m_layout.button_w, m_layout.button_h}))
+        if(Custom::ImGui::BeginCombo("Window Mode",
+               current_window_mode.c_str(),
+               {m_layout.button_w, m_layout.button_h}))
         {
             if(ImGui::Selectable("Fullscreen", window->isFullscreen()))
             {
@@ -109,10 +117,13 @@ void SettingsSection::render() noexcept
         }
 
         // Vertical Sync
-        std::string current_vertical_sync = window->isVerticalSyncEnabled() ? "Enabled" : "Disabled";
+        std::string current_vertical_sync =
+            window->isVerticalSyncEnabled() ? "Enabled" : "Disabled";
         next_y = ImGui::GetCursorScreenPos().y;
         ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s, next_y});
-        if(Custom::ImGui::BeginCombo("Vertical Sync", current_vertical_sync.c_str(), {m_layout.button_w, m_layout.button_h}))
+        if(Custom::ImGui::BeginCombo("Vertical Sync",
+               current_vertical_sync.c_str(),
+               {m_layout.button_w, m_layout.button_h}))
         {
             if(ImGui::Selectable("Enabled", window->isVerticalSyncEnabled()))
             {
@@ -145,7 +156,8 @@ void SettingsSection::render() noexcept
         next_y = ImGui::GetCursorScreenPos().y;
         ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s, next_y});
         ImGui::SetNextItemWidth(m_layout.button_w);
-        static std::int32_t local_master_volume = static_cast<int>(audio.getMixerMasterVolume() * 100);
+        static std::int32_t local_master_volume =
+            static_cast<int>(audio.getMixerMasterVolume() * 100);
         if(ImGui::SliderInt("Master Volume", &local_master_volume, 0, 100, "%d%"))
         {
             audio.setMixerMasterVolume(local_master_volume / 100.f);
@@ -155,7 +167,8 @@ void SettingsSection::render() noexcept
         next_y = ImGui::GetCursorScreenPos().y;
         ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s, next_y});
         ImGui::SetNextItemWidth(m_layout.button_w);
-        static std::int32_t local_music_volume = static_cast<int>(audio.getMixerMusicVolume() * 100);
+        static std::int32_t local_music_volume =
+            static_cast<int>(audio.getMixerMusicVolume() * 100);
         if(ImGui::SliderInt("Music Volume", &local_music_volume, 0, 100, "%d%"))
         {
             audio.setMixerMusicVolume(local_music_volume / 100.f);

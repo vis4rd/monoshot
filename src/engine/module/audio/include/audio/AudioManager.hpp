@@ -1,10 +1,10 @@
 #pragma once
 
+#include <SFML/Audio/Music.hpp>
 #include <SFML/Audio/Sound.hpp>
 #include <SFML/Audio/SoundBuffer.hpp>
-#include <SFML/Audio/Music.hpp>
-
 #include <filesystem>
+#include <unordered_map>
 
 class AudioManager final
 {
@@ -15,13 +15,17 @@ class AudioManager final
     AudioManager& operator=(AudioManager&&) = delete;
     static AudioManager& get();
 
-    bool addSound(const std::string& name, const std::filesystem::path& path, const float& volume = 1.f);
+    bool addSound(const std::string& name,
+        const std::filesystem::path& path,
+        const float& volume = 1.f);
     void playSound(const std::string& name);
     bool setSoundUserVolume(const std::string& name, const float& new_volume);
     const float& getSoundUserVolume(const std::string& name) const;
     float getSoundVolume(const std::string& name) const;
 
-    bool addMusic(const std::string& name, const std::filesystem::path& path, const float& volume = 1.f);
+    bool addMusic(const std::string& name,
+        const std::filesystem::path& path,
+        const float& volume = 1.f);
     void playMusic(const std::string& name);
     void pauseMusic(const std::string& name);
     void stopMusic(const std::string& name);

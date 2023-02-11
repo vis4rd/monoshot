@@ -85,6 +85,7 @@ add_subdirectory("${PROJECT_SOURCE_DIR}/lib/sfml")
 # Modules
 add_subdirectory("${PROJECT_SOURCE_DIR}/module/input")
 add_subdirectory("${PROJECT_SOURCE_DIR}/module/cstring")
+add_subdirectory("${PROJECT_SOURCE_DIR}/module/audio")
 
 # Other sources
 file(GLOB_RECURSE GAME_SOURCES
@@ -125,8 +126,8 @@ target_link_libraries(${GAME_NAME}
            stb::image
            EnTT::EnTT
            tinyfd::tinyfd
-           sfml-audio
            vis::input
+           vis::audio
 )
 
 target_precompile_headers(${GAME_NAME}

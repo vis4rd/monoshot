@@ -1,7 +1,8 @@
 #include "../../include/section/SectionManager.hpp"
 
+#include <audio/AudioManager.hpp>
+
 #include "../../include/utility/ResourceManager.hpp"
-#include "../../include/audio/AudioManager.hpp"
 
 SectionManager& SectionManager::get()
 {
@@ -47,7 +48,10 @@ void SectionManager::update() noexcept
     {
         auto& audio = AudioManager::get();
         auto& menu_music = audio.getMusic("menu_music");
-        if((m_sections.top()->name() != "DebugSection") && (m_sections.top()->name() != "CreatorSection") && (m_sections.top()->name() != "TutorialMapSection") && (m_sections.top()->name() != "ForestMapSection")
+        if((m_sections.top()->name() != "DebugSection")
+            && (m_sections.top()->name() != "CreatorSection")
+            && (m_sections.top()->name() != "TutorialMapSection")
+            && (m_sections.top()->name() != "ForestMapSection")
             && (m_sections.top()->name() != "WinterMapSection"))
         {
             if(menu_music->getStatus() != sf::Music::Playing)

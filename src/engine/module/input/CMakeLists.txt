@@ -24,6 +24,6 @@ target_include_directories(vis_module_input
 )
 
 target_link_libraries(vis_module_input
-    PRIVATE glfw
+    PUBLIC glfw
            spdlog::spdlog
 )
