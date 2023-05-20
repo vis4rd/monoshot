@@ -1,11 +1,11 @@
-#include "../../include/utility/FrameBuffer.hpp"
+#include "../../include/gl/FrameBuffer.hpp"
 
 #include <glad/gl.h>
 #include <spdlog/spdlog.h>
 
 FrameBuffer::FrameBuffer(const std::int32_t& width, const std::int32_t& height)
-    : m_width(width),
-      m_height(height)
+    : m_width(width)
+    , m_height(height)
 {
     spdlog::debug("Creating a framebuffer");
     glCreateFramebuffers(1, &m_id);
@@ -22,12 +22,10 @@ FrameBuffer::FrameBuffer(const std::int32_t& width, const std::int32_t& height)
     // glCreateTextures(GL_TEXTURE_2D, 1, &m_fbColor);
     // glBindTexture(GL_TEXTURE_2D, m_fbColor);
     // spdlog::debug("one");
-    // glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
-    // spdlog::debug("two");
-    // glTextureParameteri(m_fbColor, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    // spdlog::debug("three");
-    // glTextureParameteri(m_fbColor, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // spdlog::debug("four");
+    // glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE,
+    // nullptr); spdlog::debug("two"); glTextureParameteri(m_fbColor, GL_TEXTURE_MIN_FILTER,
+    // GL_LINEAR); spdlog::debug("three"); glTextureParameteri(m_fbColor, GL_TEXTURE_MAG_FILTER,
+    // GL_LINEAR); spdlog::debug("four");
 
     // (stencil attachment)
     // spdlog::debug("Creating a renderbuffer");
@@ -129,7 +127,8 @@ void FrameBuffer::initStencil()
 {
     spdlog::debug("Creating a stencil attachment");
     glCreateRenderbuffers(1, &m_stencilAttachment);
-    glBindRenderbuffer(GL_RENDERBUFFER, m_stencilAttachment);  // TODO: try not to call this when everything works
+    glBindRenderbuffer(GL_RENDERBUFFER,
+        m_stencilAttachment);  // TODO: try not to call this when everything works
     glNamedRenderbufferStorage(m_stencilAttachment, GL_STENCIL_INDEX, m_width, m_height);
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
@@ -148,5 +147,8 @@ void FrameBuffer::bindAttachments()
 {
     spdlog::debug("Binding color and stencil attachments to the framebuffer");
     glNamedFramebufferTexture(m_id, GL_COLOR_ATTACHMENT0, m_colorAttachment, 0);
-    glNamedFramebufferRenderbuffer(m_id, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_stencilAttachment);
+    glNamedFramebufferRenderbuffer(m_id,
+        GL_STENCIL_ATTACHMENT,
+        GL_RENDERBUFFER,
+        m_stencilAttachment);
 }

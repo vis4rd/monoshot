@@ -1,10 +1,11 @@
-#include "../../include/utility/ElementBuffer.hpp"
-#include "spdlog/spdlog.h"
+#include "../../include/gl/ElementBuffer.hpp"
+
 #include <glad/gl.h>
+#include <spdlog/spdlog.h>
 
 ElementBuffer::ElementBuffer(const std::uint32_t* indices, std::uint32_t count)
-    : m_count(count),
-      m_isInit(true)
+    : m_count(count)
+    , m_isInit(true)
 {
     glCreateBuffers(1, &m_id);
     glNamedBufferData(m_id, m_count * sizeof(std::uint32_t), indices, GL_STATIC_DRAW);

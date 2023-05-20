@@ -1,6 +1,8 @@
-#include "../../include/utility/VertexBuffer.hpp"
-#include "spdlog/spdlog.h"
+#include "../../include/gl/VertexBuffer.hpp"
+
 #include <glad/gl.h>
+
+#include "spdlog/spdlog.h"
 
 BufferLayout::BufferLayout(std::initializer_list<BufferElement> elements)
     : m_elements(elements)
@@ -60,15 +62,15 @@ VertexBuffer::VertexBuffer(std::uint32_t size)
 }
 
 VertexBuffer::VertexBuffer(const VertexBuffer& copy)
-    : m_id(copy.m_id),
-      m_layout(copy.m_layout)
+    : m_id(copy.m_id)
+    , m_layout(copy.m_layout)
 {
     spdlog::debug("Copying VertexBuffer instance with ID = {}", copy.m_id);
 }
 
 VertexBuffer::VertexBuffer(VertexBuffer&& move)
-    : m_id(std::move(move.m_id)),
-      m_layout(std::move(move.m_layout))
+    : m_id(std::move(move.m_id))
+    , m_layout(std::move(move.m_layout))
 {
     spdlog::debug("Moving VertexBuffer instance with ID = {}", m_id);
 }
@@ -82,7 +84,9 @@ VertexBuffer::VertexBuffer(const float* vertices, std::uint32_t size)
     {
         spdlog::trace("Vertex {} = {}", i, vertices[i]);
     }
-    spdlog::debug("Created VertexBuffer instance with ID = {}, size = {} and pre-computed vertices", m_id, size);
+    spdlog::debug("Created VertexBuffer instance with ID = {}, size = {} and pre-computed vertices",
+        m_id,
+        size);
 }
 
 VertexBuffer::~VertexBuffer()
@@ -153,13 +157,12 @@ inline static std::uint32_t sizeofShaderDataType(const ShaderDataType& type)
 }
 
 BufferElement::BufferElement(const ShaderDataType& type, const std::string& name, bool normalized)
-    : m_name(name),
-      m_shaderType(type),
-      m_size(sizeofShaderDataType(type)),
-      m_offset(0),
-      m_normalized(normalized)
-{
-}
+    : m_name(name)
+    , m_shaderType(type)
+    , m_size(sizeofShaderDataType(type))
+    , m_offset(0)
+    , m_normalized(normalized)
+{ }
 
 const std::string& BufferElement::getName() const
 {

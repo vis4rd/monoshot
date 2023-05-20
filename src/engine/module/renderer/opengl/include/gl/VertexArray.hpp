@@ -2,8 +2,8 @@
 
 #include <memory>
 
-#include "VertexBuffer.hpp"
 #include "ElementBuffer.hpp"
+#include "VertexBuffer.hpp"
 
 class VertexArray
 {

@@ -1,5 +1,10 @@
 #include "../../include/shader/ShaderManager.hpp"
 
+#include <map>
+#include <spdlog/spdlog.h>
+
+namespace fs = std::filesystem;
+
 namespace ShaderManagerData
 {
 static std::map<std::string, ShaderProgram> shaderMap;
@@ -14,7 +19,8 @@ ShaderProgram& ShaderManager::addShaderProgram(const fs::path& location, const s
     auto vert = loc.string() + "/" + vert_name;
     auto frag_sh = Shader(frag, frag_name, Shader::Type::FRAGMENT);
     auto vert_sh = Shader(vert, vert_name, Shader::Type::VERTEX);
-    auto&& [iter, success] = ShaderManagerData::shaderMap.try_emplace(name, std::move(frag_sh), std::move(vert_sh));
+    auto&& [iter, success] =
+        ShaderManagerData::shaderMap.try_emplace(name, std::move(frag_sh), std::move(vert_sh));
     if(success)
     {
         return iter->second;

@@ -1,13 +1,12 @@
 #pragma once
 
-#include "../traits/Scalar.hpp"
-
-#include <glad/gl.h>
-
-#include <cstdint>
 #include <concepts>
+#include <cstdint>
+#include <glad/gl.h>
 #include <type_traits>
 #include <utility>
+
+#include "../../../../../include/traits/Scalar.hpp"
 
 // TODO: change this comment formatting to comply with doxygen
 //! params with predefined values:
@@ -430,7 +429,8 @@ constexpr void setParameterFloat(std::unsigned_integral auto&& id, std::floating
 }  // namespace impl
 
 template<ParameterIntValue ParamValue> void setParameter(std::unsigned_integral auto&& id) = delete;
-template<ParameterIntValue ParamValue> requires impl::DepthStencilTextureModeC<ParamValue> void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<Parameter::DEPTH_STENCIL_TEXTURE_MODE>(std::forward<decltype(id)>(id), std::forward<decltype(ParamValue)>(ParamValue)); }
+template<ParameterIntValue ParamValue> requires impl::DepthStencilTextureModeC<ParamValue>
+void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<Parameter::DEPTH_STENCIL_TEXTURE_MODE>(std::forward<decltype(id)>(id), std::forward<decltype(ParamValue)>(ParamValue)); }
 template<ParameterIntValue ParamValue> requires impl::TextureCompareFuncC<ParamValue> void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<Parameter::TEXTURE_COMPARE_FUNC>(std::forward<decltype(id)>(id), std::forward<decltype(ParamValue)>(ParamValue)); }
 template<ParameterIntValue ParamValue> requires impl::TextureCompareModeC<ParamValue> void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<Parameter::TEXTURE_COMPARE_MODE>(std::forward<decltype(id)>(id), std::forward<decltype(ParamValue)>(ParamValue)); }
 template<ParameterIntValue ParamValue> requires impl::TextureMinFilterC<ParamValue> void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<Parameter::TEXTURE_MIN_FILTER>(std::forward<decltype(id)>(id), std::forward<decltype(ParamValue)>(ParamValue)); }
@@ -467,8 +467,10 @@ constexpr void setParameter(std::unsigned_integral auto&& id, std::floating_poin
 // {
 //     Texture::setParameter<Texture::DepthStencilTextureMode::DEFAULT>(0u);
 //     Texture::setParameter<Texture::TextureCompareFunc::ALWAYS>(0u);
-//     Texture::setParameter<Texture::Parameter::TEXTURE_SWIZZLE_A, Texture::TextureSwizzleA::DEFAULT>(0u);
-//     Texture::setParameter<Texture::Parameter::TEXTURE_SWIZZLE_A, Texture::TextureSwizzleA::DEFAULT>(0u);
+//     Texture::setParameter<Texture::Parameter::TEXTURE_SWIZZLE_A,
+//     Texture::TextureSwizzleA::DEFAULT>(0u);
+//     Texture::setParameter<Texture::Parameter::TEXTURE_SWIZZLE_A,
+//     Texture::TextureSwizzleA::DEFAULT>(0u);
 //     Texture::setParameter<Texture::Parameter::TEXTURE_BASE_LEVEL>(0u, 0);
 //     Texture::setParameter<Texture::Parameter::TEXTURE_MAX_LEVEL>(0u, 0);
 //     // Texture::setParameter<Texture::Parameter::TEXTURE_MAX_LEVEL>(0u, 0.f);

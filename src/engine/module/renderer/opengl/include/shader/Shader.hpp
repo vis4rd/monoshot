@@ -1,18 +1,16 @@
 #pragma once
 
-#include "../camera/PerspectiveCamera.hpp"
-
-namespace fs = std::filesystem;
+#include <filesystem>
 
 class Shader
 {
     public:
     Shader();
-    Shader(const fs::path& location, const std::string& name, const int8_t type);
+    Shader(const std::filesystem::path& location, const std::string& name, const int8_t type);
     ~Shader();
 
     const std::string& getName() const;
-    const fs::path& getLocation() const;
+    const std::filesystem::path& getLocation() const;
     const std::uint32_t getID() const;
 
     enum Type
@@ -24,6 +22,6 @@ class Shader
     private:
     std::string m_source;
     std::string m_name;
-    fs::path m_location;
+    std::filesystem::path m_location;
     uint32_t m_id;
 };

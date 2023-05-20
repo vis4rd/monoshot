@@ -1,7 +1,8 @@
-#include "../../include/utility/VertexArray.hpp"
+#include "../../include/gl/VertexArray.hpp"
+
 #include <glad/gl.h>
-#include <stdexcept>
 #include <spdlog/spdlog.h>
+#include <stdexcept>
 
 static GLenum shaderDataTypeToOpenGLBaseType(const ShaderDataType& type)
 {
@@ -33,20 +34,18 @@ VertexArray::VertexArray()
 }
 
 VertexArray::VertexArray(const VertexArray& copy)
-    : m_id(copy.m_id),
-      m_vertexBufferIndex(copy.m_vertexBufferIndex),
-      m_vertexBuffers(copy.m_vertexBuffers),
-      m_elementBuffer(copy.m_elementBuffer)
-{
-}
+    : m_id(copy.m_id)
+    , m_vertexBufferIndex(copy.m_vertexBufferIndex)
+    , m_vertexBuffers(copy.m_vertexBuffers)
+    , m_elementBuffer(copy.m_elementBuffer)
+{ }
 
 VertexArray::VertexArray(VertexArray&& move)
-    : m_id(std::move(move.m_id)),
-      m_vertexBufferIndex(std::move(move.m_vertexBufferIndex)),
-      m_vertexBuffers(std::move(move.m_vertexBuffers)),
-      m_elementBuffer(std::move(move.m_elementBuffer))
-{
-}
+    : m_id(std::move(move.m_id))
+    , m_vertexBufferIndex(std::move(move.m_vertexBufferIndex))
+    , m_vertexBuffers(std::move(move.m_vertexBuffers))
+    , m_elementBuffer(std::move(move.m_elementBuffer))
+{ }
 
 VertexArray::~VertexArray()
 {
@@ -79,7 +78,9 @@ void VertexArray::unbind() const
 
 void VertexArray::addVertexBuffer(VertexBuffer&& vertex_buffer)
 {
-    spdlog::debug("Adding a VertexBuffer with ID = {} to VertexArray with ID = {}", vertex_buffer.getID(), m_id);
+    spdlog::debug("Adding a VertexBuffer with ID = {} to VertexArray with ID = {}",
+        vertex_buffer.getID(),
+        m_id);
     if(vertex_buffer.getLayout().getElements().empty())
     {
         spdlog::error("Given VertexBuffer does not have a specified layout");
@@ -91,7 +92,11 @@ void VertexArray::addVertexBuffer(VertexBuffer&& vertex_buffer)
     {
         sum_size += element.getSize();
     }
-    glVertexArrayVertexBuffer(m_id, /*vbo index for this vao*/ m_vertexBuffers.size(), /*vbo id*/ vertex_buffer, /*offset*/ 0, sum_size);
+    glVertexArrayVertexBuffer(m_id,
+        /*vbo index for this vao*/ m_vertexBuffers.size(),
+        /*vbo id*/ vertex_buffer,
+        /*offset*/ 0,
+        sum_size);
 
     const auto& layout = vertex_buffer.getLayout();
     for(const auto& element : layout)
@@ -105,7 +110,12 @@ void VertexArray::addVertexBuffer(VertexBuffer&& vertex_buffer)
             case ShaderDataType::float4:
             {
                 spdlog::debug("VertexArray: VertexBuffer element's type is a float");
-                glVertexArrayAttribFormat(m_id, m_vertexBufferIndex, element.getComponentCount(), shaderDataTypeToOpenGLBaseType(element.getShaderDataType()), element.isNormalized(), element.getOffset());
+                glVertexArrayAttribFormat(m_id,
+                    m_vertexBufferIndex,
+                    element.getComponentCount(),
+                    shaderDataTypeToOpenGLBaseType(element.getShaderDataType()),
+                    element.isNormalized(),
+                    element.getOffset());
                 glVertexArrayAttribBinding(m_id, m_vertexBufferIndex, m_vertexBuffers.size());
                 glEnableVertexArrayAttrib(m_id, m_vertexBufferIndex);
                 m_vertexBufferIndex++;
@@ -118,7 +128,11 @@ void VertexArray::addVertexBuffer(VertexBuffer&& vertex_buffer)
             case ShaderDataType::bool1:
             {
                 spdlog::debug("VertexArray: VertexBuffer element's type is an integer");
-                glVertexArrayAttribIFormat(m_id, m_vertexBufferIndex, element.getComponentCount(), shaderDataTypeToOpenGLBaseType(element.getShaderDataType()), element.getOffset());
+                glVertexArrayAttribIFormat(m_id,
+                    m_vertexBufferIndex,
+                    element.getComponentCount(),
+                    shaderDataTypeToOpenGLBaseType(element.getShaderDataType()),
+                    element.getOffset());
                 glVertexArrayAttribBinding(m_id, m_vertexBufferIndex, m_vertexBuffers.size());
                 glEnableVertexArrayAttrib(m_id, m_vertexBufferIndex);
                 m_vertexBufferIndex++;
@@ -131,7 +145,12 @@ void VertexArray::addVertexBuffer(VertexBuffer&& vertex_buffer)
                 std::uint8_t count = element.getComponentCount();
                 for(std::uint8_t i = 0; i < count; i++)
                 {
-                    glVertexArrayAttribFormat(m_id, m_vertexBufferIndex, element.getComponentCount(), shaderDataTypeToOpenGLBaseType(element.getShaderDataType()), element.isNormalized(), (element.getOffset() + sizeof(float) * count * i));
+                    glVertexArrayAttribFormat(m_id,
+                        m_vertexBufferIndex,
+                        element.getComponentCount(),
+                        shaderDataTypeToOpenGLBaseType(element.getShaderDataType()),
+                        element.isNormalized(),
+                        (element.getOffset() + sizeof(float) * count * i));
                     glVertexArrayAttribBinding(m_id, m_vertexBufferIndex, m_vertexBuffers.size());
                     glEnableVertexArrayAttrib(m_id, m_vertexBufferIndex);
                     glVertexAttribDivisor(m_vertexBufferIndex, 1);
@@ -151,10 +170,13 @@ void VertexArray::addVertexBuffer(VertexBuffer&& vertex_buffer)
 
 void VertexArray::addElementBuffer(const ElementBuffer& element_buffer)
 {
-    spdlog::debug("Adding ElementBuffer with ID = {} to VertexArray with ID = {}", element_buffer.getID(), m_id);
+    spdlog::debug("Adding ElementBuffer with ID = {} to VertexArray with ID = {}",
+        element_buffer.getID(),
+        m_id);
     if(!element_buffer.isInitialized())
     {
-        spdlog::error("Given ElementBuffer is not initialized! Pass data to it on construction or through setData() method");
+        spdlog::error(
+            "Given ElementBuffer is not initialized! Pass data to it on construction or through setData() method");
     }
     glVertexArrayElementBuffer(m_id, element_buffer);
 

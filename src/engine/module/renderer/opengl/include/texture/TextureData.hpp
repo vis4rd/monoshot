@@ -1,10 +1,9 @@
 #pragma once
 
-#include "TextureParameter.hpp"
-
+#include <glad/gl.h>
 #include <vector>
 
-#include <glad/gl.h>
+#include "TextureParameter.hpp"
 
 struct TextureData
 {

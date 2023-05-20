@@ -15,7 +15,6 @@ target_compile_features(vis_module_audio
 
 target_sources(vis_module_audio
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/AudioManager.cpp"
-            "${CMAKE_CURRENT_SOURCE_DIR}/include/audio/AudioManager.hpp"
 )
 
 target_include_directories(vis_module_audio

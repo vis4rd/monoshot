@@ -1,15 +1,14 @@
 #pragma once
 
-#include <glm/glm.hpp>
-#include <glad/gl.h>
-
 #include <array>
-#include <numeric>
-#include <unordered_set>
-#include <unordered_map>
+#include <glad/gl.h>
+#include <glm/glm.hpp>
 #include <memory>
+#include <numeric>
+#include <unordered_map>
+#include <unordered_set>
 
-#include "../utility/VertexArray.hpp"
+#include "../gl/VertexArray.hpp"
 #include "../texture/Texture.hpp"
 
 class Renderer
@@ -21,15 +20,34 @@ class Renderer
     static void beginBatch();
     static void endBatch(const glm::mat4& projection, const glm::mat4& view);
 
-    static void drawQuad(const glm::vec2& position, const glm::vec2& size, const float& rotation, const glm::vec4& color);
-    static void drawQuad(const glm::vec2& position, const glm::vec2& size, const float& rotation, const Texture::Texture& texture, const glm::vec4& color = {1.f, 1.f, 1.f, 1.f});
+    static void drawQuad(const glm::vec2& position,
+        const glm::vec2& size,
+        const float& rotation,
+        const glm::vec4& color);
+    static void drawQuad(const glm::vec2& position,
+        const glm::vec2& size,
+        const float& rotation,
+        const Texture::Texture& texture,
+        const glm::vec4& color = {1.f, 1.f, 1.f, 1.f});
 
     static void drawLine(const glm::vec2& pos1, const glm::vec2& pos2, const glm::vec4& color);
-    static void drawLine(const glm::vec2& pos1, const glm::vec2& pos2, const glm::vec4& color1, const glm::vec4& color2);
+    static void drawLine(const glm::vec2& pos1,
+        const glm::vec2& pos2,
+        const glm::vec4& color1,
+        const glm::vec4& color2);
 
-    static void drawRect(const glm::vec2& ul, const glm::vec2& br, const glm::vec4& color);  // upper-left + bottom-right corners
-    static void drawRect(const glm::vec2& ul, const glm::vec2& ur, const glm::vec2& br, const glm::vec2& bl, const glm::vec4& color);  // 4 corners
-    static void drawRect(const glm::vec2& center, const glm::vec2& size, const float& rotation, const glm::vec4& color);  // center and size
+    static void drawRect(const glm::vec2& ul,
+        const glm::vec2& br,
+        const glm::vec4& color);  // upper-left + bottom-right corners
+    static void drawRect(const glm::vec2& ul,
+        const glm::vec2& ur,
+        const glm::vec2& br,
+        const glm::vec2& bl,
+        const glm::vec4& color);  // 4 corners
+    static void drawRect(const glm::vec2& center,
+        const glm::vec2& size,
+        const float& rotation,
+        const glm::vec4& color);  // center and size
 
     struct Stats
     {
@@ -73,7 +91,8 @@ class Renderer
         std::vector<LineVertex>::iterator lineBufferIter{};
 
         std::vector<Texture::Texture> textureSlots;  // slot = vec index, unit = tex ID
-        // TODO: if shaders can't stand almost 100 uniforms, yeet arrays below to an array of structs...
+        // TODO: if shaders can't stand almost 100 uniforms, yeet arrays below to an array of
+        // structs...
         // TODO: ... and use this: https://www.khronos.org/opengl/wiki/Interface_Block_(GLSL)
         std::array<std::int32_t, maxTextures> textureSamplers = {0};
         std::array<std::uint32_t, maxTextures> textureFrameCounts = {1};

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../utility/Resource.hpp"
-#include "TextureData.hpp"
-
 #include <cstdint>
+#include <memory>
 #include <string>
+
+#include "TextureData.hpp"
 
 namespace Texture
 {
@@ -16,8 +16,14 @@ class Texture
 {
     public:
     Texture() = default;
-    Texture(const std::string_view& file_path, const std::int32_t& width, const std::int32_t& height, const std::int32_t& channel_count = 4);
-    Texture(const std::byte* data, const std::int32_t& width, const std::int32_t& height, const std::int32_t& channel_count = 4);
+    Texture(const std::string_view& file_path,
+        const std::int32_t& width,
+        const std::int32_t& height,
+        const std::int32_t& channel_count = 4);
+    Texture(const std::byte* data,
+        const std::int32_t& width,
+        const std::int32_t& height,
+        const std::int32_t& channel_count = 4);
     Texture(const std::string_view& file_path, const TextureData& texture_data = TextureData());
     Texture(const Texture& copy);
     Texture(Texture&& move);
@@ -34,8 +40,14 @@ class Texture
     const TextureData& getTextureData() const;
     const std::byte* const getData() const;
 
-    void load(const std::string_view& source_path, const std::int32_t& width, const std::int32_t& height, const std::int32_t& channel_count = 4);
-    void load(const std::byte* data, const std::int32_t& width, const std::int32_t& height, const std::int32_t& channel_count = 4);
+    void load(const std::string_view& source_path,
+        const std::int32_t& width,
+        const std::int32_t& height,
+        const std::int32_t& channel_count = 4);
+    void load(const std::byte* data,
+        const std::int32_t& width,
+        const std::int32_t& height,
+        const std::int32_t& channel_count = 4);
     void nextSub();
     void resetSub();
 
@@ -50,7 +62,8 @@ class Texture
 
     private:
     std::uint32_t m_id = 0;
-    std::int32_t m_numberOfChannels = 4;  // out value of stbi_load indicating number of rgba channels
+    std::int32_t m_numberOfChannels =
+        4;  // out value of stbi_load indicating number of rgba channels
     std::string m_sourcePath = "";
     bool m_isLoadedByStbi = false;
     std::byte* m_data = nullptr;

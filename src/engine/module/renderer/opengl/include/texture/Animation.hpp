@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "Texture.hpp"
 
 namespace Texture
@@ -12,7 +14,9 @@ class Animation : public Texture
 {
     public:
     Animation();
-    Animation(const std::string_view& texture_file_path, const double& frame_duration, const TextureData& texture_data = TextureData());
+    Animation(const std::string_view& texture_file_path,
+        const double& frame_duration,
+        const TextureData& texture_data = TextureData());
     Animation(const Animation& copy);
     Animation(Animation&& move);
     ~Animation();
@@ -34,7 +38,8 @@ class Animation : public Texture
 
     private:
     double m_frameDuration = 0.1;  // in seconds
-    double m_lastFrameChangeTimestamp = 0.0;  // if m_lastFrameChangeTimestamp + m_useDelay < Timer::getTotalTime() then it can be used again
+    double m_lastFrameChangeTimestamp = 0.0;  // if m_lastFrameChangeTimestamp + m_useDelay <
+                                              // Timer::getTotalTime() then it can be used again
 };
 
 }  // namespace impl
