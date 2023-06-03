@@ -1,12 +1,12 @@
 #pragma once
 
 #include <array>
-#include <glad/gl.h>
-#include <glm/glm.hpp>
 #include <memory>
 #include <numeric>
 #include <unordered_map>
 #include <unordered_set>
+
+#include <glm/glm.hpp>
 
 #include "../gl/VertexArray.hpp"
 #include "../texture/Texture.hpp"

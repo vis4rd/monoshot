@@ -1,6 +1,5 @@
 #pragma once
 
-#include <glad/gl.h>
 #include <vector>
 
 #include "TextureParameter.hpp"

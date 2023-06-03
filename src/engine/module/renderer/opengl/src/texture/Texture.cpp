@@ -3,7 +3,8 @@
 #include <spdlog/fmt/bin_to_hex.h>
 #include <stbi/stb_image.h>
 
-#include "../../../../../include/Root.hpp"
+#include "config/Configuration.hpp"
+#include "log/Logging.hpp"
 
 namespace Texture::impl
 {

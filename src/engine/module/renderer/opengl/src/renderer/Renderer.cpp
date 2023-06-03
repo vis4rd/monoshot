@@ -3,8 +3,8 @@
 #include <glm/ext/matrix_transform.hpp>
 #include <spdlog/spdlog.h>
 
-#include "../../../../../include/utility/Resource.hpp"
 #include "../../include/shader/ShaderManager.hpp"
+#include "resource/Resource.hpp"
 
 static Renderer::Data s_data;
 bool Renderer::m_isInit = false;

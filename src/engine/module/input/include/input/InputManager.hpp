@@ -1,8 +1,9 @@
 #pragma once
 
-#include "KeyGroup.hpp"
 #include <GLFW/glfw3.h>
 #include <spdlog/spdlog.h>
+
+#include "KeyGroup.hpp"
 
 class InputManager
 {

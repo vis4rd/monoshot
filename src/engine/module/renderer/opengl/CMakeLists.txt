@@ -26,6 +26,8 @@ target_sources(vis_module_renderer_opengl_backend
             "${CMAKE_CURRENT_SOURCE_DIR}/src/shader/ShaderProgram.cpp"
             "${CMAKE_CURRENT_SOURCE_DIR}/src/texture/Animation.cpp"
             "${CMAKE_CURRENT_SOURCE_DIR}/src/texture/Texture.cpp"
+            "${CMAKE_CURRENT_SOURCE_DIR}/src/window/NativeWindow.cpp"
+            "${CMAKE_CURRENT_SOURCE_DIR}/src/window/Window.cpp"
 )
 
 target_include_directories(vis_module_renderer_opengl_backend
@@ -34,7 +36,17 @@ target_include_directories(vis_module_renderer_opengl_backend
 
 target_link_libraries(vis_module_renderer_opengl_backend
     PUBLIC glad
-           glm
+           glfw
+           glm::glm
+           imgui::backend_glfw
+           imgui::imgui
            spdlog::spdlog
            stb::image
+           vis::traits
+           vis::config
+           vis::section
+           vis::resource
+           vis::time
+           vis::log
+           vis::input
 )

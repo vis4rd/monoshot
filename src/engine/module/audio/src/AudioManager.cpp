@@ -1,5 +1,8 @@
 #include "../include/audio/AudioManager.hpp"
 
+#include <SFML/Audio/Music.hpp>
+#include <SFML/Audio/Sound.hpp>
+#include <SFML/Audio/SoundBuffer.hpp>
 #include <spdlog/spdlog.h>
 
 static constexpr float base_volume = 100.f;

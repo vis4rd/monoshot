@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Keybind.hpp"
 #include <string>
+
+#include "Keybind.hpp"
 
 class KeyGroup
 {

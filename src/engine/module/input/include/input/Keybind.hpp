@@ -1,8 +1,9 @@
 #pragma once
 
-#include "KeyState.hpp"
-#include <functional>
 #include <cstdint>
+#include <functional>
+
+#include "KeyState.hpp"
 
 class Keybind
 {

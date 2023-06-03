@@ -2,11 +2,12 @@
 
 #include <concepts>
 #include <cstdint>
-#include <glad/gl.h>
 #include <type_traits>
 #include <utility>
 
-#include "../../../../../include/traits/Scalar.hpp"
+#include <glad/gl.h>
+
+#include "../../../../traits/include/traits/Scalar.hpp"
 
 // TODO: change this comment formatting to comply with doxygen
 //! params with predefined values:

@@ -33,6 +33,9 @@ set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory("${PROJECT_SOURCE_DIR}/lib/glfw")
+target_compile_definitions(glfw  # prevent GLFW from including gl headers
+    INTERFACE "GLFW_INCLUDE_NONE"
+)
 
 # OpenGL
 find_package(OpenGL 4.5 REQUIRED)
@@ -86,6 +89,15 @@ add_subdirectory("${PROJECT_SOURCE_DIR}/lib/sfml")
 add_subdirectory("${PROJECT_SOURCE_DIR}/module/input")
 add_subdirectory("${PROJECT_SOURCE_DIR}/module/cstring")
 add_subdirectory("${PROJECT_SOURCE_DIR}/module/audio")
+add_subdirectory("${PROJECT_SOURCE_DIR}/module/renderer")
+add_subdirectory("${PROJECT_SOURCE_DIR}/module/camera")
+add_subdirectory("${PROJECT_SOURCE_DIR}/module/section")
+add_subdirectory("${PROJECT_SOURCE_DIR}/module/traits")
+add_subdirectory("${PROJECT_SOURCE_DIR}/module/log")
+add_subdirectory("${PROJECT_SOURCE_DIR}/module/ui")
+add_subdirectory("${PROJECT_SOURCE_DIR}/module/resource")
+add_subdirectory("${PROJECT_SOURCE_DIR}/module/time")
+add_subdirectory("${PROJECT_SOURCE_DIR}/module/config")
 
 # Other sources
 file(GLOB_RECURSE GAME_SOURCES
@@ -117,21 +129,17 @@ target_sources(${GAME_NAME}
 )
 
 target_link_libraries(${GAME_NAME}
-    PUBLIC glfw
-           glad
-           glm::glm
-           imgui::imgui
-           imgui::backend_glfw
-           spdlog::spdlog
-           stb::image
-           EnTT::EnTT
-           tinyfd::tinyfd
-           vis::input
+    PUBLIC vis::input
            vis::audio
-)
-
-target_precompile_headers(${GAME_NAME}
-    PRIVATE "${PROJECT_SOURCE_DIR}/include/Root.hpp"
+           vis::renderer
+           vis::camera
+           vis::section
+           vis::traits
+           vis::log
+           vis::ui
+           vis::resource
+           vis::time
+           vis::config
 )
 
 if(MOLD_LINKER AND CMAKE_HOST_UNIX)
@@ -148,6 +156,8 @@ if(MOLD_LINKER AND CMAKE_HOST_UNIX)
     endif()
 endif()
 
+# TODO: split this CMakeLists.txt into engine one and game one
+# TODO: move this part to engine renderer module
 if(CMAKE_HOST_WIN32)
     target_link_libraries(${GAME_NAME}
     PUBLIC opengl32

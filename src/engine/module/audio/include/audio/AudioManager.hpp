@@ -1,10 +1,12 @@
 #pragma once
 
+#include <filesystem>
+#include <unordered_map>
+#include <vector>
+
 #include <SFML/Audio/Music.hpp>
 #include <SFML/Audio/Sound.hpp>
 #include <SFML/Audio/SoundBuffer.hpp>
-#include <filesystem>
-#include <unordered_map>
 
 class AudioManager final
 {

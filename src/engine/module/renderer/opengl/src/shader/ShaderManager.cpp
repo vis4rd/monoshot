@@ -1,6 +1,7 @@
 #include "../../include/shader/ShaderManager.hpp"
 
 #include <map>
+
 #include <spdlog/spdlog.h>
 
 namespace fs = std::filesystem;

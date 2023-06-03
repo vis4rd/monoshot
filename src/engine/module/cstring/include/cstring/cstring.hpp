@@ -1,9 +1,9 @@
 #pragma once
 
-#include <stdexcept>
-#include <string_view>
 #include <array>
 #include <concepts>
+#include <stdexcept>
+#include <string_view>
 
 namespace vis
 {

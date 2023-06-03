@@ -120,10 +120,17 @@ ReferenceAlignment: Left
 ########## Include sorting
 # IncludeBlocks: Regroup
 IncludeCategories:
+  - Regex: '^"'
+    Priority: 10
+  - Regex: '^<glad.*>$'
+    Priority: 3
+    SortPriority: 2
+  - Regex: '^<GLFW.*>$'
+    Priority: 3
+  - Regex: '^<.*\/*.*(\.hpp|\.h)>$'
+    Priority: 3
   - Regex: '^<'
     Priority: 1
-  - Regex: '^"'
-    Priority: 2
 SortIncludes: CaseSensitive
 SortUsingDeclarations: false
 

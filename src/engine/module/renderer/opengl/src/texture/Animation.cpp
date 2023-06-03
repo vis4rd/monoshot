@@ -1,6 +1,6 @@
 #include "../../include/texture/Animation.hpp"
 
-#include "../../include/utility/Timer.hpp"
+#include "time/Timer.hpp"
 
 namespace Texture::impl
 {

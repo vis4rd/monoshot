@@ -1,6 +1,7 @@
 #include "../../include/shader/Shader.hpp"
 
 #include <fstream>
+
 #include <glad/gl.h>
 
 namespace fs = std::filesystem;

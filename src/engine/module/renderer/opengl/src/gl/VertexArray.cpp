@@ -1,8 +1,9 @@
 #include "../../include/gl/VertexArray.hpp"
 
+#include <stdexcept>
+
 #include <glad/gl.h>
 #include <spdlog/spdlog.h>
-#include <stdexcept>
 
 static GLenum shaderDataTypeToOpenGLBaseType(const ShaderDataType& type)
 {
