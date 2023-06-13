@@ -1,10 +1,10 @@
 #include "../../include/section/SettingsSection.hpp"
 
 #include <audio/AudioManager.hpp>
+#include <resource/ResourceManager.hpp>
+#include <ui/external/BeginCombo.hpp>
 
-#include "../../include/ui/elements/LowerNavigationBox.hpp"
-#include "../../include/ui/elements/external/BeginCombo.hpp"
-#include "../../include/utility/ResourceManager.hpp"
+#include "../../include/ui/LowerNavigationBox.hpp"
 
 SettingsSection::SettingsSection()
     : Section()

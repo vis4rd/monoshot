@@ -1,8 +1,9 @@
-#include "../include/ecs/systems.hpp"
+#include "../../include/ecs/systems.hpp"
 
-#include "../include/ecs/actions.hpp"
-#include "../include/utility/Collisions.hpp"
-#include "../include/utility/ResourceManager.hpp"
+#include <resource/ResourceManager.hpp>
+
+#include "../../include/ecs/actions.hpp"
+#include "../../include/utility/Collisions.hpp"
 
 namespace ecs::system
 {

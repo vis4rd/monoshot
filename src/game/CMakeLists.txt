@@ -43,6 +43,9 @@ target_link_libraries(monoshot
            mono::resource
            mono::time
            mono::config
+           EnTT::EnTT
+           glm::glm
+           tinyfd::tinyfd
 )
 
 # Versioning

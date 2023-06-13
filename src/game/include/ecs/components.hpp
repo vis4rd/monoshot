@@ -1,10 +1,10 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <resource/ResourceManager.hpp>
+#include <traits/Scalar.hpp>
 
 #include "../gameplay/items/Weapon.hpp"
-#include "../traits/Scalar.hpp"
-#include "../utility/ResourceManager.hpp"
 
 namespace ecs::component
 {

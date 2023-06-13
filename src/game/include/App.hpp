@@ -1,10 +1,11 @@
 #pragma once
 
+#include <time/FramerateLimiter.hpp>
+#include <time/Timer.hpp>
+#include <ui/MainMenuStyle.hpp>
+
 #include "../../../meta/Version.hpp"
 #include "section/MainMenuSection.hpp"
-#include "ui/styles/MainMenuStyle.hpp"
-#include "utility/FramerateLimiter.hpp"
-#include "utility/Timer.hpp"
 
 class App
 {

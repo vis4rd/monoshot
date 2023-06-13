@@ -1,14 +1,19 @@
 #include "../../../include/map/object/MapObject.hpp"
 
-#include "../../../include/utility/ResourceManager.hpp"
+#include <resource/ResourceManager.hpp>
 
-MapObject::MapObject(const glm::vec2& position, const glm::vec2& size, Texture::Texture texture, float rotation, bool has_collision, float opacity_on_collision)
-    : m_position(position),
-      m_size(size),
-      m_rotation(rotation),
-      m_texture(texture),
-      hasCollision(has_collision),
-      opacityOnCollision(opacity_on_collision)
+MapObject::MapObject(const glm::vec2& position,
+    const glm::vec2& size,
+    Texture::Texture texture,
+    float rotation,
+    bool has_collision,
+    float opacity_on_collision)
+    : m_position(position)
+    , m_size(size)
+    , m_rotation(rotation)
+    , m_texture(texture)
+    , hasCollision(has_collision)
+    , opacityOnCollision(opacity_on_collision)
 {
     id = ObjectID::FIRST_OBJECT;
 }
@@ -128,7 +133,12 @@ MapObject MapObject::createPredefined(ObjectID id, const glm::vec2& position, fl
             break;
         }
     }
-    auto retval = MapObject(position, size, std::move(texture), rotation, has_collision, opacity_on_collision);
+    auto retval = MapObject(position,
+        size,
+        std::move(texture),
+        rotation,
+        has_collision,
+        opacity_on_collision);
     retval.id = id;
     return std::move(retval);
 }

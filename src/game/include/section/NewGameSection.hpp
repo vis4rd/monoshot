@@ -1,9 +1,10 @@
 #pragma once
 
 
-#include "Section.hpp"
-#include "../ui/layouts/NewGameLayout.hpp"
-#include "../ui/layouts/LowerNavigationBoxLayout.hpp"
+#include <section/Section.hpp>
+
+#include "../ui/LowerNavigationBoxLayout.hpp"
+#include "../ui/NewGameLayout.hpp"
 
 class NewGameSection final : public Section
 {

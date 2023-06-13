@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BaseLayout.hpp"
+#include <ui/BaseLayout.hpp>
 
 namespace UI
 {
@@ -11,7 +11,8 @@ struct SettingsLayout : public BaseLayout
     inline void update(const ImVec2& workpos, const ImVec2& worksize) override;
 };
 
-SettingsLayout::SettingsLayout(const ImVec2& workpos, const ImVec2& worksize) : BaseLayout(workpos, worksize)
+SettingsLayout::SettingsLayout(const ImVec2& workpos, const ImVec2& worksize)
+    : BaseLayout(workpos, worksize)
 {
     base_menu_w = 1840.f;
     base_menu_h = 660.f;

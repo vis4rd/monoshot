@@ -7,8 +7,8 @@
 #include <optional>
 
 #include <glm/glm.hpp>
+#include <texture/Animation.hpp>
 
-#include "../../../module/renderer/opengl/include/texture/Animation.hpp"
 #include "items/Food.hpp"
 #include "items/Weapon.hpp"
 

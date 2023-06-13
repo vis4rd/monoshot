@@ -1,14 +1,14 @@
 #include "../../include/section/GameplaySection.hpp"
 
 #include <audio/AudioManager.hpp>
+#include <renderer/Renderer.hpp>
+#include <resource/ResourceManager.hpp>
 #include <stbi/stb_image.h>
 
 #include "../../include/ecs/actions.hpp"
 #include "../../include/ecs/systems.hpp"
-#include "../../include/renderer/Renderer.hpp"
-#include "../../include/ui/elements/GameplayOverlay.hpp"
+#include "../../include/ui/GameplayOverlay.hpp"
 #include "../../include/utility/Collisions.hpp"
-#include "../../include/utility/ResourceManager.hpp"
 
 static bool s_show_debug_info = false;
 

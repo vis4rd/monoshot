@@ -1,6 +1,6 @@
-#include "../include/ecs/actions.hpp"
+#include "../../include/ecs/actions.hpp"
 
-#include "../include/ecs/components.hpp"
+#include "../../include/ecs/components.hpp"
 
 namespace ecs::action
 {

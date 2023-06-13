@@ -1,13 +1,13 @@
 #pragma once
 
-#include "../gameplay/Hero.hpp"
-#include "../camera/PerspectiveCamera.hpp"
-#include "../map/Map.hpp"
-#include "../ui/layouts/GameplayLayout.hpp"
-#include "Section.hpp"
-#include "../utility/Timer.hpp"
-
+#include <camera/PerspectiveCamera.hpp>
 #include <entt/entity/registry.hpp>
+#include <section/Section.hpp>
+#include <time/Timer.hpp>
+
+#include "../gameplay/Hero.hpp"
+#include "../map/Map.hpp"
+#include "../ui/GameplayLayout.hpp"
 
 class GameplaySection : public Section
 {

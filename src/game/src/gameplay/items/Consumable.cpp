@@ -1,20 +1,20 @@
 #include "../../../include/gameplay/items/Consumable.hpp"
 
-#include "../../../include/utility/Timer.hpp"
+#include <cmath>
+
+#include <time/Timer.hpp>
 
 Consumable::Consumable(const Consumable& copy)
-    : Item(copy),
-      m_useDelay(copy.m_useDelay),
-      m_lastUseTimestamp(copy.m_lastUseTimestamp)
-{
-}
+    : Item(copy)
+    , m_useDelay(copy.m_useDelay)
+    , m_lastUseTimestamp(copy.m_lastUseTimestamp)
+{ }
 
 Consumable::Consumable(Consumable&& move)
-    : Item(std::move(move)),
-      m_useDelay(std::move(move.m_useDelay)),
-      m_lastUseTimestamp(std::move(move.m_lastUseTimestamp))
-{
-}
+    : Item(std::move(move))
+    , m_useDelay(std::move(move.m_useDelay))
+    , m_lastUseTimestamp(std::move(move.m_lastUseTimestamp))
+{ }
 
 Consumable& Consumable::operator=(const Consumable& copy)
 {

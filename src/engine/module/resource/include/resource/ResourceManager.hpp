@@ -4,10 +4,11 @@
 
 #include <glm/glm.hpp>
 
-#include "../../../renderer/opengl/include/texture/Texture.hpp"
-#include "../../../renderer/opengl/include/window/Window.hpp"
+#include "texture/Texture.hpp"
+#include "time/FramerateLimiter.hpp"
 #include "time/Timer.hpp"
 #include "ui/Font.hpp"
+#include "window/Window.hpp"
 
 class Timer;
 class FramerateLimiter;

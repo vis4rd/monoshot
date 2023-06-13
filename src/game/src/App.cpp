@@ -1,9 +1,12 @@
 #include "../include/App.hpp"
 
-#include "../include/ui/fonts/Font.hpp"
-#include "../include/utility/ResourceManager.hpp"
-#include "../include/audio/AudioManager.hpp"
 #include <filesystem>
+
+#include <audio/AudioManager.hpp>
+#include <resource/Resource.hpp>
+#include <resource/ResourceManager.hpp>
+#include <texture/Texture.hpp>
+#include <ui/Font.hpp>
 
 App::App(const std::string& window_title, uint32_t width, uint32_t height)
     : m_input(InputManager::get())

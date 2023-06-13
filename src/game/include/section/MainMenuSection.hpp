@@ -1,8 +1,9 @@
 #pragma once
 
-#include "Section.hpp"
-#include "../ui/fonts/Font.hpp"
-#include "../ui/layouts/MainMenuLayout.hpp"
+#include <section/Section.hpp>
+#include <ui/Font.hpp>
+
+#include "../ui/MainMenuLayout.hpp"
 
 class MainMenuSection final : public Section
 {

@@ -3,8 +3,8 @@
 #include <memory>
 
 #include <glm/glm.hpp>
+#include <texture/Texture.hpp>
 
-#include "../../../module/renderer/opengl/include/texture/Texture.hpp"
 #include "../ObjectID.hpp"
 
 class MapObject

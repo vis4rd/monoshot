@@ -5,8 +5,8 @@
 #include <tuple>
 
 #include <glm/glm.hpp>
+#include <texture/Texture.hpp>
 
-#include "../../../module/renderer/opengl/include/texture/Texture.hpp"
 #include "BlockID.hpp"
 
 // MapTheme's purpose is to associate textures and colors with block IDs

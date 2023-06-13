@@ -1,4 +1,4 @@
-#include "../include/utility/ResourceManager.hpp"
+#include "../include/resource/ResourceManager.hpp"
 
 std::shared_ptr<Window> ResourceManager::window;
 std::shared_ptr<Timer> ResourceManager::timer;

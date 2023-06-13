@@ -1,9 +1,10 @@
 #pragma once
 
-#include "../../module/renderer/opengl/include/texture/Texture.hpp"
-#include "../camera/PerspectiveCamera.hpp"
+#include <camera/PerspectiveCamera.hpp>
+#include <section/Section.hpp>
+#include <texture/Texture.hpp>
+
 #include "../map/Map.hpp"
-#include "Section.hpp"
 
 class CreatorSection final : public Section
 {

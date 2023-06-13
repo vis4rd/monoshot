@@ -2,8 +2,8 @@
 
 #include <entt/entity/registry.hpp>
 #include <shader/ShaderManager.hpp>
+#include <texture/Texture.hpp>
 
-#include "../../module/renderer/opengl/include/texture/Texture.hpp"
 #include "../utility/Collisions.hpp"
 #include "MapTheme.hpp"
 #include "object/MapObject.hpp"

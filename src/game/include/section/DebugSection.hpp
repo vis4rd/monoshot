@@ -3,15 +3,15 @@
 // #include "../utility/VertexArray.hpp"
 // #include "../texture/Texture2D.hpp"
 #include <audio/AudioManager.hpp>
+#include <camera/PerspectiveCamera.hpp>
 #include <entt/entity/registry.hpp>
+#include <section/Section.hpp>
+#include <time/Timer.hpp>
 
-#include "../camera/PerspectiveCamera.hpp"
 #include "../ecs/systems.hpp"
 #include "../gameplay/Hero.hpp"
 #include "../map/Map.hpp"
-#include "../ui/layouts/GameplayLayout.hpp"
-#include "../utility/Timer.hpp"
-#include "Section.hpp"
+#include "../ui/GameplayLayout.hpp"
 
 class DebugSection final : public Section
 {
