@@ -50,3 +50,22 @@ target_link_libraries(vis_module_renderer_opengl_backend
            vis::log
            vis::input
 )
+
+if(CMAKE_HOST_WIN32)
+    target_link_libraries(vis_module_renderer_opengl_backend
+        PUBLIC opengl32
+               comdlg32
+               ole32
+    )
+    message(STATUS "WIN32 system detected.")
+elseif(CMAKE_HOST_UNIX)
+    target_link_libraries(vis_module_renderer_opengl_backend
+        PUBLIC GL
+               X11
+               pthread
+               Xrandr
+               Xi
+               dl
+    )
+    message(STATUS "UNIX system detected.")
+endif()

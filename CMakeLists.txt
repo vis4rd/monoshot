@@ -15,4 +15,4 @@ if(CMAKE_BUILD_TYPE EQUAL "")
 endif()
 string(COMPARE EQUAL ${CMAKE_BUILD_TYPE} "Debug" DEBUG_MODE)
 
-add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/src/engine")
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/src/game")

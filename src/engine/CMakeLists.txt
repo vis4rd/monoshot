@@ -1,31 +1,13 @@
 cmake_minimum_required(VERSION 3.19 FATAL_ERROR)
 
-project(MONOSHOT_GAME LANGUAGES CXX C)
-
-set(GAME_NAME "Monoshot")
-set(GLOBAL_BINARY_DIR "${PROJECT_SOURCE_DIR}/../../build/engine/lib")
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+project(MONOENGINE LANGUAGES CXX C)
 
 if(CMAKE_BUILD_TYPE EQUAL "")
     set(CMAKE_BUILD_TYPE "Release")
 endif()
 string(COMPARE EQUAL ${CMAKE_BUILD_TYPE} "Debug" DEBUG_MODE)
 
-option(MOLD_LINKER_PATH "Path to the mold linker executable" "")
-
-# Use mold linker if present in the system (to speed up linking time)
-find_program(MOLD_LINKER
-    NAMES "mold"
-    HINTS "/usr/bin"
-          "/usr/libexec/mold"
-          "/usr/local/libexec/mold"
-          "${MOLD_LINKER_PATH}"
-    DOC "Tells if mold linker has been found in the system"
-)
-
-if(MOLD_LINKER)
-    cmake_path(GET MOLD_LINKER ROOT_PATH MOLD_LINKER_PATH)
-endif()
+option(MOLD_LINKER_PATH "Path to the mold linker executable (Unix only)" "")
 
 # GLFW
 set(GLFW_CLIENT_LIBRARY "opengl" CACHE STRING "" FORCE)
@@ -99,117 +81,67 @@ add_subdirectory("${PROJECT_SOURCE_DIR}/module/resource")
 add_subdirectory("${PROJECT_SOURCE_DIR}/module/time")
 add_subdirectory("${PROJECT_SOURCE_DIR}/module/config")
 
-# Other sources
-file(GLOB_RECURSE GAME_SOURCES
-    "${PROJECT_SOURCE_DIR}/src/*.cpp"
-    "${PROJECT_SOURCE_DIR}/include/*.hpp"
-)
 
-# Game
-add_executable(${GAME_NAME})
+# Use mold linker if present in the system (to speed up linking time)
+# if(MOLD_LINKER)
+#     find_program(MOLD_LINKER
+#         NAMES "mold"
+#         HINTS "/usr/bin"
+#             "/usr/libexec/mold"
+#             "/usr/local/libexec/mold"
+#             "${MOLD_LINKER_PATH}"
+#         DOC "Tells if mold linker has been found in the system"
+#     )
 
-set_target_properties(${GAME_NAME} PROPERTIES
-    VS_STARTUP_PROJECT ${GAME_NAME}
-    FOLDER "App"
-)
+#     cmake_path(GET MOLD_LINKER ROOT_PATH MOLD_LINKER_PATH)
 
-if(DEBUG_MODE)
-    target_compile_definitions(${GAME_NAME}
-        PRIVATE "DEBUG_MODE"
-    )
-endif()
+#     if(CMAKE_HOST_UNIX)
+#         # TODO: check whether GCC can finally specify path to the linker in -fuse-ld
+#         if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+#             message(STATUS "Found mold linker at '${MOLD_LINKER}', replacing default linker for clang...")
+#             target_link_options(${EXECUTABLE_NAME}
+#                 PRIVATE "-fuse-ld=${MOLD_LINKER}"
+#             )
+#         elseif ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
+#             message(STATUS "Found mold linker at '${MOLD_LINKER}', replacing default linker for GNU...")
+#             target_link_options(${EXECUTABLE_NAME}
+#                 PRIVATE "-fuse-ld=mold"
+#             )
+#         endif()
+#     endif()
+# endif()
 
-target_compile_features(${GAME_NAME}
-    PRIVATE "cxx_std_20"
-)
+add_library(mono::input ALIAS vis_module_input)
+add_library(mono::cstring ALIAS vis_module_cstring)
+add_library(mono::audio ALIAS vis_module_audio)
+add_library(mono::renderer ALIAS vis_module_renderer)
+add_library(mono::camera ALIAS vis_module_camera)
+add_library(mono::section ALIAS vis_module_section)
+add_library(mono::traits ALIAS vis_module_traits)
+add_library(mono::log ALIAS vis_module_log)
+add_library(mono::ui ALIAS vis_module_ui)
+add_library(mono::resource ALIAS vis_module_resource)
+add_library(mono::time ALIAS vis_module_time)
+add_library(mono::config ALIAS vis_module_config)
 
-target_sources(${GAME_NAME}
-    PRIVATE ${GAME_SOURCES}
-            "${PROJECT_SOURCE_DIR}/main.cpp"
-)
+# TODO: figure out folder management for engine tree
+# # IDE Folder Management
+# set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-target_link_libraries(${GAME_NAME}
-    PUBLIC vis::input
-           vis::audio
-           vis::renderer
-           vis::camera
-           vis::section
-           vis::traits
-           vis::log
-           vis::ui
-           vis::resource
-           vis::time
-           vis::config
-)
+# function(target_group_source_files target)
+#     get_target_property(sources ${target} SOURCES)
+#     foreach(file ${sources})
+#         file(RELATIVE_PATH relative_file "${PROJECT_SOURCE_DIR}" ${file})
 
-if(MOLD_LINKER AND CMAKE_HOST_UNIX)
-    if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
-        message(STATUS "Found mold linker at '${MOLD_LINKER}', replacing default linker for clang...")
-        target_link_options(${EXECUTABLE_NAME}
-            PRIVATE "-fuse-ld=${MOLD_LINKER}"
-        )
-    elseif ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
-        message(STATUS "Found mold linker at '${MOLD_LINKER}', replacing default linker for GNU...")
-        target_link_options(${EXECUTABLE_NAME}
-            PRIVATE "-fuse-ld=mold"
-        )
-    endif()
-endif()
+#         if("${relative_file}" MATCHES ".*\\.cpp")
+#             source_group("Source Files" FILES ${relative_file})
+#         elseif("${relative_file}" MATCHES ".*\\.hpp")
+#             source_group("Header Files" FILES ${relative_file})
+#         else()
+#             source_group("Other Files" FILES ${relative_file})
+#         endif()
 
-# TODO: split this CMakeLists.txt into engine one and game one
-# TODO: move this part to engine renderer module
-if(CMAKE_HOST_WIN32)
-    target_link_libraries(${GAME_NAME}
-    PUBLIC opengl32
-           comdlg32
-           ole32)
-    message(STATUS "WIN32 system detected.")
-elseif(CMAKE_HOST_UNIX)
-    target_link_libraries(${GAME_NAME}
-    PRIVATE GL
-            X11
-            pthread
-            Xrandr
-            Xi
-            dl)
-    message(STATUS "UNIX system detected.")
-else()
-    message(STATUS "Unknown system detected.")
-endif()
+#     endforeach()
+# endfunction()
 
-# Copy dynamic libraries (they are SFML's dependencies and it's dynamic because of LGPL2 license)
-if(MINGW AND CMAKE_HOST_WIN32) # I hate SFML's CMake files
-    set(COMPILER_DIR "$<PATH:REMOVE_FILENAME,${CMAKE_CXX_COMPILER}>")
-
-    add_custom_command(TARGET ${GAME_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy "${PROJECT_SOURCE_DIR}/lib/sfml/extlibs/bin/x64/openal32.dll" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/"
-        COMMAND ${CMAKE_COMMAND} -E copy "${COMPILER_DIR}/libgcc_s_seh-1.dll" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/"
-        COMMAND ${CMAKE_COMMAND} -E copy "${COMPILER_DIR}/libstdc++-6.dll" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/"
-        COMMAND ${CMAKE_COMMAND} -E copy "${COMPILER_DIR}/libwinpthread-1.dll" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/"
-    )
-endif()
-
-# Versioning
-add_custom_command(
-    TARGET ${GAME_NAME} PRE_BUILD
-    COMMAND ${CMAKE_COMMAND} -P "${PROJECT_SOURCE_DIR}/../../meta/ProjectVersioning.cmake"
-)
-
-# IDE Folder Management
-function(target_group_source_files target)
-    get_target_property(sources ${target} SOURCES)
-    foreach(file ${sources})
-        file(RELATIVE_PATH relative_file "${PROJECT_SOURCE_DIR}" ${file})
-
-        if("${relative_file}" MATCHES ".*\\.cpp")
-            source_group("Source Files" FILES ${relative_file})
-        elseif("${relative_file}" MATCHES ".*\\.hpp")
-            source_group("Header Files" FILES ${relative_file})
-        else()
-            source_group("Other Files" FILES ${relative_file})
-        endif()
-
-    endforeach()
-endfunction()
-
-target_group_source_files(${GAME_NAME})
+# target_group_source_files(${GAME_NAME})
