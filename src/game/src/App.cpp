@@ -5,6 +5,8 @@
 #include <audio/AudioManager.hpp>
 #include <resource/Resource.hpp>
 #include <resource/ResourceManager.hpp>
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 #include <texture/Texture.hpp>
 #include <ui/Font.hpp>
 
