@@ -75,7 +75,7 @@ void Map::setTile(const Tile& tile)
         tile.x,
         tile.y,
         tile.rotation,
-        tile.block_id);
+        static_cast<std::size_t>(tile.block_id));
     this->calculateNewSize(tile.x, tile.y);
 
     const auto iter = this->findTile(tile.x, tile.y);

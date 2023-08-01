@@ -16,8 +16,8 @@ bool is_colliding_with_anything(entt::registry& registry,
     const glm::vec2& next_pos)
 {
     using namespace ecs::component;
-    const auto view =
-        registry.view<const position, const rotation, const size>().use<const position>();
+    auto view = registry.view<const position, const rotation, const size>();
+    view.use<const position>();
     // const float& hero_rot = registry.get<const rotation>(entity);
     for(std::int32_t iter = 0; auto&& [element, el_pos, el_rot, el_size] : view.each())
     {
@@ -81,11 +81,12 @@ void collide_bullets(entt::registry& bullet_registry,
 {
     namespace ec = ecs::component;
 
-    auto bullet_view = bullet_registry.view<ec::position, ec::size>(entt::exclude<ec::destroyed>)
-                           .use<ec::position>();
-    auto map_view = map_registry.view<ec::position, ec::size, ec::rotation>().use<ec::position>();
-    auto enemy_view =
-        enemy_registry.view<ec::position, ec::size, ec::rotation, ec::health>().use<ec::position>();
+    auto bullet_view = bullet_registry.view<ec::position, ec::size>(entt::exclude<ec::destroyed>);
+    auto map_view = map_registry.view<ec::position, ec::size, ec::rotation>();
+    auto enemy_view = enemy_registry.view<ec::position, ec::size, ec::rotation, ec::health>();
+    bullet_view.use<ec::position>();
+    map_view.use<ec::position>();
+    enemy_view.use<ec::position>();
 
     // go through every bullet
     for(auto&& [bullet_entity, b_pos, b_size] : bullet_view.each())
