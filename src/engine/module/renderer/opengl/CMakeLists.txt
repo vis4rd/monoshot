@@ -1,21 +1,21 @@
 include_guard()
 
-add_library(vis_module_renderer_opengl_backend)
-add_library(vis::renderer_opengl ALIAS vis_module_renderer_opengl_backend)
+add_library(mono_module_renderer_opengl_backend)
+add_library(mono::renderer_opengl ALIAS mono_module_renderer_opengl_backend)
 
 message(STATUS "Renderer: using OpenGL backend")
 
 if(DEBUG_MODE)
-    target_compile_definitions(vis_module_renderer_opengl_backend
+    target_compile_definitions(mono_module_renderer_opengl_backend
         PRIVATE "DEBUG_MODE"
     )
 endif()
 
-target_compile_features(vis_module_renderer_opengl_backend
+target_compile_features(mono_module_renderer_opengl_backend
     PRIVATE "cxx_std_20"
 )
 
-target_sources(vis_module_renderer_opengl_backend
+target_sources(mono_module_renderer_opengl_backend
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/gl/ElementBuffer.cpp"
             "${CMAKE_CURRENT_SOURCE_DIR}/src/gl/FrameBuffer.cpp"
             "${CMAKE_CURRENT_SOURCE_DIR}/src/gl/VertexArray.cpp"
@@ -30,11 +30,11 @@ target_sources(vis_module_renderer_opengl_backend
             "${CMAKE_CURRENT_SOURCE_DIR}/src/window/Window.cpp"
 )
 
-target_include_directories(vis_module_renderer_opengl_backend
+target_include_directories(mono_module_renderer_opengl_backend
     INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 
-target_link_libraries(vis_module_renderer_opengl_backend
+target_link_libraries(mono_module_renderer_opengl_backend
     PUBLIC glad
            glfw
            glm::glm
@@ -42,24 +42,24 @@ target_link_libraries(vis_module_renderer_opengl_backend
            imgui::imgui
            spdlog::spdlog
            stb::image
-           vis::traits
-           vis::config
-           vis::section
-           vis::resource
-           vis::time
-           vis::log
-           vis::input
+           mono::traits
+           mono::config
+           mono::section
+           mono::resource
+           mono::time
+           mono::log
+           mono::input
 )
 
 if(CMAKE_HOST_WIN32)
-    target_link_libraries(vis_module_renderer_opengl_backend
+    target_link_libraries(mono_module_renderer_opengl_backend
         PUBLIC opengl32
                comdlg32
                ole32
     )
     message(STATUS "WIN32 system detected.")
 elseif(CMAKE_HOST_UNIX)
-    target_link_libraries(vis_module_renderer_opengl_backend
+    target_link_libraries(mono_module_renderer_opengl_backend
         PUBLIC GL
                X11
                pthread

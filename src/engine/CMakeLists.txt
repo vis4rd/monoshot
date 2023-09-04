@@ -111,19 +111,6 @@ add_subdirectory("${PROJECT_SOURCE_DIR}/module/config")
 #     endif()
 # endif()
 
-add_library(mono::input ALIAS vis_module_input)
-add_library(mono::cstring ALIAS vis_module_cstring)
-add_library(mono::audio ALIAS vis_module_audio)
-add_library(mono::renderer ALIAS vis_module_renderer)
-add_library(mono::camera ALIAS vis_module_camera)
-add_library(mono::section ALIAS vis_module_section)
-add_library(mono::traits ALIAS vis_module_traits)
-add_library(mono::log ALIAS vis_module_log)
-add_library(mono::ui ALIAS vis_module_ui)
-add_library(mono::resource ALIAS vis_module_resource)
-add_library(mono::time ALIAS vis_module_time)
-add_library(mono::config ALIAS vis_module_config)
-
 # TODO: figure out folder management for engine tree
 # # IDE Folder Management
 # set_property(GLOBAL PROPERTY USE_FOLDERS ON)
