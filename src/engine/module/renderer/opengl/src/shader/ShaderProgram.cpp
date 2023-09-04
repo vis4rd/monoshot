@@ -3,6 +3,8 @@
 #include <glad/gl.h>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "../../include/shader/Shader.hpp"
+
 ShaderProgram::ShaderProgram()
     : m_id()
     , m_varLocations{}

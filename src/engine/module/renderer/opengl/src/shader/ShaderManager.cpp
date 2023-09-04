@@ -4,6 +4,9 @@
 
 #include <spdlog/spdlog.h>
 
+#include "../../include/shader/Shader.hpp"
+#include "../../include/shader/ShaderType.hpp"
+
 namespace fs = std::filesystem;
 
 namespace ShaderManagerData
@@ -18,8 +21,8 @@ ShaderProgram& ShaderManager::addShaderProgram(const fs::path& location, const s
     auto vert_name = name + ".vert";
     auto frag = loc.string() + "/" + frag_name;
     auto vert = loc.string() + "/" + vert_name;
-    auto frag_sh = Shader(frag, frag_name, Shader::Type::FRAGMENT);
-    auto vert_sh = Shader(vert, vert_name, Shader::Type::VERTEX);
+    auto frag_sh = Shader(frag, frag_name, ShaderType::FRAGMENT);
+    auto vert_sh = Shader(vert, vert_name, ShaderType::VERTEX);
     auto&& [iter, success] =
         ShaderManagerData::shaderMap.try_emplace(name, std::move(frag_sh), std::move(vert_sh));
     if(success)
@@ -28,7 +31,7 @@ ShaderProgram& ShaderManager::addShaderProgram(const fs::path& location, const s
     }
     else
     {
-        if(!ShaderManagerData::shaderMap.contains(name))
+        if(not ShaderManagerData::shaderMap.contains(name))
         {
             spdlog::error("ShaderProgram could not be emplaced");
             throw std::runtime_error("ShaderProgram could not be emplaced");

@@ -1,9 +1,11 @@
 #pragma once
 
-#include <glm/glm.hpp>
+#include <string>
 #include <unordered_map>
 
-#include "Shader.hpp"
+#include <glm/glm.hpp>
+
+class Shader;
 
 class ShaderProgram
 {

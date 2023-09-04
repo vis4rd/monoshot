@@ -1,27 +1,29 @@
 #pragma once
 
 #include <filesystem>
+#include <string>
 
-class Shader
+#include <glad/gl.h>
+
+enum class ShaderType;
+
+class Shader final
 {
     public:
-    Shader();
-    Shader(const std::filesystem::path& location, const std::string& name, const int8_t type);
+    Shader(const std::filesystem::path& location, const std::string& name, const ShaderType type);
     ~Shader();
 
     const std::string& getName() const;
     const std::filesystem::path& getLocation() const;
-    const std::uint32_t getID() const;
-
-    enum Type
-    {
-        FRAGMENT = 1 << 0,
-        VERTEX = 1 << 1
-    };
+    const GLuint getID() const;
 
     private:
-    std::string m_source;
-    std::string m_name;
-    std::filesystem::path m_location;
-    uint32_t m_id;
+    void readFromFile(const std::filesystem::path& location);
+    void compile() const;
+
+    private:
+    std::string m_source{};
+    std::string m_name{};
+    std::filesystem::path m_location{};
+    GLuint m_id{};
 };

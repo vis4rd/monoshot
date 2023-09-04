@@ -1,5 +1,7 @@
 #pragma once
 
+#include <filesystem>
+
 #include "ShaderProgram.hpp"
 
 class ShaderManager
