@@ -1,52 +1,51 @@
 # Monoshot
+
 A simple top-down 2D shooter game written in C++ and OpenGL 4.5.
 
-## Engineering thesis
-This is an implementation of my engineering thesis work titled:  
-**"Top-down shooter 2D arcade game written in C++"** (eng)  
-**"Zręcznościowa gra 2D typu top-down shooter napisana w C++"** (pl)  
-  
-The description of this thesis is as follows:  
-English:
-> The aim of the thesis is the creation of an arcade top-down shooter game. The gameplay is based on overcoming obstacles met on a few levels, on which the player is faced with simple tasks. The game is implemented with a help of C++ libraries.
+## Mono Engine
 
-Polish:
-> Celem pracy jest stworzenie gry zręcznościowej typu top-down shooter. Rozgrywka będzie się opierać na pokonaniu przeciwności rozłożonych na kilku poziomach, na których do wykonania przez gracza będą proste zadania. Praca zaimplementowana będzie z wykorzystaniem bibliotek w C++.
+Currently there is an effort to separate the engine source code from the game itself to improve 
+flexibility for future possible projects.
 
 ## Gameplay
-Currently, plans are to add 3 levels: tutorial, summer-themed and winter-themed. There are also 3 types of enemies which can be encountered on those levels. The goal of each map is to go from point A to B and sometimes find a quest item in the process.
 
-## Roadmap
-Currently planned features and to-do list can be found on [this Notion site](https://visard.notion.site/d62743bdc1ea41bda69a7c655179999e?v=3a975abae6ac4bafb9146d1072b42e60). In future it will be moved to issues here.
+At the current stage of full refactor, the game does not offer any gameplay (not like it ever did). 
+But there are plans to create completely destructible tile-based maps and dynamic environment.
 
-## Building with CMake
-I've chosen CMake as it allows cross-platform development and is easy to use:
+## Building
+
+The project supports building with CMake as it allows cross-platform development and is relatively easy to use:
+
 ```bash
 # clone the repository
-$ cd monoshot
-$ git submodule update --init
-$ mkdir build && cd build
-$ cmake [-DCMAKE_BUILD_TYPE=Debug] [-G "MinGW Makefiles"] ..
+cd monoshot
+git submodule update --init
+mkdir build && cd build
+cmake -DCMAKE_BUILD_TYPE=Release -G "<GENERATOR>" ..
 ```
-There are several ways to build the code depending on platform and CMake generator:
+
+Replace `<GENERATOR>` with your favourite build generator. Recommended choices are listed below:
+
+- `Ninja`,
+- `Unix Makefiles`,
+- `MinGW Makefiles`.
+
+On Windows, there is a possibility that it will even work with Visual Studio generated `.sln` file, 
+however this option has never been properly tested or supported.
+
+After the configuration is complete, build the code with:
+
 ```bash
-# on windows: open Visual Studio solution and build there
-$ ./MONOSHOT.sln
-
-# on linux: run make
-$ make
-
-# with MinGW generator: run mingw32-make
-$ mingw32-make
-
-# with Ninja generator: run ninja
-$ ninja
+cmake --build .
 ```
 
-Build with C++20 capable compiler such as GCC 12.1+ or Clang 14+ with MSVCRT runtime library[^1].
+Monoshot requires C++20 capable compiler such as GCC 13+ or Clang 14+ (preferably supporting 
+`<format>` library) with MSVCRT runtime library [^1].
 
 ## Dependencies
+
 All libraries are fetched either by git submodules or by CMake and their use is compliant with their respective licences:
+
 - [EnTT](https://github.com/skypjack/entt) - Entity Component System (MIT)
 - [glad](https://github.com/Dav1dde/glad) - OpenGL symbol loader/generator (MIT + Public Domain, WTFPL or CC0)
 - [glfw](https://github.com/glfw/glfw) - window and OpenGL context creation API (zlib/libpng)
@@ -58,9 +57,12 @@ All libraries are fetched either by git submodules or by CMake and their use is 
 - [SFML](https://github.com/SFML/SFML) - Sound and music playing (zlib)
 
 ## License
-The [thesis branch](https://github.com/vis4rd/monoshot/tree/thesis) is protected under [EULA](EULA.md). This application is free for you to compile and modify for your own personal use, but it is not free to distribute any binary copies (paid or free).
 
-In case of any questions, please reach out to me through GitHub or email provided in the [EULA](EULA.md).
+This project is licensed under MIT, a free and open-source license. For more information, please 
+see [the license file](LICENSE.md).
 
+> NOTE: `thesis` branch is licensed under its own EULA, which is not applicable here. At the 
+> same time, MIT license does not pertain to `thesis` branch.
 
-[^1]: MSVCRT is required only because of SFML, which precompiles libFLAC (and other dependencies) with the mentioned runtime library.
+[^1]: MSVCRT is required only because of SFML, which precompiles libFLAC (and other dependencies) 
+with the mentioned runtime library.

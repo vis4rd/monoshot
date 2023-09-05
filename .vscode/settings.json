@@ -42,4 +42,7 @@
     "[cmake]": {
         "files.insertFinalNewline": true,
     },
+    "[markdown]": {
+        "files.insertFinalNewline": true,
+    },
 }
