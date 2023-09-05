@@ -9,7 +9,7 @@
 #include "traits/Renderable.hpp"
 #include "traits/Updateable.hpp"
 
-class SectionManager final : public Renderable, public Updateable
+class SectionManager final
 {
     public:
     SectionManager(const SectionManager&) = delete;
@@ -19,7 +19,7 @@ class SectionManager final : public Renderable, public Updateable
     ~SectionManager();
     static SectionManager& get();
 
-    template<CSection SECTION, typename... ARGS>
+    template<IsSectionTrait SECTION, typename... ARGS>
     constexpr void emplaceSection(ARGS&&... args);
     Section&& releaseSection();
     void popSection();
@@ -27,8 +27,8 @@ class SectionManager final : public Renderable, public Updateable
     std::size_t size() const noexcept;
     void clear() noexcept;
 
-    void update() noexcept override;
-    void render() noexcept override;
+    void update() noexcept;
+    void render() noexcept;
 
     private:
     SectionManager();
@@ -37,7 +37,7 @@ class SectionManager final : public Renderable, public Updateable
     std::stack<std::unique_ptr<Section>> m_sections{};
 };
 
-template<CSection SECTION, typename... ARGS>
+template<IsSectionTrait SECTION, typename... ARGS>
 constexpr void SectionManager::emplaceSection(ARGS&&... args)
 {
     auto& sec = m_sections.emplace(std::make_unique<SECTION>(std::forward<ARGS>(args)...));

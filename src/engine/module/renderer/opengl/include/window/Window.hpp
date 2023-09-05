@@ -42,13 +42,8 @@ class Window final : public NativeWindow
     void setVerticalSync(bool vsync = true);
     void setRefreshRate(std::uint32_t hz);
 
-    template<typename... UPDATEABLES>
-    requires CUpdateablePack<UPDATEABLES...>
-    bool update(UPDATEABLES &&...updateables) noexcept;
-
-    template<typename... RENDERABLES>
-    requires CRenderablePack<RENDERABLES...>
-    void render(RENDERABLES &&...renderables) noexcept;
+    bool update(UpdateableTrait auto &&...updateables) noexcept;
+    void render(RenderableTrait auto &&...renderables) noexcept;
 
     private:
     void initImGui();
@@ -66,9 +61,7 @@ class Window final : public NativeWindow
     FrameBuffer screenFB;
 };
 
-template<typename... UPDATEABLES>
-requires CUpdateablePack<UPDATEABLES...>
-bool Window::update(UPDATEABLES &&...updateables) noexcept
+bool Window::update(UpdateableTrait auto &&...updateables) noexcept
 {
     if(m_sectionManager.size() == 0)
     {
@@ -131,9 +124,7 @@ bool Window::update(UPDATEABLES &&...updateables) noexcept
     return true;
 }
 
-template<typename... RENDERABLES>
-requires CRenderablePack<RENDERABLES...>
-void Window::render(RENDERABLES &&...renderables) noexcept
+void Window::render(RenderableTrait auto &&...renderables) noexcept
 {
     if(m_isMinimized)
     {
