@@ -39,4 +39,7 @@
         "editor.formatOnSave": true,
         "files.insertFinalNewline": true,
     },
+    "[cmake]": {
+        "files.insertFinalNewline": true,
+    },
 }
