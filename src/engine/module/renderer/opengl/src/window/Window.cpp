@@ -252,7 +252,7 @@ void Window::initImGui()
     auto &io = ImGui::GetIO();
     (void)io;
 
-    if constexpr(Flag::DebugMode)
+    if constexpr(mono::config::constant::DebugMode)
     {
         io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
     }

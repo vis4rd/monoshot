@@ -20,7 +20,7 @@ App::App(const std::string& window_title, uint32_t width, uint32_t height)
         VERSION_PATCH,
         BUILD_NUMBER);
 
-    if constexpr(Flag::DebugMode)  // Debug Build
+    if constexpr(mono::config::constant::DebugMode)  // Debug Build
     {
         // windowed, vsync
         m_window = std::make_shared<Window>(window_title, width, height, false, true);
@@ -62,7 +62,7 @@ void App::initLogger() noexcept
 
     auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
     console_sink->set_pattern("%^%l%$ | %v");
-    if constexpr(Flag::DebugMode)
+    if constexpr(mono::config::constant::DebugMode)
     {
         console_sink->set_level(spdlog::level::debug);
     }
@@ -74,7 +74,7 @@ void App::initLogger() noexcept
     auto file_sink =
         std::make_shared<spdlog::sinks::basic_file_sink_mt>("../logs/latest.log", true);
     file_sink->set_pattern("[%^%l%$] %v");
-    if constexpr(Flag::DebugMode)
+    if constexpr(mono::config::constant::DebugMode)
     {
         file_sink->set_level(spdlog::level::debug);
     }
@@ -84,7 +84,7 @@ void App::initLogger() noexcept
     }
 
     spdlog::logger multisink_logger("logger", {console_sink, file_sink});
-    if constexpr(Flag::DebugMode)
+    if constexpr(mono::config::constant::DebugMode)
     {
         multisink_logger.set_level(spdlog::level::debug);
     }

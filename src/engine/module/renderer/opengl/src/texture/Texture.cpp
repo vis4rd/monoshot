@@ -3,7 +3,7 @@
 #include <spdlog/fmt/bin_to_hex.h>
 #include <stbi/stb_image.h>
 
-#include "config/Configuration.hpp"
+#include "config/StaticConfiguration.hpp"
 #include "log/Logging.hpp"
 
 namespace Texture::impl
@@ -148,7 +148,7 @@ void Texture::load(const std::string_view& source_path,
         0));
     m_isLoadedByStbi = true;
 
-    if constexpr(Flag::DebugMode)
+    if constexpr(mono::config::constant::DebugMode)
     {
         std::span<std::byte> mem(m_data,
             m_textureData.widthTotal * m_textureData.heightTotal * m_numberOfChannels);
@@ -171,7 +171,7 @@ void Texture::load(const std::byte* data,
     m_sourcePath = fmt::format("In memory texture of size {} bytes", size);
     this->tryCopyExternalMemory(data, size);
 
-    if constexpr(Flag::DebugMode)
+    if constexpr(mono::config::constant::DebugMode)
     {
         std::span<std::byte> mem(m_data, size);
         spdlog::trace("Loaded Texture Data = {}", spdlog::to_hex(mem));
@@ -310,7 +310,7 @@ void Texture::tryCopyExternalMemory(const std::byte* memory, const std::size_t& 
         m_isLoadedByStbi = false;
         std::memcpy(m_data, memory, size);
 
-        if constexpr(Flag::DebugMode)
+        if constexpr(mono::config::constant::DebugMode)
         {
             std::span<std::byte> mem(m_data, size);
             spdlog::trace("Copied Texture Data = {}", spdlog::to_hex(mem));

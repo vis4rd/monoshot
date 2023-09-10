@@ -4,7 +4,7 @@
     #define DEBUG_MODE 0
 #endif
 
-namespace Flag
+namespace mono::config::constant
 {
 
 constexpr bool DebugMode = DEBUG_MODE;

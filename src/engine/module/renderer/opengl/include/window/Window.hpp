@@ -9,7 +9,7 @@
 #include "../gl/VertexArray.hpp"
 #include "../shader/ShaderManager.hpp"
 #include "NativeWindow.hpp"
-#include "config/Configuration.hpp"
+#include "config/StaticConfiguration.hpp"
 #include "input/InputManager.hpp"
 #include "section/SectionManager.hpp"
 
@@ -99,7 +99,7 @@ bool Window::update(UpdateableTrait auto &&...updateables) noexcept
             screenFB.getSize().x,
             screenFB.getSize().y);
     }
-    if constexpr(Flag::DebugMode)
+    if constexpr(mono::config::constant::DebugMode)
     {
         if(input.isPressedOnce(GLFW_KEY_APOSTROPHE))  // debugging purposes
         {
@@ -151,7 +151,7 @@ void Window::render(RenderableTrait auto &&...renderables) noexcept
     }
 
     // Debug panel
-    if constexpr(Flag::DebugMode)
+    if constexpr(mono::config::constant::DebugMode)
     {
         static bool show_debug_panel = true;
         static bool enable_vsync = m_isVSyncEnabled;

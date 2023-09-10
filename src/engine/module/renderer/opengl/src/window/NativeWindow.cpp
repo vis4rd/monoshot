@@ -3,7 +3,7 @@
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
 
-#include "config/Configuration.hpp"
+#include "config/StaticConfiguration.hpp"
 #include "log/Logging.hpp"
 
 NativeWindow::NativeWindow(const std::string &title, std::int32_t width, std::int32_t height)
@@ -176,7 +176,7 @@ void NativeWindow::initGL()
     }
 
     // logging
-    if constexpr(Flag::DebugMode)
+    if constexpr(mono::config::constant::DebugMode)
     {
         util::enableOpenGlLogging();
     }

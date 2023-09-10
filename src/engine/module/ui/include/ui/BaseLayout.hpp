@@ -2,7 +2,7 @@
 
 #include <imgui/imgui.h>
 
-#include "config/Configuration.hpp"
+#include "config/StaticConfiguration.hpp"
 #include "window/Window.hpp"
 
 namespace UI
@@ -60,7 +60,7 @@ BaseLayout::BaseLayout(const ImVec2& workpos, const ImVec2& worksize)
     , viewport_x(workpos.x)
     , viewport_y(workpos.y)
 {
-    if constexpr(not Flag::DebugMode)
+    if constexpr(not mono::config::constant::DebugMode)
     {
         window_flags |= ImGuiWindowFlags_NoBackground;
     }

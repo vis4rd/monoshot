@@ -239,7 +239,7 @@ void GameplaySection::render() noexcept
         font_guard.popFont();
     }
 
-    if constexpr(not Flag::DebugMode)
+    if constexpr(not mono::config::constant::DebugMode)
     {
         if(s_show_debug_info)
         {
