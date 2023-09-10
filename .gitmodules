@@ -23,3 +23,6 @@
 [submodule "SFML"]
 	path = src/engine/lib/sfml
 	url = https://github.com/SFML/SFML.git
+[submodule "INIFILE-CPP"]
+	path = src/engine/lib/inifile-cpp/inifile-cpp
+	url = https://github.com/Rookfighter/inifile-cpp.git

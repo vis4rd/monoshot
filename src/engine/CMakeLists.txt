@@ -67,6 +67,9 @@ set(SFML_BUILD_FRAMEWORKS OFF CACHE BOOL "" FORCE)
 set(SFML_STATIC_LIBRARIES ON CACHE BOOL "" FORCE)
 add_subdirectory("${PROJECT_SOURCE_DIR}/lib/sfml")
 
+# inifile-cpp
+add_subdirectory("${PROJECT_SOURCE_DIR}/lib/inifile-cpp")
+
 # Modules
 add_subdirectory("${PROJECT_SOURCE_DIR}/module/input")
 add_subdirectory("${PROJECT_SOURCE_DIR}/module/cstring")

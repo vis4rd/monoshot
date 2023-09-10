@@ -15,3 +15,8 @@ target_sources(mono_module_config
 target_include_directories(mono_module_config
     INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
+
+target_link_libraries(mono_module_config
+    PUBLIC inifile::inifile
+           spdlog::spdlog
+)
