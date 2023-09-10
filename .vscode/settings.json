@@ -45,4 +45,7 @@
     "[markdown]": {
         "files.insertFinalNewline": true,
     },
+    "[ini]": {
+        "files.insertFinalNewline": true,
+    }
 }

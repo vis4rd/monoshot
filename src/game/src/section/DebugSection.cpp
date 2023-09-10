@@ -507,10 +507,10 @@ void DebugSection::showDebugUI()
             }
         }
         ImGui::Separator();
-        ImGui::Text("Map elements count: %ld/%ld",
-            m_mapElementsRegistry.alive(),
-            m_mapElementsRegistry.size());
-        ImGui::Text("Bullet count: %ld/%ld", m_bulletRegistry.alive(), m_bulletRegistry.size());
+        ImGui::Text("Map elements count: %ld",
+            m_mapElementsRegistry.storage<ecs::component::position>().size());
+        ImGui::Text("Bullet count: %ld",
+            m_bulletRegistry.storage<ecs::component::position>().size());
 
         static std::string preview = "Forest Theme";
         bool check = false;

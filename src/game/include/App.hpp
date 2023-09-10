@@ -1,5 +1,6 @@
 #pragma once
 
+#include <config/ConfigLoader.hpp>
 #include <time/FramerateLimiter.hpp>
 #include <time/Timer.hpp>
 #include <ui/MainMenuStyle.hpp>
@@ -29,6 +30,7 @@ class App
     void destroyFonts() noexcept;
 
     private:
+    mono::ConfigLoader& m_configLoader;
     std::shared_ptr<Window> m_window;
     std::shared_ptr<Timer> m_timer;
     std::shared_ptr<FramerateLimiter> m_limiter;
