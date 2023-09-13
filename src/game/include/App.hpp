@@ -5,7 +5,6 @@
 #include <time/Timer.hpp>
 #include <ui/MainMenuStyle.hpp>
 
-#include "../../../meta/Version.hpp"
 #include "section/MainMenuSection.hpp"
 
 class App

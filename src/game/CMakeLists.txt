@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.19 FATAL_ERROR)
 
-project(MONOSHOT_GAME LANGUAGES CXX C)
+project(MONOSHOT_GAME
+    VERSION ${PROJECT_VERSION}
+    DESCRIPTION "A simple 2D top-down shooter game."
+    HOMEPAGE_URL "https://github.com/vis4rd/monoshot"
+    LANGUAGES C CXX
+)
 
 # Engine
 add_subdirectory("${PROJECT_SOURCE_DIR}/../engine" "${CMAKE_BINARY_DIR}/engine")
@@ -14,7 +19,12 @@ set_target_properties(monoshot PROPERTIES
 )
 
 target_compile_definitions(monoshot
-    PRIVATE $<$<BOOL:${DEBUG_MODE}>:DEBUG_MODE>
+    PRIVATE
+        $<$<BOOL:${DEBUG_MODE}>:DEBUG_MODE>
+        $<IF:$<BOOL:${MONOSHOT_VERSION}>,
+            MONOSHOT_VERSION="${MONOSHOT_VERSION}",
+            MONOSHOT_VERSION="unknown"
+        >
 )
 
 # Game sources
@@ -46,10 +56,4 @@ target_link_libraries(monoshot
            EnTT::EnTT
            glm::glm
            tinyfd::tinyfd
-)
-
-# Versioning
-add_custom_command(
-    TARGET monoshot PRE_BUILD
-    COMMAND ${CMAKE_COMMAND} -P "${PROJECT_SOURCE_DIR}/../../meta/ProjectVersioning.cmake"
 )

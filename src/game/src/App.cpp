@@ -15,11 +15,7 @@ App::App(const std::string& window_title, uint32_t width, uint32_t height)
     , m_input(InputManager::get())
     , m_sectionManager(SectionManager::get())
 {
-    spdlog::info("App version: {}.{}.{} (build {})",
-        VERSION_MAJOR,
-        VERSION_MINOR,
-        VERSION_PATCH,
-        BUILD_NUMBER);
+    spdlog::info("App version: {}", MONOSHOT_VERSION);
 
     if constexpr(mono::config::constant::DebugMode)  // Debug Build
     {
