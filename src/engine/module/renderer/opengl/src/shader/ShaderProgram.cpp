@@ -5,6 +5,9 @@
 
 #include "../../include/shader/Shader.hpp"
 
+namespace mono
+{
+
 ShaderProgram::ShaderProgram()
     : m_id()
     , m_varLocations{}
@@ -274,3 +277,5 @@ void ShaderProgram::trySetVariableLocation(const std::string& varName)
     }
     // glUseProgram(m_id);
 }
+
+}  // namespace mono

@@ -5,6 +5,9 @@
 
 #include <glad/gl.h>
 
+namespace mono
+{
+
 enum class ShaderType;
 
 class Shader final
@@ -27,3 +30,5 @@ class Shader final
     std::filesystem::path m_location{};
     GLuint m_id{};
 };
+
+}  // namespace mono

@@ -13,6 +13,9 @@
 #include "input/InputManager.hpp"
 #include "section/SectionManager.hpp"
 
+namespace mono
+{
+
 class Window final : public NativeWindow
 {
     public:
@@ -219,3 +222,5 @@ void Window::render(RenderableTrait auto &&...renderables) noexcept
     // Replace previous frame with the current one
     glfwSwapBuffers(m_window);
 }
+
+}  // namespace mono

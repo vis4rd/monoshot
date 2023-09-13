@@ -2,6 +2,9 @@
 
 #include "resource/ResourceManager.hpp"
 
+namespace mono
+{
+
 Window::Window()
     : Window("MONOSHOT", 1280, 720, false, true)
 { }
@@ -268,3 +271,5 @@ void Window::initImGui()
     ImGui_ImplGlfw_InitForOpenGL(m_window, true);
     ImGui_ImplOpenGL3_Init("#version 450");
 }
+
+}  // namespace mono

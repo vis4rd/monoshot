@@ -10,6 +10,9 @@ struct GLFWmonitor;
 struct GLFWvidmode;
 struct GLFWwindow;
 
+namespace mono
+{
+
 class NativeWindow
 {
     public:
@@ -39,3 +42,5 @@ class NativeWindow
     std::int32_t m_width;
     std::int32_t m_height;
 };
+
+}  // namespace mono

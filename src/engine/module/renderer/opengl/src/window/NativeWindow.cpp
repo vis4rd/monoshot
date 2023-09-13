@@ -6,6 +6,9 @@
 #include "config/StaticConfiguration.hpp"
 #include "log/Logging.hpp"
 
+namespace mono
+{
+
 NativeWindow::NativeWindow(const std::string &title, std::int32_t width, std::int32_t height)
     : m_title(title)
     , m_width(width)
@@ -184,3 +187,5 @@ void NativeWindow::initGL()
     // viewport
     glViewport(0, 0, m_width, m_height);
 }
+
+}  // namespace mono

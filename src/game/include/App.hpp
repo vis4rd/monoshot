@@ -18,8 +18,8 @@ class App
     void initFonts() noexcept;
     void initAudio() noexcept;
 
-    Window& getWindow();
-    const Window& getWindow() const;
+    mono::Window& getWindow();
+    const mono::Window& getWindow() const;
 
     void run() noexcept;
 
@@ -30,7 +30,7 @@ class App
 
     private:
     mono::ConfigLoader& m_configLoader;
-    std::shared_ptr<Window> m_window;
+    std::shared_ptr<mono::Window> m_window;
     std::shared_ptr<Timer> m_timer;
     std::shared_ptr<FramerateLimiter> m_limiter;
     InputManager& m_input;

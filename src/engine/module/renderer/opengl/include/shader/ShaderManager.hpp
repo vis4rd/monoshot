@@ -4,6 +4,9 @@
 
 #include "ShaderProgram.hpp"
 
+namespace mono
+{
+
 class ShaderManager
 {
     public:
@@ -12,3 +15,5 @@ class ShaderManager
     static ShaderProgram& useShader(const std::string& name);
     static ShaderProgram& getShader(const std::string& name);
 };
+
+}

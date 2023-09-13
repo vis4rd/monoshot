@@ -5,6 +5,9 @@
 
 #include <glm/glm.hpp>
 
+namespace mono
+{
+
 class Shader;
 
 class ShaderProgram
@@ -67,3 +70,5 @@ class ShaderProgram
     std::uint32_t m_id;
     std::unordered_map<std::string, int> m_varLocations;
 };
+
+}  // namespace mono

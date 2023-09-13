@@ -20,12 +20,12 @@ App::App(const std::string& window_title, uint32_t width, uint32_t height)
     if constexpr(mono::config::constant::DebugMode)  // Debug Build
     {
         // windowed, vsync
-        m_window = std::make_shared<Window>(window_title, width, height, false, true);
+        m_window = std::make_shared<mono::Window>(window_title, width, height, false, true);
     }
     else  // Release Build
     {
         // fullscreen, no-vsync
-        m_window = std::make_shared<Window>(window_title, width, height, true, false);
+        m_window = std::make_shared<mono::Window>(window_title, width, height, true, false);
     }
     ResourceManager::window = m_window;
 
@@ -166,12 +166,12 @@ void App::initAudio() noexcept
     audio.addMusic("menu_music", "../res/audio/music/Fragments_ambient.mp3", 0.4f);
 }
 
-Window& App::getWindow()
+mono::Window& App::getWindow()
 {
     return *m_window;
 }
 
-const Window& App::getWindow() const
+const mono::Window& App::getWindow() const
 {
     return *m_window;
 }

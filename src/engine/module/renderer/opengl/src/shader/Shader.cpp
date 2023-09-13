@@ -6,6 +6,9 @@
 
 namespace fs = std::filesystem;
 
+namespace mono
+{
+
 Shader::Shader(const fs::path& location, const std::string& name, const ShaderType type)
     : m_name(name)
     , m_location(location)
@@ -89,3 +92,5 @@ void Shader::compile() const
         throw std::runtime_error("Shader compilation failure: " + std::string(log));
     }
 }
+
+}  // namespace mono

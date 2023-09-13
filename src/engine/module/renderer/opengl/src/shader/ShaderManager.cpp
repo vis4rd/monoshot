@@ -9,6 +9,9 @@
 
 namespace fs = std::filesystem;
 
+namespace mono
+{
+
 namespace ShaderManagerData
 {
 static std::map<std::string, ShaderProgram> shaderMap;
@@ -56,3 +59,5 @@ ShaderProgram& ShaderManager::getShader(const std::string& name)
 {
     return ShaderManagerData::shaderMap.at(name);
 }
+
+}  // namespace mono
