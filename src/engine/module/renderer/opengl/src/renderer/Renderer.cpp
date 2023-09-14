@@ -57,10 +57,10 @@ void Renderer::init()
 
     // attributes
     mono::BufferLayout quadLayout = {
-        mono::BufferElement(mono::ShaderDataType::float3, "aPos"),
-        mono::BufferElement(mono::ShaderDataType::float4, "aColor"),
-        mono::BufferElement(mono::ShaderDataType::float2, "aTexCoords"),
-        mono::BufferElement(mono::ShaderDataType::float1, "aTexIndex"),
+        {mono::ShaderDataType::float3, "aPos"      },
+        {mono::ShaderDataType::float4, "aColor"    },
+        {mono::ShaderDataType::float2, "aTexCoords"},
+        {mono::ShaderDataType::float1, "aTexIndex" },
     };
     quadVbo.setLayout(quadLayout);
 
@@ -77,8 +77,8 @@ void Renderer::init()
 
     // attributes
     mono::BufferLayout lineLayout = {
-        mono::BufferElement(mono::ShaderDataType::float3, "aPos"),
-        mono::BufferElement(mono::ShaderDataType::float4, "aColor"),
+        {mono::ShaderDataType::float3, "aPos"  },
+        {mono::ShaderDataType::float4, "aColor"},
     };
     lineVbo.setLayout(lineLayout);
 

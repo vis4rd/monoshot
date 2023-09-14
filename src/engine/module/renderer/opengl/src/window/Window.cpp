@@ -31,10 +31,10 @@ Window::Window(const std::string &title,
     constexpr std::uint32_t screen_element_buffer[6] = {0, 1, 2, 2, 3, 0};
 
     VertexBuffer screenVB(screen_vertex_buffer, sizeof(screen_vertex_buffer));
-    BufferLayout layout({
-        BufferElement(ShaderDataType::float2, "aPos"),
-        BufferElement(ShaderDataType::float2, "aTexCoords"),
-    });
+    BufferLayout layout = {
+        {ShaderDataType::float2, "aPos"      },
+        {ShaderDataType::float2, "aTexCoords"},
+    };
     screenVB.setLayout(layout);
 
     ElementBuffer screenEB(screen_element_buffer, 6);
