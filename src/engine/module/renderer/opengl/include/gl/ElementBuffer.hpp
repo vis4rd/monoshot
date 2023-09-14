@@ -2,6 +2,9 @@
 
 #include <cstdint>
 
+namespace mono
+{
+
 class ElementBuffer
 {
     public:
@@ -25,3 +28,5 @@ class ElementBuffer
     std::uint32_t m_count;
     bool m_isInit = false;
 };
+
+}  // namespace mono

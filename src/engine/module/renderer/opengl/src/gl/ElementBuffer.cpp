@@ -3,6 +3,9 @@
 #include <glad/gl.h>
 #include <spdlog/spdlog.h>
 
+namespace mono
+{
+
 ElementBuffer::ElementBuffer(const std::uint32_t* indices, std::uint32_t count)
     : m_count(count)
     , m_isInit(true)
@@ -74,3 +77,5 @@ ElementBuffer::operator std::uint32_t() const
         return 0;
     }
 }
+
+}  // namespace mono

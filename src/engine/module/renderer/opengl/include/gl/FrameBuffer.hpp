@@ -1,7 +1,11 @@
 #pragma once
 
 #include <cstdint>
+
 #include <glm/glm.hpp>
+
+namespace mono
+{
 
 class FrameBuffer
 {
@@ -33,3 +37,5 @@ class FrameBuffer
     std::uint32_t m_colorAttachment = 0u;
     std::uint32_t m_stencilAttachment = 0u;
 };
+
+}  // namespace mono

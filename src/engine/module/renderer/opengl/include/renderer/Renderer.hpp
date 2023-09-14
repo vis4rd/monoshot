@@ -82,11 +82,11 @@ class Renderer
         static constinit const std::size_t maxIndexCount = maxQuadCount * 6;
         static constinit const std::size_t maxTextures = 32;
 
-        std::shared_ptr<VertexArray> quadVao;
+        std::shared_ptr<mono::VertexArray> quadVao;
         std::vector<QuadVertex> quadBuffer = std::vector<QuadVertex>(maxVertexCount);
         std::vector<QuadVertex>::iterator quadBufferIter{};
 
-        std::shared_ptr<VertexArray> lineVao;
+        std::shared_ptr<mono::VertexArray> lineVao;
         std::vector<LineVertex> lineBuffer = std::vector<LineVertex>(maxLineCount * 2);
         std::vector<LineVertex>::iterator lineBufferIter{};
 

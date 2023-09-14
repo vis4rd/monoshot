@@ -5,6 +5,11 @@
 #include <glad/gl.h>
 #include <spdlog/spdlog.h>
 
+#include "../../include/gl/ShaderDataType.hpp"
+
+namespace mono
+{
+
 static GLenum shaderDataTypeToOpenGLBaseType(const ShaderDataType& type)
 {
     switch(type)
@@ -203,3 +208,5 @@ VertexArray::operator std::uint32_t()
 {
     return m_id;
 }
+
+}  // namespace mono

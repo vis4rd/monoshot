@@ -5,6 +5,9 @@
 #include "ElementBuffer.hpp"
 #include "VertexBuffer.hpp"
 
+namespace mono
+{
+
 class VertexArray
 {
     public:
@@ -31,3 +34,5 @@ class VertexArray
     std::vector<VertexBuffer> m_vertexBuffers{};
     ElementBuffer m_elementBuffer{};
 };
+
+}  // namespace mono

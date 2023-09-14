@@ -51,16 +51,16 @@ void Renderer::init()
     }
 
     // buffers
-    s_data.quadVao = std::make_shared<VertexArray>();
-    auto quadVbo = VertexBuffer(s_data.maxVertexCount * sizeof(QuadVertex));
-    auto quadEbo = ElementBuffer(quadIndices, s_data.maxIndexCount);
+    s_data.quadVao = std::make_shared<mono::VertexArray>();
+    auto quadVbo = mono::VertexBuffer(s_data.maxVertexCount * sizeof(QuadVertex));
+    auto quadEbo = mono::ElementBuffer(quadIndices, s_data.maxIndexCount);
 
     // attributes
-    BufferLayout quadLayout = {
-        BufferElement(ShaderDataType::float3, "aPos"),
-        BufferElement(ShaderDataType::float4, "aColor"),
-        BufferElement(ShaderDataType::float2, "aTexCoords"),
-        BufferElement(ShaderDataType::float1, "aTexIndex"),
+    mono::BufferLayout quadLayout = {
+        mono::BufferElement(mono::ShaderDataType::float3, "aPos"),
+        mono::BufferElement(mono::ShaderDataType::float4, "aColor"),
+        mono::BufferElement(mono::ShaderDataType::float2, "aTexCoords"),
+        mono::BufferElement(mono::ShaderDataType::float1, "aTexIndex"),
     };
     quadVbo.setLayout(quadLayout);
 
@@ -72,13 +72,13 @@ void Renderer::init()
 
     //// Lines
     // buffers
-    s_data.lineVao = std::make_shared<VertexArray>();
-    auto lineVbo = VertexBuffer(s_data.maxVertexCount * sizeof(LineVertex));
+    s_data.lineVao = std::make_shared<mono::VertexArray>();
+    auto lineVbo = mono::VertexBuffer(s_data.maxVertexCount * sizeof(LineVertex));
 
     // attributes
-    BufferLayout lineLayout = {
-        BufferElement(ShaderDataType::float3, "aPos"),
-        BufferElement(ShaderDataType::float4, "aColor"),
+    mono::BufferLayout lineLayout = {
+        mono::BufferElement(mono::ShaderDataType::float3, "aPos"),
+        mono::BufferElement(mono::ShaderDataType::float4, "aColor"),
     };
     lineVbo.setLayout(lineLayout);
 
