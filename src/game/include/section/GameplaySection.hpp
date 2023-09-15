@@ -2,6 +2,7 @@
 
 #include <camera/PerspectiveCamera.hpp>
 #include <entt/entity/registry.hpp>
+#include <renderer/Renderer.hpp>
 #include <section/Section.hpp>
 #include <time/Timer.hpp>
 
@@ -24,13 +25,14 @@ class GameplaySection : public Section
     bool onLeave();
 
     protected:
+    entt::registry m_mapElementsRegistry{};
+    entt::registry m_bulletRegistry{};
+    entt::registry m_enemyRegistry{};
     PerspectiveCamera m_camera;
     Map m_map;
     Hero m_hero;
     UI::GameplayLayout m_layout;
-    entt::registry m_mapElementsRegistry{};
-    entt::registry m_bulletRegistry{};
-    entt::registry m_enemyRegistry{};
+    Renderer m_renderer;
 
     bool m_onEnterFinished = false;
     bool m_onLeaveStarted = false;

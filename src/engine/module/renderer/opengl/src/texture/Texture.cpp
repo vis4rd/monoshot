@@ -97,7 +97,6 @@ Texture::Texture(Texture&& move)
 
 Texture::~Texture()
 {
-    spdlog::trace("Destroying Texture...");
     this->unloadFromGpu();
     this->safeDelete();
 }
@@ -268,7 +267,6 @@ void Texture::uploadToGpu()
 
 void Texture::unloadFromGpu()
 {
-    spdlog::trace("Unloading Texture data from GPU, deleting ID = {}", m_id);
     glTextureSubImage2D(m_id,
         0,
         0,
@@ -283,10 +281,8 @@ void Texture::unloadFromGpu()
 
 void Texture::safeDelete()
 {
-    spdlog::trace("Trying to safe-delete the Texture memory...");
     if(m_data != nullptr)
     {
-        spdlog::trace("Freeing Texture memory...");
         if(m_isLoadedByStbi)
         {
             stbi_image_free(m_data);

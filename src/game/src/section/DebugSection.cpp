@@ -10,10 +10,10 @@
 
 DebugSection::DebugSection()
     : Section()
-    ,
-    // VAO(),
-    m_camera(glm::vec3(0.f, 0.f, 50.f), ResourceManager::window->getSize())
-    , m_map(5, 5)
+    // , VAO()
+    , m_camera(glm::vec3(0.f, 0.f, 50.f), ResourceManager::window->getSize())
+    , m_renderer()
+    , m_map(m_renderer, 5, 5)
     , m_hero(100)
     , m_layout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize)
 {
@@ -94,8 +94,6 @@ DebugSection::DebugSection()
     // {}, {}", util::vec3str(first), util::vec3str(second), util::vec3str(third),
     // util::vec3str(fourth));
 
-    Renderer::init();
-
     m_hero.addItem(std::move(Weapon(10, 31, 76, 35.f, 0.3)));
     m_hero.addItem(std::move(Weapon(10, 70, 20000, 10.f, 0.05)));
 
@@ -139,7 +137,6 @@ DebugSection::DebugSection()
 DebugSection::~DebugSection()
 {
     spdlog::trace("Destroying DebugSection");
-    Renderer::shutdown();
     // firstTexture->destroy();
     m_mapElementsRegistry.clear();
 }
@@ -275,7 +272,7 @@ void DebugSection::render() noexcept
 {
     spdlog::trace("Rendering DebugSection");
 
-    Renderer::beginBatch();
+    m_renderer.beginBatch();
     m_map.drawTiles(s_draw_area, s_draw_bbs);
 
     // Renderer::drawQuad({0.f, 10.f}, tile_size, 0.f, {1.f, 0.5f, 0.5f, 1.f});
@@ -289,30 +286,34 @@ void DebugSection::render() noexcept
     float& vel = m_hero.velocity;
     const float& acc = m_hero.acceleration;
     const auto& theme_color = std::get<1>(m_map.getCurrentTheme().wallBlock);
-    Renderer::drawQuad({pos.x, pos.y}, m_hero.size, rot, m_hero.getTexture(), theme_color);
+    m_renderer.drawQuad({pos.x, pos.y}, m_hero.size, rot, m_hero.getTexture(), theme_color);
 
     m_map.drawObjects({pos.x, pos.y}, s_draw_bbs);
 
     const auto bullet_view = m_bulletRegistry.view<const ecs::component::position,
         const ecs::component::size,
         const ecs::component::rotation>(entt::exclude<ecs::component::destroyed>);
-    bullet_view.each([&theme_color](const auto& b_pos, const auto& b_size, const auto& b_rot) {
-        Renderer::drawQuad({b_pos.x, b_pos.y}, b_size, b_rot, theme_color);
-    });
+    bullet_view.each(
+        [&theme_color,
+            &m_renderer = m_renderer](const auto& b_pos, const auto& b_size, const auto& b_rot) {
+            m_renderer.drawQuad({b_pos.x, b_pos.y}, b_size, b_rot, theme_color);
+        });
 
     const auto& enemy_texture = ResourceManager::enemyTexture;
     const auto enemy_view = m_enemyRegistry.view<const ecs::component::position,
         const ecs::component::size,
         const ecs::component::rotation>();
-    enemy_view.each([&enemy_texture](const auto& e_pos, const auto& e_size, const auto& e_rot) {
-        Renderer::drawQuad({e_pos.x, e_pos.y},
-            e_size,
-            e_rot,
-            enemy_texture,
-            {1.f, 0.4f, 0.4f, 1.f});
-    });
+    enemy_view.each(
+        [&enemy_texture,
+            &m_renderer = m_renderer](const auto& e_pos, const auto& e_size, const auto& e_rot) {
+            m_renderer.drawQuad({e_pos.x, e_pos.y},
+                e_size,
+                e_rot,
+                enemy_texture,
+                {1.f, 0.4f, 0.4f, 1.f});
+        });
 
-    Renderer::endBatch(m_camera.getProjectionMatrix(), m_camera.getViewMatrix());
+    m_renderer.endBatch(m_camera.getProjectionMatrix(), m_camera.getViewMatrix());
 
     // auto& triangle_zoom_shader = ShaderManager::useShader("triangle_zoom");
     // triangle_zoom_shader.uploadMat4("uTransform", model_matrix, 0);

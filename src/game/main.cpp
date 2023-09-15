@@ -6,6 +6,7 @@ int main(int, char**)
 
     App app("MONOSHOT", 1280, 720);
     app.run();
+    app.terminate(EXIT_SUCCESS);
 
-    return 0;
+    return EXIT_SUCCESS;
 }

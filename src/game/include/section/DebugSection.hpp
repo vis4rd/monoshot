@@ -5,6 +5,7 @@
 #include <audio/AudioManager.hpp>
 #include <camera/PerspectiveCamera.hpp>
 #include <entt/entity/registry.hpp>
+#include <renderer/Renderer.hpp>
 #include <section/Section.hpp>
 #include <time/Timer.hpp>
 
@@ -38,13 +39,14 @@ class DebugSection final : public Section
     // glm::mat4 model_matrix = glm::identity<glm::mat4>();
     // std::shared_ptr<Texture2D> firstTexture;
 
-    PerspectiveCamera m_camera;
-    Map m_map;
-    Hero m_hero;
-    UI::GameplayLayout m_layout;
     entt::registry m_mapElementsRegistry{};
     entt::registry m_bulletRegistry{};
     entt::registry m_enemyRegistry{};
+    PerspectiveCamera m_camera;
+    Renderer m_renderer;
+    Map m_map;
+    Hero m_hero;
+    UI::GameplayLayout m_layout;
     std::unordered_map<std::string, sf::SoundBuffer> m_soundBuffers;
     std::unordered_map<std::string, sf::Sound> m_sounds;
 

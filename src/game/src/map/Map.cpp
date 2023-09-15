@@ -9,12 +9,13 @@
 #include "../../include/ecs/actions.hpp"
 #include "../../include/ecs/systems.hpp"
 
-Map::Map(const std::size_t& width, const std::size_t& height)
+Map::Map(Renderer& renderer, const std::size_t& width, const std::size_t& height)
     : m_width(width)
     , m_height(height)
     , m_tiles()
     , m_objects()
     , m_endArea(nullptr)
+    , m_renderer(renderer)
 {
     m_tiles.reserve(width * height);
 
@@ -376,14 +377,14 @@ void Map::render(const glm::mat4& projection,
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     }
-    Renderer::beginBatch();
+    m_renderer.beginBatch();
     this->drawTiles(area, show_solid);
     this->drawObjects({}, show_solid);
     if(show_end_area)
     {
         this->drawEndArea();
     }
-    Renderer::endBatch(projection, view);
+    m_renderer.endBatch(projection, view);
     if(show_solid)
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -395,7 +396,7 @@ void Map::drawTiles(bool area, bool show_solid)
     spdlog::trace("Drawing Map tiles...");
     if(area)
     {
-        Renderer::drawQuad({m_centerX, m_centerY},
+        m_renderer.drawQuad({m_centerX, m_centerY},
             {m_width, m_height},
             0.f,
             {0.3f, 0.3f, 0.3f, 1.f});  // background area
@@ -407,7 +408,7 @@ void Map::drawTiles(bool area, bool show_solid)
         {
             if(wall_texture != nullptr)
             {
-                Renderer::drawQuad({tile.x, tile.y},
+                m_renderer.drawQuad({tile.x, tile.y},
                     {1.f, 1.f},
                     tile.rotation,
                     wall_texture,
@@ -415,7 +416,7 @@ void Map::drawTiles(bool area, bool show_solid)
             }
             else
             {
-                Renderer::drawQuad({tile.x, tile.y}, {1.f, 1.f}, tile.rotation, wall_color);
+                m_renderer.drawQuad({tile.x, tile.y}, {1.f, 1.f}, tile.rotation, wall_color);
             }
         }
     }
@@ -433,7 +434,7 @@ void Map::drawObjects(const glm::vec2& hero_pos, bool show_solid)
         // spdlog::trace("OID = {}, collision_color = ({}, {}, {}, {})",
         // objectIdToString(object.id), collision_color.x, collision_color.y, collision_color.z,
         // collision_color.w);
-        Renderer::drawQuad(object.getPosition(),
+        m_renderer.drawQuad(object.getPosition(),
             object.getSize(),
             object.getRotation(),
             object.getTexture(),
@@ -447,7 +448,7 @@ void Map::drawEndArea()
     {
         spdlog::trace("Drawing Map end area...");
         const auto& [wall_block, wall_color, wall_texture] = m_theme.wallBlock;
-        Renderer::drawRect(m_endArea->position, m_endArea->size, 0.f, wall_color);
+        m_renderer.drawRect(m_endArea->position, m_endArea->size, 0.f, wall_color);
     }
 }
 

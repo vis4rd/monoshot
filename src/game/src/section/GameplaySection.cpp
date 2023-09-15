@@ -15,14 +15,12 @@ static bool s_show_debug_info = false;
 GameplaySection::GameplaySection()
     : Section()
     , m_camera(glm::vec3(0.f, 0.f, 50.f), ResourceManager::window->getSize())
-    , m_map(5, 5)
+    , m_renderer()
+    , m_map(m_renderer, 5, 5)
     , m_hero(100)
     , m_layout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize)
 {
     m_name = "GameplaySection";
-
-    // renderer module
-    Renderer::init();
 
     // audio module
     AudioManager::get().playMusic("gameplay_music");
@@ -31,7 +29,6 @@ GameplaySection::GameplaySection()
 GameplaySection::~GameplaySection()
 {
     spdlog::trace("Destroying {}", m_name);
-    Renderer::shutdown();
     m_mapElementsRegistry.clear();
     AudioManager::get().stopMusic("gameplay_music");
 }
@@ -165,7 +162,7 @@ void GameplaySection::render() noexcept
 {
     spdlog::trace("Rendering GameplaySection");
 
-    Renderer::beginBatch();
+    m_renderer.beginBatch();
     m_map.drawTiles();
 
     const glm::vec2& pos = m_hero.position;
@@ -173,29 +170,33 @@ void GameplaySection::render() noexcept
     const float& vel = m_hero.velocity;
     const float& acc = m_hero.acceleration;
     const auto& theme_color = std::get<1>(m_map.getCurrentTheme().wallBlock);
-    Renderer::drawQuad({pos.x, pos.y}, m_hero.size, rot, m_hero.getTexture(), theme_color);
+    m_renderer.drawQuad({pos.x, pos.y}, m_hero.size, rot, m_hero.getTexture(), theme_color);
 
     const auto& enemy_texture = ResourceManager::enemyTexture;
     const auto enemy_view = m_enemyRegistry.view<const ecs::component::position,
         const ecs::component::size,
         const ecs::component::rotation>();
-    enemy_view.each([&enemy_texture](const auto& e_pos, const auto& e_size, const auto& e_rot) {
-        Renderer::drawQuad({e_pos.x, e_pos.y},
-            e_size,
-            e_rot,
-            enemy_texture,
-            {1.f, 0.4f, 0.4f, 1.f});
-    });
+    enemy_view.each(
+        [&enemy_texture,
+            &m_renderer = m_renderer](const auto& e_pos, const auto& e_size, const auto& e_rot) {
+            m_renderer.drawQuad({e_pos.x, e_pos.y},
+                e_size,
+                e_rot,
+                enemy_texture,
+                {1.f, 0.4f, 0.4f, 1.f});
+        });
 
     const auto bullet_view = m_bulletRegistry.view<const ecs::component::position,
         const ecs::component::size,
         const ecs::component::rotation>(entt::exclude<ecs::component::destroyed>);
-    bullet_view.each([&theme_color](const auto& b_pos, const auto& b_size, const auto& b_rot) {
-        Renderer::drawQuad({b_pos.x, b_pos.y}, b_size, b_rot, theme_color);
-    });
+    bullet_view.each(
+        [&theme_color,
+            &m_renderer = m_renderer](const auto& b_pos, const auto& b_size, const auto& b_rot) {
+            m_renderer.drawQuad({b_pos.x, b_pos.y}, b_size, b_rot, theme_color);
+        });
 
     m_map.drawObjects({pos.x, pos.y});
-    Renderer::endBatch(m_camera.getProjectionMatrix(), m_camera.getViewMatrix());
+    m_renderer.endBatch(m_camera.getProjectionMatrix(), m_camera.getViewMatrix());
 
     if(m_onEnterFinished && (not m_onLeaveStarted))
     {
@@ -251,10 +252,10 @@ void GameplaySection::render() noexcept
                 ImGui::Text("Mouse Position: Screen[%.2fx, %.2fy]",
                     ImGui::GetMousePos().x,
                     ImGui::GetMousePos().y);
-                ImGui::Text("Quad count: %d", Renderer::getStats().quadCount);
-                ImGui::Text("Line count: %d", Renderer::getStats().lineCount);
-                ImGui::Text("Draw calls: %d", Renderer::getStats().drawCount);
-                ImGui::Text("Indices: %d", Renderer::getStats().indexCount);
+                ImGui::Text("Quad count: %d", m_renderer.getStats().quadCount);
+                ImGui::Text("Line count: %d", m_renderer.getStats().lineCount);
+                ImGui::Text("Draw calls: %d", m_renderer.getStats().drawCount);
+                ImGui::Text("Indices: %d", m_renderer.getStats().indexCount);
             }
             ImGui::End();
         }

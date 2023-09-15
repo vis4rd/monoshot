@@ -1,6 +1,7 @@
 #pragma once
 
 #include <camera/PerspectiveCamera.hpp>
+#include <renderer/Renderer.hpp>
 #include <section/Section.hpp>
 #include <texture/Texture.hpp>
 
@@ -19,7 +20,8 @@ class CreatorSection final : public Section
     glm::vec2 mouseScreenPosToWorldPos(const glm::vec2& mouse_pos, Camera& camera);
 
     private:
+    entt::registry m_entities{};
+    Renderer m_renderer;
     Map m_map;
     PerspectiveCamera m_camera;
-    entt::registry m_entities{};
 };

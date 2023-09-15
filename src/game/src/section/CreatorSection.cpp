@@ -17,7 +17,8 @@ static glm::vec2 s_end_area_size = {10.f, 10.f};
 
 CreatorSection::CreatorSection()
     : Section()
-    , m_map(5, 5)
+    , m_renderer()
+    , m_map(m_renderer, 5, 5)
     , m_camera(glm::vec3(0.f, 0.f, 50.f), ResourceManager::window->getSize())
 {
     m_name = "CreatorSection";
@@ -41,9 +42,6 @@ CreatorSection::CreatorSection()
         }
         camera->setPosition({pos.x, pos.y, new_pos_z});
     });
-
-    // renderer
-    Renderer::init();
 }
 
 CreatorSection::~CreatorSection()
@@ -51,7 +49,6 @@ CreatorSection::~CreatorSection()
     auto window = ResourceManager::window->getNativeWindow();
     glfwSetWindowUserPointer(window, nullptr);
     glfwSetScrollCallback(window, nullptr);
-    Renderer::shutdown();
     InputManager::get().removeGroup(m_name);
 }
 
@@ -191,7 +188,7 @@ void CreatorSection::render() noexcept
         draw_bbs,
         draw_end_area);
 
-    Renderer::beginBatch();
+    m_renderer.beginBatch();
     if(s_selected_map_item > ObjectID::FIRST_OBJECT && s_selected_map_item < ObjectID::LAST_OBJECT)
     {
         // hovered object highlight
@@ -201,7 +198,7 @@ void CreatorSection::render() noexcept
                 s_randomized_rotation);
         if(map_object.getTexture())  // TODO: remove this branch when all textures are initialized
         {
-            Renderer::drawQuad(map_object.getPosition(),
+            m_renderer.drawQuad(map_object.getPosition(),
                 map_object.getSize(),
                 map_object.getRotation(),
                 map_object.getTexture(),
@@ -211,21 +208,21 @@ void CreatorSection::render() noexcept
     else if(s_selected_map_item > BlockID::FIRST_BLOCK && s_selected_map_item < BlockID::LAST_BLOCK)
     {
         // hovered tile highlight
-        Renderer::drawQuad({std::round(s_mouse_world_pos.x), std::round(s_mouse_world_pos.y)},
+        m_renderer.drawQuad({std::round(s_mouse_world_pos.x), std::round(s_mouse_world_pos.y)},
             {1.f, 1.f},
             0.f,
             {0.9f, 0.9f, 1.f, 0.2f});
     }
     else if(s_selected_map_item == 9999)
     {
-        Renderer::drawRect({s_mouse_world_pos.x, s_mouse_world_pos.y},
+        m_renderer.drawRect({s_mouse_world_pos.x, s_mouse_world_pos.y},
             s_end_area_size,
             0.f,
             {1.f, 1.f, 1.f, 1.f});
     }
     else if(s_selected_map_item == 10000)
     {
-        Renderer::drawQuad({s_mouse_world_pos.x, s_mouse_world_pos.y},
+        m_renderer.drawQuad({s_mouse_world_pos.x, s_mouse_world_pos.y},
             {1.f, 1.f},
             s_randomized_rotation,
             ResourceManager::enemyTexture,
@@ -235,7 +232,7 @@ void CreatorSection::render() noexcept
     auto view = m_entities.view<const ecs::component::position, const ecs::component::rotation>();
     for(auto&& [enemy, pos, rot] : view.each())
     {
-        Renderer::drawQuad(pos,
+        m_renderer.drawQuad(pos,
             {1.f, 1.f},
             rot.data,
             ResourceManager::enemyTexture,
@@ -251,7 +248,7 @@ void CreatorSection::render() noexcept
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     }
-    Renderer::endBatch(m_camera.getProjectionMatrix(), m_camera.getViewMatrix());
+    m_renderer.endBatch(m_camera.getProjectionMatrix(), m_camera.getViewMatrix());
     if(draw_bbs)
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

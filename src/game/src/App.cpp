@@ -49,7 +49,7 @@ App::~App() noexcept
 {
     this->destroyFonts();
     this->destroyTextures();
-    this->terminate(EXIT_SUCCESS);
+    ResourceManager::window.reset();
 }
 
 void App::initLogger() noexcept
@@ -191,21 +191,20 @@ void App::run() noexcept
 void App::terminate(int code) noexcept
 {
     spdlog::info("Closing the application");
-    std::exit(code);
 }
 
 void App::destroyTextures() noexcept
 {
     using res = ResourceManager;
-    res::largeTreeTexture.reset();
-    res::smallTreeTexture.reset();
-    res::outdoorBenchTexture.reset();
-    res::chairTexture.reset();
-    res::tableTexture.reset();
-    res::smallBushTexture.reset();
-    res::largeBushTexture.reset();
     res::carTexture.reset();
     res::destroyedCarTexture.reset();
+    res::chairTexture.reset();
+    res::outdoorBenchTexture.reset();
+    res::tableTexture.reset();
+    res::smallTreeTexture.reset();
+    res::largeTreeTexture.reset();
+    res::smallBushTexture.reset();
+    res::largeBushTexture.reset();
 
     res::rifleInventoryTexture.reset();
     res::pistolInventoryTexture.reset();

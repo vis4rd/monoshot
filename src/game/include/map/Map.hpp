@@ -8,6 +8,8 @@
 #include "MapTheme.hpp"
 #include "object/MapObject.hpp"
 
+class Renderer;
+
 struct Tile
 {
     float x = 0;
@@ -20,7 +22,7 @@ struct Tile
 class Map final
 {
     public:
-    Map(const std::size_t& width, const std::size_t& height);
+    Map(Renderer& renderer, const std::size_t& width, const std::size_t& height);
     ~Map();
 
     std::size_t getSize() const;
@@ -70,6 +72,7 @@ class Map final
     std::int64_t m_centerY = 0;
     std::vector<Tile> m_tiles;
     std::vector<MapObject> m_objects;
-    MapTheme& m_theme = MapThemes::FOREST_THEME;
     std::unique_ptr<OBB::Polygon> m_endArea;
+    MapTheme& m_theme = MapThemes::FOREST_THEME;
+    Renderer& m_renderer;
 };

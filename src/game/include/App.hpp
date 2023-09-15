@@ -22,9 +22,9 @@ class App
     const mono::Window& getWindow() const;
 
     void run() noexcept;
+    void terminate(int code = 0) noexcept;
 
     private:
-    void terminate(int code = 0) noexcept;
     void destroyTextures() noexcept;
     void destroyFonts() noexcept;
 
