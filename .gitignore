@@ -32,7 +32,6 @@
 *.app
 
 # Build directories
-cmake/
 build/
 bin/
 .cache/
