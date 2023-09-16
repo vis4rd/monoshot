@@ -16,4 +16,4 @@ class ShaderManager
     static ShaderProgram& getShader(const std::string& name);
 };
 
-}
+}  // namespace mono

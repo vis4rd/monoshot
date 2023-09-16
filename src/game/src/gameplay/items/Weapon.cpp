@@ -1,37 +1,40 @@
 #include "../../../include/gameplay/items/Weapon.hpp"
 
 #include <algorithm>
+
 #include <spdlog/spdlog.h>
 
-Weapon::Weapon(const std::int32_t& damage, const std::uint32_t& magazine_capacity, const std::uint32_t& total_ammo, const float& bullet_velocity, const double& use_delay)
-    : m_damage(damage),
-      m_ammoCurrent(0),
-      m_ammoMagazineMax(magazine_capacity),
-      m_ammoTotal(total_ammo),
-      m_bulletVelocity(bullet_velocity)
+Weapon::Weapon(const std::int32_t& damage,
+    const std::uint32_t& magazine_capacity,
+    const std::uint32_t& total_ammo,
+    const float& bullet_velocity,
+    const double& use_delay)
+    : m_damage(damage)
+    , m_ammoCurrent(0)
+    , m_ammoMagazineMax(magazine_capacity)
+    , m_ammoTotal(total_ammo)
+    , m_bulletVelocity(bullet_velocity)
 {
     this->setUseDelay(use_delay);
 }
 
 Weapon::Weapon(const Weapon& copy)
-    : Consumable(copy),
-      m_damage(copy.m_damage),
-      m_ammoCurrent(copy.m_ammoCurrent),
-      m_ammoMagazineMax(copy.m_ammoMagazineMax),
-      m_ammoTotal(copy.m_ammoTotal),
-      m_bulletVelocity(copy.m_bulletVelocity)
-{
-}
+    : Consumable(copy)
+    , m_damage(copy.m_damage)
+    , m_ammoCurrent(copy.m_ammoCurrent)
+    , m_ammoMagazineMax(copy.m_ammoMagazineMax)
+    , m_ammoTotal(copy.m_ammoTotal)
+    , m_bulletVelocity(copy.m_bulletVelocity)
+{ }
 
 Weapon::Weapon(Weapon&& move)
-    : Consumable(std::move(move)),
-      m_damage(std::move(move.m_damage)),
-      m_ammoCurrent(std::move(move.m_ammoCurrent)),
-      m_ammoMagazineMax(std::move(move.m_ammoMagazineMax)),
-      m_ammoTotal(std::move(move.m_ammoTotal)),
-      m_bulletVelocity(std::move(move.m_bulletVelocity))
-{
-}
+    : Consumable(std::move(move))
+    , m_damage(std::move(move.m_damage))
+    , m_ammoCurrent(std::move(move.m_ammoCurrent))
+    , m_ammoMagazineMax(std::move(move.m_ammoMagazineMax))
+    , m_ammoTotal(std::move(move.m_ammoTotal))
+    , m_bulletVelocity(std::move(move.m_bulletVelocity))
+{ }
 
 Weapon& Weapon::operator=(const Weapon& copy)
 {

@@ -15,7 +15,8 @@ TutorialMapSection::TutorialMapSection()
         constexpr std::uint32_t total_ammo = 62;
         constexpr float bullet_velocity = 35.f;
         constexpr double use_delay = 0.15;  // in seconds
-        m_hero.addItem(std::move(Weapon(damage, magazine_capacity, total_ammo, bullet_velocity, use_delay)));
+        m_hero.addItem(
+            std::move(Weapon(damage, magazine_capacity, total_ammo, bullet_velocity, use_delay)));
     }
 
     {  // pistol
@@ -24,6 +25,7 @@ TutorialMapSection::TutorialMapSection()
         constexpr std::uint32_t total_ammo = 52;
         constexpr float bullet_velocity = 30.f;
         constexpr double use_delay = 0.30;  // in seconds
-        m_hero.addItem(std::move(Weapon(damage, magazine_capacity, total_ammo, bullet_velocity, use_delay)));
+        m_hero.addItem(
+            std::move(Weapon(damage, magazine_capacity, total_ammo, bullet_velocity, use_delay)));
     }
 }

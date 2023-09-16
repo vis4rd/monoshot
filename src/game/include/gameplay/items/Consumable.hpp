@@ -25,5 +25,6 @@ class Consumable : public Item
 
     private:
     double m_useDelay = 0.1;  // in seconds
-    double m_lastUseTimestamp = 0.0;  // if m_lastUseTimestamp + m_useDelay < Timer::getTotalTime() then it can be used again
+    double m_lastUseTimestamp = 0.0;  // if m_lastUseTimestamp + m_useDelay < Timer::getTotalTime()
+                                      // then it can be used again
 };

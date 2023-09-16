@@ -8,16 +8,14 @@ Food::Food()
 }
 
 Food::Food(const Food& copy)
-    : Consumable(copy),
-      m_healingPower(copy.m_healingPower)
-{
-}
+    : Consumable(copy)
+    , m_healingPower(copy.m_healingPower)
+{ }
 
 Food::Food(Food&& move)
-    : Consumable(std::move(move)),
-      m_healingPower(std::move(move.m_healingPower))
-{
-}
+    : Consumable(std::move(move))
+    , m_healingPower(std::move(move.m_healingPower))
+{ }
 
 Food& Food::operator=(const Food& copy)
 {

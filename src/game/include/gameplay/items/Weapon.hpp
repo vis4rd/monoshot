@@ -8,7 +8,11 @@ class Weapon : public Consumable
     Weapon() = default;
     Weapon(const Weapon& copy);
     Weapon(Weapon&& move);
-    Weapon(const std::int32_t& damage, const std::uint32_t& magazine_capacity, const std::uint32_t& total_ammo, const float& bullet_velocity, const double& use_delay);
+    Weapon(const std::int32_t& damage,
+        const std::uint32_t& magazine_capacity,
+        const std::uint32_t& total_ammo,
+        const float& bullet_velocity,
+        const double& use_delay);
     virtual ~Weapon() = default;
 
     Weapon& operator=(const Weapon& copy);

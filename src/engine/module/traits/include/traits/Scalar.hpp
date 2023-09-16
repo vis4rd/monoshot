@@ -1,7 +1,7 @@
 #pragma once
 
-#include <utility>
 #include <concepts>
+#include <utility>
 
 template<typename T>
 concept NumericC = std::integral<T> or std::floating_point<T>;

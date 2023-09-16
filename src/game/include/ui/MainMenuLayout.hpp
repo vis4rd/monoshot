@@ -11,7 +11,8 @@ struct MainMenuLayout : public BaseLayout
     inline void update(const ImVec2& workpos, const ImVec2& worksize) override;
 };
 
-MainMenuLayout::MainMenuLayout(const ImVec2& workpos, const ImVec2& worksize) : BaseLayout(workpos, worksize)
+MainMenuLayout::MainMenuLayout(const ImVec2& workpos, const ImVec2& worksize)
+    : BaseLayout(workpos, worksize)
 {
     base_menu_w = 512.f;
     base_menu_h = 512.f;

@@ -10,9 +10,9 @@ namespace OBB
 // See: https://en.wikipedia.org/wiki/Hyperplane_separation_theorem
 
 Polygon::Polygon(const glm::vec2& center, const glm::vec2& size, const float& rotation)
-    : points(4),
-      position(center),
-      size(size)
+    : points(4)
+    , position(center)
+    , size(size)
 {
     //? possibly this matrix operation can be simplified if this path becomes too hot
     glm::mat4 model = glm::translate(glm::mat4(1.f), glm::vec3(center, 0.f));
@@ -25,19 +25,24 @@ Polygon::Polygon(const glm::vec2& center, const glm::vec2& size, const float& ro
     this->points[3] = glm::vec2(model * glm::vec4{-0.5f, 0.5f, 0.f, 1.f});
 }
 
-glm::vec2 findCollisionSat(glm::vec2& pos1, const glm::vec2& size1, const float& rotation1, glm::vec2& pos2, const glm::vec2& size2, const float& rotation2)
+glm::vec2 findCollisionSat(glm::vec2& pos1,
+    const glm::vec2& size1,
+    const float& rotation1,
+    glm::vec2& pos2,
+    const glm::vec2& size2,
+    const float& rotation2)
 {
     constexpr float inf = 999999999.f;
     Polygon poly1(pos1, size1, 0.f);
     Polygon poly2(pos2, size2, rotation2);
 
     float overlap = inf;
-    auto resolve = [&overlap](Polygon& poly1, Polygon& poly2) mutable -> bool
-    {
+    auto resolve = [&overlap](Polygon& poly1, Polygon& poly2) mutable -> bool {
         for(int a = 0; a < poly1.points.size(); a++)
         {
             int b = (a + 1) % poly1.points.size();
-            glm::vec2 axis_proj = glm::normalize(glm::vec2{-(poly1.points[b].y - poly1.points[a].y), poly1.points[b].x - poly1.points[a].x});
+            glm::vec2 axis_proj = glm::normalize(glm::vec2{-(poly1.points[b].y - poly1.points[a].y),
+                poly1.points[b].x - poly1.points[a].x});
 
             float min_r1 = inf;
             float max_r1 = -inf;
@@ -78,10 +83,12 @@ glm::vec2 findCollisionSat(glm::vec2& pos1, const glm::vec2& size1, const float&
 /**
  * @brief Find intersection between two line segments.
  *
- * @warning This function assumes that the intersection exists. If it doesn't, the behavior is undefined.
+ * @warning This function assumes that the intersection exists. If it doesn't, the behavior is
+ * undefined.
  * @return glm::vec2
  */
-// glm::vec2 findSegmentIntersection(const glm::vec2& one_s, const glm::vec2& one_e, const glm::vec2& two_s, const glm::vec2& two_e)
+// glm::vec2 findSegmentIntersection(const glm::vec2& one_s, const glm::vec2& one_e, const
+// glm::vec2& two_s, const glm::vec2& two_e)
 // {
 //     constexpr auto cross = [](const glm::vec2& one, const glm::vec2& two) -> float
 //     {
@@ -101,13 +108,29 @@ glm::vec2 findCollisionSat(glm::vec2& pos1, const glm::vec2& size1, const float&
 // Polygon "Diagonal" Collision Algorithm (not an official name)
 // source: https://youtu.be/7Ik2vowGcU0
 
-bool findCollision(const glm::vec2& pos1, const glm::vec2& size1, const float& rotation1, const glm::vec2& pos2, const glm::vec2& size2, const float& rotation2)
+bool findCollision(const glm::vec2& pos1,
+    const glm::vec2& size1,
+    const float& rotation1,
+    const glm::vec2& pos2,
+    const glm::vec2& size2,
+    const float& rotation2)
 {
-    constexpr auto doSegmentsIntersect = [](const glm::vec2& line1_s, const glm::vec2& line1_e, const glm::vec2& line2_s, const glm::vec2& line2_e) -> bool
-    {
-        // TODO: seems like this code does not cover some corner cases, possibly replace it with some more refined one
-        return (((line2_s.x - line1_s.x) * (line1_e.y - line1_s.y) - (line2_s.y - line1_s.y) * (line1_e.x - line1_s.x)) * ((line2_e.x - line1_s.x) * (line1_e.y - line1_s.y) - (line2_e.y - line1_s.y) * (line1_e.x - line1_s.x)) < 0)
-               && (((line1_s.x - line2_s.x) * (line2_e.y - line2_s.y) - (line1_s.y - line2_s.y) * (line2_e.x - line2_s.x)) * ((line1_e.x - line2_s.x) * (line2_e.y - line2_s.y) - (line1_e.y - line2_s.y) * (line2_e.x - line2_s.x)) < 0);
+    constexpr auto doSegmentsIntersect = [](const glm::vec2& line1_s,
+                                             const glm::vec2& line1_e,
+                                             const glm::vec2& line2_s,
+                                             const glm::vec2& line2_e) -> bool {
+        // TODO: seems like this code does not cover some corner cases, possibly replace it with
+        // some more refined one
+        return (((line2_s.x - line1_s.x) * (line1_e.y - line1_s.y)
+                    - (line2_s.y - line1_s.y) * (line1_e.x - line1_s.x))
+                       * ((line2_e.x - line1_s.x) * (line1_e.y - line1_s.y)
+                           - (line2_e.y - line1_s.y) * (line1_e.x - line1_s.x))
+                   < 0)
+               && (((line1_s.x - line2_s.x) * (line2_e.y - line2_s.y)
+                       - (line1_s.y - line2_s.y) * (line2_e.x - line2_s.x))
+                       * ((line1_e.x - line2_s.x) * (line2_e.y - line2_s.y)
+                           - (line1_e.y - line2_s.y) * (line2_e.x - line2_s.x))
+                   < 0);
     };
 
     // TODO: remove Polygons and simplify this function if possible
@@ -139,7 +162,10 @@ bool findCollision(const glm::vec2& pos1, const glm::vec2& size1, const float& r
 namespace AABB
 {
 
-bool isCollidingX(const glm::vec2& pos1, const glm::vec2& size1, const glm::vec2& pos2, const glm::vec2& size2)
+bool isCollidingX(const glm::vec2& pos1,
+    const glm::vec2& size1,
+    const glm::vec2& pos2,
+    const glm::vec2& size2)
 {
     const auto left1 = pos1.x - (size1.x / 2.f);
     const auto right1 = pos1.x + (size1.x / 2.f);
@@ -148,7 +174,10 @@ bool isCollidingX(const glm::vec2& pos1, const glm::vec2& size1, const glm::vec2
     return (left1 < right2) && (right1 > left2);
 }
 
-bool isCollidingY(const glm::vec2& pos1, const glm::vec2& size1, const glm::vec2& pos2, const glm::vec2& size2)
+bool isCollidingY(const glm::vec2& pos1,
+    const glm::vec2& size1,
+    const glm::vec2& pos2,
+    const glm::vec2& size2)
 {
     const auto bottom1 = pos1.y - (size1.y / 2.f);
     const auto top1 = pos1.y + (size1.y / 2.f);
@@ -157,12 +186,18 @@ bool isCollidingY(const glm::vec2& pos1, const glm::vec2& size1, const glm::vec2
     return (bottom1 < top2) && (top1 > bottom2);
 }
 
-bool isColliding(const glm::vec2& pos1, const glm::vec2& size1, const glm::vec2& pos2, const glm::vec2& size2)
+bool isColliding(const glm::vec2& pos1,
+    const glm::vec2& size1,
+    const glm::vec2& pos2,
+    const glm::vec2& size2)
 {
     return isCollidingX(pos1, size1, pos2, size2) && isCollidingY(pos1, size1, pos2, size2);
 }
 
-glm::vec2 findCollision(const glm::vec2& pos1, const glm::vec2& size1, const glm::vec2& pos2, const glm::vec2& size2)
+glm::vec2 findCollision(const glm::vec2& pos1,
+    const glm::vec2& size1,
+    const glm::vec2& pos2,
+    const glm::vec2& size2)
 {
     // find intersection area
     const float inter_left = glm::max(pos1.x - size1.x / 2.f, pos2.x - size2.x / 2.f);
