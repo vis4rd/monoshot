@@ -5,7 +5,6 @@
         "josetr.cmake-language-support-vscode",
         "llvm-vs-code-extensions.vscode-clangd",
         "ms-vscode.cmake-tools",
-        "ms-vscode.cpptools",
         "seatonjiang.gitmoji-vscode",
         "slevesque.shader",
         "xaver.clang-format"

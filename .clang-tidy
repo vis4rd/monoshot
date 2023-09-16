@@ -1,0 +1,11 @@
+Checks:
+  # enabled
+  clang-analyzer-*,
+  cppcoreguildelines-*,
+  google-*,
+  modernize-*,
+  performance-*,
+  # disabled
+  modernize-use-trailing-return-type
+WarningsAsErrors: true
+AnalyzeTemporaryDtors: true

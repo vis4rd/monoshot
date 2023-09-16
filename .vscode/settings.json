@@ -1,17 +1,7 @@
 {
-    "C_Cpp.autoAddFileAssociations": false,
-    "C_Cpp.clang_format_style": "file",
-    "C_Cpp.default.cStandard": "c17",
-    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
-    "C_Cpp.default.cppStandard": "c++20",
-    "C_Cpp.doxygen.generatedStyle": "/**",
-    "C_Cpp.errorSquiggles": "enabled",
-    "C_Cpp.formatting": "clangFormat",
-    "C_Cpp.inlayHints.autoDeclarationTypes.enabled": true,
-    "C_Cpp.inlayHints.parameterNames.enabled": true,
-    "C_Cpp.inlayHints.referenceOperator.enabled": true,
-    "C_Cpp.intelliSenseEngine": "default",
-    "C_Cpp.preferredPathSeparator": "Forward Slash",
+    "clang-format.language.c.enable": true,
+    "clang-format.language.cpp.enable": true,
+    "clang-format.style": "file",
     //
     "cmake.buildBeforeRun": false,
     "cmake.configureOnEdit": false,
@@ -35,7 +25,7 @@
     "git.suggestSmartCommit": false,
     //
     "[cpp]": {
-        "editor.defaultFormatter": "ms-vscode.cpptools",
+        "editor.defaultFormatter": "xaver.clang-format",
         "editor.formatOnSave": true,
         "files.insertFinalNewline": true,
     },
@@ -47,5 +37,5 @@
     },
     "[ini]": {
         "files.insertFinalNewline": true,
-    }
+    },
 }
