@@ -10,6 +10,8 @@
 #include <texture/Texture.hpp>
 #include <ui/Font.hpp>
 
+#include "../include/section/MainMenuSection.hpp"
+
 App::App(const std::string& window_title, uint32_t width, uint32_t height)
     : m_configLoader(mono::ConfigLoader::get())
     , m_input(InputManager::get())

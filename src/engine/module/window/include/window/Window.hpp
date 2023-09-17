@@ -5,13 +5,15 @@
 #include <imgui/backends/imgui_impl_opengl3.h>
 #include <imgui/imgui.h>
 
-#include "../gl/FrameBuffer.hpp"
-#include "../gl/VertexArray.hpp"
-#include "../shader/ShaderManager.hpp"
 #include "NativeWindow.hpp"
 #include "config/StaticConfiguration.hpp"
+#include "gl/FrameBuffer.hpp"
+#include "gl/VertexArray.hpp"
 #include "input/InputManager.hpp"
 #include "section/SectionManager.hpp"
+#include "shader/ShaderManager.hpp"
+#include "traits/Renderable.hpp"
+#include "traits/Updateable.hpp"
 
 namespace mono
 {
@@ -59,10 +61,9 @@ class Window final : public NativeWindow
     bool m_isMaximized = false;
     bool m_isMinimized = false;
     bool m_isVSyncEnabled = false;
-    SectionManager &m_sectionManager = SectionManager::get();
-    InputManager &m_inputManager = InputManager::get();
     VertexArray screenVA;
     FrameBuffer screenFB;
+    SectionManager &m_sectionManager = SectionManager::get();
 };
 
 bool Window::update(UpdateableTrait auto &&...updateables) noexcept

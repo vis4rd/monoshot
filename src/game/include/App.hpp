@@ -4,8 +4,7 @@
 #include <time/FramerateLimiter.hpp>
 #include <time/Timer.hpp>
 #include <ui/MainMenuStyle.hpp>
-
-#include "section/MainMenuSection.hpp"
+#include <window/Window.hpp>
 
 class App
 {

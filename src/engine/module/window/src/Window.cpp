@@ -1,4 +1,4 @@
-#include "../../include/window/Window.hpp"
+#include "../include/window/Window.hpp"
 
 #include "resource/ResourceManager.hpp"
 

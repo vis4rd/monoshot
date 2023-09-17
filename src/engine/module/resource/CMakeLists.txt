@@ -17,6 +17,7 @@ target_include_directories(mono_module_resource
 
 target_link_libraries(mono_module_resource
     PUBLIC glm::glm
+           mono::window
            mono::renderer
            mono::time
            mono::ui
