@@ -2,9 +2,6 @@
 
 #include <string>
 
-#include "traits/Renderable.hpp"
-#include "traits/Updateable.hpp"
-
 class Section
 {
     public:

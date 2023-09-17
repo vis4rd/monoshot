@@ -6,8 +6,6 @@
 #include <spdlog/spdlog.h>
 
 #include "Section.hpp"
-#include "traits/Renderable.hpp"
-#include "traits/Updateable.hpp"
 
 class SectionManager final
 {

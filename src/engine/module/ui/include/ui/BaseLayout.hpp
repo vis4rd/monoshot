@@ -3,7 +3,6 @@
 #include <imgui/imgui.h>
 
 #include "config/StaticConfiguration.hpp"
-#include "window/Window.hpp"
 
 namespace UI
 {
