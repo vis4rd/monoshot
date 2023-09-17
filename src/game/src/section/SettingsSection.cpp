@@ -46,7 +46,8 @@ void SettingsSection::render() noexcept
         std::string current_resolution = std::to_string(window_w) + "x" + std::to_string(window_h);
         ImGui::SetCursorScreenPos(
             {m_layout.menu_x + m_layout.button_w_s, m_layout.menu_y + m_layout.button_h_s});
-        if(Custom::ImGui::BeginCombo("Resolution",
+        if(Custom::ImGui::BeginCombo(
+               "Resolution",
                current_resolution.c_str(),
                {m_layout.button_w, m_layout.button_h}))
         {
@@ -73,7 +74,8 @@ void SettingsSection::render() noexcept
         std::string current_refresh_rate = std::to_string(window->getRefreshRate()) + "Hz";
         auto next_y = ImGui::GetCursorScreenPos().y;
         ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s, next_y});
-        if(Custom::ImGui::BeginCombo("Rate ",
+        if(Custom::ImGui::BeginCombo(
+               "Rate ",
                current_refresh_rate.c_str(),
                {m_layout.button_w, m_layout.button_h}))
         {
@@ -99,7 +101,8 @@ void SettingsSection::render() noexcept
         std::string current_window_mode = window->isFullscreen() ? "Fullscreen" : "Windowed";
         next_y = ImGui::GetCursorScreenPos().y;
         ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s, next_y});
-        if(Custom::ImGui::BeginCombo("Window Mode",
+        if(Custom::ImGui::BeginCombo(
+               "Window Mode",
                current_window_mode.c_str(),
                {m_layout.button_w, m_layout.button_h}))
         {
@@ -121,7 +124,8 @@ void SettingsSection::render() noexcept
             window->isVerticalSyncEnabled() ? "Enabled" : "Disabled";
         next_y = ImGui::GetCursorScreenPos().y;
         ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s, next_y});
-        if(Custom::ImGui::BeginCombo("Vertical Sync",
+        if(Custom::ImGui::BeginCombo(
+               "Vertical Sync",
                current_vertical_sync.c_str(),
                {m_layout.button_w, m_layout.button_h}))
         {

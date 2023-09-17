@@ -71,16 +71,18 @@ void NewGameSection::render() noexcept
             auto& sm = SectionManager::get();
             sm.emplaceSection<TutorialMapSection>();
         }
-        ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s,
-            m_layout.menu_y + m_layout.button_h_s * 2 + m_layout.button_h});
+        ImGui::SetCursorScreenPos(
+            {m_layout.menu_x + m_layout.button_w_s,
+             m_layout.menu_y + m_layout.button_h_s * 2 + m_layout.button_h});
         if(ImGui::Button("Forest", {m_layout.button_w, m_layout.button_h}))
         {
             spdlog::debug("Clicking 'Forest'");
             auto& sm = SectionManager::get();
             sm.emplaceSection<ForestMapSection>();
         }
-        ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s,
-            m_layout.menu_y + m_layout.button_h_s * 3 + m_layout.button_h * 2});
+        ImGui::SetCursorScreenPos(
+            {m_layout.menu_x + m_layout.button_w_s,
+             m_layout.menu_y + m_layout.button_h_s * 3 + m_layout.button_h * 2});
         if(ImGui::Button("Winter", {m_layout.button_w, m_layout.button_h}))
         {
             spdlog::debug("Clicking 'Winter'");
@@ -89,8 +91,9 @@ void NewGameSection::render() noexcept
         }
         if(s_show_debug_level)
         {
-            ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s,
-                m_layout.menu_y + m_layout.button_h_s * 4 + m_layout.button_h * 3});
+            ImGui::SetCursorScreenPos(
+                {m_layout.menu_x + m_layout.button_w_s,
+                 m_layout.menu_y + m_layout.button_h_s * 4 + m_layout.button_h * 3});
             if(ImGui::Button("Debug Level", {m_layout.button_w, m_layout.button_h}))
             {
                 spdlog::debug("Clicking 'Debug Level'");

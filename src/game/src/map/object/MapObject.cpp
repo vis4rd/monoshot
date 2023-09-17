@@ -2,7 +2,8 @@
 
 #include <resource/ResourceManager.hpp>
 
-MapObject::MapObject(const glm::vec2& position,
+MapObject::MapObject(
+    const glm::vec2& position,
     const glm::vec2& size,
     Texture::Texture texture,
     float rotation,
@@ -133,7 +134,8 @@ MapObject MapObject::createPredefined(ObjectID id, const glm::vec2& position, fl
             break;
         }
     }
-    auto retval = MapObject(position,
+    auto retval = MapObject(
+        position,
         size,
         std::move(texture),
         rotation,

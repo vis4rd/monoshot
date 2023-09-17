@@ -20,7 +20,8 @@ class Window final : public NativeWindow
 {
     public:
     Window();
-    Window(const std::string &title,
+    Window(
+        const std::string &title,
         std::uint32_t width,
         std::uint32_t height,
         bool fullscreen = true,
@@ -93,12 +94,14 @@ bool Window::update(UpdateableTrait auto &&...updateables) noexcept
     if(input.isPressedOnce(GLFW_KEY_F11))
     {
         spdlog::debug("on F11: window size = {}x{}", m_width, m_height);
-        spdlog::debug("on F11: framebuffer size = {}x{}",
+        spdlog::debug(
+            "on F11: framebuffer size = {}x{}",
             screenFB.getSize().x,
             screenFB.getSize().y);
         this->toggleFullscreen();
         spdlog::debug("after F11: window size = {}x{}", m_width, m_height);
-        spdlog::debug("after F11: framebuffer size = {}x{}",
+        spdlog::debug(
+            "after F11: framebuffer size = {}x{}",
             screenFB.getSize().x,
             screenFB.getSize().y);
     }
@@ -181,13 +184,16 @@ void Window::render(RenderableTrait auto &&...renderables) noexcept
                 }
 
                 ImGui::Text("Window size: (%d, %d)", m_width, m_height);
-                ImGui::Text("Framebuffer size: (%d, %d)",
+                ImGui::Text(
+                    "Framebuffer size: (%d, %d)",
                     screenFB.getSize().x,
                     screenFB.getSize().y);
-                ImGui::Text("Performance: [%.2fms] [%.0ffps]",
+                ImGui::Text(
+                    "Performance: [%.2fms] [%.0ffps]",
                     1000.0f / ImGui::GetIO().Framerate,
                     ImGui::GetIO().Framerate);
-                ImGui::Text("Mouse Position: Screen[%.2fx, %.2fy]",
+                ImGui::Text(
+                    "Mouse Position: Screen[%.2fx, %.2fy]",
                     ImGui::GetMousePos().x,
                     ImGui::GetMousePos().y);
             }

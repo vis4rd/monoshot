@@ -33,7 +33,8 @@ class Map final
     void removeObject(const glm::vec2& position);
 
     void setTile(const Tile& tile);
-    void setTile(const float& x,
+    void setTile(
+        const float& x,
         const float& y,
         const float& rotation,
         BlockID block_id,
@@ -52,7 +53,8 @@ class Map final
     bool isInEndArea(const glm::vec2& pos, const glm::vec2& size) const;
 
     void update() noexcept;
-    void render(const glm::mat4& projection,
+    void render(
+        const glm::mat4& projection,
         const glm::mat4& view,
         bool area = false,
         bool show_solid = false,

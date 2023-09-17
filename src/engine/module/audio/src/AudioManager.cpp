@@ -10,7 +10,8 @@ AudioManager& AudioManager::get()
     return instance;
 }
 
-bool AudioManager::addSound(const std::string& name,
+bool AudioManager::addSound(
+    const std::string& name,
     const std::filesystem::path& path,
     const float& volume)
 {
@@ -96,7 +97,8 @@ float AudioManager::getSoundVolume(const std::string& name) const
     return retval;
 }
 
-bool AudioManager::addMusic(const std::string& name,
+bool AudioManager::addMusic(
+    const std::string& name,
     const std::filesystem::path& path,
     const float& volume)
 {

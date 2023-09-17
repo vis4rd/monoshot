@@ -130,7 +130,8 @@ void FrameBuffer::initStencil()
 {
     spdlog::debug("Creating a stencil attachment");
     glCreateRenderbuffers(1, &m_stencilAttachment);
-    glBindRenderbuffer(GL_RENDERBUFFER,
+    glBindRenderbuffer(
+        GL_RENDERBUFFER,
         m_stencilAttachment);  // TODO: try not to call this when everything works
     glNamedRenderbufferStorage(m_stencilAttachment, GL_STENCIL_INDEX, m_width, m_height);
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
@@ -150,7 +151,8 @@ void FrameBuffer::bindAttachments()
 {
     spdlog::debug("Binding color and stencil attachments to the framebuffer");
     glNamedFramebufferTexture(m_id, GL_COLOR_ATTACHMENT0, m_colorAttachment, 0);
-    glNamedFramebufferRenderbuffer(m_id,
+    glNamedFramebufferRenderbuffer(
+        m_id,
         GL_STENCIL_ATTACHMENT,
         GL_RENDERBUFFER,
         m_stencilAttachment);

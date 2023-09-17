@@ -16,11 +16,13 @@ class Texture
 {
     public:
     Texture() = default;
-    Texture(const std::string_view& file_path,
+    Texture(
+        const std::string_view& file_path,
         const std::int32_t& width,
         const std::int32_t& height,
         const std::int32_t& channel_count = 4);
-    Texture(const std::byte* data,
+    Texture(
+        const std::byte* data,
         const std::int32_t& width,
         const std::int32_t& height,
         const std::int32_t& channel_count = 4);
@@ -40,11 +42,13 @@ class Texture
     const TextureData& getTextureData() const;
     const std::byte* const getData() const;
 
-    void load(const std::string_view& source_path,
+    void load(
+        const std::string_view& source_path,
         const std::int32_t& width,
         const std::int32_t& height,
         const std::int32_t& channel_count = 4);
-    void load(const std::byte* data,
+    void load(
+        const std::byte* data,
         const std::int32_t& width,
         const std::int32_t& height,
         const std::int32_t& channel_count = 4);

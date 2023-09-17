@@ -52,8 +52,9 @@ class cstring final
     {
         if((n < 0) or (n > N))
         {
-            throw std::out_of_range("cstring::at: i (which is " + std::to_string(n)
-                                    + ") >= N (which is " + std::to_string(N) + ")");
+            throw std::out_of_range(
+                "cstring::at: i (which is " + std::to_string(n) + ") >= N (which is "
+                + std::to_string(N) + ")");
         }
         return m_data.at(n);
     }

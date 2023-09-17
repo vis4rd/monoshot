@@ -91,7 +91,8 @@ void CreatorSection::update() noexcept
     }
     if(input.isPressedOnce(GLFW_KEY_R))
     {
-        s_randomized_rotation = std::fmod((std::floor(s_randomized_rotation / 45.f) + 1.f) * 45.f,
+        s_randomized_rotation = std::fmod(
+            (std::floor(s_randomized_rotation / 45.f) + 1.f) * 45.f,
             360.f);  // nudge rotation values to every 45 degrees
     }
     if(input.isHeld(GLFW_KEY_DELETE))
@@ -110,22 +111,25 @@ void CreatorSection::update() noexcept
     if(!ImGui::GetIO().WantCaptureMouse)
     {
         if(s_selected_map_item > ObjectID::FIRST_OBJECT
-            && s_selected_map_item < ObjectID::LAST_OBJECT)  // if the chosen object is a MapObject
+           && s_selected_map_item < ObjectID::LAST_OBJECT)  // if the chosen object is a MapObject
         {
             if(input.isPressedOnce(GLFW_MOUSE_BUTTON_LEFT))
             {
-                m_map.addObject(s_mouse_world_pos,
+                m_map.addObject(
+                    s_mouse_world_pos,
                     s_randomized_rotation,
                     static_cast<ObjectID>(s_selected_map_item));
                 s_randomized_rotation = util::random::getRandomNumber(0.f, 360.f);
             }
         }
-        else if(s_selected_map_item > BlockID::FIRST_BLOCK
-                && s_selected_map_item < BlockID::LAST_BLOCK)  // if its a Block
+        else if(
+            s_selected_map_item > BlockID::FIRST_BLOCK
+            && s_selected_map_item < BlockID::LAST_BLOCK)  // if its a Block
         {
             if(input.isHeld(GLFW_MOUSE_BUTTON_LEFT))
             {
-                m_map.setTile(s_mouse_world_pos.x,
+                m_map.setTile(
+                    s_mouse_world_pos.x,
                     s_mouse_world_pos.y,
                     0.f,
                     static_cast<BlockID>(s_selected_map_item),
@@ -143,11 +147,13 @@ void CreatorSection::update() noexcept
         {
             if(input.isPressedOnce(GLFW_MOUSE_BUTTON_LEFT))
             {
-                ecs::action::spawn_enemy(m_entities,
+                ecs::action::spawn_enemy(
+                    m_entities,
                     s_mouse_world_pos,
                     {1.f, 1.f},
                     s_randomized_rotation);
-                spdlog::debug("Map: Placing an enemy with coords ({}, {})",
+                spdlog::debug(
+                    "Map: Placing an enemy with coords ({}, {})",
                     s_mouse_world_pos.x,
                     s_mouse_world_pos.y);
             }
@@ -182,7 +188,8 @@ void CreatorSection::render() noexcept
     static bool draw_end_area = true;
 
     // map rendering
-    m_map.render(m_camera.getProjectionMatrix(),
+    m_map.render(
+        m_camera.getProjectionMatrix(),
         m_camera.getViewMatrix(),
         draw_area,
         draw_bbs,
@@ -192,13 +199,14 @@ void CreatorSection::render() noexcept
     if(s_selected_map_item > ObjectID::FIRST_OBJECT && s_selected_map_item < ObjectID::LAST_OBJECT)
     {
         // hovered object highlight
-        const auto map_object =
-            MapObject::createPredefined(static_cast<ObjectID>(s_selected_map_item),
-                s_mouse_world_pos,
-                s_randomized_rotation);
+        const auto map_object = MapObject::createPredefined(
+            static_cast<ObjectID>(s_selected_map_item),
+            s_mouse_world_pos,
+            s_randomized_rotation);
         if(map_object.getTexture())  // TODO: remove this branch when all textures are initialized
         {
-            m_renderer.drawQuad(map_object.getPosition(),
+            m_renderer.drawQuad(
+                map_object.getPosition(),
                 map_object.getSize(),
                 map_object.getRotation(),
                 map_object.getTexture(),
@@ -208,21 +216,24 @@ void CreatorSection::render() noexcept
     else if(s_selected_map_item > BlockID::FIRST_BLOCK && s_selected_map_item < BlockID::LAST_BLOCK)
     {
         // hovered tile highlight
-        m_renderer.drawQuad({std::round(s_mouse_world_pos.x), std::round(s_mouse_world_pos.y)},
+        m_renderer.drawQuad(
+            {std::round(s_mouse_world_pos.x), std::round(s_mouse_world_pos.y)},
             {1.f, 1.f},
             0.f,
             {0.9f, 0.9f, 1.f, 0.2f});
     }
     else if(s_selected_map_item == 9999)
     {
-        m_renderer.drawRect({s_mouse_world_pos.x, s_mouse_world_pos.y},
+        m_renderer.drawRect(
+            {s_mouse_world_pos.x, s_mouse_world_pos.y},
             s_end_area_size,
             0.f,
             {1.f, 1.f, 1.f, 1.f});
     }
     else if(s_selected_map_item == 10000)
     {
-        m_renderer.drawQuad({s_mouse_world_pos.x, s_mouse_world_pos.y},
+        m_renderer.drawQuad(
+            {s_mouse_world_pos.x, s_mouse_world_pos.y},
             {1.f, 1.f},
             s_randomized_rotation,
             ResourceManager::enemyTexture,
@@ -232,7 +243,8 @@ void CreatorSection::render() noexcept
     auto view = m_entities.view<const ecs::component::position, const ecs::component::rotation>();
     for(auto&& [enemy, pos, rot] : view.each())
     {
-        m_renderer.drawQuad(pos,
+        m_renderer.drawQuad(
+            pos,
             {1.f, 1.f},
             rot.data,
             ResourceManager::enemyTexture,
@@ -272,11 +284,13 @@ void CreatorSection::render() noexcept
         }
 
         ImGui::Separator();
-        ImGui::Text("Camera position: (%.2f, %.2f, %.2f)",
+        ImGui::Text(
+            "Camera position: (%.2f, %.2f, %.2f)",
             camera_pos.x,
             camera_pos.y,
             camera_pos.z);
-        ImGui::Text("Camera target: (%.2f, %.2f, %.2f)",
+        ImGui::Text(
+            "Camera target: (%.2f, %.2f, %.2f)",
             camera_target.x,
             camera_target.y,
             camera_target.z);
@@ -295,7 +309,8 @@ void CreatorSection::render() noexcept
 
         ImGui::Separator();
         static std::string preview = "Wall";
-        std::array<bool,
+        std::array<
+            bool,
             static_cast<std::size_t>(BlockID::BLOCK_COUNT)
                 + static_cast<std::size_t>(ObjectID::OBJECT_COUNT) + 1 + 1>
             checks = {0};
@@ -304,7 +319,8 @@ void CreatorSection::render() noexcept
             for(std::size_t block_id = BlockID::FIRST_BLOCK + 1; block_id < BlockID::LAST_BLOCK;
                 block_id++)
             {
-                if(ImGui::Selectable((blockToString(block_id) + std::string("##unique_id")).c_str(),
+                if(ImGui::Selectable(
+                       (blockToString(block_id) + std::string("##unique_id")).c_str(),
                        &(checks[block_id - BlockID::FIRST_BLOCK - 1])))
                 {
                     spdlog::debug("Selected Block '{}'", blockToString(block_id));
@@ -325,9 +341,11 @@ void CreatorSection::render() noexcept
                     preview = objectIdToString(object_id);
                 }
             }
-            if(ImGui::Selectable("EndArea##unique_id",
-                   &(checks[static_cast<std::size_t>(BlockID::BLOCK_COUNT)
-                            + static_cast<std::size_t>(ObjectID::OBJECT_COUNT)])))
+            if(ImGui::Selectable(
+                   "EndArea##unique_id",
+                   &(checks
+                         [static_cast<std::size_t>(BlockID::BLOCK_COUNT)
+                          + static_cast<std::size_t>(ObjectID::OBJECT_COUNT)])))
             {
                 spdlog::debug("Selected End Area");
                 s_selected_map_item = 9999;
@@ -348,7 +366,8 @@ void CreatorSection::render() noexcept
         if(ImGui::Button("Save to file"))
         {
             std::array<const char*, 1> patterns = {"*.msmap"};
-            const char* file_path = tinyfd_saveFileDialog("Choose save location...",
+            const char* file_path = tinyfd_saveFileDialog(
+                "Choose save location...",
                 "./",
                 patterns.size(),
                 patterns.data(),
@@ -362,7 +381,8 @@ void CreatorSection::render() noexcept
         if(ImGui::Button("Load from file"))
         {
             std::array<const char*, 2> patterns = {"*.msmap", "*.map"};
-            const char* file_path = tinyfd_openFileDialog("Load a map...",
+            const char* file_path = tinyfd_openFileDialog(
+                "Load a map...",
                 "./",
                 patterns.size(),
                 patterns.data(),

@@ -8,7 +8,8 @@ namespace util
 
 inline auto mat4str(const glm::mat4& mat)
 {
-    return fmt::format("{}, {}, {}, {}\n{}, {}, {}, {}\n{}, {}, {}, {}\n{}, {}, {}, {}",
+    return fmt::format(
+        "{}, {}, {}, {}\n{}, {}, {}, {}\n{}, {}, {}, {}\n{}, {}, {}, {}",
         mat[0][0],
         mat[1][0],
         mat[2][0],

@@ -174,21 +174,25 @@ void Renderer::endBatch(const glm::mat4& projection, const glm::mat4& view)
         glDrawElements(GL_TRIANGLES, m_stats.indexCount, GL_UNSIGNED_INT, nullptr);
 
         // spdlog::trace("Renderer: uploading uniforms");  // commented for performance reasons
-        quad_shader.uploadArrayInt("uTextures",
+        quad_shader.uploadArrayInt(
+            "uTextures",
             m_data.textureSlotsTakenCount,
             m_data.textureSamplers.data(),
             2);
         quad_shader.uploadMat4("uProjection", projection, 0);
         quad_shader.uploadMat4("uView", view, 1);
-        quad_shader.uploadArrayUInt("uFrameCount",
+        quad_shader.uploadArrayUInt(
+            "uFrameCount",
             m_data.textureSlotsTakenCount,
             m_data.textureFrameCounts.data(),
             34);
-        quad_shader.uploadArrayUInt("uFrameRowLength",
+        quad_shader.uploadArrayUInt(
+            "uFrameRowLength",
             m_data.textureSlotsTakenCount,
             m_data.textureFrameRowLengths.data(),
             66);
-        quad_shader.uploadArrayUInt("uFrameCurrentIndex",
+        quad_shader.uploadArrayUInt(
+            "uFrameCurrentIndex",
             m_data.textureSlotsTakenCount,
             m_data.textureFrameCurrentIndex.data(),
             98);
@@ -232,7 +236,8 @@ void Renderer::endBatch(const glm::mat4& projection, const glm::mat4& view)
     // spdlog::trace("Renderer: finished batch");  // commented for performance reasons
 }
 
-void Renderer::drawQuad(const glm::vec2& position,
+void Renderer::drawQuad(
+    const glm::vec2& position,
     const glm::vec2& size,
     const float& rotation,
     const glm::vec4& color)
@@ -253,7 +258,8 @@ void Renderer::drawQuad(const glm::vec2& position,
 //     return -1.f;
 // }
 
-void Renderer::drawQuad(const glm::vec2& position,
+void Renderer::drawQuad(
+    const glm::vec2& position,
     const glm::vec2& size,
     const float& rotation,
     const Texture::Texture& texture,
@@ -263,7 +269,7 @@ void Renderer::drawQuad(const glm::vec2& position,
     // {}", position.x, position.y, size.x, size.y, rotation);
 
     if(m_stats.indexCount >= m_data.maxIndexCount
-        || m_data.textureSlotsTakenCount >= m_data.maxTextures)
+       || m_data.textureSlotsTakenCount >= m_data.maxTextures)
     {
         endBatch(m_data.last_projection_matrix, m_data.last_view_matrix);
         beginBatch();
@@ -275,7 +281,8 @@ void Renderer::drawQuad(const glm::vec2& position,
                              * glm::scale(identity, glm::vec3(size, 1.f));
     // spdlog::trace("Renderer: model_matrix:\n{}", util::mat4str(model_matrix));
 
-    auto find_slot = [&m_data = m_data](const std::vector<Texture::Texture>& slots,
+    auto find_slot = [&m_data = m_data](
+                         const std::vector<Texture::Texture>& slots,
                          const std::uint32_t& texture_id) -> float {
         for(std::size_t slot = 0; slot < m_data.textureSlots.size(); slot++)
         {
@@ -323,7 +330,8 @@ void Renderer::drawLine(const glm::vec2& pos1, const glm::vec2& pos2, const glm:
     Renderer::drawLine(pos1, pos2, color, color);
 }
 
-void Renderer::drawLine(const glm::vec2& pos1,
+void Renderer::drawLine(
+    const glm::vec2& pos1,
     const glm::vec2& pos2,
     const glm::vec4& color1,
     const glm::vec4& color2)
@@ -339,7 +347,8 @@ void Renderer::drawLine(const glm::vec2& pos1,
     m_stats.lineCount++;
 }
 
-void Renderer::drawRect(const glm::vec2& ul,
+void Renderer::drawRect(
+    const glm::vec2& ul,
     const glm::vec2& br,
     const glm::vec4& color)  // upper-left + bottom-right
 {
@@ -348,7 +357,8 @@ void Renderer::drawRect(const glm::vec2& ul,
     Renderer::drawRect(ul, ur, br, bl, color);
 }
 
-void Renderer::drawRect(const glm::vec2& ul,
+void Renderer::drawRect(
+    const glm::vec2& ul,
     const glm::vec2& ur,
     const glm::vec2& br,
     const glm::vec2& bl,
@@ -360,7 +370,8 @@ void Renderer::drawRect(const glm::vec2& ul,
     Renderer::drawLine(ul, bl, color);
 }
 
-void Renderer::drawRect(const glm::vec2& center,
+void Renderer::drawRect(
+    const glm::vec2& center,
     const glm::vec2& size,
     const float& rotation,
     const glm::vec4& color)  // center and size

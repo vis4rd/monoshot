@@ -103,7 +103,8 @@ DebugSection::DebugSection()
     // ecs::action::spawn_enemy(m_enemyRegistry, {4.f, 0.f});
 
     // sounds and music
-    const auto setupSound = [&buffers = m_soundBuffers, &sounds = m_sounds](const std::string& name,
+    const auto setupSound = [&buffers = m_soundBuffers, &sounds = m_sounds](
+                                const std::string& name,
                                 const std::string& filename) -> void {
         sf::SoundBuffer buffer{};
         if(bool success = buffer.loadFromFile(filename); not success)
@@ -123,8 +124,8 @@ DebugSection::DebugSection()
     setupSound("handgun_click", "../res/audio/handgun_click.mp3");
 
     if(bool success =
-            m_music.openFromFile("../res/audio/music/Ancient Jungle Ruins - HeatleyBros.mp3");
-        not success)
+           m_music.openFromFile("../res/audio/music/Ancient Jungle Ruins - HeatleyBros.mp3");
+       not success)
     {
         spdlog::debug(
             "Could not load music from file 'res/audio/music/Ancient Jungle Ruins - HeatleyBros.mp3'");
@@ -290,27 +291,26 @@ void DebugSection::render() noexcept
 
     m_map.drawObjects({pos.x, pos.y}, s_draw_bbs);
 
-    const auto bullet_view = m_bulletRegistry.view<const ecs::component::position,
+    const auto bullet_view = m_bulletRegistry.view<
+        const ecs::component::position,
         const ecs::component::size,
         const ecs::component::rotation>(entt::exclude<ecs::component::destroyed>);
     bullet_view.each(
         [&theme_color,
-            &m_renderer = m_renderer](const auto& b_pos, const auto& b_size, const auto& b_rot) {
+         &m_renderer = m_renderer](const auto& b_pos, const auto& b_size, const auto& b_rot) {
             m_renderer.drawQuad({b_pos.x, b_pos.y}, b_size, b_rot, theme_color);
         });
 
     const auto& enemy_texture = ResourceManager::enemyTexture;
-    const auto enemy_view = m_enemyRegistry.view<const ecs::component::position,
+    const auto enemy_view = m_enemyRegistry.view<
+        const ecs::component::position,
         const ecs::component::size,
         const ecs::component::rotation>();
     enemy_view.each(
         [&enemy_texture,
-            &m_renderer = m_renderer](const auto& e_pos, const auto& e_size, const auto& e_rot) {
-            m_renderer.drawQuad({e_pos.x, e_pos.y},
-                e_size,
-                e_rot,
-                enemy_texture,
-                {1.f, 0.4f, 0.4f, 1.f});
+         &m_renderer = m_renderer](const auto& e_pos, const auto& e_size, const auto& e_rot) {
+            m_renderer
+                .drawQuad({e_pos.x, e_pos.y}, e_size, e_rot, enemy_texture, {1.f, 0.4f, 0.4f, 1.f});
         });
 
     m_renderer.endBatch(m_camera.getProjectionMatrix(), m_camera.getViewMatrix());
@@ -332,7 +332,8 @@ void DebugSection::render() noexcept
             current_ammo = weapon.getAmmoCurrent();
             total_ammo = weapon.getAmmoTotal();
         }
-        UI::drawOverlay(m_layout,
+        UI::drawOverlay(
+            m_layout,
             m_hero.health,
             m_hero.maxHealth,
             current_ammo,
@@ -351,7 +352,8 @@ void DebugSection::render() noexcept
         const auto& font = res::uiTitleFont;
         auto font_guard = font->use();
         const auto text_pos = res::window->getSize() / 2;
-        ImGui::SetNextWindowPos({static_cast<float>(text_pos.x), static_cast<float>(text_pos.y)},
+        ImGui::SetNextWindowPos(
+            {static_cast<float>(text_pos.x), static_cast<float>(text_pos.y)},
             ImGuiCond_Always,
             {0.5f, 0.5f});
         ImGui::SetNextWindowSize(
@@ -477,17 +479,20 @@ void DebugSection::showDebugUI()
             const auto& camera_pos = m_camera.getPosition();
             m_camera.setPosition({camera_pos.x, camera_pos.y, zoom});
         }
-        ImGui::Text("Performance: [%.2fms] [%.0ffps]",
+        ImGui::Text(
+            "Performance: [%.2fms] [%.0ffps]",
             1000.0f / ImGui::GetIO().Framerate,
             ImGui::GetIO().Framerate);
-        ImGui::Text("Mouse Position: Screen[%.2fx, %.2fy]",
+        ImGui::Text(
+            "Mouse Position: Screen[%.2fx, %.2fy]",
             ImGui::GetMousePos().x,
             ImGui::GetMousePos().y);
         const glm::vec2 mouse_screen_pos = ResourceManager::window->getMousePosition();
         const auto mouse_world_pos = this->mouseScreenPosToWorldPos(mouse_screen_pos, m_camera);
         ImGui::Text("mouse screen position: (%f, %f)", mouse_screen_pos.x, mouse_screen_pos.y);
         ImGui::Text("mouse world position: (%f, %f)", mouse_world_pos.x, mouse_world_pos.y);
-        ImGui::Text("hero: pos(%.2f, %.2f), vel(%.2f), acc(%.2f), rot(%.2f)",
+        ImGui::Text(
+            "hero: pos(%.2f, %.2f), vel(%.2f), acc(%.2f), rot(%.2f)",
             pos.x,
             pos.y,
             vel,
@@ -501,16 +506,19 @@ void DebugSection::showDebugUI()
             if(m_hero.holdsWeapon())
             {
                 const auto& weapon = m_hero.getCurrentItem<Weapon>();
-                ImGui::Text("ammo: %u/%u/%u",
+                ImGui::Text(
+                    "ammo: %u/%u/%u",
                     weapon.getAmmoCurrent(),
                     weapon.getAmmoMagazineMax(),
                     weapon.getAmmoTotal());
             }
         }
         ImGui::Separator();
-        ImGui::Text("Map elements count: %ld",
+        ImGui::Text(
+            "Map elements count: %ld",
             m_mapElementsRegistry.storage<ecs::component::position>().size());
-        ImGui::Text("Bullet count: %ld",
+        ImGui::Text(
+            "Bullet count: %ld",
             m_bulletRegistry.storage<ecs::component::position>().size());
 
         static std::string preview = "Forest Theme";
@@ -544,7 +552,8 @@ void DebugSection::showDebugUI()
         float* cc = reinterpret_cast<float*>(&clear_color);
         if(ImGui::ColorEdit3("clear color", cc))
         {
-            glClearColor(clear_color.r * clear_color.a,
+            glClearColor(
+                clear_color.r * clear_color.a,
                 clear_color.g * clear_color.a,
                 clear_color.b * clear_color.a,
                 clear_color.a);

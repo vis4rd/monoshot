@@ -25,7 +25,8 @@ Polygon::Polygon(const glm::vec2& center, const glm::vec2& size, const float& ro
     this->points[3] = glm::vec2(model * glm::vec4{-0.5f, 0.5f, 0.f, 1.f});
 }
 
-glm::vec2 findCollisionSat(glm::vec2& pos1,
+glm::vec2 findCollisionSat(
+    glm::vec2& pos1,
     const glm::vec2& size1,
     const float& rotation1,
     glm::vec2& pos2,
@@ -41,7 +42,8 @@ glm::vec2 findCollisionSat(glm::vec2& pos1,
         for(int a = 0; a < poly1.points.size(); a++)
         {
             int b = (a + 1) % poly1.points.size();
-            glm::vec2 axis_proj = glm::normalize(glm::vec2{-(poly1.points[b].y - poly1.points[a].y),
+            glm::vec2 axis_proj = glm::normalize(glm::vec2{
+                -(poly1.points[b].y - poly1.points[a].y),
                 poly1.points[b].x - poly1.points[a].x});
 
             float min_r1 = inf;
@@ -108,7 +110,8 @@ glm::vec2 findCollisionSat(glm::vec2& pos1,
 // Polygon "Diagonal" Collision Algorithm (not an official name)
 // source: https://youtu.be/7Ik2vowGcU0
 
-bool findCollision(const glm::vec2& pos1,
+bool findCollision(
+    const glm::vec2& pos1,
     const glm::vec2& size1,
     const float& rotation1,
     const glm::vec2& pos2,
@@ -116,20 +119,20 @@ bool findCollision(const glm::vec2& pos1,
     const float& rotation2)
 {
     constexpr auto doSegmentsIntersect = [](const glm::vec2& line1_s,
-                                             const glm::vec2& line1_e,
-                                             const glm::vec2& line2_s,
-                                             const glm::vec2& line2_e) -> bool {
+                                            const glm::vec2& line1_e,
+                                            const glm::vec2& line2_s,
+                                            const glm::vec2& line2_e) -> bool {
         // TODO: seems like this code does not cover some corner cases, possibly replace it with
         // some more refined one
         return (((line2_s.x - line1_s.x) * (line1_e.y - line1_s.y)
-                    - (line2_s.y - line1_s.y) * (line1_e.x - line1_s.x))
-                       * ((line2_e.x - line1_s.x) * (line1_e.y - line1_s.y)
-                           - (line2_e.y - line1_s.y) * (line1_e.x - line1_s.x))
-                   < 0)
+                 - (line2_s.y - line1_s.y) * (line1_e.x - line1_s.x))
+                    * ((line2_e.x - line1_s.x) * (line1_e.y - line1_s.y)
+                       - (line2_e.y - line1_s.y) * (line1_e.x - line1_s.x))
+                < 0)
                && (((line1_s.x - line2_s.x) * (line2_e.y - line2_s.y)
-                       - (line1_s.y - line2_s.y) * (line2_e.x - line2_s.x))
+                    - (line1_s.y - line2_s.y) * (line2_e.x - line2_s.x))
                        * ((line1_e.x - line2_s.x) * (line2_e.y - line2_s.y)
-                           - (line1_e.y - line2_s.y) * (line2_e.x - line2_s.x))
+                          - (line1_e.y - line2_s.y) * (line2_e.x - line2_s.x))
                    < 0);
     };
 
@@ -162,7 +165,8 @@ bool findCollision(const glm::vec2& pos1,
 namespace AABB
 {
 
-bool isCollidingX(const glm::vec2& pos1,
+bool isCollidingX(
+    const glm::vec2& pos1,
     const glm::vec2& size1,
     const glm::vec2& pos2,
     const glm::vec2& size2)
@@ -174,7 +178,8 @@ bool isCollidingX(const glm::vec2& pos1,
     return (left1 < right2) && (right1 > left2);
 }
 
-bool isCollidingY(const glm::vec2& pos1,
+bool isCollidingY(
+    const glm::vec2& pos1,
     const glm::vec2& size1,
     const glm::vec2& pos2,
     const glm::vec2& size2)
@@ -186,7 +191,8 @@ bool isCollidingY(const glm::vec2& pos1,
     return (bottom1 < top2) && (top1 > bottom2);
 }
 
-bool isColliding(const glm::vec2& pos1,
+bool isColliding(
+    const glm::vec2& pos1,
     const glm::vec2& size1,
     const glm::vec2& pos2,
     const glm::vec2& size2)
@@ -194,7 +200,8 @@ bool isColliding(const glm::vec2& pos1,
     return isCollidingX(pos1, size1, pos2, size2) && isCollidingY(pos1, size1, pos2, size2);
 }
 
-glm::vec2 findCollision(const glm::vec2& pos1,
+glm::vec2 findCollision(
+    const glm::vec2& pos1,
     const glm::vec2& size1,
     const glm::vec2& pos2,
     const glm::vec2& size2)

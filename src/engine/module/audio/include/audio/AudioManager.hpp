@@ -17,7 +17,8 @@ class AudioManager final
     AudioManager& operator=(AudioManager&&) = delete;
     static AudioManager& get();
 
-    bool addSound(const std::string& name,
+    bool addSound(
+        const std::string& name,
         const std::filesystem::path& path,
         const float& volume = 1.f);
     void playSound(const std::string& name);
@@ -25,7 +26,8 @@ class AudioManager final
     const float& getSoundUserVolume(const std::string& name) const;
     float getSoundVolume(const std::string& name) const;
 
-    bool addMusic(const std::string& name,
+    bool addMusic(
+        const std::string& name,
         const std::filesystem::path& path,
         const float& volume = 1.f);
     void playMusic(const std::string& name);

@@ -9,7 +9,8 @@ Window::Window()
     : Window("MONOSHOT", 1280, 720, false, true)
 { }
 
-Window::Window(const std::string &title,
+Window::Window(
+    const std::string &title,
     std::uint32_t width,
     std::uint32_t height,
     bool fullscreen,
@@ -44,7 +45,8 @@ Window::Window(const std::string &title,
     ShaderManager::addShaderProgram("../res/shaders", "screen");
 
     // update internal size tracking for UI and framebuffer size when user resizes the window
-    glfwSetWindowSizeCallback(m_window,
+    glfwSetWindowSizeCallback(
+        m_window,
         [](GLFWwindow *window, int new_width, int new_height) -> void {
             spdlog::debug("New window size = {}x{} in screen coordinates", new_width, new_height);
             auto &_this = ResourceManager::window;
@@ -166,7 +168,8 @@ void Window::setFullscreen(bool fullscreen)
     }
     else
     {
-        glfwSetWindowMonitor(m_window,
+        glfwSetWindowMonitor(
+            m_window,
             nullptr,
             (lr.x - sr.x) / 2.f,
             (lr.y - sr.y) / 2.f,
@@ -234,7 +237,8 @@ void Window::setRefreshRate(std::uint32_t hz)
     if(this->isFullscreen())
     {
         const auto monitor = NativeWindow::getCurrentMonitor();
-        glfwSetWindowMonitor(m_window,
+        glfwSetWindowMonitor(
+            m_window,
             monitor,
             GLFW_DONT_CARE,
             GLFW_DONT_CARE,

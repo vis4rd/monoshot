@@ -10,7 +10,8 @@
 class MapObject
 {
     public:
-    MapObject(const glm::vec2& position,
+    MapObject(
+        const glm::vec2& position,
         const glm::vec2& size,
         Texture::Texture texture,
         float rotation = 0.f,

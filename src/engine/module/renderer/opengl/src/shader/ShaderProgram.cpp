@@ -53,7 +53,8 @@ void ShaderProgram::use() const
     glUseProgram(m_id);
 }
 
-void ShaderProgram::uploadVec2(const std::string& varName,
+void ShaderProgram::uploadVec2(
+    const std::string& varName,
     const glm::vec2& var,
     const std::int32_t& location)
 {
@@ -68,7 +69,8 @@ void ShaderProgram::uploadVec2(const std::string& varName,
     glUniform2f(m_varLocations[varName], var.x, var.y);
 }
 
-void ShaderProgram::uploadVec3(const std::string& varName,
+void ShaderProgram::uploadVec3(
+    const std::string& varName,
     const glm::vec3& var,
     const std::int32_t& location)
 {
@@ -83,7 +85,8 @@ void ShaderProgram::uploadVec3(const std::string& varName,
     glUniform3f(m_varLocations[varName], var.x, var.y, var.z);
 }
 
-void ShaderProgram::uploadVec4(const std::string& varName,
+void ShaderProgram::uploadVec4(
+    const std::string& varName,
     const glm::vec4& var,
     const std::int32_t& location)
 {
@@ -98,7 +101,8 @@ void ShaderProgram::uploadVec4(const std::string& varName,
     glUniform4f(m_varLocations[varName], var.x, var.y, var.z, var.w);
 }
 
-void ShaderProgram::uploadIVec2(const std::string& varName,
+void ShaderProgram::uploadIVec2(
+    const std::string& varName,
     const glm::ivec2& var,
     const std::int32_t& location)
 {
@@ -113,7 +117,8 @@ void ShaderProgram::uploadIVec2(const std::string& varName,
     glUniform2i(m_varLocations[varName], var.x, var.y);
 }
 
-void ShaderProgram::uploadIVec3(const std::string& varName,
+void ShaderProgram::uploadIVec3(
+    const std::string& varName,
     const glm::ivec3& var,
     const std::int32_t& location)
 {
@@ -128,7 +133,8 @@ void ShaderProgram::uploadIVec3(const std::string& varName,
     glUniform3i(m_varLocations[varName], var.x, var.y, var.z);
 }
 
-void ShaderProgram::uploadIVec4(const std::string& varName,
+void ShaderProgram::uploadIVec4(
+    const std::string& varName,
     const glm::ivec4& var,
     const std::int32_t& location)
 {
@@ -143,7 +149,8 @@ void ShaderProgram::uploadIVec4(const std::string& varName,
     glUniform4i(m_varLocations[varName], var.x, var.y, var.z, var.w);
 }
 
-void ShaderProgram::uploadFloat(const std::string& varName,
+void ShaderProgram::uploadFloat(
+    const std::string& varName,
     const float& var,
     const std::int32_t& location)
 {
@@ -158,7 +165,8 @@ void ShaderProgram::uploadFloat(const std::string& varName,
     glUniform1f(m_varLocations[varName], var);
 }
 
-void ShaderProgram::uploadInt(const std::string& varName,
+void ShaderProgram::uploadInt(
+    const std::string& varName,
     const int& var,
     const std::int32_t& location)
 {
@@ -173,7 +181,8 @@ void ShaderProgram::uploadInt(const std::string& varName,
     glUniform1i(m_varLocations[varName], var);
 }
 
-void ShaderProgram::uploadUInt(const std::string& varName,
+void ShaderProgram::uploadUInt(
+    const std::string& varName,
     const std::uint32_t& var,
     const std::int32_t& location)
 {
@@ -188,7 +197,8 @@ void ShaderProgram::uploadUInt(const std::string& varName,
     glUniform1ui(m_varLocations[varName], var);
 }
 
-void ShaderProgram::uploadBool(const std::string& varName,
+void ShaderProgram::uploadBool(
+    const std::string& varName,
     const bool& var,
     const std::int32_t& location)
 {
@@ -203,7 +213,8 @@ void ShaderProgram::uploadBool(const std::string& varName,
     glUniform1i(m_varLocations[varName], var);
 }
 
-void ShaderProgram::uploadMat3(const std::string& varName,
+void ShaderProgram::uploadMat3(
+    const std::string& varName,
     const glm::mat3& var,
     const std::int32_t& location)
 {
@@ -218,7 +229,8 @@ void ShaderProgram::uploadMat3(const std::string& varName,
     glUniformMatrix3fv(m_varLocations[varName], 1, GL_FALSE, glm::value_ptr(var));
 }
 
-void ShaderProgram::uploadMat4(const std::string& varName,
+void ShaderProgram::uploadMat4(
+    const std::string& varName,
     const glm::mat4& var,
     const std::int32_t& location)
 {
@@ -233,7 +245,8 @@ void ShaderProgram::uploadMat4(const std::string& varName,
     glUniformMatrix4fv(m_varLocations[varName], 1, GL_FALSE, glm::value_ptr(var));
 }
 
-void ShaderProgram::uploadArrayInt(const std::string& varName,
+void ShaderProgram::uploadArrayInt(
+    const std::string& varName,
     const std::size_t& size,
     const std::int32_t* array,
     const std::int32_t& location)
@@ -249,7 +262,8 @@ void ShaderProgram::uploadArrayInt(const std::string& varName,
     glUniform1iv(m_varLocations[varName], size, array);
 }
 
-void ShaderProgram::uploadArrayUInt(const std::string& varName,
+void ShaderProgram::uploadArrayUInt(
+    const std::string& varName,
     const std::size_t& size,
     const std::uint32_t* array,
     const std::int32_t& location)

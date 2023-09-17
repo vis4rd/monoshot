@@ -103,7 +103,7 @@ AlwaysBreakTemplateDeclarations: 'Yes'
 
 
 ########## Alignment
-AlignAfterOpenBracket: DontAlign
+AlignAfterOpenBracket: AlwaysBreak
 AlignArrayOfStructures: Left
 AlignConsecutiveMacros: true
 AlignConsecutiveAssignments: false

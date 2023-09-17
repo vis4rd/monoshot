@@ -44,7 +44,8 @@ const std::size_t& Map::getHeight() const
 
 void Map::addObject(const glm::vec2& position, const float& rotation, ObjectID object_id)
 {
-    spdlog::debug("Placed MapObject: OID = {}, pos = ({}, {}), rot = {}",
+    spdlog::debug(
+        "Placed MapObject: OID = {}, pos = ({}, {}), rot = {}",
         objectIdToString(object_id),
         position.x,
         position.y,
@@ -57,7 +58,8 @@ void Map::removeObject(const glm::vec2& position)
     std::size_t dynamic_size = m_objects.size();
     for(std::size_t i = 0; i < dynamic_size; i++)
     {
-        const bool col = AABB::isColliding(position,
+        const bool col = AABB::isColliding(
+            position,
             {0.01f, 0.01f},
             m_objects[i].getPosition(),
             m_objects[i].getSize());
@@ -72,7 +74,8 @@ void Map::removeObject(const glm::vec2& position)
 
 void Map::setTile(const Tile& tile)
 {
-    spdlog::debug("Map: Placing a tile with coords ({}, {}), rotation {}, block_id {}",
+    spdlog::debug(
+        "Map: Placing a tile with coords ({}, {}), rotation {}, block_id {}",
         tile.x,
         tile.y,
         tile.rotation,
@@ -90,7 +93,8 @@ void Map::setTile(const Tile& tile)
     }
 }
 
-void Map::setTile(const float& x,
+void Map::setTile(
+    const float& x,
     const float& y,
     const float& rotation,
     BlockID block_id,
@@ -139,7 +143,8 @@ void Map::addTilesToRegistry(entt::registry& registry) const
         pos.y = tile.y;
         rot.data = tile.rotation;
         size = {1.f, 1.f};
-        spdlog::debug("Filling ECS registry with tile pos = ({}, {}), rot = {}",
+        spdlog::debug(
+            "Filling ECS registry with tile pos = ({}, {}), rot = {}",
             pos.x,
             pos.y,
             rot.data);
@@ -193,7 +198,8 @@ void Map::loadFromFile(const std::string& filename, entt::registry& enemy_regist
         std::stringstream line_buffer(line);
         line_buffer >> tile_x >> tile_y >> tile_rotation >> tile_block >> tile_solid;
         this->setTile(tile_x, tile_y, tile_rotation, static_cast<BlockID>(tile_block), tile_solid);
-        spdlog::debug("Loading Tile: pos = ({}, {}), rot = {}, solid = {}, ID = '{}'",
+        spdlog::debug(
+            "Loading Tile: pos = ({}, {}), rot = {}, solid = {}, ID = '{}'",
             tile_x,
             tile_y,
             tile_rotation,
@@ -219,12 +225,14 @@ void Map::loadFromFile(const std::string& filename, entt::registry& enemy_regist
             >> object_rotation >> object_solid >> object_id;
         if(object_id == 9999)
         {
-            m_endArea = std::make_unique<OBB::Polygon>(glm::vec2(object_pos_x, object_pos_y),
+            m_endArea = std::make_unique<OBB::Polygon>(
+                glm::vec2(object_pos_x, object_pos_y),
                 glm::vec2(object_size_x, object_size_y),
                 object_rotation);
             continue;
         }
-        this->addObject({object_pos_x, object_pos_y},
+        this->addObject(
+            {object_pos_x, object_pos_y},
             object_rotation,
             static_cast<ObjectID>(object_id));
         spdlog::debug(
@@ -245,7 +253,8 @@ void Map::loadFromFile(const std::string& filename, entt::registry& enemy_regist
     {
         std::stringstream line_buffer(line);
         line_buffer >> enemy_pos_x >> enemy_pos_y >> enemy_rotation;
-        ecs::action::spawn_enemy(enemy_registry,
+        ecs::action::spawn_enemy(
+            enemy_registry,
             {enemy_pos_x, enemy_pos_y},
             {1.f, 1.f},
             enemy_rotation);
@@ -273,7 +282,8 @@ void Map::saveToFile(const std::string& filename, const entt::registry& enemy_re
     {
         file_buffer << tile.x << ' ' << tile.y << ' ' << tile.rotation << ' ' << tile.block_id
                     << ' ' << tile.solid << '\n';
-        spdlog::debug("Saving Tile: pos = ({}, {}), rot = {}, solid = {}, ID = '{}'",
+        spdlog::debug(
+            "Saving Tile: pos = ({}, {}), rot = {}, solid = {}, ID = '{}'",
             tile.x,
             tile.y,
             tile.rotation,
@@ -307,7 +317,8 @@ void Map::saveToFile(const std::string& filename, const entt::registry& enemy_re
         file_buffer << m_endArea->position.x << ' ' << m_endArea->position.y << ' '
                     << m_endArea->size.x << ' ' << m_endArea->size.y << ' ' << 0.f << ' ' << 0
                     << ' ' << 9999 << '\n';
-        spdlog::debug("Saving EndArea: pos = ({}, {}), size = ({}, {})",
+        spdlog::debug(
+            "Saving EndArea: pos = ({}, {}), size = ({}, {})",
             m_endArea->position.x,
             m_endArea->position.y,
             m_endArea->size.x,
@@ -367,7 +378,8 @@ bool Map::isInEndArea(const glm::vec2& pos, const glm::vec2& size) const
 
 void Map::update() noexcept { }
 
-void Map::render(const glm::mat4& projection,
+void Map::render(
+    const glm::mat4& projection,
     const glm::mat4& view,
     bool area,
     bool show_solid,
@@ -396,7 +408,8 @@ void Map::drawTiles(bool area, bool show_solid)
     spdlog::trace("Drawing Map tiles...");
     if(area)
     {
-        m_renderer.drawQuad({m_centerX, m_centerY},
+        m_renderer.drawQuad(
+            {m_centerX, m_centerY},
             {m_width, m_height},
             0.f,
             {0.3f, 0.3f, 0.3f, 1.f});  // background area
@@ -408,7 +421,8 @@ void Map::drawTiles(bool area, bool show_solid)
         {
             if(wall_texture != nullptr)
             {
-                m_renderer.drawQuad({tile.x, tile.y},
+                m_renderer.drawQuad(
+                    {tile.x, tile.y},
                     {1.f, 1.f},
                     tile.rotation,
                     wall_texture,
@@ -434,7 +448,8 @@ void Map::drawObjects(const glm::vec2& hero_pos, bool show_solid)
         // spdlog::trace("OID = {}, collision_color = ({}, {}, {}, {})",
         // objectIdToString(object.id), collision_color.x, collision_color.y, collision_color.z,
         // collision_color.w);
-        m_renderer.drawQuad(object.getPosition(),
+        m_renderer.drawQuad(
+            object.getPosition(),
             object.getSize(),
             object.getRotation(),
             object.getTexture(),
@@ -461,7 +476,8 @@ void Map::calculateNewSize(const float& tile_x, const float& tile_y)
     if(abs_tile_center_x > center_x)
     {
         m_width = abs_tile_center_x * 2 + 1;
-        spdlog::trace("Map: tile.x > center_x ({} > {}): new_width = {}",
+        spdlog::trace(
+            "Map: tile.x > center_x ({} > {}): new_width = {}",
             abs_tile_center_x,
             center_x,
             m_width);
@@ -470,7 +486,8 @@ void Map::calculateNewSize(const float& tile_x, const float& tile_y)
     if(abs_tile_center_y > center_y)
     {
         m_height = abs_tile_center_y * 2 + 1;
-        spdlog::trace("Map: tile.y > center_y (|{}| > {}): new_height = {}",
+        spdlog::trace(
+            "Map: tile.y > center_y (|{}| > {}): new_height = {}",
             abs_tile_center_y,
             center_y,
             m_height);

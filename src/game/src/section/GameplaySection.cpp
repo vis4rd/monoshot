@@ -172,25 +172,24 @@ void GameplaySection::render() noexcept
     m_renderer.drawQuad({pos.x, pos.y}, m_hero.size, rot, m_hero.getTexture(), theme_color);
 
     const auto& enemy_texture = ResourceManager::enemyTexture;
-    const auto enemy_view = m_enemyRegistry.view<const ecs::component::position,
+    const auto enemy_view = m_enemyRegistry.view<
+        const ecs::component::position,
         const ecs::component::size,
         const ecs::component::rotation>();
     enemy_view.each(
         [&enemy_texture,
-            &m_renderer = m_renderer](const auto& e_pos, const auto& e_size, const auto& e_rot) {
-            m_renderer.drawQuad({e_pos.x, e_pos.y},
-                e_size,
-                e_rot,
-                enemy_texture,
-                {1.f, 0.4f, 0.4f, 1.f});
+         &m_renderer = m_renderer](const auto& e_pos, const auto& e_size, const auto& e_rot) {
+            m_renderer
+                .drawQuad({e_pos.x, e_pos.y}, e_size, e_rot, enemy_texture, {1.f, 0.4f, 0.4f, 1.f});
         });
 
-    const auto bullet_view = m_bulletRegistry.view<const ecs::component::position,
+    const auto bullet_view = m_bulletRegistry.view<
+        const ecs::component::position,
         const ecs::component::size,
         const ecs::component::rotation>(entt::exclude<ecs::component::destroyed>);
     bullet_view.each(
         [&theme_color,
-            &m_renderer = m_renderer](const auto& b_pos, const auto& b_size, const auto& b_rot) {
+         &m_renderer = m_renderer](const auto& b_pos, const auto& b_size, const auto& b_rot) {
             m_renderer.drawQuad({b_pos.x, b_pos.y}, b_size, b_rot, theme_color);
         });
 
@@ -207,7 +206,8 @@ void GameplaySection::render() noexcept
             current_ammo = weapon.getAmmoCurrent();
             total_ammo = weapon.getAmmoTotal();
         }
-        UI::drawOverlay(m_layout,
+        UI::drawOverlay(
+            m_layout,
             m_hero.health,
             m_hero.maxHealth,
             current_ammo,
@@ -226,7 +226,8 @@ void GameplaySection::render() noexcept
         const auto& font = res::uiTitleFont;
         auto font_guard = font->use();
         const auto text_pos = res::window->getSize() / 2;
-        ImGui::SetNextWindowPos({static_cast<float>(text_pos.x), static_cast<float>(text_pos.y)},
+        ImGui::SetNextWindowPos(
+            {static_cast<float>(text_pos.x), static_cast<float>(text_pos.y)},
             ImGuiCond_Always,
             {0.5f, 0.5f});
         ImGui::SetNextWindowSize(
@@ -245,10 +246,12 @@ void GameplaySection::render() noexcept
         {
             ImGui::Begin("Release Mode Statistics");
             {
-                ImGui::Text("Performance: [%.2fms] [%.0ffps]",
+                ImGui::Text(
+                    "Performance: [%.2fms] [%.0ffps]",
                     1000.0f / ImGui::GetIO().Framerate,
                     ImGui::GetIO().Framerate);
-                ImGui::Text("Mouse Position: Screen[%.2fx, %.2fy]",
+                ImGui::Text(
+                    "Mouse Position: Screen[%.2fx, %.2fy]",
                     ImGui::GetMousePos().x,
                     ImGui::GetMousePos().y);
                 ImGui::Text("Quad count: %d", m_renderer.getStats().quadCount);

@@ -14,7 +14,8 @@ class Animation : public Texture
 {
     public:
     Animation();
-    Animation(const std::string_view& texture_file_path,
+    Animation(
+        const std::string_view& texture_file_path,
         const double& frame_duration,
         const TextureData& texture_data = TextureData());
     Animation(const Animation& copy);

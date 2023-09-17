@@ -36,7 +36,8 @@ VertexBuffer::VertexBuffer(const float* vertices, std::uint32_t size)
     {
         spdlog::trace("Vertex {} = {}", i, vertices[i]);
     }
-    spdlog::debug("Created VertexBuffer instance with ID = {}, size = {} and pre-computed vertices",
+    spdlog::debug(
+        "Created VertexBuffer instance with ID = {}, size = {} and pre-computed vertices",
         m_id,
         size);
 }

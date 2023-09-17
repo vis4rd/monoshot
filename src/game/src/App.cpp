@@ -120,16 +120,16 @@ void App::initTextures() noexcept
     res::pistolInventoryTexture =
         Resource::create<Texture::impl::Texture>("../res/textures/pistol_inventory.png", 256, 128);
 
-    res::enemyTexture =
-        Resource::create<Texture::impl::Texture>("../res/textures/entities/player.png",
-            TextureData{
-                .widthTotal = 192,
-                .heightTotal = 16,
-                .widthSub = 16,
-                .heightSub = 16,
-                .numberOfSubs = 12,
-                .numberOfSubsInOneRow = 12,
-            });
+    res::enemyTexture = Resource::create<Texture::impl::Texture>(
+        "../res/textures/entities/player.png",
+        TextureData{
+            .widthTotal = 192,
+            .heightTotal = 16,
+            .widthSub = 16,
+            .heightSub = 16,
+            .numberOfSubs = 12,
+            .numberOfSubsInOneRow = 12,
+        });
 }
 
 void App::initFonts() noexcept
@@ -146,7 +146,8 @@ void App::initFonts() noexcept
     // res::uiButtonFont = std::make_shared<Font>("../res/fonts/abandoned/Abandoned-Bold.ttf",
     // *res::uiButtonFontSize);
     res::uiButtonFontSize = std::make_shared<float>(20.f * window_width / 1920.f);
-    res::uiButtonFont = std::make_shared<Font>("../res/fonts/brass-mono/regular_comfortable.otf",
+    res::uiButtonFont = std::make_shared<Font>(
+        "../res/fonts/brass-mono/regular_comfortable.otf",
         *res::uiButtonFontSize);
     res::uiAmmoFontSize = std::make_shared<float>(25.f * window_width / 1920.f);
     res::uiAmmoFont =
@@ -160,7 +161,8 @@ void App::initAudio() noexcept
     audio.addSound("footstep", "../res/audio/footstep.mp3");
     audio.addSound("handgun_click", "../res/audio/handgun_click.mp3");
 
-    audio.addMusic("gameplay_music",
+    audio.addMusic(
+        "gameplay_music",
         "../res/audio/music/Ancient Jungle Ruins - HeatleyBros.mp3",
         0.3f);
     audio.addMusic("menu_music", "../res/audio/music/Fragments_ambient.mp3", 0.4f);

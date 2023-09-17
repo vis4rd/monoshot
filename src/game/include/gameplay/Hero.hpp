@@ -23,7 +23,8 @@ concept IsConsumableC = std::derived_from<T, Consumable>;
 class Hero final
 {
     public:
-    Hero(const std::int32_t& health,
+    Hero(
+        const std::int32_t& health,
         const std::optional<Weapon>& main_weapon = std::nullopt,
         const std::optional<Weapon>& secondary_weapon = std::nullopt);
     ~Hero();
@@ -66,8 +67,9 @@ template<impl::IsConsumableC T>
 void Hero::addItem(T&& item)
 {
     const auto set_item =
-        [&ai = m_availableItems, &i = m_items, &ci = m_currentItem]<impl::IsConsumableC P>(P&& item,
-            std::size_t index) -> bool {
+        [&ai = m_availableItems,
+         &i = m_items,
+         &ci = m_currentItem]<impl::IsConsumableC P>(P&& item, std::size_t index) -> bool {
         if(!ai.at(index))
         {
             i.at(index) = std::make_shared<T>(std::move(item));

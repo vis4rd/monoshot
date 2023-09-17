@@ -21,7 +21,8 @@ inline constexpr ImVec2 operator*(const ImVec2& first, const float multiplier)
 using namespace ::ImGui;
 using namespace helpers;
 
-bool ImGui::BeginCombo(const char* label,
+bool ImGui::BeginCombo(
+    const char* label,
     const char* preview_value,
     const ImVec2& size_arg,
     ImGuiComboFlags flags)
@@ -38,9 +39,10 @@ bool ImGui::BeginCombo(const char* label,
 
     const ImGuiStyle& style = ctx.Style;
     const ImGuiID id = window.GetID(label);
-    IM_ASSERT((flags & (ImGuiComboFlags_NoArrowButton | ImGuiComboFlags_NoPreview))
-              != (ImGuiComboFlags_NoArrowButton
-                  | ImGuiComboFlags_NoPreview));  // Can't use both flags together
+    IM_ASSERT(
+        (flags & (ImGuiComboFlags_NoArrowButton | ImGuiComboFlags_NoPreview))
+        != (ImGuiComboFlags_NoArrowButton
+            | ImGuiComboFlags_NoPreview));  // Can't use both flags together
 
     const float arrow_size = (flags & ImGuiComboFlags_NoArrowButton) ? 0.0f : GetFrameHeight();
     const ImVec2 preview_size = CalcTextSize(preview_value, NULL, true);
@@ -49,8 +51,10 @@ bool ImGui::BeginCombo(const char* label,
         CalcItemSize(size_arg, preview_size_with_padding.x, preview_size_with_padding.y);
 
     const ImRect bounding_box(window.DC.CursorPos, window.DC.CursorPos + size);
-    const ImRect total_bounding_box(bounding_box.Min,
-        ImVec2(bounding_box.Max.x + (preview_size.x * style.ItemInnerSpacing.x) + preview_size.x,
+    const ImRect total_bounding_box(
+        bounding_box.Min,
+        ImVec2(
+            bounding_box.Max.x + (preview_size.x * style.ItemInnerSpacing.x) + preview_size.x,
             bounding_box.Max.y));
     ItemSize(total_bounding_box, style.FramePadding.y);
     if(!ItemAdd(total_bounding_box, id, &bounding_box))
@@ -75,7 +79,8 @@ bool ImGui::BeginCombo(const char* label,
     RenderNavHighlight(bounding_box, id);
     if(!(flags & ImGuiComboFlags_NoPreview))
     {
-        window.DrawList->AddRectFilled(bounding_box.Min,
+        window.DrawList->AddRectFilled(
+            bounding_box.Min,
             ImVec2(value_x2, bounding_box.Max.y),
             frame_col,
             style.FrameRounding,
@@ -87,15 +92,18 @@ bool ImGui::BeginCombo(const char* label,
         ImU32 bg_col =
             GetColorU32((popup_open || hovered) ? ImGuiCol_ButtonHovered : ImGuiCol_Button);
         ImU32 text_col = GetColorU32(ImGuiCol_Text);
-        window.DrawList->AddRectFilled(ImVec2(value_x2, bounding_box.Min.y),
+        window.DrawList->AddRectFilled(
+            ImVec2(value_x2, bounding_box.Min.y),
             bounding_box.Max,
             bg_col,
             style.FrameRounding,
             (size.x <= arrow_size) ? ImDrawFlags_RoundCornersAll : ImDrawFlags_RoundCornersRight);
         if(value_x2 + arrow_size - style.FramePadding.x <= bounding_box.Max.x)
         {
-            RenderArrow(window.DrawList,
-                ImVec2(value_x2 + style.FramePadding.y,
+            RenderArrow(
+                window.DrawList,
+                ImVec2(
+                    value_x2 + style.FramePadding.y,
                     bounding_box.Min.y + style.FramePadding.y + ((size.y - arrow_size) / 2.0f)),
                 text_col,
                 ImGuiDir_Down,
@@ -120,8 +128,10 @@ bool ImGui::BeginCombo(const char* label,
         {
             LogSetNextTextDecoration("{", "}");
         }
-        RenderTextClipped(ImVec2(bounding_box.Min.x, bounding_box.Min.y + style.FramePadding.y),
-            ImVec2(bounding_box.Max.x - style.FramePadding.x,
+        RenderTextClipped(
+            ImVec2(bounding_box.Min.x, bounding_box.Min.y + style.FramePadding.y),
+            ImVec2(
+                bounding_box.Max.x - style.FramePadding.x,
                 bounding_box.Max.y - style.FramePadding.y),
             preview_value,
             NULL,
@@ -131,8 +141,10 @@ bool ImGui::BeginCombo(const char* label,
     }
     if(preview_size.x > 0)
     {
-        RenderText(ImVec2(bounding_box.Max.x + style.ItemInnerSpacing.x,
-                       bounding_box.Min.y + style.FramePadding.y + ((size.y - arrow_size) / 2.0f)),
+        RenderText(
+            ImVec2(
+                bounding_box.Max.x + style.ItemInnerSpacing.x,
+                bounding_box.Min.y + style.FramePadding.y + ((size.y - arrow_size) / 2.0f)),
             label);
     }
 

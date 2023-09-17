@@ -20,13 +20,15 @@ class InputManager
     constexpr void removeGroup(const std::string& group);
 
     template<typename FUNC, typename... Args>
-    constexpr void addKeybind(const std::string& group,
+    constexpr void addKeybind(
+        const std::string& group,
         int32_t key,
         KeyState state,
         FUNC&& callback,
         Args&&... cb_args);
     template<typename FUNC, typename... Args>
-    constexpr void addKeybind(const std::size_t& group_id,
+    constexpr void addKeybind(
+        const std::size_t& group_id,
         int32_t key,
         KeyState state,
         FUNC&& callback,
@@ -98,7 +100,8 @@ constexpr bool InputManager::isKeybindInGroup(const std::string& group, int32_t 
 }
 
 template<typename FUNC, typename... Args>
-constexpr void InputManager::addKeybind(const std::string& group,
+constexpr void InputManager::addKeybind(
+    const std::string& group,
     int32_t key,
     KeyState state,
     FUNC&& callback,
@@ -106,7 +109,8 @@ constexpr void InputManager::addKeybind(const std::string& group,
 {
     auto iter = this->findGroup(group);
     std::size_t index = std::distance(m_keybinds.begin(), iter);
-    this->addKeybind<FUNC, Args...>(index,
+    this->addKeybind<FUNC, Args...>(
+        index,
         key,
         state,
         std::forward<FUNC>(callback),
@@ -114,7 +118,8 @@ constexpr void InputManager::addKeybind(const std::string& group,
 }
 
 template<typename FUNC, typename... Args>
-constexpr void InputManager::addKeybind(const std::size_t& group_id,
+constexpr void InputManager::addKeybind(
+    const std::size_t& group_id,
     int32_t key,
     KeyState state,
     FUNC&& callback,
@@ -127,14 +132,16 @@ constexpr void InputManager::addKeybind(const std::size_t& group_id,
     }
     if(this->isKeybindInGroup(m_keybinds.at(group_id).name, key))
     {
-        spdlog::warn("Given key ID '{}' is already present in group '{}', ignoring...",
+        spdlog::warn(
+            "Given key ID '{}' is already present in group '{}', ignoring...",
             key,
             m_keybinds.at(group_id).name);
         return;
     }
     if((group_id >= m_keybinds.size()) || (group_id < 0))
     {
-        spdlog::debug("Given group_id = {} is out of bounds in keybinds vector of size {}",
+        spdlog::debug(
+            "Given group_id = {} is out of bounds in keybinds vector of size {}",
             group_id,
             m_keybinds.size());
         spdlog::critical("Given keybind group does not exist");

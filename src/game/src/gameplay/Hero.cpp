@@ -3,14 +3,16 @@
 #include <resource/Resource.hpp>
 #include <spdlog/spdlog.h>
 
-Hero::Hero(const std::int32_t& health,
+Hero::Hero(
+    const std::int32_t& health,
     const std::optional<Weapon>& main_weapon,
     const std::optional<Weapon>& secondary_weapon)
     : health(health)
     , maxHealth(health)
     , m_items{nullptr, nullptr, nullptr}
     , m_availableItems{false, false, false}
-    , m_texture{Resource::create<Texture::impl::Animation>("../res/textures/entities/player.png",
+    , m_texture{Resource::create<Texture::impl::Animation>(
+          "../res/textures/entities/player.png",
           0.03,
           TextureData{
               .widthTotal = 192,

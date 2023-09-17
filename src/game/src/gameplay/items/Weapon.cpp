@@ -4,7 +4,8 @@
 
 #include <spdlog/spdlog.h>
 
-Weapon::Weapon(const std::int32_t& damage,
+Weapon::Weapon(
+    const std::int32_t& damage,
     const std::uint32_t& magazine_capacity,
     const std::uint32_t& total_ammo,
     const float& bullet_velocity,

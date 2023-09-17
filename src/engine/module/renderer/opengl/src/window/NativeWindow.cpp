@@ -117,7 +117,8 @@ std::vector<glm::ivec2> NativeWindow::queryMonitorResolutions()
         const auto &vm = video_modes[i];
         if((vm.width % 16 == 0) && (vm.height % 9 == 0) && (vm.refreshRate == hz))
         {
-            spdlog::trace("Found video mode: r{}g{}b{}, {}x{}, {}Hz",
+            spdlog::trace(
+                "Found video mode: r{}g{}b{}, {}x{}, {}Hz",
                 vm.redBits,
                 vm.greenBits,
                 vm.blueBits,

@@ -22,43 +22,55 @@ class ShaderProgram
 
     void use() const;
 
-    void uploadVec2(const std::string& varName,
+    void uploadVec2(
+        const std::string& varName,
         const glm::vec2& var,
         const std::int32_t& location = -1);
-    void uploadVec3(const std::string& varName,
+    void uploadVec3(
+        const std::string& varName,
         const glm::vec3& var,
         const std::int32_t& location = -1);
-    void uploadVec4(const std::string& varName,
+    void uploadVec4(
+        const std::string& varName,
         const glm::vec4& var,
         const std::int32_t& location = -1);
-    void uploadIVec2(const std::string& varName,
+    void uploadIVec2(
+        const std::string& varName,
         const glm::ivec2& var,
         const std::int32_t& location = -1);
-    void uploadIVec3(const std::string& varName,
+    void uploadIVec3(
+        const std::string& varName,
         const glm::ivec3& var,
         const std::int32_t& location = -1);
-    void uploadIVec4(const std::string& varName,
+    void uploadIVec4(
+        const std::string& varName,
         const glm::ivec4& var,
         const std::int32_t& location = -1);
-    void uploadFloat(const std::string& varName,
+    void uploadFloat(
+        const std::string& varName,
         const float& var,
         const std::int32_t& location = -1);
     void uploadInt(const std::string& varName, const int& var, const std::int32_t& location = -1);
-    void uploadUInt(const std::string& varName,
+    void uploadUInt(
+        const std::string& varName,
         const std::uint32_t& var,
         const std::int32_t& location = -1);
     void uploadBool(const std::string& varName, const bool& var, const std::int32_t& location = -1);
-    void uploadMat3(const std::string& varName,
+    void uploadMat3(
+        const std::string& varName,
         const glm::mat3& var,
         const std::int32_t& location = -1);
-    void uploadMat4(const std::string& varName,
+    void uploadMat4(
+        const std::string& varName,
         const glm::mat4& var,
         const std::int32_t& location = -1);
-    void uploadArrayInt(const std::string& varName,
+    void uploadArrayInt(
+        const std::string& varName,
         const std::size_t& size,
         const std::int32_t* array,
         const std::int32_t& location = -1);
-    void uploadArrayUInt(const std::string& varName,
+    void uploadArrayUInt(
+        const std::string& varName,
         const std::size_t& size,
         const std::uint32_t* array,
         const std::int32_t& location = -1);

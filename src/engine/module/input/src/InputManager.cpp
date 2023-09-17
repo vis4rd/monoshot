@@ -20,7 +20,8 @@ std::size_t InputManager::addGroup(const std::string& name)
         valid_name = "Keybind Group No. " + std::to_string(m_keybinds.size());
     }
     m_keybinds.emplace_back(valid_name);
-    spdlog::info("Creating a new keybind group called '{}'",
+    spdlog::info(
+        "Creating a new keybind group called '{}'",
         m_keybinds[m_keybinds.size() - 1].name);
     return m_keybinds.size() - 1;
 }

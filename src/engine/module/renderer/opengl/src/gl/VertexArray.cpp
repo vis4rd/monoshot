@@ -84,7 +84,8 @@ void VertexArray::unbind() const
 
 void VertexArray::addVertexBuffer(VertexBuffer&& vertex_buffer)
 {
-    spdlog::debug("Adding a VertexBuffer with ID = {} to VertexArray with ID = {}",
+    spdlog::debug(
+        "Adding a VertexBuffer with ID = {} to VertexArray with ID = {}",
         vertex_buffer.getID(),
         m_id);
     if(vertex_buffer.getLayout().getElements().empty())
@@ -98,7 +99,8 @@ void VertexArray::addVertexBuffer(VertexBuffer&& vertex_buffer)
     {
         sum_size += element.getSize();
     }
-    glVertexArrayVertexBuffer(m_id,
+    glVertexArrayVertexBuffer(
+        m_id,
         /*vbo index for this vao*/ m_vertexBuffers.size(),
         /*vbo id*/ vertex_buffer,
         /*offset*/ 0,
@@ -116,7 +118,8 @@ void VertexArray::addVertexBuffer(VertexBuffer&& vertex_buffer)
             case ShaderDataType::float4:
             {
                 spdlog::debug("VertexArray: VertexBuffer element's type is a float");
-                glVertexArrayAttribFormat(m_id,
+                glVertexArrayAttribFormat(
+                    m_id,
                     m_vertexBufferIndex,
                     element.getComponentCount(),
                     shaderDataTypeToOpenGLBaseType(element.getShaderDataType()),
@@ -134,7 +137,8 @@ void VertexArray::addVertexBuffer(VertexBuffer&& vertex_buffer)
             case ShaderDataType::bool1:
             {
                 spdlog::debug("VertexArray: VertexBuffer element's type is an integer");
-                glVertexArrayAttribIFormat(m_id,
+                glVertexArrayAttribIFormat(
+                    m_id,
                     m_vertexBufferIndex,
                     element.getComponentCount(),
                     shaderDataTypeToOpenGLBaseType(element.getShaderDataType()),
@@ -151,7 +155,8 @@ void VertexArray::addVertexBuffer(VertexBuffer&& vertex_buffer)
                 std::uint8_t count = element.getComponentCount();
                 for(std::uint8_t i = 0; i < count; i++)
                 {
-                    glVertexArrayAttribFormat(m_id,
+                    glVertexArrayAttribFormat(
+                        m_id,
                         m_vertexBufferIndex,
                         element.getComponentCount(),
                         shaderDataTypeToOpenGLBaseType(element.getShaderDataType()),
@@ -176,7 +181,8 @@ void VertexArray::addVertexBuffer(VertexBuffer&& vertex_buffer)
 
 void VertexArray::addElementBuffer(const ElementBuffer& element_buffer)
 {
-    spdlog::debug("Adding ElementBuffer with ID = {} to VertexArray with ID = {}",
+    spdlog::debug(
+        "Adding ElementBuffer with ID = {} to VertexArray with ID = {}",
         element_buffer.getID(),
         m_id);
     if(!element_buffer.isInitialized())

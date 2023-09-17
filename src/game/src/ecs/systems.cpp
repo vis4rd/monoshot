@@ -11,7 +11,8 @@ namespace ecs::system
 namespace impl
 {
 
-bool is_colliding_with_anything(entt::registry& registry,
+bool is_colliding_with_anything(
+    entt::registry& registry,
     const glm::vec2& entity_size,
     const glm::vec2& next_pos)
 {
@@ -47,7 +48,8 @@ void move_bullets(entt::registry& registry)
         entt::exclude<ecs::component::destroyed>);
     for(auto&& [bullet, rot, mvel, acc] : view.each())
     {
-        const auto& vel = registry.patch<velocity>(bullet,
+        const auto& vel = registry.patch<velocity>(
+            bullet,
             [&acc = acc.data, &mvel = mvel.data, delta_time](float& vel) {
                 vel = glm::max(glm::min(vel + acc * delta_time, mvel), 0.f);
             });
@@ -75,7 +77,8 @@ void check_alive_bullets(entt::registry& registry)
     }
 }
 
-void collide_bullets(entt::registry& bullet_registry,
+void collide_bullets(
+    entt::registry& bullet_registry,
     entt::registry& map_registry,
     entt::registry& enemy_registry)
 {
@@ -109,7 +112,8 @@ void collide_bullets(entt::registry& bullet_registry,
         const auto& en_entity = enemy_view.front();
         if(en_entity != entt::null)
         {
-            if(OBB::findCollision(b_pos,
+            if(OBB::findCollision(
+                   b_pos,
                    b_size,
                    0.f,
                    enemy_view.get<ec::position>(en_entity),
@@ -133,7 +137,8 @@ void collide_bullets(entt::registry& bullet_registry,
 
         // go through closest map elements
         const auto& el_entity = map_view.front();
-        if(OBB::findCollision(b_pos,
+        if(OBB::findCollision(
+               b_pos,
                b_size,
                0.f,
                map_view.get<ec::position>(el_entity),
@@ -172,7 +177,7 @@ void move_hero_with_collisions(entt::registry& registry, Hero& hero, glm::vec2& 
     };
 
     constexpr auto is_opposite_direction_vector = [](const glm::vec2& one,
-                                                      const glm::vec2& two) -> bool {
+                                                     const glm::vec2& two) -> bool {
         return (one.x > 0.f && two.x < 0.f) || (one.x < 0.f && two.x > 0.f)
                || (one.y > 0.f && two.y < 0.f) || (one.y < 0.f && two.y > 0.f);
     };
@@ -216,7 +221,8 @@ void move_hero_with_collisions(entt::registry& registry, Hero& hero, glm::vec2& 
     resolve_collision(hero.position, hero.size, shift_y);
 }
 
-void update_ais(entt::registry& enemy_registry,
+void update_ais(
+    entt::registry& enemy_registry,
     const glm::vec2& hero_pos,
     entt::registry& bullet_registry)
 {
@@ -258,7 +264,8 @@ void update_ais(entt::registry& enemy_registry,
                     if(weapon.getAmmoCurrent() > 0)
                     {
                         const auto bullet_pos = pos + glm::normalize(diff) * 1.f;
-                        ecs::action::spawn_bullet(bullet_registry,
+                        ecs::action::spawn_bullet(
+                            bullet_registry,
                             bullet_pos,
                             rot,
                             weapon.getBulletVelocity());

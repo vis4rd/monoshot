@@ -9,38 +9,37 @@
 namespace Texture::impl
 {
 
-Texture::Texture(const std::string_view& file_path,
+Texture::Texture(
+    const std::string_view& file_path,
     const std::int32_t& width,
     const std::int32_t& height,
     const std::int32_t& channel_count)
-    : m_textureData{.widthTotal = width,
-        .heightTotal = height,
-        .widthSub = width,
-        .heightSub = height}
+    : m_textureData{.widthTotal = width, .heightTotal = height, .widthSub = width, .heightSub = height}
     , m_numberOfChannels(channel_count)
     , m_sourcePath(file_path)
 {
-    spdlog::trace("Creating Texture with width = {}, height = {}",
+    spdlog::trace(
+        "Creating Texture with width = {}, height = {}",
         m_textureData.widthTotal,
         m_textureData.heightTotal);
-    this->load(m_sourcePath,
+    this->load(
+        m_sourcePath,
         m_textureData.widthTotal,
         m_textureData.heightTotal,
         m_numberOfChannels);
     this->uploadToGpu();
 }
 
-Texture::Texture(const std::byte* data,
+Texture::Texture(
+    const std::byte* data,
     const std::int32_t& width,
     const std::int32_t& height,
     const std::int32_t& channel_count)
-    : m_textureData{.widthTotal = width,
-        .heightTotal = height,
-        .widthSub = width,
-        .heightSub = height}
+    : m_textureData{.widthTotal = width, .heightTotal = height, .widthSub = width, .heightSub = height}
     , m_numberOfChannels(channel_count)
 {
-    spdlog::trace("Creating Texture with width = {}, height = {}",
+    spdlog::trace(
+        "Creating Texture with width = {}, height = {}",
         m_textureData.widthTotal,
         m_textureData.heightTotal);
     this->load(data, m_textureData.widthTotal, m_textureData.heightTotal, m_numberOfChannels);
@@ -64,7 +63,8 @@ Texture::Texture(const std::string_view& file_path, const TextureData& texture_d
         m_textureData.numberOfSubsInOneRow,
         m_textureData.pixelDataFormat,
         m_textureData.dataType);
-    this->load(m_sourcePath,
+    this->load(
+        m_sourcePath,
         m_textureData.widthTotal,
         m_textureData.heightTotal,
         m_numberOfChannels);
@@ -79,7 +79,8 @@ Texture::Texture(const Texture& copy)
 {
     spdlog::trace("Copying Texture...");
     this->safeDelete();
-    this->tryCopyExternalMemory(copy.m_data,
+    this->tryCopyExternalMemory(
+        copy.m_data,
         m_textureData.widthTotal * m_textureData.heightTotal * m_numberOfChannels);
 }
 
@@ -91,7 +92,8 @@ Texture::Texture(Texture&& move)
 {
     spdlog::trace("Moving Texture...");
     this->safeDelete();
-    this->tryCopyExternalMemory(move.m_data,
+    this->tryCopyExternalMemory(
+        move.m_data,
         m_textureData.widthTotal * m_textureData.heightTotal * m_numberOfChannels);
 }
 
@@ -110,7 +112,8 @@ Texture& Texture::operator=(const Texture& copy)
     m_sourcePath = copy.m_sourcePath;
 
     this->safeDelete();
-    this->tryCopyExternalMemory(copy.m_data,
+    this->tryCopyExternalMemory(
+        copy.m_data,
         m_textureData.widthTotal * m_textureData.heightTotal * m_numberOfChannels);
     return *this;
 }
@@ -124,12 +127,14 @@ Texture& Texture::operator=(Texture&& move)
     m_sourcePath = std::exchange(move.m_sourcePath, std::string());
 
     this->safeDelete();
-    this->tryCopyExternalMemory(move.m_data,
+    this->tryCopyExternalMemory(
+        move.m_data,
         m_textureData.widthTotal * m_textureData.heightTotal * m_numberOfChannels);
     return *this;
 }
 
-void Texture::load(const std::string_view& source_path,
+void Texture::load(
+    const std::string_view& source_path,
     const std::int32_t& width,
     const std::int32_t& height,
     const std::int32_t& channel_count)
@@ -140,7 +145,8 @@ void Texture::load(const std::string_view& source_path,
     this->safeDelete();
     spdlog::trace("Loading Texture data from a file '{}'", source_path);
     m_sourcePath = source_path;
-    m_data = reinterpret_cast<std::byte*>(stbi_load(m_sourcePath.c_str(),
+    m_data = reinterpret_cast<std::byte*>(stbi_load(
+        m_sourcePath.c_str(),
         &m_textureData.widthTotal,
         &m_textureData.heightTotal,
         &m_numberOfChannels,
@@ -149,13 +155,15 @@ void Texture::load(const std::string_view& source_path,
 
     if constexpr(mono::config::constant::DebugMode)
     {
-        std::span<std::byte> mem(m_data,
+        std::span<std::byte> mem(
+            m_data,
             m_textureData.widthTotal * m_textureData.heightTotal * m_numberOfChannels);
         spdlog::trace("Loaded Texture Data = {}", spdlog::to_hex(mem));
     }
 }
 
-void Texture::load(const std::byte* data,
+void Texture::load(
+    const std::byte* data,
     const std::int32_t& width,
     const std::int32_t& height,
     const std::int32_t& channel_count)
@@ -244,12 +252,14 @@ void Texture::uploadToGpu()
     // void glTextureStorage2D(id, mipmap_count, internal_texture_format, width_total,
     // height_total); void glTextureSubImage2D(id, mipmap_level, x_offset, y_offset, subimage_width,
     // subimage_height, pixel_data_format, data_type, data_ptr);
-    glTextureStorage2D(m_id,
+    glTextureStorage2D(
+        m_id,
         m_textureData.mipmapLevel,
         m_textureData.internalFormat,
         m_textureData.widthTotal,
         m_textureData.heightTotal);
-    glTextureSubImage2D(m_id,
+    glTextureSubImage2D(
+        m_id,
         0,
         0,
         0,
@@ -267,7 +277,8 @@ void Texture::uploadToGpu()
 
 void Texture::unloadFromGpu()
 {
-    glTextureSubImage2D(m_id,
+    glTextureSubImage2D(
+        m_id,
         0,
         0,
         0,
