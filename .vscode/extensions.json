@@ -7,6 +7,5 @@
         "ms-vscode.cmake-tools",
         "seatonjiang.gitmoji-vscode",
         "slevesque.shader",
-        "xaver.clang-format"
     ]
 }

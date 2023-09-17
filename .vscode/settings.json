@@ -1,7 +1,8 @@
 {
-    "clang-format.language.c.enable": true,
-    "clang-format.language.cpp.enable": true,
-    "clang-format.style": "file",
+    "clangd.arguments": [
+        "--header-insertion",
+        "never"
+    ],
     //
     "cmake.buildBeforeRun": false,
     "cmake.configureOnEdit": false,
@@ -24,8 +25,10 @@
     "git.ignoreSubmodules": true,
     "git.suggestSmartCommit": false,
     //
+    "terminal.integrated.defaultProfile.windows": "Git Bash",
+    //
     "[cpp]": {
-        "editor.defaultFormatter": "xaver.clang-format",
+        "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd",
         "editor.formatOnSave": true,
         "files.insertFinalNewline": true,
     },
