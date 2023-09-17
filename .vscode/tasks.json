@@ -1,0 +1,22 @@
+{
+    //! Executing tasks on Windows requires Git Bash (or other unix-like shell) to be installed.
+    // Default shell on Windows is either Powershell or CMD, which do not support grep or xargs.
+    // Basically it is easier to require specific shell than to maintain multiplatform tasks.
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run clang-format",
+            "detail": "Run clang-format on all C++ files in src/ directory.",
+            "type": "shell",
+            "command": "find src/ -type f | grep -vi lib/* | grep -e .*\\.[ch]pp | xargs clang-format -i",
+            "icon": {
+                "color": "terminal.ansiCyan"
+            },
+            "presentation": {
+                "panel": "dedicated",
+                "reveal": "silent",
+                "showReuseMessage": false,
+            },
+        }
+    ]
+}
