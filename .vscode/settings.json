@@ -35,10 +35,14 @@
     "[cmake]": {
         "files.insertFinalNewline": true,
     },
-    "[markdown]": {
-        "files.insertFinalNewline": true,
-    },
     "[ini]": {
         "files.insertFinalNewline": true,
     },
+    "[markdown]": {
+        "files.insertFinalNewline": true,
+    },
+    "[yaml]": {
+        "editor.formatOnSave": true,
+        "files.insertFinalNewline": true,
+    }
 }
