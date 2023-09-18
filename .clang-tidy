@@ -1,6 +1,26 @@
+---
 WarningsAsErrors: true
 AnalyzeTemporaryDtors: true
-Checks: -*,clang-analyzer-*,cppcoreguidelines-*,google-*,modernize-*,performance-*,readability-identifier-naming,-modernize-use-trailing-return-type,-cppcoreguidelines-pro-type-union-access,-cppcoreguidelines-non-private-member-variables-in-classes,-cppcoreguidelines-avoid-const-or-ref-data-members
+# HeaderFileExtensions: ['hpp'] # clang-tidy > 18
+# ImplementationFileExtensions: ['cpp'] # clang-tidy > 18
+
+# Do not use any whitespaces in comments
+Checks: |
+  -*,
+
+  #enabled
+  clang-analyzer-*,
+  cppcoreguidelines-*,
+  google-*,
+  modernize-*,
+  performance-*,
+  readability-identifier-naming,
+
+  #disabled
+  -modernize-use-trailing-return-type,
+  -cppcoreguidelines-pro-type-union-access,
+  -cppcoreguidelines-non-private-member-variables-in-classes,
+  -cppcoreguidelines-avoid-const-or-ref-data-members
 
 CheckOptions:
   readability-identifier-naming.AbstractClassCase: CamelCase
@@ -57,3 +77,4 @@ CheckOptions:
   readability-identifier-naming.ValueTemplateParameterCase: UPPER_CASE
   readability-identifier-naming.VariableCase: lower_case
   readability-identifier-naming.VirtualMethodCase: camelBack
+...
