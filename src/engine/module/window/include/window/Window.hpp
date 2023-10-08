@@ -221,7 +221,7 @@ void Window::render(RenderableTrait auto &&...renderables) noexcept
     glViewport(0, 0, m_width, m_height);  // set the main viewport to window size
 
     // use screen shader
-    ShaderManager::useShader("screen");
+    mono::gl::ShaderManager::get().useShader("screen");
     screenVA.bind();
     glBindTexture(GL_TEXTURE_2D, screenFB.getColorID());
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);

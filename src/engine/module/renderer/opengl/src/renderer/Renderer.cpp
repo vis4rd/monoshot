@@ -65,7 +65,10 @@ Renderer::Renderer()
     m_data.quadVao->addElementBuffer(quadEbo);
 
     // shaders
-    mono::ShaderManager::addShaderProgram("../res/shaders", "quad");
+    mono::gl::ShaderManager::get().addShaderProgram(
+        "quad",
+        "../res/shaders/quad.vert",
+        "../res/shaders/quad.frag");
 
     //// Lines
     // buffers
@@ -82,7 +85,10 @@ Renderer::Renderer()
     m_data.lineVao->addVertexBuffer(std::move(lineVbo));
 
     // shaders
-    mono::ShaderManager::addShaderProgram("../res/shaders", "line");
+    mono::gl::ShaderManager::get().addShaderProgram(
+        "line",
+        "../res/shaders/line.vert",
+        "../res/shaders/line.frag");
 
 
     // textures
@@ -167,7 +173,7 @@ void Renderer::endBatch(const glm::mat4& projection, const glm::mat4& view)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         // spdlog::trace("Renderer: binding shader 'quad'");  // commented for performance reasons
-        auto& quad_shader = mono::ShaderManager::useShader("quad");
+        auto& quad_shader = mono::gl::ShaderManager::get().useShader("quad");
 
         // spdlog::trace("Renderer: binding quad VAO");  // commented for performance reasons
         m_data.quadVao->bind();
@@ -219,7 +225,7 @@ void Renderer::endBatch(const glm::mat4& projection, const glm::mat4& view)
             size);
 
         // spdlog::trace("Renderer: binding shader 'line'");  // commented for performance reasons
-        auto& line_shader = mono::ShaderManager::useShader("line");
+        auto& line_shader = mono::gl::ShaderManager::get().useShader("line");
 
         // spdlog::trace("Renderer: binding line VAO");  // commented for performance reasons
         m_data.lineVao->bind();

@@ -42,7 +42,10 @@ Window::Window(
     screenVA.addVertexBuffer(std::move(screenVB));
     screenVA.addElementBuffer(screenEB);
 
-    ShaderManager::addShaderProgram("../res/shaders", "screen");
+    mono::gl::ShaderManager::get().addShaderProgram(
+        "screen",
+        "../res/shaders/screen.vert",
+        "../res/shaders/screen.frag");
 
     // update internal size tracking for UI and framebuffer size when user resizes the window
     glfwSetWindowSizeCallback(

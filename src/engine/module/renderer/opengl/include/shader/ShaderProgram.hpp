@@ -5,82 +5,61 @@
 
 #include <glm/glm.hpp>
 
-namespace mono
+namespace mono::gl
 {
+
+using GLsizei = int;
+using GLint = int;
+using GLuint = std::uint32_t;
+
 
 class Shader;
 
 class ShaderProgram
 {
     public:
-    ShaderProgram();
-    ShaderProgram(Shader&& frag, Shader&& vert);
-    ShaderProgram(const ShaderProgram& copy);
-    ShaderProgram(ShaderProgram&& move);
+    ShaderProgram() = default;
+    ShaderProgram(const Shader& frag, const Shader& vert);
+    ShaderProgram(const ShaderProgram& copy) = default;
+    ShaderProgram(ShaderProgram&& move) noexcept;
+    ~ShaderProgram() = default;
 
-    const std::uint32_t getID() const;
+    ShaderProgram& operator=(const ShaderProgram& copy) = default;
+    ShaderProgram& operator=(ShaderProgram&& move) noexcept;
+
+    GLuint getID() const;
 
     void use() const;
 
-    void uploadVec2(
-        const std::string& varName,
-        const glm::vec2& var,
-        const std::int32_t& location = -1);
-    void uploadVec3(
-        const std::string& varName,
-        const glm::vec3& var,
-        const std::int32_t& location = -1);
-    void uploadVec4(
-        const std::string& varName,
-        const glm::vec4& var,
-        const std::int32_t& location = -1);
-    void uploadIVec2(
-        const std::string& varName,
-        const glm::ivec2& var,
-        const std::int32_t& location = -1);
-    void uploadIVec3(
-        const std::string& varName,
-        const glm::ivec3& var,
-        const std::int32_t& location = -1);
-    void uploadIVec4(
-        const std::string& varName,
-        const glm::ivec4& var,
-        const std::int32_t& location = -1);
-    void uploadFloat(
-        const std::string& varName,
-        const float& var,
-        const std::int32_t& location = -1);
-    void uploadInt(const std::string& varName, const int& var, const std::int32_t& location = -1);
-    void uploadUInt(
-        const std::string& varName,
-        const std::uint32_t& var,
-        const std::int32_t& location = -1);
-    void uploadBool(const std::string& varName, const bool& var, const std::int32_t& location = -1);
-    void uploadMat3(
-        const std::string& varName,
-        const glm::mat3& var,
-        const std::int32_t& location = -1);
-    void uploadMat4(
-        const std::string& varName,
-        const glm::mat4& var,
-        const std::int32_t& location = -1);
+    void uploadVec2(const std::string& var_name, const glm::vec2& var, GLint location = -1);
+    void uploadVec3(const std::string& var_name, const glm::vec3& var, GLint location = -1);
+    void uploadVec4(const std::string& var_name, const glm::vec4& var, GLint location = -1);
+    void uploadIVec2(const std::string& var_name, const glm::ivec2& var, GLint location = -1);
+    void uploadIVec3(const std::string& var_name, const glm::ivec3& var, GLint location = -1);
+    void uploadIVec4(const std::string& var_name, const glm::ivec4& var, GLint location = -1);
+    void uploadFloat(const std::string& var_name, const float& var, GLint location = -1);
+    void uploadInt(const std::string& var_name, const int& var, GLint location = -1);
+    void uploadUInt(const std::string& var_name, const std::uint32_t& var, GLint location = -1);
+    void uploadBool(const std::string& var_name, const bool& var, GLint location = -1);
+    void uploadMat3(const std::string& var_name, const glm::mat3& var, GLint location = -1);
+    void uploadMat4(const std::string& var_name, const glm::mat4& var, GLint location = -1);
     void uploadArrayInt(
-        const std::string& varName,
-        const std::size_t& size,
+        const std::string& var_name,
+        GLsizei size,
         const std::int32_t* array,
-        const std::int32_t& location = -1);
+        GLint location = -1);
     void uploadArrayUInt(
-        const std::string& varName,
-        const std::size_t& size,
+        const std::string& var_name,
+        GLsizei size,
         const std::uint32_t* array,
-        const std::int32_t& location = -1);
+        GLint location = -1);
 
     private:
-    void trySetVariableLocation(const std::string& varName);
+    void trySetVariableLocation(const std::string& var_name);
 
     private:
-    std::uint32_t m_id;
-    std::unordered_map<std::string, int> m_varLocations;
+    std::uint32_t m_id{};
+    std::unordered_map<std::string, int> m_varLocations{};
 };
 
-}  // namespace mono
+}  // namespace mono::gl

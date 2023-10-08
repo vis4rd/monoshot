@@ -7,57 +7,62 @@
 #include "../../include/shader/Shader.hpp"
 #include "../../include/shader/ShaderType.hpp"
 
-namespace fs = std::filesystem;
-
-namespace mono
+namespace mono::gl
 {
 
-namespace ShaderManagerData
+ShaderManager ShaderManager::get()
 {
-static std::map<std::string, ShaderProgram> shaderMap;
+    static ShaderManager instance{};
+    return instance;
 }
 
-ShaderProgram& ShaderManager::addShaderProgram(const fs::path& location, const std::string& name)
+ShaderProgram& ShaderManager::addShaderProgram(
+    const std::string& name,
+    const std::filesystem::path& vertex_location,
+    const std::filesystem::path& fragment_location)
 {
-    auto loc = fs::absolute(location);
-    auto frag_name = name + ".frag";
-    auto vert_name = name + ".vert";
-    auto frag = loc.string() + "/" + frag_name;
-    auto vert = loc.string() + "/" + vert_name;
-    auto frag_sh = Shader(frag, frag_name, ShaderType::FRAGMENT);
-    auto vert_sh = Shader(vert, vert_name, ShaderType::VERTEX);
-    auto&& [iter, success] =
-        ShaderManagerData::shaderMap.try_emplace(name, std::move(frag_sh), std::move(vert_sh));
-    if(success)
+    spdlog::debug(
+        "Adding shader program '{}' from files '{}' and '{}'",
+        name,
+        vertex_location.string(),
+        fragment_location.string());
+
+    if(m_shaderMap.contains(name))
     {
-        return iter->second;
+        spdlog::info("ShaderProgram '{}' already exists, ignoring...", name);
+        return m_shaderMap.at(name);
     }
-    else
+
+    auto vert_name = name + "-vertex";
+    auto frag_name = name + "-fragment";
+    auto vert_sh = Shader(vertex_location, vert_name, ShaderType::VERTEX);
+    auto frag_sh = Shader(fragment_location, frag_name, ShaderType::FRAGMENT);
+
+    auto program = ShaderProgram(frag_sh, vert_sh);
+
+    try
     {
-        if(not ShaderManagerData::shaderMap.contains(name))
-        {
-            spdlog::error("ShaderProgram could not be emplaced");
-            throw std::runtime_error("ShaderProgram could not be emplaced");
-        }
-        else
-        {
-            spdlog::info("ShaderProgram '{}' already exists, ignoring...", name);
-            return ShaderManagerData::shaderMap.at(name);
-        }
+        // TODO(kluczka): now it fails here? Shader program not linked?
+        m_shaderMap[name] = std::move(program);
+        return m_shaderMap.at(name);
+    }
+    catch(const std::exception& e)
+    {
+        spdlog::error("ShaderProgram could not be emplaced");
+        throw std::runtime_error("ShaderProgram could not be emplaced");
     }
 }
 
 ShaderProgram& ShaderManager::useShader(const std::string& name)
 {
-    auto& result = ShaderManagerData::shaderMap[name];
-    spdlog::trace("Binding ShaderProgram '{}' with ID = {}", name, result.getID());
+    auto& result = m_shaderMap[name];
     result.use();
     return result;
 }
 
 ShaderProgram& ShaderManager::getShader(const std::string& name)
 {
-    return ShaderManagerData::shaderMap.at(name);
+    return m_shaderMap.at(name);
 }
 
-}  // namespace mono
+}  // namespace mono::gl

@@ -1,13 +1,16 @@
 #pragma once
 
-namespace mono
+#include <cstdint>
+
+namespace mono::gl
 {
 
-enum class ShaderType
+enum class ShaderType : std::int8_t
 {
-    FRAGMENT = 1 << 0,
-    VERTEX = 1 << 1,
-    COMPUTE = 1 << 2
+    VERTEX,
+    GEOMETRY,
+    FRAGMENT,
+    COMPUTE,
 };
 
-}  // namespace mono
+}  // namespace mono::gl

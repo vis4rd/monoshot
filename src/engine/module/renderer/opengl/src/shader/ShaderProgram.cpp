@@ -1,49 +1,55 @@
 #include "../../include/shader/ShaderProgram.hpp"
 
+#include <array>
+
 #include <glad/gl.h>
 #include <glm/gtc/type_ptr.hpp>
+#include <spdlog/spdlog.h>
 
 #include "../../include/shader/Shader.hpp"
 
-namespace mono
+namespace mono::gl
 {
 
-ShaderProgram::ShaderProgram()
-    : m_id()
-    , m_varLocations{}
-{ }
-
-ShaderProgram::ShaderProgram(Shader&& frag, Shader&& vert)
-    : m_id(glCreateProgram())
+ShaderProgram::ShaderProgram(const Shader& frag, const Shader& vert)
+    : m_id{glCreateProgram()}
     , m_varLocations{}
 {
+    spdlog::debug(
+        "Creating shader program from shaders '{}' and '{}'",
+        vert.getName(),
+        frag.getName());
+
     glAttachShader(m_id, vert.getID());
     glAttachShader(m_id, frag.getID());
 
     glLinkProgram(m_id);
-    int success;
-    char log[512];
+    GLint success{};
     glGetProgramiv(m_id, GL_LINK_STATUS, &success);
     if(!success)
     {
-        glGetProgramInfoLog(m_id, 512, nullptr, log);
-        auto output = "Shader linking failure: " + std::string(log);
-        throw std::runtime_error(output);
+        constexpr std::size_t max_log_size = 512;
+        std::array<GLchar, max_log_size> log{};
+        glGetProgramInfoLog(m_id, max_log_size, nullptr, log.data());
+        throw std::runtime_error(
+            "Shader linking failure: " + std::string(log.data(), max_log_size));
     }
 }
 
-ShaderProgram::ShaderProgram(const ShaderProgram& copy)
-    : m_id(copy.m_id)
-    , m_varLocations(copy.m_varLocations)
-{ }
-
-ShaderProgram::ShaderProgram(ShaderProgram&& move)
+ShaderProgram::ShaderProgram(ShaderProgram&& move) noexcept
     : m_id(move.m_id)
-    , m_varLocations(move.m_varLocations)  // copying instead of moving to prevent
-                                           // segfault by std::unordered_map bug
+    // copying instead of moving to prevent segfault by std::unordered_map bug
+    , m_varLocations(move.m_varLocations)  // NOLINT(performance-move-constructor-init)
 { }
 
-const std::uint32_t ShaderProgram::getID() const
+ShaderProgram& ShaderProgram::operator=(ShaderProgram&& move) noexcept
+{
+    m_id = move.m_id;
+    m_varLocations = move.m_varLocations;
+    return *this;
+}
+
+GLuint ShaderProgram::getID() const
 {
     return m_id;
 }
@@ -53,243 +59,210 @@ void ShaderProgram::use() const
     glUseProgram(m_id);
 }
 
-void ShaderProgram::uploadVec2(
-    const std::string& varName,
-    const glm::vec2& var,
-    const std::int32_t& location)
+void ShaderProgram::uploadVec2(const std::string& var_name, const glm::vec2& var, GLint location)
 {
     if(location >= 0)
     {
-        m_varLocations[varName] = location;
+        m_varLocations[var_name] = location;
     }
     else
     {
-        this->trySetVariableLocation(varName);
+        this->trySetVariableLocation(var_name);
     }
-    glUniform2f(m_varLocations[varName], var.x, var.y);
+    glUniform2f(m_varLocations[var_name], var.x, var.y);
 }
 
-void ShaderProgram::uploadVec3(
-    const std::string& varName,
-    const glm::vec3& var,
-    const std::int32_t& location)
+void ShaderProgram::uploadVec3(const std::string& var_name, const glm::vec3& var, GLint location)
 {
     if(location >= 0)
     {
-        m_varLocations[varName] = location;
+        m_varLocations[var_name] = location;
     }
     else
     {
-        this->trySetVariableLocation(varName);
+        this->trySetVariableLocation(var_name);
     }
-    glUniform3f(m_varLocations[varName], var.x, var.y, var.z);
+    glUniform3f(m_varLocations[var_name], var.x, var.y, var.z);
 }
 
-void ShaderProgram::uploadVec4(
-    const std::string& varName,
-    const glm::vec4& var,
-    const std::int32_t& location)
+void ShaderProgram::uploadVec4(const std::string& var_name, const glm::vec4& var, GLint location)
 {
     if(location >= 0)
     {
-        m_varLocations[varName] = location;
+        m_varLocations[var_name] = location;
     }
     else
     {
-        this->trySetVariableLocation(varName);
+        this->trySetVariableLocation(var_name);
     }
-    glUniform4f(m_varLocations[varName], var.x, var.y, var.z, var.w);
+    glUniform4f(m_varLocations[var_name], var.x, var.y, var.z, var.w);
 }
 
-void ShaderProgram::uploadIVec2(
-    const std::string& varName,
-    const glm::ivec2& var,
-    const std::int32_t& location)
+void ShaderProgram::uploadIVec2(const std::string& var_name, const glm::ivec2& var, GLint location)
 {
     if(location >= 0)
     {
-        m_varLocations[varName] = location;
+        m_varLocations[var_name] = location;
     }
     else
     {
-        this->trySetVariableLocation(varName);
+        this->trySetVariableLocation(var_name);
     }
-    glUniform2i(m_varLocations[varName], var.x, var.y);
+    glUniform2i(m_varLocations[var_name], var.x, var.y);
 }
 
-void ShaderProgram::uploadIVec3(
-    const std::string& varName,
-    const glm::ivec3& var,
-    const std::int32_t& location)
+void ShaderProgram::uploadIVec3(const std::string& var_name, const glm::ivec3& var, GLint location)
 {
     if(location >= 0)
     {
-        m_varLocations[varName] = location;
+        m_varLocations[var_name] = location;
     }
     else
     {
-        this->trySetVariableLocation(varName);
+        this->trySetVariableLocation(var_name);
     }
-    glUniform3i(m_varLocations[varName], var.x, var.y, var.z);
+    glUniform3i(m_varLocations[var_name], var.x, var.y, var.z);
 }
 
-void ShaderProgram::uploadIVec4(
-    const std::string& varName,
-    const glm::ivec4& var,
-    const std::int32_t& location)
+void ShaderProgram::uploadIVec4(const std::string& var_name, const glm::ivec4& var, GLint location)
 {
     if(location >= 0)
     {
-        m_varLocations[varName] = location;
+        m_varLocations[var_name] = location;
     }
     else
     {
-        this->trySetVariableLocation(varName);
+        this->trySetVariableLocation(var_name);
     }
-    glUniform4i(m_varLocations[varName], var.x, var.y, var.z, var.w);
+    glUniform4i(m_varLocations[var_name], var.x, var.y, var.z, var.w);
 }
 
-void ShaderProgram::uploadFloat(
-    const std::string& varName,
-    const float& var,
-    const std::int32_t& location)
+void ShaderProgram::uploadFloat(const std::string& var_name, const float& var, GLint location)
 {
     if(location >= 0)
     {
-        m_varLocations[varName] = location;
+        m_varLocations[var_name] = location;
     }
     else
     {
-        this->trySetVariableLocation(varName);
+        this->trySetVariableLocation(var_name);
     }
-    glUniform1f(m_varLocations[varName], var);
+    glUniform1f(m_varLocations[var_name], var);
 }
 
-void ShaderProgram::uploadInt(
-    const std::string& varName,
-    const int& var,
-    const std::int32_t& location)
+void ShaderProgram::uploadInt(const std::string& var_name, const int& var, GLint location)
 {
     if(location >= 0)
     {
-        m_varLocations[varName] = location;
+        m_varLocations[var_name] = location;
     }
     else
     {
-        this->trySetVariableLocation(varName);
+        this->trySetVariableLocation(var_name);
     }
-    glUniform1i(m_varLocations[varName], var);
+    glUniform1i(m_varLocations[var_name], var);
 }
 
 void ShaderProgram::uploadUInt(
-    const std::string& varName,
+    const std::string& var_name,
     const std::uint32_t& var,
-    const std::int32_t& location)
+    GLint location)
 {
     if(location >= 0)
     {
-        m_varLocations[varName] = location;
+        m_varLocations[var_name] = location;
     }
     else
     {
-        this->trySetVariableLocation(varName);
+        this->trySetVariableLocation(var_name);
     }
-    glUniform1ui(m_varLocations[varName], var);
+    glUniform1ui(m_varLocations[var_name], var);
 }
 
-void ShaderProgram::uploadBool(
-    const std::string& varName,
-    const bool& var,
-    const std::int32_t& location)
+void ShaderProgram::uploadBool(const std::string& var_name, const bool& var, GLint location)
 {
     if(location >= 0)
     {
-        m_varLocations[varName] = location;
+        m_varLocations[var_name] = location;
     }
     else
     {
-        this->trySetVariableLocation(varName);
+        this->trySetVariableLocation(var_name);
     }
-    glUniform1i(m_varLocations[varName], var);
+    glUniform1i(m_varLocations[var_name], var);
 }
 
-void ShaderProgram::uploadMat3(
-    const std::string& varName,
-    const glm::mat3& var,
-    const std::int32_t& location)
+void ShaderProgram::uploadMat3(const std::string& var_name, const glm::mat3& var, GLint location)
 {
     if(location >= 0)
     {
-        m_varLocations[varName] = location;
+        m_varLocations[var_name] = location;
     }
     else
     {
-        this->trySetVariableLocation(varName);
+        this->trySetVariableLocation(var_name);
     }
-    glUniformMatrix3fv(m_varLocations[varName], 1, GL_FALSE, glm::value_ptr(var));
+    glUniformMatrix3fv(m_varLocations[var_name], 1, GL_FALSE, glm::value_ptr(var));
 }
 
-void ShaderProgram::uploadMat4(
-    const std::string& varName,
-    const glm::mat4& var,
-    const std::int32_t& location)
+void ShaderProgram::uploadMat4(const std::string& var_name, const glm::mat4& var, GLint location)
 {
     if(location >= 0)
     {
-        m_varLocations[varName] = location;
+        m_varLocations[var_name] = location;
     }
     else
     {
-        this->trySetVariableLocation(varName);
+        this->trySetVariableLocation(var_name);
     }
-    glUniformMatrix4fv(m_varLocations[varName], 1, GL_FALSE, glm::value_ptr(var));
+    glUniformMatrix4fv(m_varLocations[var_name], 1, GL_FALSE, glm::value_ptr(var));
 }
 
 void ShaderProgram::uploadArrayInt(
-    const std::string& varName,
-    const std::size_t& size,
+    const std::string& var_name,
+    GLsizei size,
     const std::int32_t* array,
-    const std::int32_t& location)
+    GLint location)
 {
     if(location >= 0)
     {
-        m_varLocations[varName] = location;
+        m_varLocations[var_name] = location;
     }
     else
     {
-        this->trySetVariableLocation(varName);
+        this->trySetVariableLocation(var_name);
     }
-    glUniform1iv(m_varLocations[varName], size, array);
+    glUniform1iv(m_varLocations[var_name], size, array);
 }
 
 void ShaderProgram::uploadArrayUInt(
-    const std::string& varName,
-    const std::size_t& size,
+    const std::string& var_name,
+    GLsizei size,
     const std::uint32_t* array,
-    const std::int32_t& location)
+    GLint location)
 {
     if(location >= 0)
     {
-        m_varLocations[varName] = location;
+        m_varLocations[var_name] = location;
     }
     else
     {
-        this->trySetVariableLocation(varName);
+        this->trySetVariableLocation(var_name);
     }
-    glUniform1uiv(m_varLocations[varName], size, array);
+    glUniform1uiv(m_varLocations[var_name], size, array);
 }
 
-void ShaderProgram::trySetVariableLocation(const std::string& varName)
+void ShaderProgram::trySetVariableLocation(const std::string& var_name)
 {
-    if(!m_varLocations.contains(varName))
+    if(!m_varLocations.contains(var_name))
     {
-        m_varLocations[varName] = glGetUniformLocation(m_id, varName.c_str());
-        if(m_varLocations[varName] < 0)
+        m_varLocations[var_name] = glGetUniformLocation(m_id, var_name.c_str());
+        if(m_varLocations[var_name] < 0)
         {
-            throw std::runtime_error("Did not find the location of uniform \"" + varName + "\".");
+            throw std::runtime_error("Did not find the location of uniform \"" + var_name + "\".");
         }
     }
     // glUseProgram(m_id);
 }
 
-}  // namespace mono
+}  // namespace mono::gl

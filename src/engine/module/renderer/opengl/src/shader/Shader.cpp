@@ -1,19 +1,27 @@
 #include "../../include/shader/Shader.hpp"
 
+#include <array>
 #include <fstream>
+
+#include <glad/gl.h>
+#include <spdlog/spdlog.h>
 
 #include "../../include/shader/ShaderType.hpp"
 
-namespace fs = std::filesystem;
-
-namespace mono
+namespace mono::gl
 {
 
-Shader::Shader(const fs::path& location, const std::string& name, const ShaderType type)
-    : m_name(name)
-    , m_location(location)
+Shader::Shader(const std::filesystem::path& location, const std::string& name, ShaderType type)
+    : m_location(location)
+    , m_name(name)
+    , m_type(type)
 {
-    this->readFromFile(m_location);
+    spdlog::debug(
+        "Creating {} shader '{}' from file '{}'",
+        static_cast<std::int8_t>(type),
+        name,
+        location.string());
+    auto source = this->readFromFile(m_location);
 
     switch(type)
     {
@@ -34,7 +42,7 @@ Shader::Shader(const fs::path& location, const std::string& name, const ShaderTy
         }
     }
 
-    this->compile();
+    this->compile(source);
 }
 
 Shader::~Shader()
@@ -42,24 +50,24 @@ Shader::~Shader()
     glDeleteShader(m_id);
 }
 
-const std::string& Shader::getName() const
+std::string_view Shader::getName() const
 {
     return m_name;
 }
 
-const fs::path& Shader::getLocation() const
+const std::filesystem::path& Shader::getLocation() const
 {
     return m_location;
 }
 
-const std::uint32_t Shader::getID() const
+GLuint Shader::getID() const
 {
     return m_id;
 }
 
-void Shader::readFromFile(const std::filesystem::path& location)
+std::string Shader::readFromFile(const std::filesystem::path& location)
 {
-    if(not fs::exists(m_location) or not fs::is_regular_file(m_location))
+    if(not std::filesystem::exists(m_location) or not std::filesystem::is_regular_file(m_location))
     {
         throw std::runtime_error(
             "The directory '" + m_location.string() + "' does not exist or is not a shader file.");
@@ -74,23 +82,25 @@ void Shader::readFromFile(const std::filesystem::path& location)
     ss << source.rdbuf();
     source.close();
 
-    m_source = ss.str();
+    return ss.str();
 }
 
-void Shader::compile() const
+void Shader::compile(const std::string& source) const
 {
-    const char* ptr = m_source.data();
+    const char* ptr = source.data();
     glShaderSource(m_id, 1, &ptr, nullptr);
     glCompileShader(m_id);
 
-    GLint success;
-    GLchar log[512];
+    GLint success{};
     glGetShaderiv(m_id, GL_COMPILE_STATUS, &success);
     if(!success)
     {
-        glGetShaderInfoLog(m_id, 512, nullptr, log);
-        throw std::runtime_error("Shader compilation failure: " + std::string(log));
+        constexpr std::size_t max_log_size = 512;
+        std::array<GLchar, max_log_size> log{};
+        glGetShaderInfoLog(m_id, max_log_size, nullptr, log.data());
+        throw std::runtime_error(
+            "Shader compilation failure: " + std::string(log.data(), max_log_size));
     }
 }
 
-}  // namespace mono
+}  // namespace mono::gl

@@ -18,6 +18,7 @@ Checks: |
 
   #disabled
   -modernize-use-trailing-return-type,
+  -modernize-pass-by-value,
   -cppcoreguidelines-pro-type-union-access,
   -cppcoreguidelines-non-private-member-variables-in-classes,
   -cppcoreguidelines-avoid-const-or-ref-data-members
