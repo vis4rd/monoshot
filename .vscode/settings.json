@@ -4,6 +4,8 @@
         "never"
     ],
     //
+    "C_Cpp.intelliSenseEngine": "disabled",
+    //
     "cmake.buildBeforeRun": false,
     "cmake.configureOnEdit": false,
     "cmake.configureOnOpen": false,
@@ -36,6 +38,9 @@
         "files.insertFinalNewline": true,
     },
     "[ini]": {
+        "files.insertFinalNewline": true,
+    },
+    "[jsonc]": {
         "files.insertFinalNewline": true,
     },
     "[markdown]": {

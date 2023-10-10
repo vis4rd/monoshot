@@ -7,5 +7,6 @@
         "ms-vscode.cmake-tools",
         "seatonjiang.gitmoji-vscode",
         "slevesque.shader",
-    ]
+        "ms-vscode.cpptools", // debugging only
+    ],
 }

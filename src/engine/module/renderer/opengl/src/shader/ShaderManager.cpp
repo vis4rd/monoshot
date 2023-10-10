@@ -10,7 +10,7 @@
 namespace mono::gl
 {
 
-ShaderManager ShaderManager::get()
+ShaderManager& ShaderManager::get()
 {
     static ShaderManager instance{};
     return instance;
@@ -42,7 +42,6 @@ ShaderProgram& ShaderManager::addShaderProgram(
 
     try
     {
-        // TODO(kluczka): now it fails here? Shader program not linked?
         m_shaderMap[name] = std::move(program);
         return m_shaderMap.at(name);
     }

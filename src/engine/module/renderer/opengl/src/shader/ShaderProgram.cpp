@@ -16,7 +16,8 @@ ShaderProgram::ShaderProgram(const Shader& frag, const Shader& vert)
     , m_varLocations{}
 {
     spdlog::debug(
-        "Creating shader program from shaders '{}' and '{}'",
+        "Creating shader program with ID = {}, from shaders '{}' and '{}'",
+        m_id,
         vert.getName(),
         frag.getName());
 

@@ -11,7 +11,7 @@ namespace mono::gl
 class ShaderManager
 {
     public:
-    static ShaderManager get();
+    static ShaderManager& get();
 
     ShaderProgram& addShaderProgram(
         const std::string& name,
