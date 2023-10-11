@@ -56,16 +56,4 @@ void ShaderProgram::use() const
     glUseProgram(m_id);
 }
 
-void ShaderProgram::trySetVariableLocation(const std::string& var_name)
-{
-    if(!m_varLocations.contains(var_name))
-    {
-        m_varLocations[var_name] = glGetUniformLocation(m_id, var_name.c_str());
-        if(m_varLocations[var_name] < 0)
-        {
-            throw std::runtime_error("Did not find the location of uniform \"" + var_name + "\".");
-        }
-    }
-}
-
 }  // namespace mono::gl

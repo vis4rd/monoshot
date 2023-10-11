@@ -27,16 +27,11 @@ class ShaderProgram
     ShaderProgram& operator=(ShaderProgram&& move) noexcept;
 
     GLuint getID() const;
-
     void use() const;
-
     void uploadUniform(
         const std::string& var_name,
         const ValidUniformVariableTrait auto& var,
         GLint location = -1);
-
-    private:
-    void trySetVariableLocation(const std::string& var_name);
 
     private:
     std::uint32_t m_id{};
@@ -48,17 +43,16 @@ void ShaderProgram::uploadUniform(
     const ValidUniformVariableTrait auto& var,
     GLint location)
 {
+    if(location < 0)
+    {
+        spdlog::error(
+            "Invalid location ({}) for uniform variable. Location must be >= 0",
+            location);
+    }
+
+    m_varLocations[var_name] = location;
+
     using T = std::remove_cvref_t<decltype(var)>;
-
-    if(location >= 0)
-    {
-        m_varLocations[var_name] = location;
-    }
-    else
-    {
-        this->trySetVariableLocation(var_name);
-    }
-
     if constexpr(TwoElementVariableTrait<T, float>)
     {
         glUniform2f(m_varLocations[var_name], var.x, var.y);
