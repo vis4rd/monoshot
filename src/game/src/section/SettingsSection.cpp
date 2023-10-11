@@ -1,6 +1,5 @@
 #include "../../include/section/SettingsSection.hpp"
 
-#include <audio/AudioManager.hpp>
 #include <resource/ResourceManager.hpp>
 #include <ui/external/BeginCombo.hpp>
 
@@ -154,39 +153,6 @@ void SettingsSection::render() noexcept
             limiter->setLimit(local_limit);
         }
         ImGui::EndDisabled();
-
-        // Master mixer volume
-        auto& audio = AudioManager::get();
-        next_y = ImGui::GetCursorScreenPos().y;
-        ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s, next_y});
-        ImGui::SetNextItemWidth(m_layout.button_w);
-        static std::int32_t local_master_volume =
-            static_cast<int>(audio.getMixerMasterVolume() * 100);
-        if(ImGui::SliderInt("Master Volume", &local_master_volume, 0, 100, "%d%"))
-        {
-            audio.setMixerMasterVolume(local_master_volume / 100.f);
-        }
-
-        // Music mixer volume
-        next_y = ImGui::GetCursorScreenPos().y;
-        ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s, next_y});
-        ImGui::SetNextItemWidth(m_layout.button_w);
-        static std::int32_t local_music_volume =
-            static_cast<int>(audio.getMixerMusicVolume() * 100);
-        if(ImGui::SliderInt("Music Volume", &local_music_volume, 0, 100, "%d%"))
-        {
-            audio.setMixerMusicVolume(local_music_volume / 100.f);
-        }
-
-        // SFX mixer volume
-        next_y = ImGui::GetCursorScreenPos().y;
-        ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s, next_y});
-        ImGui::SetNextItemWidth(m_layout.button_w);
-        static std::int32_t local_sfx_volume = static_cast<int>(audio.getMixerSfxVolume() * 100);
-        if(ImGui::SliderInt("SFX Volume", &local_sfx_volume, 0, 100, "%d%"))
-        {
-            audio.setMixerSfxVolume(local_sfx_volume / 100.f);
-        }
     }
     ImGui::End();
     ImGui::PopStyleVar();

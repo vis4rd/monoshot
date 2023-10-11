@@ -1,6 +1,5 @@
 #include "../../include/section/GameplaySection.hpp"
 
-#include <audio/AudioManager.hpp>
 #include <renderer/Renderer.hpp>
 #include <resource/ResourceManager.hpp>
 #include <stbi/stb_image.h>
@@ -20,16 +19,12 @@ GameplaySection::GameplaySection()
     , m_layout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize)
 {
     m_name = "GameplaySection";
-
-    // audio module
-    AudioManager::get().playMusic("gameplay_music");
 }
 
 GameplaySection::~GameplaySection()
 {
     spdlog::trace("Destroying {}", m_name);
     m_mapElementsRegistry.clear();
-    AudioManager::get().stopMusic("gameplay_music");
 }
 
 void GameplaySection::update() noexcept
@@ -51,7 +46,6 @@ void GameplaySection::update() noexcept
         SectionManager::get().popSection();
         return;
     }
-    auto& audio = AudioManager::get();
 
     // press escape to leave
     auto& input = InputManager::get();
@@ -77,15 +71,9 @@ void GameplaySection::update() noexcept
     move_direction.y += bool(input.isHeld(GLFW_KEY_W) + input.isPressedOnce(GLFW_KEY_UP));
     {
         const bool does_move = bool((move_direction.x != 0.f) + (move_direction.y != 0.f));
-        static std::size_t footstep_sound_trigger;
         if(does_move)
         {
             const std::int32_t is_next_frame = m_hero.getTexture()->nextFrame();
-            footstep_sound_trigger = (footstep_sound_trigger + is_next_frame) % (m_hero.getTexture()->getTextureData().numberOfSubs / 2);
-            if(footstep_sound_trigger == 0)
-            {
-                audio.playSound("footstep");
-            }
         }
         else
         {
@@ -105,7 +93,6 @@ void GameplaySection::update() noexcept
                 if(weapon.getAmmoCurrent() > 0)
                 {
                     ecs::action::spawn_bullet(m_bulletRegistry, pos, rot, weapon.getBulletVelocity());
-                    audio.playSound("gunshot");
                 }
             }
         }
@@ -120,17 +107,14 @@ void GameplaySection::update() noexcept
         }
         if(input.isPressedOnce(GLFW_KEY_1))
         {
-            audio.playSound("handgun_click");
             m_hero.setCurrentItem(0);
         }
         if(input.isPressedOnce(GLFW_KEY_2))
         {
-            audio.playSound("handgun_click");
             m_hero.setCurrentItem(1);
         }
         if(input.isPressedOnce(GLFW_KEY_3))
         {
-            audio.playSound("handgun_click");
             m_hero.setCurrentItem(2);
         }
     }

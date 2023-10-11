@@ -2,7 +2,6 @@
 
 #include <filesystem>
 
-#include <audio/AudioManager.hpp>
 #include <resource/Resource.hpp>
 #include <resource/ResourceManager.hpp>
 #include <spdlog/sinks/basic_file_sink.h>
@@ -40,7 +39,6 @@ App::App(const std::string& window_title, uint32_t width, uint32_t height)
 
     this->initFonts();
     this->initTextures();
-    this->initAudio();
 
     MainMenuStyle();
 
@@ -154,20 +152,6 @@ void App::initFonts() noexcept
     res::uiAmmoFontSize = std::make_shared<float>(25.f * window_width / 1920.f);
     res::uiAmmoFont =
         std::make_shared<Font>("../res/fonts/gunplay/GUNPLAY_.ttf", *res::uiAmmoFontSize);
-}
-
-void App::initAudio() noexcept
-{
-    auto& audio = AudioManager::get();
-    audio.addSound("gunshot", "../res/audio/gunshot.mp3", 0.5f);
-    audio.addSound("footstep", "../res/audio/footstep.mp3");
-    audio.addSound("handgun_click", "../res/audio/handgun_click.mp3");
-
-    audio.addMusic(
-        "gameplay_music",
-        "../res/audio/music/Ancient Jungle Ruins - HeatleyBros.mp3",
-        0.3f);
-    audio.addMusic("menu_music", "../res/audio/music/Fragments_ambient.mp3", 0.4f);
 }
 
 mono::Window& App::getWindow()

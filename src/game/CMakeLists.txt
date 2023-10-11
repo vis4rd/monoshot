@@ -43,7 +43,6 @@ target_sources(monoshot
 
 target_link_libraries(monoshot
     PUBLIC mono::input
-           mono::audio
            mono::window
            mono::renderer
            mono::camera

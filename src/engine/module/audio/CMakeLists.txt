@@ -22,7 +22,8 @@ target_include_directories(mono_module_audio
 )
 
 target_link_libraries(mono_module_audio
-    PUBLIC sfml-audio
+    PUBLIC
+        # sfml-audio
            spdlog::spdlog
 )
 

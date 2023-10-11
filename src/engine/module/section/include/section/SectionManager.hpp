@@ -14,7 +14,7 @@ class SectionManager final
     SectionManager(SectionManager&&) = delete;
     SectionManager& operator=(const SectionManager&) = delete;
     SectionManager& operator=(SectionManager&&) = delete;
-    ~SectionManager();
+    ~SectionManager() = default;
     static SectionManager& get();
 
     template<IsSectionTrait SECTION, typename... ARGS>
@@ -29,7 +29,7 @@ class SectionManager final
     void render() noexcept;
 
     private:
-    SectionManager();
+    SectionManager() = default;
 
     private:
     std::stack<std::unique_ptr<Section>> m_sections{};

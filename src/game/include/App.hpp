@@ -15,7 +15,6 @@ class App
     static void initLogger() noexcept;
     void initTextures() noexcept;
     void initFonts() noexcept;
-    void initAudio() noexcept;
 
     mono::Window& getWindow();
     const mono::Window& getWindow() const;

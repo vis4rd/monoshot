@@ -2,7 +2,6 @@
 
 // #include "../utility/VertexArray.hpp"
 // #include "../texture/Texture2D.hpp"
-#include <audio/AudioManager.hpp>
 #include <camera/PerspectiveCamera.hpp>
 #include <entt/entity/registry.hpp>
 #include <renderer/Renderer.hpp>
@@ -47,8 +46,6 @@ class DebugSection final : public Section
     Map m_map;
     Hero m_hero;
     UI::GameplayLayout m_layout;
-    std::unordered_map<std::string, sf::SoundBuffer> m_soundBuffers;
-    std::unordered_map<std::string, sf::Sound> m_sounds;
 
     bool m_onEnterFinished = false;
     bool m_onLeaveStarted = false;
@@ -56,6 +53,4 @@ class DebugSection final : public Section
     double m_enterFinishTimestamp = Timer::getTotalTime() + m_entranceDuration;
     const double m_leaveDuration = 5.0;
     double m_leaveStartTimestamp = 0.0;
-
-    sf::Music m_music;
 };

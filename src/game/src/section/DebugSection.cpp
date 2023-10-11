@@ -101,38 +101,6 @@ DebugSection::DebugSection()
     m_map.addTilesToRegistry(m_mapElementsRegistry);
 
     // ecs::action::spawn_enemy(m_enemyRegistry, {4.f, 0.f});
-
-    // sounds and music
-    const auto setupSound = [&buffers = m_soundBuffers, &sounds = m_sounds](
-                                const std::string& name,
-                                const std::string& filename) -> void {
-        sf::SoundBuffer buffer{};
-        if(bool success = buffer.loadFromFile(filename); not success)
-        {
-            spdlog::error("Could not load sound from '{}' file", filename);
-            throw std::runtime_error("Could not load sound from '" + filename + "' file");
-        }
-        buffers[name] = std::move(buffer);
-
-        sf::Sound sound{};
-        sound.setBuffer(buffers[name]);
-        sounds[name] = std::move(sound);
-    };
-    setupSound("pop", "../res/audio/pop.mp3");
-    setupSound("gunshot", "../res/audio/gunshot.mp3");
-    setupSound("footstep", "../res/audio/footstep.mp3");
-    setupSound("handgun_click", "../res/audio/handgun_click.mp3");
-
-    if(bool success =
-           m_music.openFromFile("../res/audio/music/Ancient Jungle Ruins - HeatleyBros.mp3");
-       not success)
-    {
-        spdlog::debug(
-            "Could not load music from file 'res/audio/music/Ancient Jungle Ruins - HeatleyBros.mp3'");
-        throw std::runtime_error(
-            "Could not load music from file 'res/audio/music/Ancient Jungle Ruins - HeatleyBros.mp3'");
-    }
-    m_music.play();
 }
 
 DebugSection::~DebugSection()
@@ -186,15 +154,9 @@ void DebugSection::update() noexcept
     move_direction.y += bool(input.isHeld(GLFW_KEY_W) + input.isPressedOnce(GLFW_KEY_UP));
     {
         const bool does_move = bool((move_direction.x != 0.f) + (move_direction.y != 0.f));
-        static std::size_t footstep_sound_trigger;
         if(does_move)
         {
             const std::int32_t is_next_frame = m_hero.getTexture()->nextFrame();
-            footstep_sound_trigger = (footstep_sound_trigger + is_next_frame) % (m_hero.getTexture()->getTextureData().numberOfSubs / 2);
-            if(footstep_sound_trigger == 0)
-            {
-                m_sounds["footstep"].play();
-            }
         }
         else
         {
@@ -214,7 +176,6 @@ void DebugSection::update() noexcept
                 if(weapon.getAmmoCurrent() > 0)
                 {
                     ecs::action::spawn_bullet(m_bulletRegistry, pos, rot, weapon.getBulletVelocity());
-                    m_sounds["gunshot"].play();
                 }
             }
         }
@@ -229,17 +190,14 @@ void DebugSection::update() noexcept
         }
         if(input.isPressedOnce(GLFW_KEY_1))
         {
-            m_sounds["handgun_click"].play();
             m_hero.setCurrentItem(0);
         }
         if(input.isPressedOnce(GLFW_KEY_2))
         {
-            m_sounds["handgun_click"].play();
             m_hero.setCurrentItem(1);
         }
         if(input.isPressedOnce(GLFW_KEY_3))
         {
-            m_sounds["handgun_click"].play();
             m_hero.setCurrentItem(2);
         }
     }

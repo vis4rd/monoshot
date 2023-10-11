@@ -1,6 +1,5 @@
 #include "../include/section/SectionManager.hpp"
 
-#include "audio/AudioManager.hpp"
 #include "resource/ResourceManager.hpp"
 
 SectionManager& SectionManager::get()
@@ -45,23 +44,6 @@ void SectionManager::update() noexcept
 {
     if(!m_sections.empty())
     {
-        auto& audio = AudioManager::get();
-        auto& menu_music = audio.getMusic("menu_music");
-        if((m_sections.top()->name() != "DebugSection")
-           && (m_sections.top()->name() != "CreatorSection")
-           && (m_sections.top()->name() != "TutorialMapSection")
-           && (m_sections.top()->name() != "ForestMapSection")
-           && (m_sections.top()->name() != "WinterMapSection"))
-        {
-            if(menu_music->getStatus() != sf::Music::Playing)
-            {
-                menu_music->play();
-            }
-        }
-        else
-        {
-            menu_music->pause();
-        }
         m_sections.top()->update();
     }
 }
@@ -72,14 +54,4 @@ void SectionManager::render() noexcept
     {
         m_sections.top()->render();
     }
-}
-
-SectionManager::SectionManager()
-{
-    AudioManager::get().playMusic("menu_music");
-}
-
-SectionManager::~SectionManager()
-{
-    AudioManager::get().pauseMusic("menu_music");
 }
