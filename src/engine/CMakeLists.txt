@@ -49,31 +49,13 @@ add_subdirectory("${PROJECT_SOURCE_DIR}/lib/entt")
 # tinyfiledialogs
 add_subdirectory("${PROJECT_SOURCE_DIR}/lib/tinyfiledialogs")
 
-# SFML
-set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
-set(SFML_USE_STATIC_STD_LIBS ON CACHE BOOL "" FORCE)
-set(SFML_BUILD_WINDOW OFF CACHE BOOL "" FORCE)
-set(SFML_BUILD_GRAPHICS OFF CACHE BOOL "" FORCE)
-set(SFML_BUILD_AUDIO ON CACHE BOOL "" FORCE)
-set(SFML_BUILD_NETWORK OFF CACHE BOOL "" FORCE)
-set(SFML_BUILD_DOC OFF CACHE BOOL "" FORCE)
-set(SFML_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-set(SFML_BUILD_TEST_SUITE OFF CACHE BOOL "" FORCE)
-set(SFML_ENABLE_COVERAGE OFF CACHE BOOL "" FORCE)
-set(SFML_INSTALL_PKGCONFIG_FILES OFF CACHE BOOL "" FORCE)
-set(SFML_ENABLE_PCH ON CACHE BOOL "" FORCE)
-set(SFML_USE_SYSTEM_DEPS OFF CACHE BOOL "" FORCE)
-set(SFML_BUILD_FRAMEWORKS OFF CACHE BOOL "" FORCE)
-set(SFML_STATIC_LIBRARIES ON CACHE BOOL "" FORCE)
-add_subdirectory("${PROJECT_SOURCE_DIR}/lib/sfml")
-
 # inifile-cpp
 add_subdirectory("${PROJECT_SOURCE_DIR}/lib/inifile-cpp")
 
 # Modules
 add_subdirectory("${PROJECT_SOURCE_DIR}/module/input")
 add_subdirectory("${PROJECT_SOURCE_DIR}/module/cstring")
-add_subdirectory("${PROJECT_SOURCE_DIR}/module/audio")
+# add_subdirectory("${PROJECT_SOURCE_DIR}/module/audio") # currently not supported
 add_subdirectory("${PROJECT_SOURCE_DIR}/module/renderer")
 add_subdirectory("${PROJECT_SOURCE_DIR}/module/camera")
 add_subdirectory("${PROJECT_SOURCE_DIR}/module/section")

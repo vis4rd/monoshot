@@ -41,7 +41,7 @@ cmake --build .
 ```
 
 Monoshot requires C++20 capable compiler such as GCC 13+ or Clang 14+ (preferably supporting
-`<format>` library) with MSVCRT runtime library [^1].
+`<format>` library).
 
 ## Dependencies
 
@@ -50,7 +50,6 @@ their respective licences:
 
 - [EnTT](https://github.com/skypjack/entt) - Entity Component System (`MIT`)
 - [ImGui](https://github.com/ocornut/imgui) - Graphical User Interface (`MIT`)
-- [SFML](https://github.com/SFML/SFML) - Sound and music playing (`zlib`)
 - [glad](https://github.com/Dav1dde/glad) - OpenGL symbol loader/generator (`MIT` +
 `Public Domain`, `WTFPL` or `CC0`)
 - [glfw](https://github.com/glfw/glfw) - Window and OpenGL context creation API (`zlib`/`libpng`)
@@ -69,6 +68,3 @@ see [the license file](LICENSE.md).
 
 > NOTE: `thesis` branch is licensed under its own EULA, which is not applicable here. At the
 > same time, MIT license does not pertain to `thesis` branch.
-
-[^1]: MSVCRT is required only because of SFML, which precompiles libFLAC (and other dependencies)
-with the mentioned runtime library.

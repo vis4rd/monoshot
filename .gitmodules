@@ -20,9 +20,6 @@
 [submodule "TINYFILEDIALOGS"]
 	path = src/engine/lib/tinyfiledialogs/tinyfiledialogs
 	url = https://git.code.sf.net/p/tinyfiledialogs/code
-[submodule "SFML"]
-	path = src/engine/lib/sfml
-	url = https://github.com/SFML/SFML.git
 [submodule "INIFILE-CPP"]
 	path = src/engine/lib/inifile-cpp/inifile-cpp
 	url = https://github.com/Rookfighter/inifile-cpp.git
