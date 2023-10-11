@@ -1,5 +1,8 @@
 #include "../../include/texture/Texture.hpp"
 
+#include <cstring>
+#include <format>
+
 #include <spdlog/fmt/bin_to_hex.h>
 #include <stbi/stb_image.h>
 
@@ -152,14 +155,6 @@ void Texture::load(
         &m_numberOfChannels,
         0));
     m_isLoadedByStbi = true;
-
-    if constexpr(mono::config::constant::DebugMode)
-    {
-        std::span<std::byte> mem(
-            m_data,
-            m_textureData.widthTotal * m_textureData.heightTotal * m_numberOfChannels);
-        spdlog::trace("Loaded Texture Data = {}", spdlog::to_hex(mem));
-    }
 }
 
 void Texture::load(
@@ -175,14 +170,8 @@ void Texture::load(
         m_textureData.widthTotal * m_textureData.heightTotal * m_numberOfChannels;
     this->safeDelete();
     spdlog::trace("Loading Texture from memory of size {} bytes", size);
-    m_sourcePath = fmt::format("In memory texture of size {} bytes", size);
+    m_sourcePath = std::format("In memory texture of size {} bytes", size);
     this->tryCopyExternalMemory(data, size);
-
-    if constexpr(mono::config::constant::DebugMode)
-    {
-        std::span<std::byte> mem(m_data, size);
-        spdlog::trace("Loaded Texture Data = {}", spdlog::to_hex(mem));
-    }
 }
 
 const std::uint32_t& Texture::getID() const
@@ -316,12 +305,6 @@ void Texture::tryCopyExternalMemory(const std::byte* memory, const std::size_t& 
         m_data = new std::byte[size];
         m_isLoadedByStbi = false;
         std::memcpy(m_data, memory, size);
-
-        if constexpr(mono::config::constant::DebugMode)
-        {
-            std::span<std::byte> mem(m_data, size);
-            spdlog::trace("Copied Texture Data = {}", spdlog::to_hex(mem));
-        }
     }
     else
     {

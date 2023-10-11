@@ -38,7 +38,10 @@ add_subdirectory("${PROJECT_SOURCE_DIR}/lib/imgui")
 # spdlog
 set(SPDLOG_BUILD_SHARED OFF CACHE BOOL "" FORCE)
 set(SPDLOG_ENABLE_PCH ON CACHE BOOL "" FORCE)
+set(SPDLOG_USE_STD_FORMAT on CACHE BOOL "" FORCE)
+set(CMAKE_CXX_STANDARD 20)
 add_subdirectory("${PROJECT_SOURCE_DIR}/lib/spdlog")
+target_compile_definitions(spdlog PUBLIC SPDLOG_SOURCE_LOCATION)
 
 # stb_image
 add_subdirectory("${PROJECT_SOURCE_DIR}/lib/stb_image")

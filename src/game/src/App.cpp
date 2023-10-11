@@ -57,40 +57,30 @@ void App::initLogger() noexcept
     namespace fs = std::filesystem;
     fs::create_directory("../logs");
 
-    auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-    console_sink->set_pattern("%^%l%$ | %v");
+    const std::string info_pattern{"[%Y-%m-%d %T.%e][%^%l%$] %v"};
+    const std::string debug_pattern{"[%Y-%m-%d %T.%e][%^%l%$][thread %t][%s:%#] %v"};
+    spdlog::level log_level{spdlog::level::info};
+    std::string log_pattern{info_pattern};
+
     if constexpr(mono::config::constant::DebugMode)
     {
-        console_sink->set_level(spdlog::level::debug);
+        log_level = spdlog::level::debug;
+        log_pattern = debug_pattern;
     }
-    else
-    {
-        console_sink->set_level(spdlog::level::info);
-    }
+
+    auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+    console_sink->set_pattern(log_pattern);
+    console_sink->set_level(log_level);
 
     auto file_sink =
         std::make_shared<spdlog::sinks::basic_file_sink_mt>("../logs/latest.log", true);
-    file_sink->set_pattern("[%^%l%$] %v");
-    if constexpr(mono::config::constant::DebugMode)
-    {
-        file_sink->set_level(spdlog::level::debug);
-    }
-    else
-    {
-        file_sink->set_level(spdlog::level::info);
-    }
+    file_sink->set_pattern(log_pattern);
+    file_sink->set_level(log_level);
 
     spdlog::logger multisink_logger("logger", {console_sink, file_sink});
-    if constexpr(mono::config::constant::DebugMode)
-    {
-        multisink_logger.set_level(spdlog::level::debug);
-    }
-    else
-    {
-        multisink_logger.set_level(spdlog::level::info);
-    }
-    spdlog::set_default_logger(std::make_shared<spdlog::logger>(multisink_logger));
+    multisink_logger.set_level(log_level);
 
+    spdlog::set_default_logger(std::make_shared<spdlog::logger>(multisink_logger));
     spdlog::debug("Logging initialized");
 }
 
