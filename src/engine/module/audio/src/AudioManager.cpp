@@ -22,7 +22,7 @@ bool AudioManager::addSound(
 
     sf::SoundBuffer buffer;
     bool success = false;
-    if(success = buffer.loadFromFile(path); success)
+    if(success = buffer.loadFromFile(path.string()); success)
     {
         m_soundNames[name] = getNextFreeSoundIndex();
         m_soundBuffers.push_back(std::move(buffer));
@@ -109,7 +109,7 @@ bool AudioManager::addMusic(
 
     auto music = std::make_unique<sf::Music>();
     bool success = false;
-    if(success = music->openFromFile(path); success)
+    if(success = music->openFromFile(path.string()); success)
     {
         m_musicNames[name] = getNextFreeMusicIndex();
         auto& init_volume = m_musicInitialVolumes.emplace_back(volume);
