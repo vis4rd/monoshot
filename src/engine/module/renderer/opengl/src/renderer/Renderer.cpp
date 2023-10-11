@@ -146,7 +146,7 @@ void Renderer::endBatch(const glm::mat4& projection, const glm::mat4& view)
     m_data.last_view_matrix = view;
 
     // quads
-    if(m_stats.indexCount > 0)  // TODO: possibly can be removed in favor of just quadCount
+    if(m_stats.indexCount > 0)  // TODO(vis4rd): possibly can be removed in favor of just quadCount
     {
         // spdlog::trace("Renderer: filling up VB, sending data to gpu");  // commented for
         // performance reasons
@@ -179,29 +179,12 @@ void Renderer::endBatch(const glm::mat4& projection, const glm::mat4& view)
         m_data.quadVao->bind();
         glDrawElements(GL_TRIANGLES, m_stats.indexCount, GL_UNSIGNED_INT, nullptr);
 
-        // spdlog::trace("Renderer: uploading uniforms");  // commented for performance reasons
-        quad_shader.uploadArrayInt(
-            "uTextures",
-            m_data.textureSlotsTakenCount,
-            m_data.textureSamplers.data(),
-            2);
-        quad_shader.uploadMat4("uProjection", projection, 0);
-        quad_shader.uploadMat4("uView", view, 1);
-        quad_shader.uploadArrayUInt(
-            "uFrameCount",
-            m_data.textureSlotsTakenCount,
-            m_data.textureFrameCounts.data(),
-            34);
-        quad_shader.uploadArrayUInt(
-            "uFrameRowLength",
-            m_data.textureSlotsTakenCount,
-            m_data.textureFrameRowLengths.data(),
-            66);
-        quad_shader.uploadArrayUInt(
-            "uFrameCurrentIndex",
-            m_data.textureSlotsTakenCount,
-            m_data.textureFrameCurrentIndex.data(),
-            98);
+        quad_shader.uploadUniform("uTextures", m_data.textureSamplers, 2);
+        quad_shader.uploadUniform("uProjection", projection, 0);
+        quad_shader.uploadUniform("uView", view, 1);
+        quad_shader.uploadUniform("uFrameCount", m_data.textureFrameCounts, 34);
+        quad_shader.uploadUniform("uFrameRowLength", m_data.textureFrameRowLengths, 66);
+        quad_shader.uploadUniform("uFrameCurrentIndex", m_data.textureFrameCurrentIndex, 98);
 
         glDisable(GL_BLEND);
 
@@ -234,8 +217,8 @@ void Renderer::endBatch(const glm::mat4& projection, const glm::mat4& view)
         glDrawArrays(GL_LINES, 0, m_stats.lineCount * 2);
 
         // spdlog::trace("Renderer: uploading uniforms");  // commented for performance reasons
-        line_shader.uploadMat4("uProjection", projection, 0);
-        line_shader.uploadMat4("uView", view, 1);
+        line_shader.uploadUniform("uProjection", projection, 0);
+        line_shader.uploadUniform("uView", view, 1);
     }
 
     m_stats.drawCount++;
