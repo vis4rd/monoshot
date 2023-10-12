@@ -2,6 +2,7 @@
 
 #include <filesystem>
 
+#include <cstring/cstring.hpp>
 #include <resource/Resource.hpp>
 #include <resource/ResourceManager.hpp>
 #include <spdlog/sinks/basic_file_sink.h>
@@ -57,8 +58,8 @@ void App::initLogger() noexcept
     namespace fs = std::filesystem;
     fs::create_directory("../logs");
 
-    const std::string info_pattern{"[%Y-%m-%d %T.%e][%^%l%$] %v"};
-    const std::string debug_pattern{"[%Y-%m-%d %T.%e][%^%l%$][thread %t][%s:%#] %v"};
+    constexpr mono::cstring info_pattern{"[%Y-%m-%d %T.%e][%^%l%$] %v"};
+    constexpr mono::cstring debug_pattern{"[%Y-%m-%d %T.%e][%^%l%$][thread %t][%s:%#] %v"};
     spdlog::level log_level{spdlog::level::info};
     std::string log_pattern{info_pattern};
 
@@ -72,8 +73,23 @@ void App::initLogger() noexcept
     console_sink->set_pattern(log_pattern);
     console_sink->set_level(log_level);
 
-    auto file_sink =
-        std::make_shared<spdlog::sinks::basic_file_sink_mt>("../logs/latest.log", true);
+    std::string file_name = std::format("../logs/{}", std::chrono::system_clock::now());
+    file_name.replace(file_name.find(' '), 1, "_");
+    file_name.replace(file_name.find(':'), 1, "-");
+    file_name.replace(file_name.find(':'), 1, "-");
+    file_name = file_name.substr(0, file_name.rfind('.'));
+    if constexpr(mono::config::constant::DebugMode)
+    {
+        file_name += "_debug";
+    }
+    file_name += ".log";
+
+    {
+        // create a file
+        std::fstream file{file_name};
+    }
+
+    auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(file_name, true);
     file_sink->set_pattern(log_pattern);
     file_sink->set_level(log_level);
 

@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include <string_view>
 
-namespace vis
+namespace mono
 {
 
 template<std::size_t N>
@@ -87,7 +87,7 @@ class cstring final
     [[nodiscard]] constexpr bool operator<=(const cstring&) const = default;
     [[nodiscard]] constexpr bool operator>=(const cstring&) const = default;
 
-    [[nodiscard]] constexpr operator std::string_view() const { return {std::data(m_data), N}; }
+    [[nodiscard]] constexpr operator std::string_view() const { return {std::data(m_data), N - 1}; }
 
 
     private:
@@ -100,4 +100,4 @@ class cstring final
     underlying_type m_data{};
 };
 
-}  // namespace vis
+}  // namespace mono
