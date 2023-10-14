@@ -47,7 +47,7 @@ ConfigLoader::ConfigLoader()
 
 void ConfigLoader::updateRuntimeConfiguration() const
 {
-    config::runtime::UseOpenGL = m_iniFile.at("engine").at("UseOpenGL").as<bool>();
+    config::runtime::useOpenGl = m_iniFile.at("engine").at("UseOpenGL").as<bool>();
 }
 
 }  // namespace mono

@@ -43,13 +43,13 @@ void NewGameSection::render() noexcept
     const auto& title_font_size = *res::uiTitleFontSize;
 
     auto title_font_guard = title_font->use();
-    ImGui::SetNextWindowPos({m_layout.menu_x, m_layout.menu_y - title_font_size - 100.f});
+    ImGui::SetNextWindowPos({m_layout.menuX, m_layout.menuY - title_font_size - 100.f});
     ImGui::SetNextWindowSize(
         {ResourceManager::window->getSize().x - 200.f, title_font->get()->FontSize + 50.f});
-    ImGui::Begin("NewGameMenuGameTitle", nullptr, m_layout.window_flags);
+    ImGui::Begin("NewGameMenuGameTitle", nullptr, m_layout.windowFlags);
     {
         auto next_y = ImGui::GetCursorScreenPos().y;
-        ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s, next_y});
+        ImGui::SetCursorScreenPos({m_layout.menuX + m_layout.buttonWS, next_y});
         ImGui::Text("MONOSHOT");
     }
     ImGui::End();
@@ -58,32 +58,32 @@ void NewGameSection::render() noexcept
     const auto& button_font = res::uiButtonFont;
 
     auto button_font_guard = button_font->use();
-    ImGui::SetNextWindowPos({m_layout.menu_x, m_layout.menu_y});
-    ImGui::SetNextWindowSize({m_layout.menu_w, m_layout.menu_h});
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {m_layout.button_w_s, m_layout.button_h_s});
-    ImGui::Begin("NewGameMenu", nullptr, m_layout.window_flags);
+    ImGui::SetNextWindowPos({m_layout.menuX, m_layout.menuY});
+    ImGui::SetNextWindowSize({m_layout.menuW, m_layout.menuH});
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {m_layout.buttonWS, m_layout.buttonHS});
+    ImGui::Begin("NewGameMenu", nullptr, m_layout.windowFlags);
     {
         ImGui::SetCursorScreenPos(
-            {m_layout.menu_x + m_layout.button_w_s, m_layout.menu_y + m_layout.button_h_s});
-        if(ImGui::Button("Tutorial", {m_layout.button_w, m_layout.button_h}))
+            {m_layout.menuX + m_layout.buttonWS, m_layout.menuY + m_layout.buttonHS});
+        if(ImGui::Button("Tutorial", {m_layout.buttonW, m_layout.buttonH}))
         {
             spdlog::debug("Clicking 'Tutorial'");
             auto& sm = SectionManager::get();
             sm.emplaceSection<TutorialMapSection>();
         }
         ImGui::SetCursorScreenPos(
-            {m_layout.menu_x + m_layout.button_w_s,
-             m_layout.menu_y + m_layout.button_h_s * 2 + m_layout.button_h});
-        if(ImGui::Button("Forest", {m_layout.button_w, m_layout.button_h}))
+            {m_layout.menuX + m_layout.buttonWS,
+             m_layout.menuY + m_layout.buttonHS * 2 + m_layout.buttonH});
+        if(ImGui::Button("Forest", {m_layout.buttonW, m_layout.buttonH}))
         {
             spdlog::debug("Clicking 'Forest'");
             auto& sm = SectionManager::get();
             sm.emplaceSection<ForestMapSection>();
         }
         ImGui::SetCursorScreenPos(
-            {m_layout.menu_x + m_layout.button_w_s,
-             m_layout.menu_y + m_layout.button_h_s * 3 + m_layout.button_h * 2});
-        if(ImGui::Button("Winter", {m_layout.button_w, m_layout.button_h}))
+            {m_layout.menuX + m_layout.buttonWS,
+             m_layout.menuY + m_layout.buttonHS * 3 + m_layout.buttonH * 2});
+        if(ImGui::Button("Winter", {m_layout.buttonW, m_layout.buttonH}))
         {
             spdlog::debug("Clicking 'Winter'");
             auto& sm = SectionManager::get();
@@ -92,9 +92,9 @@ void NewGameSection::render() noexcept
         if(s_show_debug_level)
         {
             ImGui::SetCursorScreenPos(
-                {m_layout.menu_x + m_layout.button_w_s,
-                 m_layout.menu_y + m_layout.button_h_s * 4 + m_layout.button_h * 3});
-            if(ImGui::Button("Debug Level", {m_layout.button_w, m_layout.button_h}))
+                {m_layout.menuX + m_layout.buttonWS,
+                 m_layout.menuY + m_layout.buttonHS * 4 + m_layout.buttonH * 3});
+            if(ImGui::Button("Debug Level", {m_layout.buttonW, m_layout.buttonH}))
             {
                 spdlog::debug("Clicking 'Debug Level'");
                 auto& sm = SectionManager::get();

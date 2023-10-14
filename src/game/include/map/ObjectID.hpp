@@ -7,6 +7,7 @@ enum ObjectID : std::size_t
     FIRST_OBJECT = 2000,
 
     // write objects here
+    // NOLINTBEGIN(readability-identifier-naming)
     Car,
     DestroyedCar,
     Chair,
@@ -16,6 +17,7 @@ enum ObjectID : std::size_t
     LargeTree,
     SmallBush,
     LargeBush,
+    // NOLINTEND(readability-identifier-naming)
 
     LAST_OBJECT,
     OBJECT_COUNT = LAST_OBJECT - FIRST_OBJECT - 1

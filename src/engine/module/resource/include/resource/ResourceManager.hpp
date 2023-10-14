@@ -15,6 +15,7 @@ class FramerateLimiter;
 
 struct ResourceManager
 {
+    // NOLINTBEGIN(readability-identifier-naming)
     static std::shared_ptr<mono::Window> window;
     static std::shared_ptr<Timer> timer;
     static glm::vec4 mapThemeBackgroundColor;
@@ -42,4 +43,5 @@ struct ResourceManager
     static std::shared_ptr<float> uiAmmoFontSize;
 
     static std::shared_ptr<FramerateLimiter> framerateLimiter;
+    // NOLINTEND(readability-identifier-naming)
 };

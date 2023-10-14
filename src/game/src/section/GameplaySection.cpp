@@ -92,7 +92,7 @@ void GameplaySection::update() noexcept
                 const auto& weapon = m_hero.getCurrentItem<Weapon>();
                 if(weapon.getAmmoCurrent() > 0)
                 {
-                    ecs::action::spawn_bullet(m_bulletRegistry, pos, rot, weapon.getBulletVelocity());
+                    ecs::action::spawnBullet(m_bulletRegistry, pos, rot, weapon.getBulletVelocity());
                 }
             }
         }
@@ -216,7 +216,7 @@ void GameplaySection::render() noexcept
             {0.5f, 0.5f});
         ImGui::SetNextWindowSize(
             {static_cast<float>(text_pos.x), static_cast<float>(text_pos.y) / 1.5f});
-        ImGui::Begin("Win message", nullptr, m_layout.window_flags | ImGuiWindowFlags_NoBackground);
+        ImGui::Begin("Win message", nullptr, m_layout.windowFlags | ImGuiWindowFlags_NoBackground);
         {
             TextCentered("You won");
         }
@@ -224,7 +224,7 @@ void GameplaySection::render() noexcept
         font_guard.popFont();
     }
 
-    if constexpr(not mono::config::constant::DebugMode)
+    if constexpr(not mono::config::constant::debugMode)
     {
         if(s_show_debug_info)
         {

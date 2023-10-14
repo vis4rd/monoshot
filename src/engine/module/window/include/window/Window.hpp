@@ -106,7 +106,7 @@ bool Window::update(UpdateableTrait auto &&...updateables) noexcept
             screenFB.getSize().x,
             screenFB.getSize().y);
     }
-    if constexpr(mono::config::constant::DebugMode)
+    if constexpr(mono::config::constant::debugMode)
     {
         if(input.isPressedOnce(GLFW_KEY_APOSTROPHE))  // debugging purposes
         {
@@ -158,7 +158,7 @@ void Window::render(RenderableTrait auto &&...renderables) noexcept
     }
 
     // Debug panel
-    if constexpr(mono::config::constant::DebugMode)
+    if constexpr(mono::config::constant::debugMode)
     {
         static bool show_debug_panel = true;
         static bool enable_vsync = m_isVSyncEnabled;

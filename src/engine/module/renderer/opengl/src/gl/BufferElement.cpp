@@ -11,17 +11,17 @@ inline static std::uint32_t sizeofShaderDataType(const ShaderDataType& type)
 {
     switch(type)
     {
-        case ShaderDataType::bool1: return 1;
-        case ShaderDataType::float1:
-        case ShaderDataType::int1: return 4;
-        case ShaderDataType::float2:
-        case ShaderDataType::int2: return 4 * 2;
-        case ShaderDataType::float3:
-        case ShaderDataType::int3: return 4 * 3;
-        case ShaderDataType::float4:
-        case ShaderDataType::int4: return 4 * 4;
-        case ShaderDataType::mat3: return 4 * 3 * 3;
-        case ShaderDataType::mat4: return 4 * 4 * 4;
+        case ShaderDataType::BOOL1: return 1;
+        case ShaderDataType::FLOAT1:
+        case ShaderDataType::INT1: return 4;
+        case ShaderDataType::FLOAT2:
+        case ShaderDataType::INT2: return 4 * 2;
+        case ShaderDataType::FLOAT3:
+        case ShaderDataType::INT3: return 4 * 3;
+        case ShaderDataType::FLOAT4:
+        case ShaderDataType::INT4: return 4 * 4;
+        case ShaderDataType::MAT3: return 4 * 3 * 3;
+        case ShaderDataType::MAT4: return 4 * 4 * 4;
         default:
         {
             spdlog::error("Unknown ShaderDataType, returning 0");
@@ -67,17 +67,17 @@ std::uint32_t BufferElement::getComponentCount() const
 {
     switch(m_shaderType)
     {
-        case ShaderDataType::bool1:
-        case ShaderDataType::float1:
-        case ShaderDataType::int1: return 1;
-        case ShaderDataType::float2:
-        case ShaderDataType::int2: return 2;
-        case ShaderDataType::float3:
-        case ShaderDataType::int3:
-        case ShaderDataType::mat3: return 3;
-        case ShaderDataType::float4:
-        case ShaderDataType::int4:
-        case ShaderDataType::mat4: return 4;
+        case ShaderDataType::BOOL1:
+        case ShaderDataType::FLOAT1:
+        case ShaderDataType::INT1: return 1;
+        case ShaderDataType::FLOAT2:
+        case ShaderDataType::INT2: return 2;
+        case ShaderDataType::FLOAT3:
+        case ShaderDataType::INT3:
+        case ShaderDataType::MAT3: return 3;
+        case ShaderDataType::FLOAT4:
+        case ShaderDataType::INT4:
+        case ShaderDataType::MAT4: return 4;
         default:
         {
             spdlog::error("Unknown ShaderDataType, returning 0");

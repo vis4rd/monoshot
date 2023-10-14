@@ -80,7 +80,7 @@ void InputManager::updateKeyState(const std::int32_t& glfw_key)
     auto& ps = m_previousKeystates.at(index);
     auto& cs = m_currentKeystates.at(index);
     std::int32_t glfw_state = 0;
-    if(this->is_mouse_key(glfw_key))
+    if(this->isMouseKey(glfw_key))
     {
         glfw_state = glfwGetMouseButton(window, glfw_key);
     }

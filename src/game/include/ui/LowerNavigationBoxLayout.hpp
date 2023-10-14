@@ -16,36 +16,36 @@ struct LowerNavigationBoxLayout : public BaseLayout
 LowerNavigationBoxLayout::LowerNavigationBoxLayout(const ImVec2& workpos, const ImVec2& worksize)
     : BaseLayout(workpos, worksize)
 {
-    base_menu_w = 1840.f;
+    m_baseMenuW = 1840.f;
     this->update(workpos, worksize);
 
-    spdlog::debug("box size = ({}, {})", menu_w, menu_h);
-    spdlog::debug("box pos = ({}, {})", menu_x, menu_y);
-    spdlog::debug("button size = [{}({}, {}){}]", button_w_s, button_w, button_h, button_h_s);
+    spdlog::debug("box size = ({}, {})", menuW, menuH);
+    spdlog::debug("box pos = ({}, {})", menuX, menuY);
+    spdlog::debug("button size = [{}({}, {}){}]", buttonWS, buttonW, buttonH, buttonHS);
 }
 
 void LowerNavigationBoxLayout::update(const ImVec2& workpos, const ImVec2& worksize)
 {
-    viewport_w = worksize.x;
-    viewport_h = worksize.y;
-    viewport_x = workpos.x;
-    viewport_y = workpos.y;
+    viewportW = worksize.x;
+    viewportH = worksize.y;
+    viewportX = workpos.x;
+    viewportY = workpos.y;
 
-    scale_w = viewport_w / base_viewport_w;
-    scale_h = viewport_h / base_viewport_h;
-    external_h_spacing = 40.f * scale_h;
-    external_w_spacing = 40.f * scale_w;
+    m_scaleW = viewportW / m_baseViewportW;
+    m_scaleH = viewportH / m_baseViewportH;
+    externalHSpacing = 40.f * m_scaleH;
+    externalWSpacing = 40.f * m_scaleW;
 
-    menu_x = viewport_x + external_w_spacing;
-    menu_w = base_menu_w * scale_w;
+    menuX = viewportX + externalWSpacing;
+    menuW = m_baseMenuW * m_scaleW;
 
-    button_w = base_button_w * scale_w;
-    button_h = base_button_h * scale_h;
-    button_w_s = base_w_spacing * scale_w;
-    button_h_s = base_h_spacing * scale_h;
+    buttonW = m_baseButtonW * m_scaleW;
+    buttonH = m_baseButtonH * m_scaleH;
+    buttonWS = m_baseWSpacing * m_scaleW;
+    buttonHS = m_baseHSpacing * m_scaleH;
 
-    menu_h = button_h + (2.f * button_h_s);
-    menu_y = viewport_y + viewport_h - menu_h - external_h_spacing;
+    menuH = buttonH + (2.f * buttonHS);
+    menuY = viewportY + viewportH - menuH - externalHSpacing;
 }
 
 }  // namespace UI

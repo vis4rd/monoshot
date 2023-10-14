@@ -24,14 +24,14 @@ inline void drawOverlay(
         res::rifleInventoryTexture->getID(),
         res::pistolInventoryTexture->getID()};
 
-    ImGui::SetNextWindowPos({layout.menu_x, layout.menu_y});
-    ImGui::SetNextWindowSize({layout.menu_w, layout.menu_h});
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {layout.button_w_s, layout.button_h_s});
-    ImGui::Begin("Gameplay Overlay", nullptr, layout.window_flags | ImGuiWindowFlags_NoBackground);
+    ImGui::SetNextWindowPos({layout.menuX, layout.menuY});
+    ImGui::SetNextWindowSize({layout.menuW, layout.menuH});
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {layout.buttonWS, layout.buttonHS});
+    ImGui::Begin("Gameplay Overlay", nullptr, layout.windowFlags | ImGuiWindowFlags_NoBackground);
     {
         ImGui::Image(
             (void*)(std::intptr_t)weapon_texture_indices[weapon_index],
-            {256 * layout.viewport_w / 1920.f, 128 * layout.viewport_h / 1080.f});
+            {256 * layout.viewportW / 1920.f, 128 * layout.viewportH / 1080.f});
         ImGui::Text("%u/%u", current_ammo, total_ammo);
         ImGui::Text("+ %d/%d", hero_health, max_hero_health);
     }

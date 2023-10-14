@@ -7,8 +7,10 @@ enum BlockID : std::size_t
     FIRST_BLOCK = 0,
 
     // write blocks here
+    // NOLINTBEGIN(readability-identifier-naming)
     Wall,
     InvisibleWall,
+    // NOLINTEND(readability-identifier-naming)
 
     LAST_BLOCK,
     BLOCK_COUNT = LAST_BLOCK - FIRST_BLOCK - 1

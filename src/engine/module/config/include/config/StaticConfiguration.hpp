@@ -7,6 +7,6 @@
 namespace mono::config::constant
 {
 
-constexpr bool DebugMode = DEBUG_MODE;
+constexpr bool debugMode = DEBUG_MODE;
 
 }

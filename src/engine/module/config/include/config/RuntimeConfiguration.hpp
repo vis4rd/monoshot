@@ -3,6 +3,6 @@
 namespace mono::config::runtime
 {
 
-bool UseOpenGL = true;
+bool useOpenGl = true;
 
 }

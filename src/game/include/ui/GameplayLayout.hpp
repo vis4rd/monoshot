@@ -14,16 +14,16 @@ struct GameplayLayout : public BaseLayout
 GameplayLayout::GameplayLayout(const ImVec2& workpos, const ImVec2& worksize)
     : BaseLayout(workpos, worksize)
 {
-    base_menu_w = 384.f;
-    base_menu_h = 512.f;
+    m_baseMenuW = 384.f;
+    m_baseMenuH = 512.f;
     this->BaseLayout::update(workpos, worksize);
-    menu_y = viewport_y + viewport_h - menu_h;
+    menuY = viewportY + viewportH - menuH;
 }
 
 void GameplayLayout::update(const ImVec2& workpos, const ImVec2& worksize)
 {
     this->BaseLayout::update(workpos, worksize);
-    menu_y = viewport_y + viewport_h - menu_h;
+    menuY = viewportY + viewportH - menuH;
 }
 
 }  // namespace UI

@@ -31,13 +31,13 @@ void MainMenuSection::render() noexcept
     const auto& title_font_size = *res::uiTitleFontSize;
 
     auto title_font_guard = title_font->use();
-    ImGui::SetNextWindowPos({m_layout.menu_x, m_layout.menu_y - title_font_size - 100.f});
+    ImGui::SetNextWindowPos({m_layout.menuX, m_layout.menuY - title_font_size - 100.f});
     ImGui::SetNextWindowSize(
         {res::window->getSize().x - 200.f, title_font->get()->FontSize + 50.f});
-    ImGui::Begin("MainMenuGameTitle", nullptr, m_layout.window_flags);
+    ImGui::Begin("MainMenuGameTitle", nullptr, m_layout.windowFlags);
     {
         auto next_y = ImGui::GetCursorScreenPos().y;
-        ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s, next_y});
+        ImGui::SetCursorScreenPos({m_layout.menuX + m_layout.buttonWS, next_y});
         ImGui::Text("%s", m_titleText.c_str());
     }
     ImGui::End();
@@ -46,38 +46,38 @@ void MainMenuSection::render() noexcept
     const auto& button_font = res::uiButtonFont;
 
     auto button_font_guard = button_font->use();
-    ImGui::SetNextWindowPos({m_layout.menu_x, m_layout.menu_y});
-    ImGui::SetNextWindowSize({m_layout.menu_w, m_layout.menu_h});
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {m_layout.button_w_s, m_layout.button_h_s});
-    ImGui::Begin("MainMenu", nullptr, m_layout.window_flags);
+    ImGui::SetNextWindowPos({m_layout.menuX, m_layout.menuY});
+    ImGui::SetNextWindowSize({m_layout.menuW, m_layout.menuH});
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {m_layout.buttonWS, m_layout.buttonHS});
+    ImGui::Begin("MainMenu", nullptr, m_layout.windowFlags);
     {
         ImGui::SetCursorScreenPos(
-            {m_layout.menu_x + m_layout.button_w_s, m_layout.menu_y + m_layout.button_h_s});
-        if(ImGui::Button("New game", {m_layout.button_w, m_layout.button_h}))
+            {m_layout.menuX + m_layout.buttonWS, m_layout.menuY + m_layout.buttonHS});
+        if(ImGui::Button("New game", {m_layout.buttonW, m_layout.buttonH}))
         {
             spdlog::debug("Clicking 'New game'");
             auto& sm = SectionManager::get();
             sm.emplaceSection<NewGameSection>();
         }
         ImGui::SetCursorScreenPos(
-            {m_layout.menu_x + m_layout.button_w_s, ImGui::GetCursorScreenPos().y});
-        if(ImGui::Button("Map creator", {m_layout.button_w, m_layout.button_h}))
+            {m_layout.menuX + m_layout.buttonWS, ImGui::GetCursorScreenPos().y});
+        if(ImGui::Button("Map creator", {m_layout.buttonW, m_layout.buttonH}))
         {
             spdlog::debug("Clicking 'Map creator'");
             auto& sm = SectionManager::get();
             sm.emplaceSection<CreatorSection>();
         }
         ImGui::SetCursorScreenPos(
-            {m_layout.menu_x + m_layout.button_w_s, ImGui::GetCursorScreenPos().y});
-        if(ImGui::Button("Settings", {m_layout.button_w, m_layout.button_h}))
+            {m_layout.menuX + m_layout.buttonWS, ImGui::GetCursorScreenPos().y});
+        if(ImGui::Button("Settings", {m_layout.buttonW, m_layout.buttonH}))
         {
             spdlog::debug("Clicking 'Settings'");
             auto& sm = SectionManager::get();
             sm.emplaceSection<SettingsSection>();
         }
         ImGui::SetCursorScreenPos(
-            {m_layout.menu_x + m_layout.button_w_s, ImGui::GetCursorScreenPos().y});
-        if(ImGui::Button("Exit", {m_layout.button_w, m_layout.button_h}))
+            {m_layout.menuX + m_layout.buttonWS, ImGui::GetCursorScreenPos().y});
+        if(ImGui::Button("Exit", {m_layout.buttonW, m_layout.buttonH}))
         {
             spdlog::debug("Clicking 'Exit'");
             SectionManager::get().clear();

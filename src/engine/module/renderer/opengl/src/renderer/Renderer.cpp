@@ -32,37 +32,37 @@ Renderer::Renderer()
 
     //// Quads
     // data
-    std::uint32_t quadIndices[m_data.maxIndexCount];
+    std::uint32_t quad_indices[m_data.MAX_INDEX_COUNT];
     std::uint32_t offset = 0;
-    for(std::size_t i = 0; i < m_data.maxIndexCount; i += 6)
+    for(std::size_t i = 0; i < m_data.MAX_INDEX_COUNT; i += 6)
     {
-        quadIndices[i + 0] = 0 + offset;
-        quadIndices[i + 1] = 1 + offset;
-        quadIndices[i + 2] = 2 + offset;
+        quad_indices[i + 0] = 0 + offset;
+        quad_indices[i + 1] = 1 + offset;
+        quad_indices[i + 2] = 2 + offset;
 
-        quadIndices[i + 3] = 2 + offset;
-        quadIndices[i + 4] = 3 + offset;
-        quadIndices[i + 5] = 0 + offset;
+        quad_indices[i + 3] = 2 + offset;
+        quad_indices[i + 4] = 3 + offset;
+        quad_indices[i + 5] = 0 + offset;
 
         offset += 4;
     }
 
     // buffers
     m_data.quadVao = std::make_shared<mono::VertexArray>();
-    auto quadVbo = mono::VertexBuffer(m_data.maxVertexCount * sizeof(QuadVertex));
-    auto quadEbo = mono::ElementBuffer(quadIndices, m_data.maxIndexCount);
+    auto quad_vbo = mono::VertexBuffer(m_data.MAX_VERTEX_COUNT * sizeof(QuadVertex));
+    auto quad_ebo = mono::ElementBuffer(quad_indices, m_data.MAX_INDEX_COUNT);
 
     // attributes
-    mono::BufferLayout quadLayout = {
-        {mono::ShaderDataType::float3, "aPos"      },
-        {mono::ShaderDataType::float4, "aColor"    },
-        {mono::ShaderDataType::float2, "aTexCoords"},
-        {mono::ShaderDataType::float1, "aTexIndex" },
+    mono::BufferLayout quad_layout = {
+        {mono::ShaderDataType::FLOAT3, "aPos"      },
+        {mono::ShaderDataType::FLOAT4, "aColor"    },
+        {mono::ShaderDataType::FLOAT2, "aTexCoords"},
+        {mono::ShaderDataType::FLOAT1, "aTexIndex" },
     };
-    quadVbo.setLayout(quadLayout);
+    quad_vbo.setLayout(quad_layout);
 
-    m_data.quadVao->addVertexBuffer(std::move(quadVbo));
-    m_data.quadVao->addElementBuffer(quadEbo);
+    m_data.quadVao->addVertexBuffer(std::move(quad_vbo));
+    m_data.quadVao->addElementBuffer(quad_ebo);
 
     // shaders
     mono::gl::ShaderManager::get().addShaderProgram(
@@ -73,16 +73,16 @@ Renderer::Renderer()
     //// Lines
     // buffers
     m_data.lineVao = std::make_shared<mono::VertexArray>();
-    auto lineVbo = mono::VertexBuffer(m_data.maxVertexCount * sizeof(LineVertex));
+    auto line_vbo = mono::VertexBuffer(m_data.MAX_VERTEX_COUNT * sizeof(LineVertex));
 
     // attributes
-    mono::BufferLayout lineLayout = {
-        {mono::ShaderDataType::float3, "aPos"  },
-        {mono::ShaderDataType::float4, "aColor"},
+    mono::BufferLayout line_layout = {
+        {mono::ShaderDataType::FLOAT3, "aPos"  },
+        {mono::ShaderDataType::FLOAT4, "aColor"},
     };
-    lineVbo.setLayout(lineLayout);
+    line_vbo.setLayout(line_layout);
 
-    m_data.lineVao->addVertexBuffer(std::move(lineVbo));
+    m_data.lineVao->addVertexBuffer(std::move(line_vbo));
 
     // shaders
     mono::gl::ShaderManager::get().addShaderProgram(
@@ -142,8 +142,8 @@ void Renderer::beginBatch()
 void Renderer::endBatch(const glm::mat4& projection, const glm::mat4& view)
 {
     // spdlog::trace("Renderer: ending a batch");  // commented for performance reasons
-    m_data.last_projection_matrix = projection;
-    m_data.last_view_matrix = view;
+    m_data.lastProjectionMatrix = projection;
+    m_data.lastViewMatrix = view;
 
     // quads
     if(m_stats.indexCount > 0)  // TODO(vis4rd): possibly can be removed in favor of just quadCount
@@ -257,10 +257,10 @@ void Renderer::drawQuad(
     // spdlog::trace("Renderer: drawing a Quad, position = ({}, {}), size = ({}, {}), rotation =
     // {}", position.x, position.y, size.x, size.y, rotation);
 
-    if(m_stats.indexCount >= m_data.maxIndexCount
-       || m_data.textureSlotsTakenCount >= m_data.maxTextures)
+    if(m_stats.indexCount >= m_data.MAX_INDEX_COUNT
+       || m_data.textureSlotsTakenCount >= m_data.MAX_TEXTURES)
     {
-        endBatch(m_data.last_projection_matrix, m_data.last_view_matrix);
+        endBatch(m_data.lastProjectionMatrix, m_data.lastViewMatrix);
         beginBatch();
     }
 

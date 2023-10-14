@@ -15,7 +15,7 @@ struct Tile
     float x = 0;
     float y = 0;
     float rotation = 0.f;
-    BlockID block_id;
+    BlockID blockId;
     bool solid = false;  // indicates if collisions should apply
 };
 

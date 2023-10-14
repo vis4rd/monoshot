@@ -31,16 +31,16 @@ Window::Window(
         {-1.f, -1.f, 0.f, 0.f, 1.f, -1.f, 1.f, 0.f, 1.f, 1.f, 1.f, 1.f, -1.f, 1.f, 0.f, 1.f};
     constexpr std::uint32_t screen_element_buffer[6] = {0, 1, 2, 2, 3, 0};
 
-    VertexBuffer screenVB(screen_vertex_buffer, sizeof(screen_vertex_buffer));
+    VertexBuffer screen_vb(screen_vertex_buffer, sizeof(screen_vertex_buffer));
     BufferLayout layout = {
-        {ShaderDataType::float2, "aPos"      },
-        {ShaderDataType::float2, "aTexCoords"},
+        {ShaderDataType::FLOAT2, "aPos"      },
+        {ShaderDataType::FLOAT2, "aTexCoords"},
     };
-    screenVB.setLayout(layout);
+    screen_vb.setLayout(layout);
 
-    ElementBuffer screenEB(screen_element_buffer, 6);
-    screenVA.addVertexBuffer(std::move(screenVB));
-    screenVA.addElementBuffer(screenEB);
+    ElementBuffer screen_eb(screen_element_buffer, 6);
+    screenVA.addVertexBuffer(std::move(screen_vb));
+    screenVA.addElementBuffer(screen_eb);
 
     mono::gl::ShaderManager::get().addShaderProgram(
         "screen",
@@ -52,16 +52,16 @@ Window::Window(
         m_window,
         [](GLFWwindow *window, int new_width, int new_height) -> void {
             spdlog::debug("New window size = {}x{} in screen coordinates", new_width, new_height);
-            auto &_this = ResourceManager::window;
-            _this->m_width = new_width;
-            _this->m_height = new_height;
-            _this->setFramebufferSize({new_width, new_height});
+            auto &self = ResourceManager::window;
+            self->m_width = new_width;
+            self->m_height = new_height;
+            self->setFramebufferSize({new_width, new_height});
         });
 
     glfwSetWindowMaximizeCallback(m_window, [](GLFWwindow *window, int maximized) -> void {
-        auto &_this = ResourceManager::window;
-        _this->m_isMaximized = static_cast<bool>(maximized);
-        if(_this->m_isMaximized)
+        auto &self = ResourceManager::window;
+        self->m_isMaximized = static_cast<bool>(maximized);
+        if(self->m_isMaximized)
         {
             spdlog::debug("Window has been maximized");
         }
@@ -72,9 +72,9 @@ Window::Window(
     });
 
     glfwSetWindowIconifyCallback(m_window, [](GLFWwindow *window, int minimized) -> void {
-        auto &_this = ResourceManager::window;
-        _this->m_isMinimized = static_cast<bool>(minimized);
-        if(_this->m_isMinimized)
+        auto &self = ResourceManager::window;
+        self->m_isMinimized = static_cast<bool>(minimized);
+        if(self->m_isMinimized)
         {
             spdlog::debug("Window has been minimized");
         }
@@ -262,7 +262,7 @@ void Window::initImGui()
     auto &io = ImGui::GetIO();
     (void)io;
 
-    if constexpr(mono::config::constant::DebugMode)
+    if constexpr(mono::config::constant::debugMode)
     {
         io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
     }

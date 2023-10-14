@@ -2,6 +2,7 @@
 
 #include <imgui/imgui.h>
 
+// NOLINTNEXTLINE(readability-identifier-naming)
 inline void MainMenuStyle()
 {
     ImGuiStyle& style = ImGui::GetStyle();

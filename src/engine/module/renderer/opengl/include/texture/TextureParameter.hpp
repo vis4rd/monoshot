@@ -118,6 +118,7 @@
 // height
 
 
+// NOLINTNEXTLINE(readability-identifier-naming)
 namespace Texture
 {
 
@@ -127,9 +128,11 @@ using ParameterIntValue = GLint;
 using ParameterFloatValue = GLfloat;
 
 // List of parameters
+// NOLINTNEXTLINE(readability-identifier-naming)
 namespace Parameter
 {
 
+// NOLINTBEGIN(readability-identifier-naming)
 static constexpr ParameterName DEPTH_STENCIL_TEXTURE_MODE = GL_DEPTH_STENCIL_TEXTURE_MODE;
 static constexpr ParameterName TEXTURE_COMPARE_FUNC = GL_TEXTURE_COMPARE_FUNC;
 static constexpr ParameterName TEXTURE_COMPARE_MODE = GL_TEXTURE_COMPARE_MODE;
@@ -150,10 +153,12 @@ static constexpr ParameterName TEXTURE_MAX_LEVEL = GL_TEXTURE_MAX_LEVEL;
 static constexpr ParameterName TEXTURE_LOD_BIAS = GL_TEXTURE_LOD_BIAS;
 static constexpr ParameterName TEXTURE_MIN_LOD = GL_TEXTURE_MIN_LOD;
 static constexpr ParameterName TEXTURE_MAX_LOD = GL_TEXTURE_MAX_LOD;
+// NOLINTEND(readability-identifier-naming)
 
 };  // namespace Parameter
 
 // Strong typed parameter names with values
+// NOLINTBEGIN(readability-identifier-naming)
 namespace DepthStencilTextureMode
 {
 static constexpr ParameterIntValue DEFAULT = GL_DEPTH_COMPONENT;
@@ -291,6 +296,8 @@ static constexpr ParameterIntValue MIRRORED_REPEAT = GL_MIRRORED_REPEAT;
 static constexpr ParameterIntValue REPEAT = GL_REPEAT;
 };  // namespace TextureWrapR
 
+// NOLINTEND(readability-identifier-naming)
+
 namespace impl
 {
 
@@ -299,7 +306,7 @@ concept ParameterAnyValueOf = ((LHS == RHS) || ...);
 
 // clang-format off
 // Concepts for each parameter name plus some helpers
-template<ParameterName ParamName> concept ParameterC = ParameterAnyValueOf<ParamName,
+template<ParameterName PARAM_NAME> concept ParameterC = ParameterAnyValueOf<PARAM_NAME,
     Parameter::DEPTH_STENCIL_TEXTURE_MODE,
     Parameter::TEXTURE_COMPARE_FUNC,
     Parameter::TEXTURE_COMPARE_MODE,
@@ -410,53 +417,53 @@ template<ParameterIntValue T> concept TextureWrapRC = ParameterAnyValueOf<T,
     TextureWrapR::MIRRORED_REPEAT,
     TextureWrapR::REPEAT>;
 
-template<ParameterName ParamName> concept ParameterIntValueC = ParameterAnyValueOf<ParamName, Parameter::TEXTURE_BASE_LEVEL, Parameter::TEXTURE_MAX_LEVEL>;
-template<ParameterName ParamName> concept ParameterFloatValueC = ParameterAnyValueOf<ParamName, Parameter::TEXTURE_LOD_BIAS, Parameter::TEXTURE_MIN_LOD, Parameter::TEXTURE_MAX_LOD>;
+template<ParameterName PARAM_NAME> concept ParameterIntValueC = ParameterAnyValueOf<PARAM_NAME, Parameter::TEXTURE_BASE_LEVEL, Parameter::TEXTURE_MAX_LEVEL>;
+template<ParameterName PARAM_NAME> concept ParameterFloatValueC = ParameterAnyValueOf<PARAM_NAME, Parameter::TEXTURE_LOD_BIAS, Parameter::TEXTURE_MIN_LOD, Parameter::TEXTURE_MAX_LOD>;
 
-template<ParameterName ParamName>
-requires ParameterC<ParamName>
+template<ParameterName PARAM_NAME>
+requires ParameterC<PARAM_NAME>
 constexpr void setParameterInt(std::unsigned_integral auto&& id, std::integral auto&& param_value)
 {
-    glTextureParameteri(id, ParamName, param_value);
+    glTextureParameteri(id, PARAM_NAME, param_value);
 }
 
-template<ParameterName ParamName>
-requires ParameterC<ParamName>
+template<ParameterName PARAM_NAME>
+requires ParameterC<PARAM_NAME>
 constexpr void setParameterFloat(std::unsigned_integral auto&& id, std::floating_point auto&& param_value)
 {
-    glTextureParameterf(id, ParamName, param_value);
+    glTextureParameterf(id, PARAM_NAME, param_value);
 }
 
 }  // namespace impl
 
-template<ParameterIntValue ParamValue> void setParameter(std::unsigned_integral auto&& id) = delete;
-template<ParameterIntValue ParamValue> requires impl::DepthStencilTextureModeC<ParamValue>
-void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<Parameter::DEPTH_STENCIL_TEXTURE_MODE>(std::forward<decltype(id)>(id), std::forward<decltype(ParamValue)>(ParamValue)); }
-template<ParameterIntValue ParamValue> requires impl::TextureCompareFuncC<ParamValue> void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<Parameter::TEXTURE_COMPARE_FUNC>(std::forward<decltype(id)>(id), std::forward<decltype(ParamValue)>(ParamValue)); }
-template<ParameterIntValue ParamValue> requires impl::TextureCompareModeC<ParamValue> void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<Parameter::TEXTURE_COMPARE_MODE>(std::forward<decltype(id)>(id), std::forward<decltype(ParamValue)>(ParamValue)); }
-template<ParameterIntValue ParamValue> requires impl::TextureMinFilterC<ParamValue> void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<Parameter::TEXTURE_MIN_FILTER>(std::forward<decltype(id)>(id), std::forward<decltype(ParamValue)>(ParamValue)); }
-template<ParameterIntValue ParamValue> requires impl::TextureMagFilterC<ParamValue> void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<Parameter::TEXTURE_MAG_FILTER>(std::forward<decltype(id)>(id), std::forward<decltype(ParamValue)>(ParamValue)); }
-template<ParameterName ParamName, ParameterIntValue ParamValue> requires impl::TextureSwizzleRC<ParamValue> && (ParamName == Parameter::TEXTURE_SWIZZLE_R) void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<ParamName>(std::forward<decltype(id)>(id), std::forward<decltype(ParamValue)>(ParamValue)); }
-template<ParameterName ParamName, ParameterIntValue ParamValue> requires impl::TextureSwizzleGC<ParamValue> && (ParamName == Parameter::TEXTURE_SWIZZLE_G) void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<ParamName>(std::forward<decltype(id)>(id), std::forward<decltype(ParamValue)>(ParamValue)); }
-template<ParameterName ParamName, ParameterIntValue ParamValue> requires impl::TextureSwizzleBC<ParamValue> && (ParamName == Parameter::TEXTURE_SWIZZLE_B) void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<ParamName>(std::forward<decltype(id)>(id), std::forward<decltype(ParamValue)>(ParamValue)); }
-template<ParameterName ParamName, ParameterIntValue ParamValue> requires impl::TextureSwizzleAC<ParamValue> && (ParamName == Parameter::TEXTURE_SWIZZLE_A) void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<ParamName>(std::forward<decltype(id)>(id), std::forward<decltype(ParamValue)>(ParamValue)); }
-template<ParameterName ParamName, ParameterIntValue ParamValue> requires impl::TextureSwizzleRGBAC<ParamValue> && (ParamName == Parameter::TEXTURE_SWIZZLE_RGBA) void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<ParamName>(std::forward<decltype(id)>(id), std::forward<decltype(ParamValue)>(ParamValue)); }
-template<ParameterName ParamName, ParameterIntValue ParamValue> requires impl::TextureWrapSC<ParamValue> && (ParamName == Parameter::TEXTURE_WRAP_S) void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<ParamName>(std::forward<decltype(id)>(id), std::forward<decltype(ParamValue)>(ParamValue)); }
-template<ParameterName ParamName, ParameterIntValue ParamValue> requires impl::TextureWrapTC<ParamValue> && (ParamName == Parameter::TEXTURE_WRAP_T) void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<ParamName>(std::forward<decltype(id)>(id), std::forward<decltype(ParamValue)>(ParamValue)); }
-template<ParameterName ParamName, ParameterIntValue ParamValue> requires impl::TextureWrapRC<ParamValue> && (ParamName == Parameter::TEXTURE_WRAP_R) void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<ParamName>(std::forward<decltype(id)>(id), std::forward<decltype(ParamValue)>(ParamValue)); }
+template<ParameterIntValue PARAM_NAME> void setParameter(std::unsigned_integral auto&& id) = delete;
+template<ParameterIntValue PARAM_NAME> requires impl::DepthStencilTextureModeC<PARAM_NAME>
+void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<Parameter::DEPTH_STENCIL_TEXTURE_MODE>(std::forward<decltype(id)>(id), std::forward<decltype(PARAM_NAME)>(PARAM_NAME)); }
+template<ParameterIntValue PARAM_NAME> requires impl::TextureCompareFuncC<PARAM_NAME> void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<Parameter::TEXTURE_COMPARE_FUNC>(std::forward<decltype(id)>(id), std::forward<decltype(PARAM_NAME)>(PARAM_NAME)); }
+template<ParameterIntValue PARAM_NAME> requires impl::TextureCompareModeC<PARAM_NAME> void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<Parameter::TEXTURE_COMPARE_MODE>(std::forward<decltype(id)>(id), std::forward<decltype(PARAM_NAME)>(PARAM_NAME)); }
+template<ParameterIntValue PARAM_NAME> requires impl::TextureMinFilterC<PARAM_NAME> void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<Parameter::TEXTURE_MIN_FILTER>(std::forward<decltype(id)>(id), std::forward<decltype(PARAM_NAME)>(PARAM_NAME)); }
+template<ParameterIntValue PARAM_NAME> requires impl::TextureMagFilterC<PARAM_NAME> void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<Parameter::TEXTURE_MAG_FILTER>(std::forward<decltype(id)>(id), std::forward<decltype(PARAM_NAME)>(PARAM_NAME)); }
+template<ParameterName PARAM_NAME, ParameterIntValue PARAM_VALUE> requires impl::TextureSwizzleRC<PARAM_VALUE> && (PARAM_NAME == Parameter::TEXTURE_SWIZZLE_R) void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<PARAM_NAME>(std::forward<decltype(id)>(id), std::forward<decltype(PARAM_VALUE)>(PARAM_VALUE)); }
+template<ParameterName PARAM_NAME, ParameterIntValue PARAM_VALUE> requires impl::TextureSwizzleGC<PARAM_VALUE> && (PARAM_NAME == Parameter::TEXTURE_SWIZZLE_G) void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<PARAM_NAME>(std::forward<decltype(id)>(id), std::forward<decltype(PARAM_VALUE)>(PARAM_VALUE)); }
+template<ParameterName PARAM_NAME, ParameterIntValue PARAM_VALUE> requires impl::TextureSwizzleBC<PARAM_VALUE> && (PARAM_NAME == Parameter::TEXTURE_SWIZZLE_B) void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<PARAM_NAME>(std::forward<decltype(id)>(id), std::forward<decltype(PARAM_VALUE)>(PARAM_VALUE)); }
+template<ParameterName PARAM_NAME, ParameterIntValue PARAM_VALUE> requires impl::TextureSwizzleAC<PARAM_VALUE> && (PARAM_NAME == Parameter::TEXTURE_SWIZZLE_A) void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<PARAM_NAME>(std::forward<decltype(id)>(id), std::forward<decltype(PARAM_VALUE)>(PARAM_VALUE)); }
+template<ParameterName PARAM_NAME, ParameterIntValue PARAM_VALUE> requires impl::TextureSwizzleRGBAC<PARAM_VALUE> && (PARAM_NAME == Parameter::TEXTURE_SWIZZLE_RGBA) void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<PARAM_NAME>(std::forward<decltype(id)>(id), std::forward<decltype(PARAM_VALUE)>(PARAM_VALUE)); }
+template<ParameterName PARAM_NAME, ParameterIntValue PARAM_VALUE> requires impl::TextureWrapSC<PARAM_VALUE> && (PARAM_NAME == Parameter::TEXTURE_WRAP_S) void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<PARAM_NAME>(std::forward<decltype(id)>(id), std::forward<decltype(PARAM_VALUE)>(PARAM_VALUE)); }
+template<ParameterName PARAM_NAME, ParameterIntValue PARAM_VALUE> requires impl::TextureWrapTC<PARAM_VALUE> && (PARAM_NAME == Parameter::TEXTURE_WRAP_T) void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<PARAM_NAME>(std::forward<decltype(id)>(id), std::forward<decltype(PARAM_VALUE)>(PARAM_VALUE)); }
+template<ParameterName PARAM_NAME, ParameterIntValue PARAM_VALUE> requires impl::TextureWrapRC<PARAM_VALUE> && (PARAM_NAME == Parameter::TEXTURE_WRAP_R) void setParameter(std::unsigned_integral auto&& id) { impl::setParameterInt<PARAM_NAME>(std::forward<decltype(id)>(id), std::forward<decltype(PARAM_VALUE)>(PARAM_VALUE)); }
 
-template <ParameterName ParamName>
-requires impl::ParameterIntValueC<ParamName>
+template <ParameterName PARAM_NAME>
+requires impl::ParameterIntValueC<PARAM_NAME>
 constexpr void setParameter(std::unsigned_integral auto&& id, std::integral auto&& param_value)
 {
-    impl::setParameterInt<ParamName>(std::forward<decltype(id)>(id), std::forward<decltype(param_value)>(param_value));
+    impl::setParameterInt<PARAM_NAME>(std::forward<decltype(id)>(id), std::forward<decltype(param_value)>(param_value));
 }
 
-template <ParameterName ParamName>
-requires impl::ParameterFloatValueC<ParamName>
+template <ParameterName PARAM_NAME>
+requires impl::ParameterFloatValueC<PARAM_NAME>
 constexpr void setParameter(std::unsigned_integral auto&& id, std::floating_point auto&& param_value)
 {
-    impl::setParameterFloat<ParamName>(std::forward<decltype(id)>(id), std::forward<decltype(param_value)>(param_value));
+    impl::setParameterFloat<PARAM_NAME>(std::forward<decltype(id)>(id), std::forward<decltype(param_value)>(param_value));
 }
 
 // clang-format on

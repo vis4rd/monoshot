@@ -33,10 +33,10 @@ void SettingsSection::render() noexcept
     const auto& button_font = res::uiButtonFont;
 
     auto button_font_guard = button_font->use();
-    ImGui::SetNextWindowPos({m_layout.menu_x, m_layout.menu_y});
-    ImGui::SetNextWindowSize({m_layout.menu_w, m_layout.menu_h});
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {m_layout.button_w_s, m_layout.button_h_s});
-    ImGui::Begin("SettingsMenu", nullptr, m_layout.window_flags);
+    ImGui::SetNextWindowPos({m_layout.menuX, m_layout.menuY});
+    ImGui::SetNextWindowSize({m_layout.menuW, m_layout.menuH});
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {m_layout.buttonWS, m_layout.buttonHS});
+    ImGui::Begin("SettingsMenu", nullptr, m_layout.windowFlags);
     {
         // Resolution
         const auto& window_size = window->getSize();
@@ -44,11 +44,11 @@ void SettingsSection::render() noexcept
         const auto& window_h = window_size.y;
         std::string current_resolution = std::to_string(window_w) + "x" + std::to_string(window_h);
         ImGui::SetCursorScreenPos(
-            {m_layout.menu_x + m_layout.button_w_s, m_layout.menu_y + m_layout.button_h_s});
+            {m_layout.menuX + m_layout.buttonWS, m_layout.menuY + m_layout.buttonHS});
         if(Custom::ImGui::BeginCombo(
                "Resolution",
                current_resolution.c_str(),
-               {m_layout.button_w, m_layout.button_h}))
+               {m_layout.buttonW, m_layout.buttonH}))
         {
             const auto resolutions = window->queryMonitorResolutions();
             const int32_t mode_count = resolutions.size();
@@ -72,11 +72,11 @@ void SettingsSection::render() noexcept
         ImGui::BeginDisabled(!window->isFullscreen());
         std::string current_refresh_rate = std::to_string(window->getRefreshRate()) + "Hz";
         auto next_y = ImGui::GetCursorScreenPos().y;
-        ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s, next_y});
+        ImGui::SetCursorScreenPos({m_layout.menuX + m_layout.buttonWS, next_y});
         if(Custom::ImGui::BeginCombo(
                "Rate ",
                current_refresh_rate.c_str(),
-               {m_layout.button_w, m_layout.button_h}))
+               {m_layout.buttonW, m_layout.buttonH}))
         {
             const auto refresh_rates = window->queryMonitorRefreshRates();
             const int32_t mode_count = refresh_rates.size();
@@ -99,11 +99,11 @@ void SettingsSection::render() noexcept
         // Fullscreen
         std::string current_window_mode = window->isFullscreen() ? "Fullscreen" : "Windowed";
         next_y = ImGui::GetCursorScreenPos().y;
-        ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s, next_y});
+        ImGui::SetCursorScreenPos({m_layout.menuX + m_layout.buttonWS, next_y});
         if(Custom::ImGui::BeginCombo(
                "Window Mode",
                current_window_mode.c_str(),
-               {m_layout.button_w, m_layout.button_h}))
+               {m_layout.buttonW, m_layout.buttonH}))
         {
             if(ImGui::Selectable("Fullscreen", window->isFullscreen()))
             {
@@ -122,11 +122,11 @@ void SettingsSection::render() noexcept
         std::string current_vertical_sync =
             window->isVerticalSyncEnabled() ? "Enabled" : "Disabled";
         next_y = ImGui::GetCursorScreenPos().y;
-        ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s, next_y});
+        ImGui::SetCursorScreenPos({m_layout.menuX + m_layout.buttonWS, next_y});
         if(Custom::ImGui::BeginCombo(
                "Vertical Sync",
                current_vertical_sync.c_str(),
-               {m_layout.button_w, m_layout.button_h}))
+               {m_layout.buttonW, m_layout.buttonH}))
         {
             if(ImGui::Selectable("Enabled", window->isVerticalSyncEnabled()))
             {
@@ -143,8 +143,8 @@ void SettingsSection::render() noexcept
 
         // Max FPS Limit
         next_y = ImGui::GetCursorScreenPos().y;
-        ImGui::SetCursorScreenPos({m_layout.menu_x + m_layout.button_w_s, next_y});
-        ImGui::SetNextItemWidth(m_layout.button_w);
+        ImGui::SetCursorScreenPos({m_layout.menuX + m_layout.buttonWS, next_y});
+        ImGui::SetNextItemWidth(m_layout.buttonW);
         auto& limiter = res::framerateLimiter;
         static std::int32_t local_limit = limiter->getLimit();
         ImGui::BeginDisabled(window->isVerticalSyncEnabled());

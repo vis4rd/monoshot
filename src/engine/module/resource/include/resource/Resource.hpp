@@ -3,6 +3,7 @@
 #include <concepts>
 #include <memory>
 
+// NOLINTNEXTLINE(readability-identifier-naming)
 namespace Resource
 {
 
@@ -14,10 +15,10 @@ namespace Resource
 template<typename T>
 concept IsResourceC = std::semiregular<T>;
 
-template<IsResourceC T, typename... Args>
-std::shared_ptr<T> create(Args&&... args)
+template<IsResourceC T, typename... ARGS>
+std::shared_ptr<T> create(ARGS&&... args)
 {
-    return std::make_shared<T>(std::forward<Args>(args)...);
+    return std::make_shared<T>(std::forward<ARGS>(args)...);
 }
 
 }  // namespace Resource

@@ -19,20 +19,20 @@ class InputManager
     void processGroup(GLFWwindow* window, const std::string& group);
     constexpr void removeGroup(const std::string& group);
 
-    template<typename FUNC, typename... Args>
+    template<typename FUNC, typename... ARGS>
     constexpr void addKeybind(
         const std::string& group,
         int32_t key,
         KeyState state,
         FUNC&& callback,
-        Args&&... cb_args);
-    template<typename FUNC, typename... Args>
+        ARGS&&... cb_args);
+    template<typename FUNC, typename... ARGS>
     constexpr void addKeybind(
         const std::size_t& group_id,
         int32_t key,
         KeyState state,
         FUNC&& callback,
-        Args&&... cb_args);
+        ARGS&&... cb_args);
     constexpr bool isKeybindInGroup(const std::string& group, int32_t glfw_key) const;
     constexpr void removeKeybind(const std::string& group, int32_t glfw_key);
 
@@ -45,10 +45,10 @@ class InputManager
 
     private:
     InputManager() = default;
-    constexpr bool is_valid_key(const std::int32_t key) const;
-    constexpr bool is_printable_key(const std::int32_t key) const;
-    constexpr bool is_functional_key(const std::int32_t key) const;
-    constexpr bool is_mouse_key(const std::int32_t key) const;
+    constexpr bool isValidKey(const std::int32_t key) const;
+    constexpr bool isPrintableKey(const std::int32_t key) const;
+    constexpr bool isFunctionalKey(const std::int32_t key) const;
+    constexpr bool isMouseKey(const std::int32_t key) const;
     constexpr auto findGroup(const std::string& group_name);
     constexpr auto findGroup(const std::string& group_name) const;
     constexpr Keybind* findKeybindInGroup(const std::string& group, int32_t glfw_key);
@@ -99,33 +99,33 @@ constexpr bool InputManager::isKeybindInGroup(const std::string& group, int32_t 
     return iter->keybinds.contains(glfw_key);
 }
 
-template<typename FUNC, typename... Args>
+template<typename FUNC, typename... ARGS>
 constexpr void InputManager::addKeybind(
     const std::string& group,
     int32_t key,
     KeyState state,
     FUNC&& callback,
-    Args&&... cb_args)
+    ARGS&&... cb_args)
 {
     auto iter = this->findGroup(group);
     std::size_t index = std::distance(m_keybinds.begin(), iter);
-    this->addKeybind<FUNC, Args...>(
+    this->addKeybind<FUNC, ARGS...>(
         index,
         key,
         state,
         std::forward<FUNC>(callback),
-        std::forward<Args>(cb_args)...);
+        std::forward<ARGS>(cb_args)...);
 }
 
-template<typename FUNC, typename... Args>
+template<typename FUNC, typename... ARGS>
 constexpr void InputManager::addKeybind(
     const std::size_t& group_id,
     int32_t key,
     KeyState state,
     FUNC&& callback,
-    Args&&... cb_args)
+    ARGS&&... cb_args)
 {
-    if(!this->is_valid_key(key))
+    if(!this->isValidKey(key))
     {
         spdlog::warn("Given key ID '{}' is not valid, ignoring...", key);
         return;
@@ -165,12 +165,12 @@ constexpr void InputManager::removeKeybind(const std::string& group, int32_t glf
     }
 }
 
-constexpr bool InputManager::is_valid_key(const std::int32_t key) const
+constexpr bool InputManager::isValidKey(const std::int32_t key) const
 {
-    return this->is_printable_key(key) || this->is_functional_key(key) || this->is_mouse_key(key);
+    return this->isPrintableKey(key) || this->isFunctionalKey(key) || this->isMouseKey(key);
 }
 
-constexpr bool InputManager::is_printable_key(const std::int32_t key) const
+constexpr bool InputManager::isPrintableKey(const std::int32_t key) const
 {
     // unfortunately key numbers are not tightly packed
     // and scancodes are not guaranteed to be tightly packed on every platform
@@ -230,7 +230,7 @@ constexpr bool InputManager::is_printable_key(const std::int32_t key) const
     }
 }
 
-constexpr bool InputManager::is_functional_key(const std::int32_t key) const
+constexpr bool InputManager::isFunctionalKey(const std::int32_t key) const
 {
     switch(key)
     {
@@ -308,7 +308,7 @@ constexpr bool InputManager::is_functional_key(const std::int32_t key) const
     }
 }
 
-constexpr bool InputManager::is_mouse_key(const std::int32_t key) const
+constexpr bool InputManager::isMouseKey(const std::int32_t key) const
 {
     return key >= GLFW_MOUSE_BUTTON_1 && key <= GLFW_MOUSE_BUTTON_LAST;
 }

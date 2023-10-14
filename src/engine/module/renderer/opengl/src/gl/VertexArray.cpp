@@ -14,17 +14,17 @@ static GLenum shaderDataTypeToOpenGLBaseType(const ShaderDataType& type)
 {
     switch(type)
     {
-        case ShaderDataType::float1: return GL_FLOAT;
-        case ShaderDataType::float2: return GL_FLOAT;
-        case ShaderDataType::float3: return GL_FLOAT;
-        case ShaderDataType::float4: return GL_FLOAT;
-        case ShaderDataType::mat3: return GL_FLOAT;
-        case ShaderDataType::mat4: return GL_FLOAT;
-        case ShaderDataType::int1: return GL_INT;
-        case ShaderDataType::int2: return GL_INT;
-        case ShaderDataType::int3: return GL_INT;
-        case ShaderDataType::int4: return GL_INT;
-        case ShaderDataType::bool1: return GL_BOOL;
+        case ShaderDataType::FLOAT1: return GL_FLOAT;
+        case ShaderDataType::FLOAT2: return GL_FLOAT;
+        case ShaderDataType::FLOAT3: return GL_FLOAT;
+        case ShaderDataType::FLOAT4: return GL_FLOAT;
+        case ShaderDataType::MAT3: return GL_FLOAT;
+        case ShaderDataType::MAT4: return GL_FLOAT;
+        case ShaderDataType::INT1: return GL_INT;
+        case ShaderDataType::INT2: return GL_INT;
+        case ShaderDataType::INT3: return GL_INT;
+        case ShaderDataType::INT4: return GL_INT;
+        case ShaderDataType::BOOL1: return GL_BOOL;
         default:
         {
             spdlog::error("Unknown ShaderDataType, returning 0");
@@ -112,10 +112,10 @@ void VertexArray::addVertexBuffer(VertexBuffer&& vertex_buffer)
         auto& type = element.getShaderDataType();
         switch(type)
         {
-            case ShaderDataType::float1:
-            case ShaderDataType::float2:
-            case ShaderDataType::float3:
-            case ShaderDataType::float4:
+            case ShaderDataType::FLOAT1:
+            case ShaderDataType::FLOAT2:
+            case ShaderDataType::FLOAT3:
+            case ShaderDataType::FLOAT4:
             {
                 spdlog::debug("VertexArray: VertexBuffer element's type is a float");
                 glVertexArrayAttribFormat(
@@ -130,11 +130,11 @@ void VertexArray::addVertexBuffer(VertexBuffer&& vertex_buffer)
                 m_vertexBufferIndex++;
                 break;
             }
-            case ShaderDataType::int1:
-            case ShaderDataType::int2:
-            case ShaderDataType::int3:
-            case ShaderDataType::int4:
-            case ShaderDataType::bool1:
+            case ShaderDataType::INT1:
+            case ShaderDataType::INT2:
+            case ShaderDataType::INT3:
+            case ShaderDataType::INT4:
+            case ShaderDataType::BOOL1:
             {
                 spdlog::debug("VertexArray: VertexBuffer element's type is an integer");
                 glVertexArrayAttribIFormat(
@@ -148,8 +148,8 @@ void VertexArray::addVertexBuffer(VertexBuffer&& vertex_buffer)
                 m_vertexBufferIndex++;
                 break;
             }
-            case ShaderDataType::mat3:
-            case ShaderDataType::mat4:
+            case ShaderDataType::MAT3:
+            case ShaderDataType::MAT4:
             {
                 spdlog::debug("VertexArray: VertexBuffer element's type is a matrix");
                 std::uint8_t count = element.getComponentCount();

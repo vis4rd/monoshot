@@ -37,7 +37,7 @@ void openGLDebugMessageCallback(
     std::uint32_t severity,
     std::int32_t length,
     const char *message,
-    const void *userParam)
+    const void *user_param)
 {
     switch(severity)
     {

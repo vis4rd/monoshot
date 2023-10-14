@@ -175,7 +175,7 @@ void DebugSection::update() noexcept
                 const auto& weapon = m_hero.getCurrentItem<Weapon>();
                 if(weapon.getAmmoCurrent() > 0)
                 {
-                    ecs::action::spawn_bullet(m_bulletRegistry, pos, rot, weapon.getBulletVelocity());
+                    ecs::action::spawnBullet(m_bulletRegistry, pos, rot, weapon.getBulletVelocity());
                 }
             }
         }
@@ -224,15 +224,15 @@ void DebugSection::update() noexcept
     // clang-format on
 }
 
-static bool s_draw_area = false;
-static bool s_draw_bbs = false;
+static bool drawArea = false;
+static bool drawBbs = false;
 
 void DebugSection::render() noexcept
 {
     spdlog::trace("Rendering DebugSection");
 
     m_renderer.beginBatch();
-    m_map.drawTiles(s_draw_area, s_draw_bbs);
+    m_map.drawTiles(drawArea, drawBbs);
 
     // Renderer::drawQuad({0.f, 10.f}, tile_size, 0.f, {1.f, 0.5f, 0.5f, 1.f});
     // Renderer::drawQuad({0.f, 8.f}, tile_size, 0.f, {1.f, 0.5f, 0.5f, 1.f});
@@ -247,7 +247,7 @@ void DebugSection::render() noexcept
     const auto& theme_color = std::get<1>(m_map.getCurrentTheme().wallBlock);
     m_renderer.drawQuad({pos.x, pos.y}, m_hero.size, rot, m_hero.getTexture(), theme_color);
 
-    m_map.drawObjects({pos.x, pos.y}, s_draw_bbs);
+    m_map.drawObjects({pos.x, pos.y}, drawBbs);
 
     const auto bullet_view = m_bulletRegistry.view<
         const ecs::component::position,
@@ -300,7 +300,7 @@ void DebugSection::render() noexcept
     }
     if(m_onLeaveStarted)
     {
-        const auto TextCentered = [](const char* text, auto&&... args) {
+        const auto text_centered = [](const char* text, auto&&... args) {
             float font_size = ImGui::GetFontSize() * strlen(text) / 2;
             ImGui::SameLine(ImGui::GetWindowSize().x / 2 - font_size + (font_size / 2));
 
@@ -316,9 +316,9 @@ void DebugSection::render() noexcept
             {0.5f, 0.5f});
         ImGui::SetNextWindowSize(
             {static_cast<float>(text_pos.x), static_cast<float>(text_pos.y) / 1.5f});
-        ImGui::Begin("Win message", nullptr, m_layout.window_flags | ImGuiWindowFlags_NoBackground);
+        ImGui::Begin("Win message", nullptr, m_layout.windowFlags | ImGuiWindowFlags_NoBackground);
         {
-            TextCentered("You won");
+            text_centered("You won");
         }
         ImGui::End();
         font_guard.popFont();
@@ -503,8 +503,8 @@ void DebugSection::showDebugUI()
             }
             ImGui::EndCombo();
         }
-        ImGui::Checkbox("Draw map area", &s_draw_area);
-        ImGui::Checkbox("Draw bounding boxes", &s_draw_bbs);
+        ImGui::Checkbox("Draw map area", &drawArea);
+        ImGui::Checkbox("Draw bounding boxes", &drawBbs);
 
         auto& clear_color = ResourceManager::mapThemeBackgroundColor;
         float* cc = reinterpret_cast<float*>(&clear_color);

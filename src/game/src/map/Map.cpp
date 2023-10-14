@@ -79,7 +79,7 @@ void Map::setTile(const Tile& tile)
         tile.x,
         tile.y,
         tile.rotation,
-        static_cast<std::size_t>(tile.block_id));
+        static_cast<std::size_t>(tile.blockId));
     this->calculateNewSize(tile.x, tile.y);
 
     const auto iter = this->findTile(tile.x, tile.y);
@@ -104,7 +104,7 @@ void Map::setTile(
     new_tile.x = std::round(x);
     new_tile.y = std::round(y);
     new_tile.rotation = rotation;
-    new_tile.block_id = block_id;
+    new_tile.blockId = block_id;
     new_tile.solid = solid;
     this->setTile(new_tile);
 }
@@ -253,7 +253,7 @@ void Map::loadFromFile(const std::string& filename, entt::registry& enemy_regist
     {
         std::stringstream line_buffer(line);
         line_buffer >> enemy_pos_x >> enemy_pos_y >> enemy_rotation;
-        ecs::action::spawn_enemy(
+        ecs::action::spawnEnemy(
             enemy_registry,
             {enemy_pos_x, enemy_pos_y},
             {1.f, 1.f},
@@ -280,15 +280,15 @@ void Map::saveToFile(const std::string& filename, const entt::registry& enemy_re
     std::stringstream file_buffer{};
     for(const auto& tile : m_tiles)
     {
-        file_buffer << tile.x << ' ' << tile.y << ' ' << tile.rotation << ' ' << tile.block_id
-                    << ' ' << tile.solid << '\n';
+        file_buffer << tile.x << ' ' << tile.y << ' ' << tile.rotation << ' ' << tile.blockId << ' '
+                    << tile.solid << '\n';
         spdlog::debug(
             "Saving Tile: pos = ({}, {}), rot = {}, solid = {}, ID = '{}'",
             tile.x,
             tile.y,
             tile.rotation,
             tile.solid,
-            blockToString(tile.block_id));
+            blockToString(tile.blockId));
     }
 
     file_buffer << "\n";  // create an empty line between tiles and objects in a file
@@ -417,7 +417,7 @@ void Map::drawTiles(bool area, bool show_solid)
     const auto& [wall_block, wall_color, wall_texture] = m_theme.wallBlock;
     for(const auto& tile : m_tiles)
     {
-        if(tile.block_id == BlockID::Wall)
+        if(tile.blockId == BlockID::Wall)
         {
             if(wall_texture != nullptr)
             {

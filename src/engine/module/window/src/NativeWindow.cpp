@@ -180,7 +180,7 @@ void NativeWindow::initGL()
     }
 
     // logging
-    if constexpr(mono::config::constant::DebugMode)
+    if constexpr(mono::config::constant::debugMode)
     {
         util::enableOpenGlLogging();
     }

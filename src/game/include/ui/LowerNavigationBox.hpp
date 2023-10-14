@@ -7,26 +7,26 @@
 namespace UI
 {
 
+// NOLINTNEXTLINE(readability-identifier-naming)
 inline void LowerNavigationBox(const UI::BaseLayout& layout)
 {
     const ImGuiViewport& main_viewport = *ImGui::GetMainViewport();
 
-    ImGui::SetNextWindowPos({layout.menu_x, layout.menu_y});
-    ImGui::SetNextWindowSize({layout.menu_w, layout.menu_h});
+    ImGui::SetNextWindowPos({layout.menuX, layout.menuY});
+    ImGui::SetNextWindowSize({layout.menuW, layout.menuH});
 
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {layout.button_w_s, layout.button_h_s});
-    ImGui::Begin("LowerNavigationBox", nullptr, layout.window_flags);
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {layout.buttonWS, layout.buttonHS});
+    ImGui::Begin("LowerNavigationBox", nullptr, layout.windowFlags);
     {
-        ImGui::SetCursorScreenPos(
-            {layout.menu_x + layout.button_w_s, layout.menu_y + layout.button_h_s});
-        if(ImGui::Button("Close", {layout.button_w, layout.button_h}))
+        ImGui::SetCursorScreenPos({layout.menuX + layout.buttonWS, layout.menuY + layout.buttonHS});
+        if(ImGui::Button("Close", {layout.buttonW, layout.buttonH}))
         {
             spdlog::debug("Clicking 'Close'");
             auto& sm = SectionManager::get();
             sm.popSection();
         }
-        // else if(ImGui::SameLine(); ImGui::Button("Other option", {layout.button_w,
-        // layout.button_h}))
+        // else if(ImGui::SameLine(); ImGui::Button("Other option", {layout.buttonW,
+        // layout.buttonH}))
         // {
         //     spdlog::debug("Clicking 'Other option'");
         // }

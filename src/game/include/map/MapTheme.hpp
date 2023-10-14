@@ -21,6 +21,7 @@ struct MapTheme
     BlockData invisibleWallBlock;
 };
 
+// NOLINTNEXTLINE(readability-identifier-naming)
 namespace MapThemes
 {
 

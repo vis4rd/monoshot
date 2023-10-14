@@ -7,9 +7,11 @@ enum ItemID : std::size_t
     FIRST_ITEM = 1000,
 
     // write items here
+    // NOLINTBEGIN(readability-identifier-naming)
     Undefined,
     MedKit,
     Bandage,
+    // NOLINTEND(readability-identifier-naming)
 
     LAST_ITEM,
     ITEM_COUNT = LAST_ITEM - FIRST_ITEM - 1

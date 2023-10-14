@@ -118,10 +118,10 @@ bool findCollision(
     const glm::vec2& size2,
     const float& rotation2)
 {
-    constexpr auto doSegmentsIntersect = [](const glm::vec2& line1_s,
-                                            const glm::vec2& line1_e,
-                                            const glm::vec2& line2_s,
-                                            const glm::vec2& line2_e) -> bool {
+    constexpr auto do_segments_intersect = [](const glm::vec2& line1_s,
+                                              const glm::vec2& line1_e,
+                                              const glm::vec2& line2_s,
+                                              const glm::vec2& line2_e) -> bool {
         // TODO: seems like this code does not cover some corner cases, possibly replace it with
         // some more refined one
         return (((line2_s.x - line1_s.x) * (line1_e.y - line1_s.y)
@@ -151,7 +151,7 @@ bool findCollision(
             glm::vec2 poly2_point2 = poly2.points[(poly2_point_index + 1) % poly2.points.size()];
 
             // check if poly1's center -> vertex line segment intersects with poly2's edge
-            if(doSegmentsIntersect(poly1_center, poly1_point, poly2_point1, poly2_point2))
+            if(do_segments_intersect(poly1_center, poly1_point, poly2_point1, poly2_point2))
             {
                 return true;
             }

@@ -6,7 +6,7 @@ namespace ecs::action
 {
 
 
-void spawn_enemy(
+void spawnEnemy(
     entt::registry& registry,
     const glm::vec2& pos,
     const glm::vec2& size,
@@ -24,11 +24,7 @@ void spawn_enemy(
     registry.emplace<ec::ai_weapon>(enemy, 20, 31, 99999, 35.f, 0.3);
 }
 
-void spawn_bullet(
-    entt::registry& registry,
-    const glm::vec2& pos,
-    const float& rot,
-    const float& vel)
+void spawnBullet(entt::registry& registry, const glm::vec2& pos, const float& rot, const float& vel)
 {
     namespace ec = ecs::component;
     auto bullet = registry.create();

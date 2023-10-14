@@ -4,6 +4,7 @@
 
 #include <glm/glm.hpp>
 
+// NOLINTNEXTLINE(readability-identifier-naming)
 namespace OBB  // Oriented Bounding Box
 {
 
@@ -32,6 +33,7 @@ bool findCollision(
 
 }  // namespace OBB
 
+// NOLINTNEXTLINE(readability-identifier-naming)
 namespace AABB  // Axis-Aligned Bounding Box
 {
 

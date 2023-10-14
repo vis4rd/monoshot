@@ -9,7 +9,7 @@ namespace mono
 {
 
 template<std::size_t N>
-class cstring final
+class cstring final  // NOLINT(readability-identifier-naming)
 {
     private:
     using underlying_type = std::array<const char, N>;
@@ -33,6 +33,7 @@ class cstring final
         : m_data{cs...}
     { }
 
+    // NOLINTNEXTLINE(modernize-avoid-c-arrays,cppcoreguidelines-avoid-c-arrays,google-explicit-constructor)
     constexpr cstring(const char (&str)[N])
         : cstring{str, std::make_integer_sequence<size_type, N>{}}
     { }

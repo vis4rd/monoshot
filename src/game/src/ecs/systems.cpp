@@ -264,7 +264,7 @@ void update_ais(
                     if(weapon.getAmmoCurrent() > 0)
                     {
                         const auto bullet_pos = pos + glm::normalize(diff) * 1.f;
-                        ecs::action::spawn_bullet(
+                        ecs::action::spawnBullet(
                             bullet_registry,
                             bullet_pos,
                             rot,

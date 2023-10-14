@@ -19,7 +19,7 @@ App::App(const std::string& window_title, uint32_t width, uint32_t height)
 {
     spdlog::info("App version: {}", MONOSHOT_VERSION);
 
-    if constexpr(mono::config::constant::DebugMode)  // Debug Build
+    if constexpr(mono::config::constant::debugMode)  // Debug Build
     {
         // windowed, vsync
         m_window = std::make_shared<mono::Window>(window_title, width, height, false, true);
@@ -58,15 +58,15 @@ void App::initLogger() noexcept
     namespace fs = std::filesystem;
     fs::create_directory("../logs");
 
-    constexpr mono::cstring info_pattern{"[%Y-%m-%d %T.%e][%^%l%$] %v"};
-    constexpr mono::cstring debug_pattern{"[%Y-%m-%d %T.%e][%^%l%$][thread %t][%s:%#] %v"};
+    constexpr mono::cstring infoPattern{"[%Y-%m-%d %T.%e][%^%l%$] %v"};
+    constexpr mono::cstring debugPattern{"[%Y-%m-%d %T.%e][%^%l%$][thread %t][%s:%#] %v"};
     spdlog::level log_level{spdlog::level::info};
-    std::string log_pattern{info_pattern};
+    std::string log_pattern{infoPattern};
 
-    if constexpr(mono::config::constant::DebugMode)
+    if constexpr(mono::config::constant::debugMode)
     {
         log_level = spdlog::level::debug;
-        log_pattern = debug_pattern;
+        log_pattern = debugPattern;
     }
 
     auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
@@ -78,7 +78,7 @@ void App::initLogger() noexcept
     file_name.replace(file_name.find(':'), 1, "-");
     file_name.replace(file_name.find(':'), 1, "-");
     file_name = file_name.substr(0, file_name.rfind('.'));
-    if constexpr(mono::config::constant::DebugMode)
+    if constexpr(mono::config::constant::debugMode)
     {
         file_name += "_debug";
     }

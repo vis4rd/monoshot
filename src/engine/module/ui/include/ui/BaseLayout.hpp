@@ -4,6 +4,7 @@
 
 #include "config/StaticConfiguration.hpp"
 
+// NOLINTNEXTLINE(readability-identifier-naming)
 namespace UI
 {
 
@@ -13,78 +14,78 @@ struct BaseLayout
     virtual inline void update(const ImVec2& workpos, const ImVec2& worksize);
 
     protected:
-    float base_viewport_w = 1920.f;
-    float base_viewport_h = 1080.f;
-    float base_menu_w = 1920.f;
-    float base_menu_h = 1080.f;
-    float base_button_w = 256.f;
-    float base_button_h = 64.f;
-    float base_w_spacing = 23.f;
-    float base_h_spacing = 23.f;
-    float base_external_w_spacing = 40.f;
-    float base_external_h_spacing = 40.f;
+    float m_baseViewportW = 1920.f;
+    float m_baseViewportH = 1080.f;
+    float m_baseMenuW = 1920.f;
+    float m_baseMenuH = 1080.f;
+    float m_baseButtonW = 256.f;
+    float m_baseButtonH = 64.f;
+    float m_baseWSpacing = 23.f;
+    float m_baseHSpacing = 23.f;
+    float m_baseExternalWSpacing = 40.f;
+    float m_baseExternalHSpacing = 40.f;
 
     public:
-    float viewport_w;
-    float viewport_h;
-    float viewport_x;
-    float viewport_y;
+    float viewportW;
+    float viewportH;
+    float viewportX;
+    float viewportY;
 
     protected:
-    float scale_w = viewport_w / base_viewport_w;
-    float scale_h = viewport_h / base_viewport_h;
+    float m_scaleW = viewportW / m_baseViewportW;
+    float m_scaleH = viewportH / m_baseViewportH;
 
     public:
-    float external_h_spacing = 40.f * scale_h;
-    float external_w_spacing = 40.f * scale_w;
-    float menu_w = base_menu_w * scale_w;
-    float menu_h = base_menu_h * scale_h;
-    float menu_x = viewport_x + external_w_spacing;
-    float menu_y = viewport_y + viewport_h - menu_h - external_h_spacing;
-    float button_w = base_button_w * scale_w;
-    float button_h = base_button_h * scale_h;
-    float button_w_s = base_w_spacing * scale_w;
-    float button_h_s = base_h_spacing * scale_h;
+    float externalHSpacing = 40.f * m_scaleH;
+    float externalWSpacing = 40.f * m_scaleW;
+    float menuW = m_baseMenuW * m_scaleW;
+    float menuH = m_baseMenuH * m_scaleH;
+    float menuX = viewportX + externalWSpacing;
+    float menuY = viewportY + viewportH - menuH - externalHSpacing;
+    float buttonW = m_baseButtonW * m_scaleW;
+    float buttonH = m_baseButtonH * m_scaleH;
+    float buttonWS = m_baseWSpacing * m_scaleW;
+    float buttonHS = m_baseHSpacing * m_scaleH;
 
 
-    ImGuiWindowFlags window_flags =
+    ImGuiWindowFlags windowFlags =
         ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoMove
         | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoNav
         | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoDocking;
 };
 
 BaseLayout::BaseLayout(const ImVec2& workpos, const ImVec2& worksize)
-    : viewport_w(worksize.x)
-    , viewport_h(worksize.y)
-    , viewport_x(workpos.x)
-    , viewport_y(workpos.y)
+    : viewportW(worksize.x)
+    , viewportH(worksize.y)
+    , viewportX(workpos.x)
+    , viewportY(workpos.y)
 {
-    if constexpr(not mono::config::constant::DebugMode)
+    if constexpr(not mono::config::constant::debugMode)
     {
-        window_flags |= ImGuiWindowFlags_NoBackground;
+        windowFlags |= ImGuiWindowFlags_NoBackground;
     }
 }
 
 void BaseLayout::update(const ImVec2& workpos, const ImVec2& worksize)
 {
-    viewport_w = worksize.x;
-    viewport_h = worksize.y;
-    viewport_x = workpos.x;
-    viewport_y = workpos.y;
+    viewportW = worksize.x;
+    viewportH = worksize.y;
+    viewportX = workpos.x;
+    viewportY = workpos.y;
 
-    scale_w = viewport_w / base_viewport_w;
-    scale_h = viewport_h / base_viewport_h;
+    m_scaleW = viewportW / m_baseViewportW;
+    m_scaleH = viewportH / m_baseViewportH;
 
-    external_h_spacing = 40.f * scale_h;
-    external_w_spacing = 40.f * scale_w;
-    menu_w = base_menu_w * scale_w;
-    menu_h = base_menu_h * scale_h;
-    menu_x = viewport_x + external_w_spacing;
-    menu_y = viewport_y + viewport_h - menu_h - external_h_spacing;
-    button_w = base_button_w * scale_w;
-    button_h = base_button_h * scale_h;
-    button_w_s = base_w_spacing * scale_w;
-    button_h_s = base_h_spacing * scale_h;
+    externalHSpacing = 40.f * m_scaleH;
+    externalWSpacing = 40.f * m_scaleW;
+    menuW = m_baseMenuW * m_scaleW;
+    menuH = m_baseMenuH * m_scaleH;
+    menuX = viewportX + externalWSpacing;
+    menuY = viewportY + viewportH - menuH - externalHSpacing;
+    buttonW = m_baseButtonW * m_scaleW;
+    buttonH = m_baseButtonH * m_scaleH;
+    buttonWS = m_baseWSpacing * m_scaleW;
+    buttonHS = m_baseHSpacing * m_scaleH;
 }
 
 }  // namespace UI
