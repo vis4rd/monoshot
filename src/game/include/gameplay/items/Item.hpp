@@ -18,5 +18,5 @@ class Item
     virtual void use() = 0;
 
     public:
-    const ItemID ID = ItemID::Undefined;
+    const ItemID m_id = ItemID::Undefined;
 };

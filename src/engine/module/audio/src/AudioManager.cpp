@@ -1,6 +1,6 @@
 #include "../include/audio/AudioManager.hpp"
 
-static constexpr float base_volume = 100.f;
+static constexpr float baseVolume = 100.f;
 
 AudioManager& AudioManager::get()
 {

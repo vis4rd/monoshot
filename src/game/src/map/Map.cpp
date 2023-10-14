@@ -19,7 +19,7 @@ Map::Map(Renderer& renderer, const std::size_t& width, const std::size_t& height
 {
     m_tiles.reserve(width * height);
 
-    this->setTheme(MapThemes::FOREST_THEME);
+    this->setTheme(MapThemes::forestTheme);
 }
 
 Map::~Map()
@@ -135,9 +135,9 @@ void Map::addTilesToRegistry(entt::registry& registry) const
             continue;
         }
         auto entity = registry.create();
-        auto& pos = registry.emplace<ecs::component::position>(entity);
-        auto& rot = registry.emplace<ecs::component::rotation>(entity);
-        glm::vec2& size = registry.emplace<ecs::component::size>(entity);
+        auto& pos = registry.emplace<ecs::component::Position>(entity);
+        auto& rot = registry.emplace<ecs::component::Rotation>(entity);
+        glm::vec2& size = registry.emplace<ecs::component::Size>(entity);
 
         pos.x = tile.x;
         pos.y = tile.y;
@@ -156,9 +156,9 @@ void Map::addTilesToRegistry(entt::registry& registry) const
             continue;
         }
         auto entity = registry.create();
-        glm::vec2& pos = registry.emplace<ecs::component::position>(entity);
-        float& rot = registry.emplace<ecs::component::rotation>(entity);
-        glm::vec2& size = registry.emplace<ecs::component::size>(entity);
+        glm::vec2& pos = registry.emplace<ecs::component::Position>(entity);
+        float& rot = registry.emplace<ecs::component::Rotation>(entity);
+        glm::vec2& size = registry.emplace<ecs::component::Size>(entity);
 
         pos = object.getPosition();
         rot = object.getRotation();
@@ -328,7 +328,7 @@ void Map::saveToFile(const std::string& filename, const entt::registry& enemy_re
     file_buffer << "\n";  // create an empty line between objects and enemies in a file
 
     auto view =
-        enemy_registry.view<const ecs::component::position, const ecs::component::rotation>();
+        enemy_registry.view<const ecs::component::Position, const ecs::component::Rotation>();
     for(auto&& [enemy, pos, rot] : view.each())
     {
         file_buffer << pos.x << ' ' << pos.y << ' ' << rot.data << '\n';

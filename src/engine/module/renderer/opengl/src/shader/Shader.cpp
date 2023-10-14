@@ -95,11 +95,11 @@ void Shader::compile(const std::string& source) const
     glGetShaderiv(m_id, GL_COMPILE_STATUS, &success);
     if(!success)
     {
-        constexpr std::size_t max_log_size = 512;
-        std::array<GLchar, max_log_size> log{};
-        glGetShaderInfoLog(m_id, max_log_size, nullptr, log.data());
+        constexpr std::size_t maxLogSize = 512;
+        std::array<GLchar, maxLogSize> log{};
+        glGetShaderInfoLog(m_id, maxLogSize, nullptr, log.data());
         throw std::runtime_error(
-            "Shader compilation failure: " + std::string(log.data(), max_log_size));
+            "Shader compilation failure: " + std::string(log.data(), maxLogSize));
     }
 }
 

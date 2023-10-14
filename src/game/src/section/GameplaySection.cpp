@@ -124,16 +124,16 @@ void GameplaySection::update() noexcept
     m_camera.setTarget({pos, 0.f});
 
     // update dynamic logic
-    ecs::system::update_ais(m_enemyRegistry, m_hero.position, m_bulletRegistry);
-    ecs::system::move_hero_with_collisions(m_mapElementsRegistry, m_hero, move_direction);
-    ecs::system::move_bullets(m_bulletRegistry);
-    ecs::system::collide_bullets(m_bulletRegistry, m_mapElementsRegistry, m_enemyRegistry);
-    ecs::system::check_alive_bullets(m_bulletRegistry);
-    ecs::system::destroy_entities(m_bulletRegistry);
-    ecs::system::destroy_entities(m_enemyRegistry);
+    ecs::system::updateAis(m_enemyRegistry, m_hero.position, m_bulletRegistry);
+    ecs::system::moveHeroWithCollisions(m_mapElementsRegistry, m_hero, move_direction);
+    ecs::system::moveBullets(m_bulletRegistry);
+    ecs::system::collideBullets(m_bulletRegistry, m_mapElementsRegistry, m_enemyRegistry);
+    ecs::system::checkAliveBullets(m_bulletRegistry);
+    ecs::system::destroyEntities(m_bulletRegistry);
+    ecs::system::destroyEntities(m_enemyRegistry);
 
     // finish the level if hero gets to the end area
-    if(m_map.isInEndArea(pos, m_hero.size) && (not m_onLeaveStarted))
+    if(m_map.isInEndArea(pos, m_hero.m_size) && (not m_onLeaveStarted))
     {
         m_leaveStartTimestamp = Timer::getTotalTime();
         m_onLeaveStarted = true;
@@ -151,15 +151,15 @@ void GameplaySection::render() noexcept
     const glm::vec2& pos = m_hero.position;
     const float& rot = m_hero.rotation;
     const float& vel = m_hero.velocity;
-    const float& acc = m_hero.acceleration;
+    const float& acc = m_hero.m_acceleration;
     const auto& theme_color = std::get<1>(m_map.getCurrentTheme().wallBlock);
-    m_renderer.drawQuad({pos.x, pos.y}, m_hero.size, rot, m_hero.getTexture(), theme_color);
+    m_renderer.drawQuad({pos.x, pos.y}, m_hero.m_size, rot, m_hero.getTexture(), theme_color);
 
     const auto& enemy_texture = ResourceManager::enemyTexture;
     const auto enemy_view = m_enemyRegistry.view<
-        const ecs::component::position,
-        const ecs::component::size,
-        const ecs::component::rotation>();
+        const ecs::component::Position,
+        const ecs::component::Size,
+        const ecs::component::Rotation>();
     enemy_view.each(
         [&enemy_texture,
          &m_renderer = m_renderer](const auto& e_pos, const auto& e_size, const auto& e_rot) {
@@ -168,9 +168,9 @@ void GameplaySection::render() noexcept
         });
 
     const auto bullet_view = m_bulletRegistry.view<
-        const ecs::component::position,
-        const ecs::component::size,
-        const ecs::component::rotation>(entt::exclude<ecs::component::destroyed>);
+        const ecs::component::Position,
+        const ecs::component::Size,
+        const ecs::component::Rotation>(entt::exclude<ecs::component::Destroyed>);
     bullet_view.each(
         [&theme_color,
          &m_renderer = m_renderer](const auto& b_pos, const auto& b_size, const auto& b_rot) {
@@ -193,14 +193,14 @@ void GameplaySection::render() noexcept
         UI::drawOverlay(
             m_layout,
             m_hero.health,
-            m_hero.maxHealth,
+            m_hero.m_maxHealth,
             current_ammo,
             total_ammo,
             m_hero.getCurrentItemIndex());
     }
     if(m_onLeaveStarted)
     {
-        const auto TextCentered = [](const char* text, auto&&... args) {
+        const auto text_centered = [](const char* text, auto&&... args) {
             float font_size = ImGui::GetFontSize() * strlen(text) / 2;
             ImGui::SameLine(ImGui::GetWindowSize().x / 2 - font_size + (font_size / 2));
 
@@ -218,7 +218,7 @@ void GameplaySection::render() noexcept
             {static_cast<float>(text_pos.x), static_cast<float>(text_pos.y) / 1.5f});
         ImGui::Begin("Win message", nullptr, m_layout.windowFlags | ImGuiWindowFlags_NoBackground);
         {
-            TextCentered("You won");
+            text_centered("You won");
         }
         ImGui::End();
         font_guard.popFont();

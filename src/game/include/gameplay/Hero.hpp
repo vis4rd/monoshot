@@ -44,10 +44,10 @@ class Hero final
     Texture::Animation& getTexture();
 
     public:
-    const std::int32_t maxHealth;
-    const float maxVelocity = 7.f;
-    const glm::vec2 size = {1.f, 1.f};
-    const float acceleration = 70.f;
+    const std::int32_t m_maxHealth;
+    const float m_maxVelocity = 7.f;
+    const glm::vec2 m_size = {1.f, 1.f};
+    const float m_acceleration = 70.f;
 
     std::int32_t health;
     glm::vec2 position = {0.f, 0.f};

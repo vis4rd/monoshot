@@ -8,7 +8,7 @@ Hero::Hero(
     const std::optional<Weapon>& main_weapon,
     const std::optional<Weapon>& secondary_weapon)
     : health(health)
-    , maxHealth(health)
+    , m_maxHealth(health)
     , m_items{nullptr, nullptr, nullptr}
     , m_availableItems{false, false, false}
     , m_texture{Resource::create<Texture::impl::Animation>(
@@ -103,7 +103,7 @@ bool Hero::hasItem(const std::size_t& id) const
 {
     for(std::size_t i = 0; i < m_availableItems.size(); i++)
     {
-        if(m_availableItems.at(i) && (m_items.at(i)->ID == id))
+        if(m_availableItems.at(i) && (m_items.at(i)->m_id == id))
         {
             return true;
         }

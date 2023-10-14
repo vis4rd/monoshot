@@ -75,6 +75,6 @@ class Map final
     std::vector<Tile> m_tiles;
     std::vector<MapObject> m_objects;
     std::unique_ptr<OBB::Polygon> m_endArea;
-    MapTheme& m_theme = MapThemes::FOREST_THEME;
+    MapTheme& m_theme = MapThemes::forestTheme;
     Renderer& m_renderer;
 };

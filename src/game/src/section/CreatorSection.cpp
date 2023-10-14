@@ -99,7 +99,7 @@ void CreatorSection::update() noexcept
     {
         m_map.removeTile(mouseWorldPos.x, mouseWorldPos.y);
         m_map.removeObject(mouseWorldPos);
-        for(auto&& [enemy, pos] : m_entities.view<const ecs::component::position>().each())
+        for(auto&& [enemy, pos] : m_entities.view<const ecs::component::Position>().each())
         {
             const bool col = AABB::isColliding(mouseWorldPos, {0.01f, 0.01f}, pos, {1.f, 1.f});
             if(col)
@@ -155,23 +155,23 @@ void CreatorSection::update() noexcept
             }
         }
     }
-    if(constexpr float size_vel = 5.f; selectedMapItem == 9999)
+    if(constexpr float sizeVel = 5.f; selectedMapItem == 9999)
     {
         if(input.isHeld(GLFW_KEY_UP))
         {
-            endAreaSize.y += (delta_time * size_vel);
+            endAreaSize.y += (delta_time * sizeVel);
         }
         if(input.isHeld(GLFW_KEY_DOWN))
         {
-            endAreaSize.y -= (delta_time * size_vel);
+            endAreaSize.y -= (delta_time * sizeVel);
         }
         if(input.isHeld(GLFW_KEY_RIGHT))
         {
-            endAreaSize.x += (delta_time * size_vel);
+            endAreaSize.x += (delta_time * sizeVel);
         }
         if(input.isHeld(GLFW_KEY_LEFT))
         {
-            endAreaSize.x -= (delta_time * size_vel);
+            endAreaSize.x -= (delta_time * sizeVel);
         }
     }
     endAreaSize = glm::max(endAreaSize, 1.f);
@@ -233,7 +233,7 @@ void CreatorSection::render() noexcept
             {1.f, 0.4f, 0.4f, 0.2f});
     }
 
-    auto view = m_entities.view<const ecs::component::position, const ecs::component::rotation>();
+    auto view = m_entities.view<const ecs::component::Position, const ecs::component::Rotation>();
     for(auto&& [enemy, pos, rot] : view.each())
     {
         m_renderer.drawQuad(

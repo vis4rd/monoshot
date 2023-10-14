@@ -61,8 +61,8 @@ class Window final : public NativeWindow
     bool m_isMaximized = false;
     bool m_isMinimized = false;
     bool m_isVSyncEnabled = false;
-    VertexArray screenVA;
-    FrameBuffer screenFB;
+    VertexArray m_screenVa;
+    FrameBuffer m_screenFb;
     SectionManager &m_sectionManager = SectionManager::get();
 };
 
@@ -97,14 +97,14 @@ bool Window::update(UpdateableTrait auto &&...updateables) noexcept
         spdlog::debug("on F11: window size = {}x{}", m_width, m_height);
         spdlog::debug(
             "on F11: framebuffer size = {}x{}",
-            screenFB.getSize().x,
-            screenFB.getSize().y);
+            m_screenFb.getSize().x,
+            m_screenFb.getSize().y);
         this->toggleFullscreen();
         spdlog::debug("after F11: window size = {}x{}", m_width, m_height);
         spdlog::debug(
             "after F11: framebuffer size = {}x{}",
-            screenFB.getSize().x,
-            screenFB.getSize().y);
+            m_screenFb.getSize().x,
+            m_screenFb.getSize().y);
     }
     if constexpr(mono::config::constant::debugMode)
     {
@@ -144,11 +144,11 @@ void Window::render(RenderableTrait auto &&...renderables) noexcept
     ImGui::NewFrame();
 
     // Clear previous frame
-    screenFB.bind();
+    m_screenFb.bind();
     glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     // set framebuffer viewport to its size
-    glViewport(0, 0, screenFB.getSize().x, screenFB.getSize().y);
+    glViewport(0, 0, m_screenFb.getSize().x, m_screenFb.getSize().y);
 
     // Render
     /// Render my own stuff
@@ -187,8 +187,8 @@ void Window::render(RenderableTrait auto &&...renderables) noexcept
                 ImGui::Text("Window size: (%d, %d)", m_width, m_height);
                 ImGui::Text(
                     "Framebuffer size: (%d, %d)",
-                    screenFB.getSize().x,
-                    screenFB.getSize().y);
+                    m_screenFb.getSize().x,
+                    m_screenFb.getSize().y);
                 ImGui::Text(
                     "Performance: [%.2fms] [%.0ffps]",
                     1000.0f / ImGui::GetIO().Framerate,
@@ -213,7 +213,7 @@ void Window::render(RenderableTrait auto &&...renderables) noexcept
         glfwMakeContextCurrent(backup_current_context);
     }
 
-    screenFB.unbind();
+    m_screenFb.unbind();
     // commented for now, because technically whole texture is overdrawn
     // glClearColor(1.f, 1.f, 1.f, 1.f);
     // glClear(GL_COLOR_BUFFER_BIT);
@@ -222,8 +222,8 @@ void Window::render(RenderableTrait auto &&...renderables) noexcept
 
     // use screen shader
     mono::gl::ShaderManager::get().useShader("screen");
-    screenVA.bind();
-    glBindTexture(GL_TEXTURE_2D, screenFB.getColorID());
+    m_screenVa.bind();
+    glBindTexture(GL_TEXTURE_2D, m_screenFb.getColorID());
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
     // Replace previous frame with the current one

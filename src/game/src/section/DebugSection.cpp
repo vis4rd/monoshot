@@ -207,16 +207,16 @@ void DebugSection::update() noexcept
     m_camera.setTarget({pos, 0.f});
 
     // ecs::system::remove_dead_entities(m_registry);
-    ecs::system::update_ais(m_enemyRegistry, m_hero.position, m_bulletRegistry);
-    ecs::system::move_hero_with_collisions(m_mapElementsRegistry, m_hero, move_direction);
-    ecs::system::move_bullets(m_bulletRegistry);
-    ecs::system::collide_bullets(m_bulletRegistry, m_mapElementsRegistry, m_enemyRegistry);
-    ecs::system::check_alive_bullets(m_bulletRegistry);
-    ecs::system::destroy_entities(m_bulletRegistry);
-    ecs::system::destroy_entities(m_enemyRegistry);
+    ecs::system::updateAis(m_enemyRegistry, m_hero.position, m_bulletRegistry);
+    ecs::system::moveHeroWithCollisions(m_mapElementsRegistry, m_hero, move_direction);
+    ecs::system::moveBullets(m_bulletRegistry);
+    ecs::system::collideBullets(m_bulletRegistry, m_mapElementsRegistry, m_enemyRegistry);
+    ecs::system::checkAliveBullets(m_bulletRegistry);
+    ecs::system::destroyEntities(m_bulletRegistry);
+    ecs::system::destroyEntities(m_enemyRegistry);
 
     // finish the level if hero gets to the end area
-    if(m_map.isInEndArea(pos, m_hero.size) && (not m_onLeaveStarted))
+    if(m_map.isInEndArea(pos, m_hero.m_size) && (not m_onLeaveStarted))
     {
         m_leaveStartTimestamp = Timer::getTotalTime();
         m_onLeaveStarted = true;
@@ -243,16 +243,16 @@ void DebugSection::render() noexcept
     glm::vec2& pos = m_hero.position;
     float& rot = m_hero.rotation;
     float& vel = m_hero.velocity;
-    const float& acc = m_hero.acceleration;
+    const float& acc = m_hero.m_acceleration;
     const auto& theme_color = std::get<1>(m_map.getCurrentTheme().wallBlock);
-    m_renderer.drawQuad({pos.x, pos.y}, m_hero.size, rot, m_hero.getTexture(), theme_color);
+    m_renderer.drawQuad({pos.x, pos.y}, m_hero.m_size, rot, m_hero.getTexture(), theme_color);
 
     m_map.drawObjects({pos.x, pos.y}, drawBbs);
 
     const auto bullet_view = m_bulletRegistry.view<
-        const ecs::component::position,
-        const ecs::component::size,
-        const ecs::component::rotation>(entt::exclude<ecs::component::destroyed>);
+        const ecs::component::Position,
+        const ecs::component::Size,
+        const ecs::component::Rotation>(entt::exclude<ecs::component::Destroyed>);
     bullet_view.each(
         [&theme_color,
          &m_renderer = m_renderer](const auto& b_pos, const auto& b_size, const auto& b_rot) {
@@ -261,9 +261,9 @@ void DebugSection::render() noexcept
 
     const auto& enemy_texture = ResourceManager::enemyTexture;
     const auto enemy_view = m_enemyRegistry.view<
-        const ecs::component::position,
-        const ecs::component::size,
-        const ecs::component::rotation>();
+        const ecs::component::Position,
+        const ecs::component::Size,
+        const ecs::component::Rotation>();
     enemy_view.each(
         [&enemy_texture,
          &m_renderer = m_renderer](const auto& e_pos, const auto& e_size, const auto& e_rot) {
@@ -293,7 +293,7 @@ void DebugSection::render() noexcept
         UI::drawOverlay(
             m_layout,
             m_hero.health,
-            m_hero.maxHealth,
+            m_hero.m_maxHealth,
             current_ammo,
             total_ammo,
             m_hero.getCurrentItemIndex());
@@ -423,7 +423,7 @@ void DebugSection::showDebugUI()
     const glm::vec2& pos = m_hero.position;
     float& rot = m_hero.rotation;
     float& vel = m_hero.velocity;
-    const float& acc = m_hero.acceleration;
+    const float& acc = m_hero.m_acceleration;
 
     ImGui::Begin("Section options");
     {
@@ -456,7 +456,7 @@ void DebugSection::showDebugUI()
             vel,
             acc,
             rot);
-        ImGui::Text("health: %d/%d", m_hero.health, m_hero.maxHealth);
+        ImGui::Text("health: %d/%d", m_hero.health, m_hero.m_maxHealth);
         // const auto* weapon = dynamic_cast<Weapon*>(&*(m_hero.currentItem));
         if(!m_hero.isInventoryEmpty())
         {
@@ -474,10 +474,10 @@ void DebugSection::showDebugUI()
         ImGui::Separator();
         ImGui::Text(
             "Map elements count: %ld",
-            m_mapElementsRegistry.storage<ecs::component::position>().size());
+            m_mapElementsRegistry.storage<ecs::component::Position>().size());
         ImGui::Text(
             "Bullet count: %ld",
-            m_bulletRegistry.storage<ecs::component::position>().size());
+            m_bulletRegistry.storage<ecs::component::Position>().size());
 
         static std::string preview = "Forest Theme";
         bool check = false;
@@ -487,19 +487,19 @@ void DebugSection::showDebugUI()
             {
                 preview = "Tutorial Theme";
                 spdlog::debug("Switching MapTheme to '{}'", preview);
-                m_map.setTheme(MapThemes::TUTORIAL_THEME);
+                m_map.setTheme(MapThemes::tutorialTheme);
             }
             if(ImGui::Selectable("Forest Theme##unique_id", &check))
             {
                 preview = "Forest Theme";
                 spdlog::debug("Switching MapTheme to '{}'", preview);
-                m_map.setTheme(MapThemes::FOREST_THEME);
+                m_map.setTheme(MapThemes::forestTheme);
             }
             if(ImGui::Selectable("Winter Theme##unique_id", &check))
             {
                 preview = "Winter Theme";
                 spdlog::debug("Switching MapTheme to '{}'", preview);
-                m_map.setTheme(MapThemes::WINTER_THEME);
+                m_map.setTheme(MapThemes::winterTheme);
             }
             ImGui::EndCombo();
         }

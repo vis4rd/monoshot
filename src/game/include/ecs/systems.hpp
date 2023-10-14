@@ -11,16 +11,16 @@ namespace ecs::system
 namespace impl
 {
 
-bool is_colliding_with_anything(
+bool isCollidingWithAnything(
     entt::registry &registry,
     const glm::vec2 &entity_size,
     const glm::vec2 &next_pos);
 
 }
 
-void move_bullets(entt::registry &registry);
-void check_alive_bullets(entt::registry &registry);
-void collide_bullets(
+void moveBullets(entt::registry &registry);
+void checkAliveBullets(entt::registry &registry);
+void collideBullets(
     entt::registry &bullet_registry,
     entt::registry &map_registry,
     entt::registry &enemy_registry);
@@ -29,12 +29,9 @@ void collide_bullets(
  *
  * @param registry
  */
-void destroy_entities(entt::registry &registry);
-void move_hero_with_collisions(
-    entt::registry &registry,
-    Hero &hero,
-    glm::vec2 &hero_move_direction);
-void update_ais(
+void destroyEntities(entt::registry &registry);
+void moveHeroWithCollisions(entt::registry &registry, Hero &hero, glm::vec2 &hero_move_direction);
+void updateAis(
     entt::registry &enemy_registry,
     const glm::vec2 &hero_pos,
     entt::registry &bullet_registry);

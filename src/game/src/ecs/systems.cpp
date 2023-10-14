@@ -11,14 +11,14 @@ namespace ecs::system
 namespace impl
 {
 
-bool is_colliding_with_anything(
+bool isCollidingWithAnything(
     entt::registry& registry,
     const glm::vec2& entity_size,
     const glm::vec2& next_pos)
 {
     using namespace ecs::component;
-    auto view = registry.view<const position, const rotation, const size>();
-    view.use<const position>();
+    auto view = registry.view<const Position, const Rotation, const Size>();
+    view.use<const Position>();
     // const float& hero_rot = registry.get<const rotation>(entity);
     for(std::int32_t iter = 0; auto&& [element, el_pos, el_rot, el_size] : view.each())
     {
@@ -40,15 +40,15 @@ bool is_colliding_with_anything(
 
 }  // namespace impl
 
-void move_bullets(entt::registry& registry)
+void moveBullets(entt::registry& registry)
 {
     using namespace ecs::component;
     const float& delta_time = ResourceManager::timer->deltaTime();
-    auto view = registry.view<const rotation, const max_velocity, const acceleration>(
-        entt::exclude<ecs::component::destroyed>);
+    auto view = registry.view<const Rotation, const MaxVelocity, const Acceleration>(
+        entt::exclude<ecs::component::Destroyed>);
     for(auto&& [bullet, rot, mvel, acc] : view.each())
     {
-        const auto& vel = registry.patch<velocity>(
+        const auto& vel = registry.patch<Velocity>(
             bullet,
             [&acc = acc.data, &mvel = mvel.data, delta_time](float& vel) {
                 vel = glm::max(glm::min(vel + acc * delta_time, mvel), 0.f);
@@ -56,40 +56,40 @@ void move_bullets(entt::registry& registry)
 
         const auto rad = glm::radians(rot.data);
         glm::vec2 rot_vec = {glm::cos(rad), glm::sin(rad)};
-        registry.patch<position>(bullet, [&vel, rot_vec, delta_time](glm::vec2& pos) {
+        registry.patch<Position>(bullet, [&vel, rot_vec, delta_time](glm::vec2& pos) {
             pos += (vel.data * rot_vec * delta_time);
         });
     }
 }
 
-void check_alive_bullets(entt::registry& registry)
+void checkAliveBullets(entt::registry& registry)
 {
     const double timestamp = ResourceManager::timer->getTotalTime();
     auto view =
-        registry.view<const ecs::component::lifetime>(entt::exclude<ecs::component::destroyed>);
+        registry.view<const ecs::component::Lifetime>(entt::exclude<ecs::component::Destroyed>);
     for(auto&& [bullet, life] : view.each())
     {
         if((life.creation + life.timeTillDeath) <= timestamp)
         {
-            registry.emplace<ecs::component::destroyed>(bullet);
+            registry.emplace<ecs::component::Destroyed>(bullet);
             continue;
         }
     }
 }
 
-void collide_bullets(
+void collideBullets(
     entt::registry& bullet_registry,
     entt::registry& map_registry,
     entt::registry& enemy_registry)
 {
     namespace ec = ecs::component;
 
-    auto bullet_view = bullet_registry.view<ec::position, ec::size>(entt::exclude<ec::destroyed>);
-    auto map_view = map_registry.view<ec::position, ec::size, ec::rotation>();
-    auto enemy_view = enemy_registry.view<ec::position, ec::size, ec::rotation, ec::health>();
-    bullet_view.use<ec::position>();
-    map_view.use<ec::position>();
-    enemy_view.use<ec::position>();
+    auto bullet_view = bullet_registry.view<ec::Position, ec::Size>(entt::exclude<ec::Destroyed>);
+    auto map_view = map_registry.view<ec::Position, ec::Size, ec::Rotation>();
+    auto enemy_view = enemy_registry.view<ec::Position, ec::Size, ec::Rotation, ec::Health>();
+    bullet_view.use<ec::Position>();
+    map_view.use<ec::Position>();
+    enemy_view.use<ec::Position>();
 
     // go through every bullet
     for(auto&& [bullet_entity, b_pos, b_size] : bullet_view.each())
@@ -106,7 +106,7 @@ void collide_bullets(
         // ENEMIES RESOLUTION
         // sort enemies in similar order to bullets, hoping that most swaps will be skipped (when
         // bullets have similar positions)
-        enemy_registry.sort<ec::position>(element_sorter);
+        enemy_registry.sort<ec::Position>(element_sorter);
 
         // go through closest enemies
         const auto& en_entity = enemy_view.front();
@@ -116,24 +116,24 @@ void collide_bullets(
                    b_pos,
                    b_size,
                    0.f,
-                   enemy_view.get<ec::position>(en_entity),
-                   enemy_view.get<ec::size>(en_entity),
-                   enemy_view.get<ec::rotation>(en_entity)))
+                   enemy_view.get<ec::Position>(en_entity),
+                   enemy_view.get<ec::Size>(en_entity),
+                   enemy_view.get<ec::Rotation>(en_entity)))
             {
-                std::int32_t& enemy_health = enemy_view.get<ec::health>(en_entity);
+                std::int32_t& enemy_health = enemy_view.get<ec::Health>(en_entity);
                 enemy_health -= 20;
                 if(enemy_health <= 0)
                 {
-                    enemy_registry.emplace_or_replace<ec::destroyed>(en_entity);
+                    enemy_registry.emplace_or_replace<ec::Destroyed>(en_entity);
                 }
-                bullet_registry.emplace_or_replace<ec::destroyed>(bullet_entity);
+                bullet_registry.emplace_or_replace<ec::Destroyed>(bullet_entity);
             }
         }
 
         // MAP RESOLUTION
         // sort map elements in similar order to bullets, hoping that most swaps will be skipped
         // (when bullets have similar positions)
-        map_registry.sort<ec::position>(element_sorter);
+        map_registry.sort<ec::Position>(element_sorter);
 
         // go through closest map elements
         const auto& el_entity = map_view.front();
@@ -141,43 +141,42 @@ void collide_bullets(
                b_pos,
                b_size,
                0.f,
-               map_view.get<ec::position>(el_entity),
-               map_view.get<ec::size>(el_entity),
-               map_view.get<ec::rotation>(el_entity)))
+               map_view.get<ec::Position>(el_entity),
+               map_view.get<ec::Size>(el_entity),
+               map_view.get<ec::Rotation>(el_entity)))
         {
-            bullet_registry.emplace_or_replace<ec::destroyed>(bullet_entity);
+            bullet_registry.emplace_or_replace<ec::Destroyed>(bullet_entity);
         }
     }
 }
 
-void destroy_entities(entt::registry& registry)
+void destroyEntities(entt::registry& registry)
 {
     namespace ec = ecs::component;
-    const auto view = registry.view<ec::destroyed>();
+    const auto view = registry.view<ec::Destroyed>();
     registry.destroy(view.begin(), view.end());
 }
 
-void move_hero_with_collisions(entt::registry& registry, Hero& hero, glm::vec2& hero_move_direction)
+void moveHeroWithCollisions(entt::registry& registry, Hero& hero, glm::vec2& hero_move_direction)
 {
     const auto resolve_collision =
         [&registry](glm::vec2& current_pos, const glm::vec2& size, glm::vec2 step) -> void {
         // brute-force checking whether there is a collision in the next step
-        constexpr std::size_t max_tries = 3;
+        constexpr std::size_t maxTries = 3;
         std::size_t tries = 1;
-        for(; impl::is_colliding_with_anything(registry, size, current_pos + step)
-              && tries < max_tries;
+        for(; impl::isCollidingWithAnything(registry, size, current_pos + step) && tries < maxTries;
             tries++)
         {
             step /= 2.f;
         }
-        if(tries < max_tries)
+        if(tries < maxTries)
         {
             current_pos += step;
         }
     };
 
-    constexpr auto is_opposite_direction_vector = [](const glm::vec2& one,
-                                                     const glm::vec2& two) -> bool {
+    constexpr auto isOppositeDirectionVector = [](const glm::vec2& one,
+                                                  const glm::vec2& two) -> bool {
         return (one.x > 0.f && two.x < 0.f) || (one.x < 0.f && two.x > 0.f)
                || (one.y > 0.f && two.y < 0.f) || (one.y < 0.f && two.y > 0.f);
     };
@@ -185,7 +184,7 @@ void move_hero_with_collisions(entt::registry& registry, Hero& hero, glm::vec2& 
     const float& delta_time = ResourceManager::timer->deltaTime();
 
     // sort map tiles by distance to the hero
-    registry.sort<ecs::component::position>([&hero](const auto& lhs, const auto& rhs) {
+    registry.sort<ecs::component::Position>([&hero](const auto& lhs, const auto& rhs) {
         return glm::abs(glm::length(lhs - hero.position))
                < glm::abs(glm::length(rhs - hero.position));
     });
@@ -196,15 +195,15 @@ void move_hero_with_collisions(entt::registry& registry, Hero& hero, glm::vec2& 
     {
         hero_move_direction = glm::normalize(hero_move_direction);
         hero.velocity =
-            (hero.velocity + hero.acceleration * delta_time)
-            * (not is_opposite_direction_vector(hero_move_direction, hero.walkingDirection));
-        hero.velocity = std::min(hero.velocity, hero.maxVelocity);
+            (hero.velocity + hero.m_acceleration * delta_time)
+            * (not isOppositeDirectionVector(hero_move_direction, hero.walkingDirection));
+        hero.velocity = std::min(hero.velocity, hero.m_maxVelocity);
         hero.walkingDirection = hero_move_direction;
         // spdlog::trace("Hero moves");
     }
     else  // hero does not additionally move in this frame/tick
     {
-        hero.velocity -= hero.acceleration * delta_time;
+        hero.velocity -= hero.m_acceleration * delta_time;
         hero.velocity = std::max(hero.velocity, 0.f);
         hero.walkingDirection *= bool(hero.velocity != 0.f);
         // spdlog::trace("Hero does not move: vel = {}, calced = {:d}", hero.velocity,
@@ -217,11 +216,11 @@ void move_hero_with_collisions(entt::registry& registry, Hero& hero, glm::vec2& 
 
     // there should not be much penalty for doing both axes separatly because 99.9% of situations
     // there is no collision on first iteration in either case
-    resolve_collision(hero.position, hero.size, shift_x);
-    resolve_collision(hero.position, hero.size, shift_y);
+    resolve_collision(hero.position, hero.m_size, shift_x);
+    resolve_collision(hero.position, hero.m_size, shift_y);
 }
 
-void update_ais(
+void updateAis(
     entt::registry& enemy_registry,
     const glm::vec2& hero_pos,
     entt::registry& bullet_registry)
@@ -233,26 +232,26 @@ void update_ais(
 
     auto view =
         enemy_registry
-            .view<ec::position, ec::rotation, ec::ai_state, ec::ai_aware_range, ec::ai_weapon>();
+            .view<ec::Position, ec::Rotation, ec::AiState, ec::AiAwareRange, ec::AiWeapon>();
     for(auto&& [enemy, pos, rot, state, range, weapon] : view.each())
     {
         const auto dist = distance(pos, hero_pos);
         // state update
         switch(state)
         {
-            case ec::ai_state::IDLE:
+            case ec::AiState::IDLE:
             {
                 if(dist < range)
                 {
-                    state.data = ec::ai_state::AWARE;
+                    state.data = ec::AiState::AWARE;
                 }
                 break;
             }
-            case ec::ai_state::AWARE:
+            case ec::AiState::AWARE:
             {
                 if(dist > range)
                 {
-                    state.data = ec::ai_state::IDLE;
+                    state.data = ec::AiState::IDLE;
                     break;
                 }
                 const auto diff = hero_pos - pos;

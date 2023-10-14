@@ -16,8 +16,8 @@ Window::Window(
     bool fullscreen,
     bool vsync)
     : NativeWindow(title, width, height)
-    , screenVA()
-    , screenFB(m_width, m_height)
+    , m_screenVa()
+    , m_screenFb(m_width, m_height)
 {
     spdlog::info("Creating window instance");
 
@@ -27,20 +27,20 @@ Window::Window(
     this->setVerticalSync(vsync);
     m_isMaximized = static_cast<bool>(glfwGetWindowAttrib(m_window, GLFW_MAXIMIZED));
 
-    constexpr float screen_vertex_buffer[16] =
+    constexpr float screenVertexBuffer[16] =
         {-1.f, -1.f, 0.f, 0.f, 1.f, -1.f, 1.f, 0.f, 1.f, 1.f, 1.f, 1.f, -1.f, 1.f, 0.f, 1.f};
-    constexpr std::uint32_t screen_element_buffer[6] = {0, 1, 2, 2, 3, 0};
+    constexpr std::uint32_t screenElementBuffer[6] = {0, 1, 2, 2, 3, 0};
 
-    VertexBuffer screen_vb(screen_vertex_buffer, sizeof(screen_vertex_buffer));
+    VertexBuffer screen_vb(screenVertexBuffer, sizeof(screenVertexBuffer));
     BufferLayout layout = {
         {ShaderDataType::FLOAT2, "aPos"      },
         {ShaderDataType::FLOAT2, "aTexCoords"},
     };
     screen_vb.setLayout(layout);
 
-    ElementBuffer screen_eb(screen_element_buffer, 6);
-    screenVA.addVertexBuffer(std::move(screen_vb));
-    screenVA.addElementBuffer(screen_eb);
+    ElementBuffer screen_eb(screenElementBuffer, 6);
+    m_screenVa.addVertexBuffer(std::move(screen_vb));
+    m_screenVa.addElementBuffer(screen_eb);
 
     mono::gl::ShaderManager::get().addShaderProgram(
         "screen",
@@ -92,8 +92,8 @@ Window::~Window()
 {
     spdlog::info("Terminating window instance");
 
-    screenFB.unbind();
-    screenVA.unbind();
+    m_screenFb.unbind();
+    m_screenVa.unbind();
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
@@ -107,7 +107,7 @@ const ImGuiIO &Window::getImGuiIo() const
 
 FrameBuffer &Window::getFramebuffer()
 {
-    return screenFB;
+    return m_screenFb;
 }
 
 glm::vec2 Window::getMousePosition() const
@@ -146,7 +146,7 @@ void Window::setSize(const std::pair<int32_t, int32_t> &new_size)
 void Window::setFramebufferSize(const std::pair<int32_t, int32_t> &new_size)
 {
     spdlog::debug("New framebuffer size = {}x{} in pixels", new_size.first, new_size.second);
-    screenFB.resize(new_size.first, new_size.second);
+    m_screenFb.resize(new_size.first, new_size.second);
 }
 
 void Window::setFullscreen(bool fullscreen)
