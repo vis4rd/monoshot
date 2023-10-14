@@ -8,7 +8,7 @@ class Consumable : public Item
     Consumable() = default;
     Consumable(const Consumable& copy);
     Consumable(Consumable&& move);
-    virtual ~Consumable() = default;
+    ~Consumable() override = default;
 
     Consumable& operator=(const Consumable& copy);
     Consumable& operator=(Consumable&& move);
@@ -16,7 +16,7 @@ class Consumable : public Item
     virtual bool useDelayed() final;
 
     protected:
-    virtual void use() override;
+    void use() override;
     virtual bool canBeUsed(double timestamp = 0.0) final;
 
     virtual const double& getUseDelay() const final;

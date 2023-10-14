@@ -14,7 +14,7 @@ class Weapon : public Consumable
         const std::uint32_t& total_ammo,
         const float& bullet_velocity,
         const double& use_delay);
-    virtual ~Weapon() = default;
+    ~Weapon() override = default;
 
     Weapon& operator=(const Weapon& copy);
     Weapon& operator=(Weapon&& move);

@@ -28,7 +28,7 @@ class Window final : public NativeWindow
         std::uint32_t height,
         bool fullscreen = true,
         bool vsync = true);
-    ~Window();
+    ~Window() override;
 
     const ImGuiIO &getImGuiIo() const;
     FrameBuffer &getFramebuffer();

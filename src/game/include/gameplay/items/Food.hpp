@@ -8,7 +8,7 @@ class Food : public Consumable
     Food();
     Food(const Food& copy);
     Food(Food&& move);
-    virtual ~Food() = default;
+    ~Food() override = default;
 
     Food& operator=(const Food& copy);
     Food& operator=(Food&& move);
