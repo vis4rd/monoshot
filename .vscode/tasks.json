@@ -13,6 +13,7 @@
                 "color": "terminal.ansiCyan"
             },
             "presentation": {
+                "clear": true,
                 "panel": "dedicated",
                 "reveal": "silent",
                 "showReuseMessage": false,
@@ -22,7 +23,7 @@
             "label": "Run clang-tidy",
             "detail": "Run clang-tidy on all C++ files in src/ directory.",
             "type": "shell",
-            "command": "find src/ -type f | grep -vi lib/* | grep -e .*\\.[ch]pp | xargs clang-tidy --use-color --header-filter=\"^src/engine/module/\" -p=\"build/\"",
+            "command": "find src/ -type f | grep -vi lib/* | grep -e .*\\.[ch]pp | xargs clang-tidy --config-file=.clang-tidy --extra-arg='--std=c++20' --use-color --header-filter='^src/engine/module/' -p='build/'",
             "icon": {
                 "color": "terminal.ansiCyan",
                 "id": "sparkle",
@@ -30,6 +31,7 @@
             "problemMatcher": {
                 "source": "clang-tidy",
                 "owner": "clang-tidy",
+                "applyTo": "allDocuments",
                 "fileLocation": "absolute",
                 "pattern": [
                     {
@@ -44,6 +46,7 @@
                 ],
             },
             "presentation": {
+                "clear": true,
                 "panel": "dedicated",
                 "reveal": "silent",
                 "showReuseMessage": false,

@@ -10,7 +10,7 @@
     "cmake.configureOnEdit": false,
     "cmake.configureOnOpen": false,
     "cmake.languageSupport.enableFileAPI": true,
-    "cmake.statusbar.visibility": "icon",
+    "cmake.statusbar.visibility": "compact",
     //
     "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
     "editor.codeActionsOnSave": {
