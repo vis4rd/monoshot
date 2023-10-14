@@ -17,6 +17,37 @@
                 "reveal": "silent",
                 "showReuseMessage": false,
             },
-        }
+        },
+        {
+            "label": "Run clang-tidy",
+            "detail": "Run clang-tidy on all C++ files in src/ directory.",
+            "type": "shell",
+            "command": "find src/ -type f | grep -vi lib/* | grep -e .*\\.[ch]pp | xargs clang-tidy --use-color --header-filter=\"^src/engine/module/\" -p=\"build/\"",
+            "icon": {
+                "color": "terminal.ansiCyan",
+                "id": "sparkle",
+            },
+            "problemMatcher": {
+                "source": "clang-tidy",
+                "owner": "clang-tidy",
+                "fileLocation": "absolute",
+                "pattern": [
+                    {
+                        "regexp": "^(.*):([0-9]{1,6}):([0-9]{1,6}):\\s([a-z]+):\\s(.*)\\[(.*)\\]$",
+                        "file": 1,
+                        "line": 2,
+                        "column": 3,
+                        "severity": 4,
+                        "message": 5,
+                        "code": 6,
+                    }
+                ],
+            },
+            "presentation": {
+                "panel": "dedicated",
+                "reveal": "silent",
+                "showReuseMessage": false,
+            },
+        },
     ]
 }
