@@ -25,11 +25,11 @@ class BufferElement
     void setOffset(const std::size_t& offset);
 
     private:
-    std::string m_name;
-    ShaderDataType m_shaderType;
-    std::uint32_t m_size;
-    std::size_t m_offset;
-    bool m_normalized;
+    std::string m_name{};
+    ShaderDataType m_shaderType{};
+    std::uint32_t m_size{};
+    std::size_t m_offset{};
+    bool m_normalized{};
 };
 
 }  // namespace mono

@@ -24,8 +24,8 @@ class ElementBuffer
     operator std::uint32_t() const;
 
     private:
-    std::uint32_t m_id;
-    std::uint32_t m_count;
+    std::uint32_t m_id{};
+    std::uint32_t m_count{};
     bool m_isInit = false;
 };
 

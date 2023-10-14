@@ -15,7 +15,7 @@ struct Tile
     float x = 0;
     float y = 0;
     float rotation = 0.f;
-    BlockID blockId;
+    BlockID blockId{};
     bool solid = false;  // indicates if collisions should apply
 };
 
@@ -72,9 +72,9 @@ class Map final
     std::size_t m_height = 0;
     std::int64_t m_centerX = 0;
     std::int64_t m_centerY = 0;
-    std::vector<Tile> m_tiles;
-    std::vector<MapObject> m_objects;
-    std::unique_ptr<OBB::Polygon> m_endArea;
+    std::vector<Tile> m_tiles{};
+    std::vector<MapObject> m_objects{};
+    std::unique_ptr<OBB::Polygon> m_endArea{};
     MapTheme& m_theme = MapThemes::forestTheme;
     Renderer& m_renderer;
 };

@@ -39,8 +39,8 @@ class Camera
     virtual void updateProjectionMatrix() = 0;
 
     protected:
-    glm::vec3 m_position;  // position of the camera
-    glm::vec3 m_target;  // position where the camera points to
+    glm::vec3 m_position{};  // position of the camera
+    glm::vec3 m_target{};  // position where the camera points to
     glm::vec3 m_up = glm::vec3(0.0f, 1.0f, 0.0f);
     glm::mat4 m_viewMatrix = glm::identity<glm::mat4>();
     glm::mat4 m_projectionMatrix = glm::identity<glm::mat4>();
@@ -48,7 +48,7 @@ class Camera
     glm::mat4 m_inverseProjectionMatrix = glm::identity<glm::mat4>();
     float m_nearPlane = 0.1f;
     float m_farPlane = 100.f;
-    glm::vec2 m_resolution;
+    glm::vec2 m_resolution{};
     bool m_viewMatrixNeedsUpdate = false;
     bool m_projectionMatrixNeedsUpdate = false;
 };
