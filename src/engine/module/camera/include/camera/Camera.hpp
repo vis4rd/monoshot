@@ -17,8 +17,8 @@ class Camera
     Camera(Camera&& move);
     virtual ~Camera() = default;
 
-    virtual Camera& operator=(const Camera& copy);
-    virtual Camera& operator=(Camera&& move);
+    Camera& operator=(const Camera& copy);
+    Camera& operator=(Camera&& move);
 
     virtual const glm::vec3& getPosition() const final;
     virtual const glm::vec3& getTargetPosition() const final;
