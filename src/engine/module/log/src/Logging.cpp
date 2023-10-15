@@ -1,10 +1,13 @@
 #include "../include/log/Logging.hpp"
 
+#include <array>
+
 #include <glad/gl.h>
 
-static constexpr const char *sources[] =
+
+static constexpr const std::array<char *, 7> sources =
     {"API", "Window System", "Shader Compiler", "Third Party", "Application", "Other", "Unknown"};
-static constexpr const char *types[] = {
+static constexpr const std::array<char *, 7> types = {
     "Error",
     "Deprecated Behavior",
     "Undefined Behavior",

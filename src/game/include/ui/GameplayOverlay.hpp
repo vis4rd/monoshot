@@ -20,7 +20,7 @@ inline void drawOverlay(
     using res = ResourceManager;
     const auto& font = res::uiAmmoFont;
     auto font_guard = font->use();
-    const std::uint32_t weapon_texture_indices[2] = {
+    const std::array<std::uint32_t, 2> weapon_texture_indices = {
         res::rifleInventoryTexture->getID(),
         res::pistolInventoryTexture->getID()};
 

@@ -27,18 +27,18 @@ Window::Window(
     this->setVerticalSync(vsync);
     m_isMaximized = static_cast<bool>(glfwGetWindowAttrib(m_window, GLFW_MAXIMIZED));
 
-    constexpr float screenVertexBuffer[16] =
+    constexpr std::array<float, 16> screenVertexBuffer =
         {-1.f, -1.f, 0.f, 0.f, 1.f, -1.f, 1.f, 0.f, 1.f, 1.f, 1.f, 1.f, -1.f, 1.f, 0.f, 1.f};
-    constexpr std::uint32_t screenElementBuffer[6] = {0, 1, 2, 2, 3, 0};
+    constexpr std::array<std::uint32_t, 6> screenElementBuffer = {0, 1, 2, 2, 3, 0};
 
-    VertexBuffer screen_vb(screenVertexBuffer, sizeof(screenVertexBuffer));
+    VertexBuffer screen_vb(screenVertexBuffer.data(), screenVertexBuffer.size() * sizeof(float));
     BufferLayout layout = {
         {ShaderDataType::FLOAT2, "aPos"      },
         {ShaderDataType::FLOAT2, "aTexCoords"},
     };
     screen_vb.setLayout(layout);
 
-    ElementBuffer screen_eb(screenElementBuffer, 6);
+    ElementBuffer screen_eb(screenElementBuffer.data(), 6);
     m_screenVa.addVertexBuffer(std::move(screen_vb));
     m_screenVa.addElementBuffer(screen_eb);
 

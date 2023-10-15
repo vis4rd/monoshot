@@ -32,6 +32,8 @@ Renderer::Renderer()
 
     //// Quads
     // data
+    // TODO(vis4rd): use std::vector instead of c-style array
+    // NOLINTNEXTLINE(modernize-avoid-c-arrays)
     std::uint32_t quad_indices[m_data.MAX_INDEX_COUNT];
     std::uint32_t offset = 0;
     for(std::size_t i = 0; i < m_data.MAX_INDEX_COUNT; i += 6)
