@@ -13,7 +13,7 @@ class VertexArray
     public:
     VertexArray();
     VertexArray(const VertexArray& copy);
-    VertexArray(VertexArray&& move);
+    VertexArray(VertexArray&& move) noexcept;
     ~VertexArray();
 
     void bind() const;

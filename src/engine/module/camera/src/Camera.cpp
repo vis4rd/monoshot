@@ -21,7 +21,7 @@ Camera::Camera(const Camera& copy)
     , m_projectionMatrixNeedsUpdate(copy.m_projectionMatrixNeedsUpdate)
 { }
 
-Camera::Camera(Camera&& move)
+Camera::Camera(Camera&& move) noexcept
     : m_position(std::move(move.m_position))
     , m_target(std::move(move.m_target))
     , m_up(std::move(move.m_up))
@@ -53,7 +53,7 @@ Camera& Camera::operator=(const Camera& copy)
     return *this;
 }
 
-Camera& Camera::operator=(Camera&& move)
+Camera& Camera::operator=(Camera&& move) noexcept
 {
     m_position = std::move(move.m_position);
     m_target = std::move(move.m_target);

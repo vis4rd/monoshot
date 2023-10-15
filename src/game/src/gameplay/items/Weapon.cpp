@@ -28,7 +28,7 @@ Weapon::Weapon(const Weapon& copy)
     , m_bulletVelocity(copy.m_bulletVelocity)
 { }
 
-Weapon::Weapon(Weapon&& move)
+Weapon::Weapon(Weapon&& move) noexcept
     : Consumable(std::move(move))
     , m_damage(std::move(move.m_damage))
     , m_ammoCurrent(std::move(move.m_ammoCurrent))
@@ -48,7 +48,7 @@ Weapon& Weapon::operator=(const Weapon& copy)
     return *this;
 }
 
-Weapon& Weapon::operator=(Weapon&& move)
+Weapon& Weapon::operator=(Weapon&& move) noexcept
 {
     m_damage = std::move(move.m_damage);
     m_ammoCurrent = std::move(move.m_ammoCurrent);

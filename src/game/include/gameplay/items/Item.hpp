@@ -12,7 +12,7 @@ class Item
 
     Item& operator=(const Item& copy) { return *this; }
 
-    Item& operator=(Item&& move) { return *this; }
+    Item& operator=(Item&& move) noexcept { return *this; }
 
     protected:
     virtual void use() = 0;

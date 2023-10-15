@@ -12,7 +12,7 @@ Food::Food(const Food& copy)
     , m_healingPower(copy.m_healingPower)
 { }
 
-Food::Food(Food&& move)
+Food::Food(Food&& move) noexcept
     : Consumable(std::move(move))
     , m_healingPower(std::move(move.m_healingPower))
 { }
@@ -24,7 +24,7 @@ Food& Food::operator=(const Food& copy)
     return *this;
 }
 
-Food& Food::operator=(Food&& move)
+Food& Food::operator=(Food&& move) noexcept
 {
     m_healingPower = std::move(move.m_healingPower);
     this->Consumable::operator=(std::move(move));

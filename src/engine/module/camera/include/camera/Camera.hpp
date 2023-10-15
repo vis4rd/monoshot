@@ -14,11 +14,11 @@ class Camera
     Camera() = default;
     explicit Camera(const glm::vec3& position, const glm::vec2& resolution);
     Camera(const Camera& copy);
-    Camera(Camera&& move);
+    Camera(Camera&& move) noexcept;
     virtual ~Camera() = default;
 
     Camera& operator=(const Camera& copy);
-    Camera& operator=(Camera&& move);
+    Camera& operator=(Camera&& move) noexcept;
 
     virtual const glm::vec3& getPosition() const final;
     virtual const glm::vec3& getTargetPosition() const final;

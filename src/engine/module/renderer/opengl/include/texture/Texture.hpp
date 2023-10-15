@@ -28,11 +28,11 @@ class Texture
         const std::int32_t& channel_count = 4);
     Texture(const std::string_view& file_path, const TextureData& texture_data = TextureData());
     Texture(const Texture& copy);
-    Texture(Texture&& move);
+    Texture(Texture&& move) noexcept;
     virtual ~Texture();
 
     Texture& operator=(const Texture& copy);
-    Texture& operator=(Texture&& move);
+    Texture& operator=(Texture&& move) noexcept;
 
     const std::uint32_t& getID() const;
     const std::int32_t& getWidth() const;

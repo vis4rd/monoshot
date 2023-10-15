@@ -7,7 +7,7 @@ class Weapon : public Consumable
     public:
     Weapon() = default;
     Weapon(const Weapon& copy);
-    Weapon(Weapon&& move);
+    Weapon(Weapon&& move) noexcept;
     Weapon(
         const std::int32_t& damage,
         const std::uint32_t& magazine_capacity,
@@ -17,7 +17,7 @@ class Weapon : public Consumable
     ~Weapon() override = default;
 
     Weapon& operator=(const Weapon& copy);
-    Weapon& operator=(Weapon&& move);
+    Weapon& operator=(Weapon&& move) noexcept;
 
     void reload();
     virtual const std::int32_t& getDamage() const final;

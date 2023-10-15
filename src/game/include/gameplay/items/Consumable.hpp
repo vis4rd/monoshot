@@ -7,11 +7,11 @@ class Consumable : public Item
     public:
     Consumable() = default;
     Consumable(const Consumable& copy);
-    Consumable(Consumable&& move);
+    Consumable(Consumable&& move) noexcept;
     ~Consumable() override = default;
 
     Consumable& operator=(const Consumable& copy);
-    Consumable& operator=(Consumable&& move);
+    Consumable& operator=(Consumable&& move) noexcept;
 
     virtual bool useDelayed() final;
 

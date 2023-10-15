@@ -15,7 +15,7 @@ class VertexBuffer
     VertexBuffer(std::uint32_t size);
     VertexBuffer(const float* vertices, std::uint32_t size);
     VertexBuffer(const VertexBuffer& copy);
-    VertexBuffer(VertexBuffer&& move);
+    VertexBuffer(VertexBuffer&& move) noexcept;
     ~VertexBuffer();
 
     void bind() const;

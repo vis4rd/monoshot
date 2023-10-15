@@ -16,17 +16,17 @@ class Scalar
 
     constexpr Scalar() : data(static_cast<T>(0))                 { }
     constexpr Scalar(const Scalar& copy) : data(copy.data)       { }
-    constexpr Scalar(Scalar&& move) : data(std::move(move.data)) { }
+    constexpr Scalar(Scalar&& move) noexcept : data(std::move(move.data)) { }
     constexpr ~Scalar() = default;
 
     operator T&()             { return data; }
     operator const T&() const { return data; }
     operator T()        const { return data; }
 
-    constexpr Scalar& operator=(const Scalar& copy) { this->data = copy.data; return *this; }
-    constexpr Scalar& operator=(Scalar&& move)      { this->data = std::move(move.data); return *this; }
-    constexpr Scalar& operator=(const T& val)       { this->data = std::move(val); return *this; }
-    constexpr Scalar& operator=(T&& val)            { this->data = std::move(val); return *this; }
+    constexpr Scalar& operator=(const Scalar& copy)     { this->data = copy.data; return *this; }
+    constexpr Scalar& operator=(Scalar&& move) noexcept { this->data = std::move(move.data); return *this; }
+    constexpr Scalar& operator=(const T& val)           { this->data = std::move(val); return *this; }
+    constexpr Scalar& operator=(T&& val)                { this->data = std::move(val); return *this; }
 
     constexpr Scalar operator+(const Scalar& rhs) const { Scalar retval; retval.data = this->data + rhs.data; return retval; }
     constexpr Scalar operator-(const Scalar& rhs) const { Scalar retval; retval.data = this->data - rhs.data; return retval; }

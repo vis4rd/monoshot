@@ -7,11 +7,11 @@ class Food : public Consumable
     public:
     Food();
     Food(const Food& copy);
-    Food(Food&& move);
+    Food(Food&& move) noexcept;
     ~Food() override = default;
 
     Food& operator=(const Food& copy);
-    Food& operator=(Food&& move);
+    Food& operator=(Food&& move) noexcept;
 
     virtual const std::int32_t& getHealingPower() const final;
 

@@ -19,11 +19,11 @@ class Animation : public Texture
         const double& frame_duration,
         const TextureData& texture_data = TextureData());
     Animation(const Animation& copy);
-    Animation(Animation&& move);
+    Animation(Animation&& move) noexcept;
     ~Animation() override;
 
     Animation& operator=(const Animation& copy);
-    Animation& operator=(Animation&& move);
+    Animation& operator=(Animation&& move) noexcept;
 
     void setFrameDuration(const double& frame_duration);
 

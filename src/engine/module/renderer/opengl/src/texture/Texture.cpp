@@ -87,7 +87,7 @@ Texture::Texture(const Texture& copy)
         m_textureData.widthTotal * m_textureData.heightTotal * m_numberOfChannels);
 }
 
-Texture::Texture(Texture&& move)
+Texture::Texture(Texture&& move) noexcept
     : m_id(std::exchange(move.m_id, 0u))
     , m_textureData(std::exchange(move.m_textureData, TextureData()))
     , m_numberOfChannels(std::exchange(move.m_numberOfChannels, 0))
@@ -121,7 +121,7 @@ Texture& Texture::operator=(const Texture& copy)
     return *this;
 }
 
-Texture& Texture::operator=(Texture&& move)
+Texture& Texture::operator=(Texture&& move) noexcept
 {
     spdlog::trace("Moving Texture...");
     m_id = std::exchange(move.m_id, 0u);

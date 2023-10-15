@@ -20,7 +20,7 @@ VertexBuffer::VertexBuffer(const VertexBuffer& copy)
     spdlog::debug("Copying VertexBuffer instance with ID = {}", copy.m_id);
 }
 
-VertexBuffer::VertexBuffer(VertexBuffer&& move)
+VertexBuffer::VertexBuffer(VertexBuffer&& move) noexcept
     : m_id(std::move(move.m_id))
     , m_layout(std::move(move.m_layout))
 {
