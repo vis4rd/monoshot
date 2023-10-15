@@ -26,6 +26,7 @@ class VertexArray
     const std::vector<VertexBuffer>& getVertexBuffers() const;
     const ElementBuffer& getElementBuffer() const;
 
+    // NOLINTNEXTLINE(google-explicit-constructor)
     operator std::uint32_t();
 
     private:

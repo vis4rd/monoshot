@@ -21,6 +21,7 @@ class ElementBuffer
     void setData(std::uint32_t* indices, std::uint32_t count);
     bool isInitialized() const;
 
+    // NOLINTNEXTLINE(google-explicit-constructor)
     operator std::uint32_t() const;
 
     private:

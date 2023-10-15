@@ -8,7 +8,7 @@ class KeyGroup
 {
     public:
     KeyGroup() = default;
-    KeyGroup(const std::string& name);
+    explicit KeyGroup(const std::string& name);
 
     public:
     std::string name{};

@@ -11,7 +11,9 @@ template<NumericC T>
 class Scalar
 {
     public:
+    // NOLINTNEXTLINE(google-explicit-constructor)
     constexpr Scalar(const T& val) : data(val)       { }
+    // NOLINTNEXTLINE(google-explicit-constructor)
     constexpr Scalar(T&& val) : data(std::move(val)) { }
 
     constexpr Scalar() : data(static_cast<T>(0))                 { }
@@ -19,8 +21,11 @@ class Scalar
     constexpr Scalar(Scalar&& move) noexcept : data(std::move(move.data)) { }
     constexpr ~Scalar() = default;
 
+    // NOLINTNEXTLINE(google-explicit-constructor)
     operator T&()             { return data; }
+    // NOLINTNEXTLINE(google-explicit-constructor)
     operator const T&() const { return data; }
+    // NOLINTNEXTLINE(google-explicit-constructor)
     operator T()        const { return data; }
 
     constexpr Scalar& operator=(const Scalar& copy)     { this->data = copy.data; return *this; }

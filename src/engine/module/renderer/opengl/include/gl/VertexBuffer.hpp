@@ -12,7 +12,7 @@ namespace mono
 class VertexBuffer
 {
     public:
-    VertexBuffer(std::uint32_t size);
+    explicit VertexBuffer(std::uint32_t size);
     VertexBuffer(const float* vertices, std::uint32_t size);
     VertexBuffer(const VertexBuffer& copy);
     VertexBuffer(VertexBuffer&& move) noexcept;
@@ -27,6 +27,7 @@ class VertexBuffer
     void setData(const void* data, const std::uint32_t& size);
     void setLayout(const BufferLayout& layout);
 
+    // NOLINTNEXTLINE(google-explicit-constructor)
     operator std::uint32_t() const;
 
     private:

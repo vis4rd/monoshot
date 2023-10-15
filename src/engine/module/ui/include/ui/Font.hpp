@@ -11,7 +11,7 @@ namespace impl
 class FontUsageGuard
 {
     public:
-    FontUsageGuard(ImFont* font);
+    explicit FontUsageGuard(ImFont* font);
     ~FontUsageGuard();
 
     void popFont();
@@ -25,7 +25,7 @@ class FontUsageGuard
 class Font
 {
     public:
-    Font(std::string_view file_path, float size = 16.f);
+    explicit Font(std::string_view file_path, float size = 16.f);
     ImFont* loadFromFile(std::string_view file_path, float size = 16.f);
     // clang-format off
     [[nodiscard("This function returns a RAII guard which pushes and pops the ImGui fonts for you")]]

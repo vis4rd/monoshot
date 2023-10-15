@@ -23,7 +23,7 @@ concept IsConsumableC = std::derived_from<T, Consumable>;
 class Hero final
 {
     public:
-    Hero(
+    explicit Hero(
         const std::int32_t& health,
         const std::optional<Weapon>& main_weapon = std::nullopt,
         const std::optional<Weapon>& secondary_weapon = std::nullopt);

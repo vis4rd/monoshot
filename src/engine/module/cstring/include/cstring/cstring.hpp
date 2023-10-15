@@ -88,6 +88,7 @@ class cstring final  // NOLINT(readability-identifier-naming)
     [[nodiscard]] constexpr bool operator<=(const cstring&) const = default;
     [[nodiscard]] constexpr bool operator>=(const cstring&) const = default;
 
+    // NOLINTNEXTLINE(google-explicit-constructor)
     [[nodiscard]] constexpr operator std::string_view() const { return {std::data(m_data), N - 1}; }
 
 

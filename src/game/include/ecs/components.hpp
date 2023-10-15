@@ -29,21 +29,21 @@ struct Collision : public Scalar<bool>
 
 struct MaxVelocity : public Scalar<float>
 {
-    MaxVelocity(float val = 7.f)
+    explicit MaxVelocity(float val = 7.f)
         : Scalar<float>(val)
     { }
 };
 
 struct Acceleration : public Scalar<float>
 {
-    Acceleration(float val = 100.f)
+    explicit Acceleration(float val = 100.f)
         : Scalar<float>(val)
     { }
 };
 
 struct Lifetime
 {
-    Lifetime(double timestamp, double life_duration = 1.0)
+    explicit Lifetime(double timestamp, double life_duration = 1.0)
         : creation(timestamp)
         , timeTillDeath(life_duration)
     { }
@@ -57,7 +57,7 @@ struct Destroyed
 
 struct Health : public Scalar<std::int32_t>
 {
-    Health(std::int32_t val = 100)
+    explicit Health(std::int32_t val = 100)
         : Scalar<std::int32_t>(val)
     { }
 };
@@ -77,7 +77,7 @@ struct AiState : public Scalar<std::int32_t>
 
 struct AiAwareRange : public Scalar<float>
 {
-    AiAwareRange(float val = 10.f)
+    explicit AiAwareRange(float val = 10.f)
         : Scalar<float>(val)
     { }
 };

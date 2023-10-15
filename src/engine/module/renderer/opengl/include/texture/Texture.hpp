@@ -26,7 +26,9 @@ class Texture
         const std::int32_t& width,
         const std::int32_t& height,
         const std::int32_t& channel_count = 4);
-    Texture(const std::string_view& file_path, const TextureData& texture_data = TextureData());
+    explicit Texture(
+        const std::string_view& file_path,
+        const TextureData& texture_data = TextureData());
     Texture(const Texture& copy);
     Texture(Texture&& move) noexcept;
     virtual ~Texture();
