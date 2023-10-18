@@ -34,7 +34,6 @@ BufferElement::BufferElement(const ShaderDataType& type, const std::string& name
     : m_name(name)
     , m_shaderType(type)
     , m_size(sizeofShaderDataType(type))
-    , m_offset(0)
     , m_normalized(normalized)
 { }
 

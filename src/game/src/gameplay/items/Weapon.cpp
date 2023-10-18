@@ -11,7 +11,6 @@ Weapon::Weapon(
     const float& bullet_velocity,
     const double& use_delay)
     : m_damage(damage)
-    , m_ammoCurrent(0)
     , m_ammoMagazineMax(magazine_capacity)
     , m_ammoTotal(total_ammo)
     , m_bulletVelocity(bullet_velocity)
