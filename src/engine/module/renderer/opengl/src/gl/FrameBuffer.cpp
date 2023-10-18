@@ -113,7 +113,7 @@ const std::uint32_t& FrameBuffer::getStencilID() const
 
 glm::ivec2 FrameBuffer::getSize() const
 {
-    return glm::ivec2(m_width, m_height);
+    return {m_width, m_height};
 }
 
 void FrameBuffer::initTexture()

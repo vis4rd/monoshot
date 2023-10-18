@@ -9,12 +9,12 @@ namespace helpers
 {
 inline constexpr ImVec2 operator+(const ImVec2& first, const ImVec2& second)
 {
-    return ImVec2(first.x + second.x, first.y + second.y);
+    return {first.x + second.x, first.y + second.y};
 }
 
 inline constexpr ImVec2 operator*(const ImVec2& first, const float multiplier)
 {
-    return ImVec2(first.x * multiplier, first.y * multiplier);
+    return {first.x * multiplier, first.y * multiplier};
 }
 }  // namespace helpers
 
