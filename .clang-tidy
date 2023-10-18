@@ -17,11 +17,12 @@ Checks: |
   readability-identifier-naming,
 
   #disabled
-  -modernize-use-trailing-return-type,
-  -modernize-pass-by-value,
-  -cppcoreguidelines-pro-type-union-access,
+  -cppcoreguidelines-avoid-const-or-ref-data-members,
+  -cppcoreguidelines-avoid-magic-numbers,
   -cppcoreguidelines-non-private-member-variables-in-classes,
-  -cppcoreguidelines-avoid-const-or-ref-data-members
+  -cppcoreguidelines-pro-type-union-access,
+  -modernize-pass-by-value,
+  -modernize-use-trailing-return-type
 
 CheckOptions:
   readability-identifier-naming.AbstractClassCase: CamelCase
