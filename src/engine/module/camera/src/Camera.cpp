@@ -6,21 +6,6 @@ Camera::Camera(const glm::vec3& position, const glm::vec2& resolution)
     , m_resolution(resolution)
 { }
 
-Camera::Camera(const Camera& copy)
-    : m_position(copy.m_position)
-    , m_target(copy.m_target)
-    , m_up(copy.m_up)
-    , m_viewMatrix(copy.m_viewMatrix)
-    , m_projectionMatrix(copy.m_projectionMatrix)
-    , m_inverseViewMatrix(copy.m_inverseViewMatrix)
-    , m_inverseProjectionMatrix(copy.m_inverseProjectionMatrix)
-    , m_nearPlane(copy.m_nearPlane)
-    , m_farPlane(copy.m_farPlane)
-    , m_resolution(copy.m_resolution)
-    , m_viewMatrixNeedsUpdate(copy.m_viewMatrixNeedsUpdate)
-    , m_projectionMatrixNeedsUpdate(copy.m_projectionMatrixNeedsUpdate)
-{ }
-
 Camera::Camera(Camera&& move) noexcept
     : m_position(move.m_position)
     , m_target(move.m_target)
@@ -35,23 +20,6 @@ Camera::Camera(Camera&& move) noexcept
     , m_viewMatrixNeedsUpdate(move.m_viewMatrixNeedsUpdate)
     , m_projectionMatrixNeedsUpdate(move.m_projectionMatrixNeedsUpdate)
 { }
-
-Camera& Camera::operator=(const Camera& copy)
-{
-    m_position = copy.m_position;
-    m_target = copy.m_target;
-    m_up = copy.m_up;
-    m_viewMatrix = copy.m_viewMatrix;
-    m_projectionMatrix = copy.m_projectionMatrix;
-    m_inverseViewMatrix = copy.m_inverseViewMatrix;
-    m_inverseProjectionMatrix = copy.m_inverseProjectionMatrix;
-    m_nearPlane = copy.m_nearPlane;
-    m_farPlane = copy.m_farPlane;
-    m_resolution = copy.m_resolution;
-    m_viewMatrixNeedsUpdate = copy.m_viewMatrixNeedsUpdate;
-    m_projectionMatrixNeedsUpdate = copy.m_projectionMatrixNeedsUpdate;
-    return *this;
-}
 
 Camera& Camera::operator=(Camera&& move) noexcept
 {

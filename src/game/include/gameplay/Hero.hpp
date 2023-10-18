@@ -27,7 +27,7 @@ class Hero final
         const std::int32_t& health,
         const std::optional<Weapon>& main_weapon = std::nullopt,
         const std::optional<Weapon>& secondary_weapon = std::nullopt);
-    ~Hero();
+    ~Hero() = default;
 
     template<impl::IsConsumableC T>
     void addItem(T&& item);

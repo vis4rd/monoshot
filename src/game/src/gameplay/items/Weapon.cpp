@@ -19,15 +19,6 @@ Weapon::Weapon(
     this->setUseDelay(use_delay);
 }
 
-Weapon::Weapon(const Weapon& copy)
-    : Consumable(copy)
-    , m_damage(copy.m_damage)
-    , m_ammoCurrent(copy.m_ammoCurrent)
-    , m_ammoMagazineMax(copy.m_ammoMagazineMax)
-    , m_ammoTotal(copy.m_ammoTotal)
-    , m_bulletVelocity(copy.m_bulletVelocity)
-{ }
-
 Weapon::Weapon(Weapon&& move) noexcept
     : Consumable(std::move(move))
     , m_damage(move.m_damage)
@@ -36,17 +27,6 @@ Weapon::Weapon(Weapon&& move) noexcept
     , m_ammoTotal(move.m_ammoTotal)
     , m_bulletVelocity(move.m_bulletVelocity)
 { }
-
-Weapon& Weapon::operator=(const Weapon& copy)
-{
-    m_damage = copy.m_damage;
-    m_ammoCurrent = copy.m_ammoCurrent;
-    m_ammoMagazineMax = copy.m_ammoMagazineMax;
-    m_ammoTotal = copy.m_ammoTotal;
-    m_bulletVelocity = copy.m_bulletVelocity;
-    this->Consumable::operator=(copy);
-    return *this;
-}
 
 Weapon& Weapon::operator=(Weapon&& move) noexcept
 {

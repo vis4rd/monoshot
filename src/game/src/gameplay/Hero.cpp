@@ -37,8 +37,6 @@ Hero::Hero(
     this->setCurrentItem(0);
 }
 
-Hero::~Hero() { }
-
 void Hero::dropCurrentItem()
 {
     if(isInventoryEmpty())

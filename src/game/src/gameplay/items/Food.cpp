@@ -7,22 +7,10 @@ Food::Food()
     this->setUseDelay(3.0);
 }
 
-Food::Food(const Food& copy)
-    : Consumable(copy)
-    , m_healingPower(copy.m_healingPower)
-{ }
-
 Food::Food(Food&& move) noexcept
     : Consumable(std::move(move))
     , m_healingPower(move.m_healingPower)
 { }
-
-Food& Food::operator=(const Food& copy)
-{
-    m_healingPower = copy.m_healingPower;
-    this->Consumable::operator=(copy);
-    return *this;
-}
 
 Food& Food::operator=(Food&& move) noexcept
 {

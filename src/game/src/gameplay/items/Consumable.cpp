@@ -4,25 +4,11 @@
 
 #include <time/Timer.hpp>
 
-Consumable::Consumable(const Consumable& copy)
-    : Item(copy)
-    , m_useDelay(copy.m_useDelay)
-    , m_lastUseTimestamp(copy.m_lastUseTimestamp)
-{ }
-
 Consumable::Consumable(Consumable&& move) noexcept
     : Item(std::move(move))
     , m_useDelay(move.m_useDelay)
     , m_lastUseTimestamp(move.m_lastUseTimestamp)
 { }
-
-Consumable& Consumable::operator=(const Consumable& copy)
-{
-    m_useDelay = copy.m_useDelay;
-    m_lastUseTimestamp = copy.m_lastUseTimestamp;
-    this->Item::operator=(copy);
-    return *this;
-}
 
 Consumable& Consumable::operator=(Consumable&& move) noexcept
 {

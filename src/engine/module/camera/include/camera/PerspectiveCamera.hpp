@@ -7,11 +7,11 @@ class PerspectiveCamera : public Camera
     public:
     PerspectiveCamera() = default;
     explicit PerspectiveCamera(const glm::vec3& position, const glm::vec2& resolution);
-    PerspectiveCamera(const PerspectiveCamera& copy);
+    PerspectiveCamera(const PerspectiveCamera& copy) = default;
     PerspectiveCamera(PerspectiveCamera&& move) noexcept;
     ~PerspectiveCamera() override = default;
 
-    PerspectiveCamera& operator=(const PerspectiveCamera& copy);
+    PerspectiveCamera& operator=(const PerspectiveCamera& copy) = default;
     PerspectiveCamera& operator=(PerspectiveCamera&& move) noexcept;
 
     const float& getFov() const;

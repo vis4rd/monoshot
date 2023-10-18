@@ -20,7 +20,7 @@ class Animation : public Texture
         const TextureData& texture_data = TextureData());
     Animation(const Animation& copy);
     Animation(Animation&& move) noexcept;
-    ~Animation() override;
+    ~Animation() override = default;
 
     Animation& operator=(const Animation& copy);
     Animation& operator=(Animation&& move) noexcept;

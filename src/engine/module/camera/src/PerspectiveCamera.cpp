@@ -7,22 +7,10 @@ PerspectiveCamera::PerspectiveCamera(const glm::vec3& position, const glm::vec2&
     this->updateProjectionMatrix();
 }
 
-PerspectiveCamera::PerspectiveCamera(const PerspectiveCamera& copy)
-    : Camera(copy)
-    , m_fov(copy.m_fov)
-{ }
-
 PerspectiveCamera::PerspectiveCamera(PerspectiveCamera&& move) noexcept
     : Camera(std::move(move))
     , m_fov(move.m_fov)
 { }
-
-PerspectiveCamera& PerspectiveCamera::operator=(const PerspectiveCamera& copy)
-{
-    this->Camera::operator=(copy);
-    m_fov = copy.m_fov;
-    return *this;
-}
 
 PerspectiveCamera& PerspectiveCamera::operator=(PerspectiveCamera&& move) noexcept
 {

@@ -6,7 +6,7 @@ class Weapon : public Consumable
 {
     public:
     Weapon() = default;
-    Weapon(const Weapon& copy);
+    Weapon(const Weapon& copy) = default;
     Weapon(Weapon&& move) noexcept;
     Weapon(
         const std::int32_t& damage,
@@ -16,7 +16,7 @@ class Weapon : public Consumable
         const double& use_delay);
     ~Weapon() override = default;
 
-    Weapon& operator=(const Weapon& copy);
+    Weapon& operator=(const Weapon& copy) = default;
     Weapon& operator=(Weapon&& move) noexcept;
 
     void reload();

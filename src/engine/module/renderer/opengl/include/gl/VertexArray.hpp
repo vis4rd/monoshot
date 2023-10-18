@@ -12,7 +12,7 @@ class VertexArray
 {
     public:
     VertexArray();
-    VertexArray(const VertexArray& copy);
+    VertexArray(const VertexArray& copy) = default;
     VertexArray(VertexArray&& move) noexcept;
     ~VertexArray();
 

@@ -39,13 +39,6 @@ VertexArray::VertexArray()
     spdlog::debug("Created VertexArray instance with ID = {}", m_id);
 }
 
-VertexArray::VertexArray(const VertexArray& copy)
-    : m_id(copy.m_id)
-    , m_vertexBufferIndex(copy.m_vertexBufferIndex)
-    , m_vertexBuffers(copy.m_vertexBuffers)
-    , m_elementBuffer(copy.m_elementBuffer)
-{ }
-
 VertexArray::VertexArray(VertexArray&& move) noexcept
     : m_id(move.m_id)
     , m_vertexBufferIndex(move.m_vertexBufferIndex)
