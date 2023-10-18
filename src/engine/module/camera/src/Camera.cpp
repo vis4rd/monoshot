@@ -22,18 +22,18 @@ Camera::Camera(const Camera& copy)
 { }
 
 Camera::Camera(Camera&& move) noexcept
-    : m_position(std::move(move.m_position))
-    , m_target(std::move(move.m_target))
-    , m_up(std::move(move.m_up))
-    , m_viewMatrix(std::move(move.m_viewMatrix))
-    , m_projectionMatrix(std::move(move.m_projectionMatrix))
-    , m_inverseViewMatrix(std::move(move.m_inverseViewMatrix))
-    , m_inverseProjectionMatrix(std::move(move.m_inverseProjectionMatrix))
-    , m_nearPlane(std::move(move.m_nearPlane))
-    , m_farPlane(std::move(move.m_farPlane))
-    , m_resolution(std::move(move.m_resolution))
-    , m_viewMatrixNeedsUpdate(std::move(move.m_viewMatrixNeedsUpdate))
-    , m_projectionMatrixNeedsUpdate(std::move(move.m_projectionMatrixNeedsUpdate))
+    : m_position(move.m_position)
+    , m_target(move.m_target)
+    , m_up(move.m_up)
+    , m_viewMatrix(move.m_viewMatrix)
+    , m_projectionMatrix(move.m_projectionMatrix)
+    , m_inverseViewMatrix(move.m_inverseViewMatrix)
+    , m_inverseProjectionMatrix(move.m_inverseProjectionMatrix)
+    , m_nearPlane(move.m_nearPlane)
+    , m_farPlane(move.m_farPlane)
+    , m_resolution(move.m_resolution)
+    , m_viewMatrixNeedsUpdate(move.m_viewMatrixNeedsUpdate)
+    , m_projectionMatrixNeedsUpdate(move.m_projectionMatrixNeedsUpdate)
 { }
 
 Camera& Camera::operator=(const Camera& copy)
@@ -55,18 +55,18 @@ Camera& Camera::operator=(const Camera& copy)
 
 Camera& Camera::operator=(Camera&& move) noexcept
 {
-    m_position = std::move(move.m_position);
-    m_target = std::move(move.m_target);
-    m_up = std::move(move.m_up);
-    m_viewMatrix = std::move(move.m_viewMatrix);
-    m_projectionMatrix = std::move(move.m_projectionMatrix);
-    m_inverseViewMatrix = std::move(move.m_inverseViewMatrix);
-    m_inverseProjectionMatrix = std::move(move.m_inverseProjectionMatrix);
-    m_nearPlane = std::move(move.m_nearPlane);
-    m_farPlane = std::move(move.m_farPlane);
-    m_resolution = std::move(move.m_resolution);
-    m_viewMatrixNeedsUpdate = std::move(move.m_viewMatrixNeedsUpdate);
-    m_projectionMatrixNeedsUpdate = std::move(move.m_projectionMatrixNeedsUpdate);
+    m_position = move.m_position;
+    m_target = move.m_target;
+    m_up = move.m_up;
+    m_viewMatrix = move.m_viewMatrix;
+    m_projectionMatrix = move.m_projectionMatrix;
+    m_inverseViewMatrix = move.m_inverseViewMatrix;
+    m_inverseProjectionMatrix = move.m_inverseProjectionMatrix;
+    m_nearPlane = move.m_nearPlane;
+    m_farPlane = move.m_farPlane;
+    m_resolution = move.m_resolution;
+    m_viewMatrixNeedsUpdate = move.m_viewMatrixNeedsUpdate;
+    m_projectionMatrixNeedsUpdate = move.m_projectionMatrixNeedsUpdate;
     return *this;
 }
 

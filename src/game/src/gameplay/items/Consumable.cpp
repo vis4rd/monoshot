@@ -12,8 +12,8 @@ Consumable::Consumable(const Consumable& copy)
 
 Consumable::Consumable(Consumable&& move) noexcept
     : Item(std::move(move))
-    , m_useDelay(std::move(move.m_useDelay))
-    , m_lastUseTimestamp(std::move(move.m_lastUseTimestamp))
+    , m_useDelay(move.m_useDelay)
+    , m_lastUseTimestamp(move.m_lastUseTimestamp)
 { }
 
 Consumable& Consumable::operator=(const Consumable& copy)
@@ -26,8 +26,8 @@ Consumable& Consumable::operator=(const Consumable& copy)
 
 Consumable& Consumable::operator=(Consumable&& move) noexcept
 {
-    m_useDelay = std::move(move.m_useDelay);
-    m_lastUseTimestamp = std::move(move.m_lastUseTimestamp);
+    m_useDelay = move.m_useDelay;
+    m_lastUseTimestamp = move.m_lastUseTimestamp;
     this->Item::operator=(std::move(move));
     return *this;
 }

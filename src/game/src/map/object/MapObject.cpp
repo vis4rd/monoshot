@@ -142,7 +142,7 @@ MapObject MapObject::createPredefined(ObjectID id, const glm::vec2& position, fl
         has_collision,
         opacity_on_collision);
     retval.id = id;
-    return std::move(retval);
+    return retval;
 }
 
 MapObject MapObject::createSmallTree(const glm::vec2& position, float rotation)

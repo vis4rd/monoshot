@@ -14,7 +14,7 @@ PerspectiveCamera::PerspectiveCamera(const PerspectiveCamera& copy)
 
 PerspectiveCamera::PerspectiveCamera(PerspectiveCamera&& move) noexcept
     : Camera(std::move(move))
-    , m_fov(std::move(move.m_fov))
+    , m_fov(move.m_fov)
 { }
 
 PerspectiveCamera& PerspectiveCamera::operator=(const PerspectiveCamera& copy)
@@ -27,7 +27,7 @@ PerspectiveCamera& PerspectiveCamera::operator=(const PerspectiveCamera& copy)
 PerspectiveCamera& PerspectiveCamera::operator=(PerspectiveCamera&& move) noexcept
 {
     this->Camera::operator=(std::move(move));
-    m_fov = std::move(move.m_fov);
+    m_fov = move.m_fov;
     return *this;
 }
 

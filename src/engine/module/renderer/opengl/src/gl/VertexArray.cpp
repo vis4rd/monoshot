@@ -47,10 +47,10 @@ VertexArray::VertexArray(const VertexArray& copy)
 { }
 
 VertexArray::VertexArray(VertexArray&& move) noexcept
-    : m_id(std::move(move.m_id))
-    , m_vertexBufferIndex(std::move(move.m_vertexBufferIndex))
+    : m_id(move.m_id)
+    , m_vertexBufferIndex(move.m_vertexBufferIndex)
     , m_vertexBuffers(std::move(move.m_vertexBuffers))
-    , m_elementBuffer(std::move(move.m_elementBuffer))
+    , m_elementBuffer(move.m_elementBuffer)
 { }
 
 VertexArray::~VertexArray()

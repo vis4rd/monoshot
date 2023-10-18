@@ -25,12 +25,12 @@ Hero::Hero(
 {
     if(main_weapon)
     {
-        m_items.at(0) = std::make_shared<Weapon>(std::move(main_weapon.value()));
+        m_items.at(0) = std::make_shared<Weapon>(main_weapon.value());
         m_availableItems.at(0) = true;
     }
     if(secondary_weapon)
     {
-        m_items.at(1) = std::make_shared<Weapon>(std::move(secondary_weapon.value()));
+        m_items.at(1) = std::make_shared<Weapon>(secondary_weapon.value());
         m_availableItems.at(1) = true;
     }
     this->setCurrentItem(1);

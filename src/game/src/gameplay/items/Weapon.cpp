@@ -30,11 +30,11 @@ Weapon::Weapon(const Weapon& copy)
 
 Weapon::Weapon(Weapon&& move) noexcept
     : Consumable(std::move(move))
-    , m_damage(std::move(move.m_damage))
-    , m_ammoCurrent(std::move(move.m_ammoCurrent))
-    , m_ammoMagazineMax(std::move(move.m_ammoMagazineMax))
-    , m_ammoTotal(std::move(move.m_ammoTotal))
-    , m_bulletVelocity(std::move(move.m_bulletVelocity))
+    , m_damage(move.m_damage)
+    , m_ammoCurrent(move.m_ammoCurrent)
+    , m_ammoMagazineMax(move.m_ammoMagazineMax)
+    , m_ammoTotal(move.m_ammoTotal)
+    , m_bulletVelocity(move.m_bulletVelocity)
 { }
 
 Weapon& Weapon::operator=(const Weapon& copy)
@@ -50,11 +50,11 @@ Weapon& Weapon::operator=(const Weapon& copy)
 
 Weapon& Weapon::operator=(Weapon&& move) noexcept
 {
-    m_damage = std::move(move.m_damage);
-    m_ammoCurrent = std::move(move.m_ammoCurrent);
-    m_ammoMagazineMax = std::move(move.m_ammoMagazineMax);
-    m_ammoTotal = std::move(move.m_ammoTotal);
-    m_bulletVelocity = std::move(move.m_bulletVelocity);
+    m_damage = move.m_damage;
+    m_ammoCurrent = move.m_ammoCurrent;
+    m_ammoMagazineMax = move.m_ammoMagazineMax;
+    m_ammoTotal = move.m_ammoTotal;
+    m_bulletVelocity = move.m_bulletVelocity;
     this->Consumable::operator=(std::move(move));
     return *this;
 }
