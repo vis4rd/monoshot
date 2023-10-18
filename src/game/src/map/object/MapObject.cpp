@@ -12,7 +12,7 @@ MapObject::MapObject(
     : m_position(position)
     , m_size(size)
     , m_rotation(rotation)
-    , m_texture(texture)
+    , m_texture(std::move(texture))
     , hasCollision(has_collision)
     , opacityOnCollision(opacity_on_collision)
 {
