@@ -22,6 +22,7 @@ Checks: |
   -cppcoreguidelines-non-private-member-variables-in-classes,
   -cppcoreguidelines-pro-type-union-access,
   -modernize-pass-by-value,
+  -modernize-use-nodiscard,
   -modernize-use-trailing-return-type
 
 CheckOptions:
