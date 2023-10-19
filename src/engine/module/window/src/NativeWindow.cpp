@@ -160,7 +160,7 @@ static void glfwErrorMessageCallback(int error_code, const char *description)
 void NativeWindow::initGLFW()
 {
     spdlog::debug("Initializing GLFW");
-    glfwSetErrorCallback((GLFWerrorfun)glfwErrorMessageCallback);
+    glfwSetErrorCallback(static_cast<GLFWerrorfun>(glfwErrorMessageCallback));
 
     if(!glfwInit())
     {

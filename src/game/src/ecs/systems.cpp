@@ -205,7 +205,7 @@ void moveHeroWithCollisions(entt::registry& registry, Hero& hero, glm::vec2& her
     {
         hero.velocity -= hero.m_acceleration * delta_time;
         hero.velocity = std::max(hero.velocity, 0.f);
-        hero.walkingDirection *= bool(hero.velocity != 0.f);
+        hero.walkingDirection *= (hero.velocity != 0.f);
         // spdlog::trace("Hero does not move: vel = {}, calced = {:d}", hero.velocity,
         // ((hero.walkingDirection.x != 0.f) | (hero.walkingDirection.y != 0.f)));
     }

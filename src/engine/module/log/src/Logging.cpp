@@ -100,7 +100,7 @@ void enableOpenGlLogging()
             useless_codes.size(),
             useless_codes.data(),
             GL_FALSE);
-        glDebugMessageCallback((GLDEBUGPROC)openGLDebugMessageCallback, nullptr);
+        glDebugMessageCallback(static_cast<GLDEBUGPROC>(openGLDebugMessageCallback), nullptr);
     }
 }
 

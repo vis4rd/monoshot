@@ -148,12 +148,12 @@ void DebugSection::update() noexcept
 
     // poll next move events
     glm::vec2 move_direction = {0.f, 0.f};
-    move_direction.x -= bool(input.isHeld(GLFW_KEY_A) + input.isPressedOnce(GLFW_KEY_LEFT));
-    move_direction.x += bool(input.isHeld(GLFW_KEY_D) + input.isPressedOnce(GLFW_KEY_RIGHT));
-    move_direction.y -= bool(input.isHeld(GLFW_KEY_S) + input.isPressedOnce(GLFW_KEY_DOWN));
-    move_direction.y += bool(input.isHeld(GLFW_KEY_W) + input.isPressedOnce(GLFW_KEY_UP));
+    move_direction.x -= static_cast<bool>(input.isHeld(GLFW_KEY_A) + input.isPressedOnce(GLFW_KEY_LEFT));
+    move_direction.x += static_cast<bool>(input.isHeld(GLFW_KEY_D) + input.isPressedOnce(GLFW_KEY_RIGHT));
+    move_direction.y -= static_cast<bool>(input.isHeld(GLFW_KEY_S) + input.isPressedOnce(GLFW_KEY_DOWN));
+    move_direction.y += static_cast<bool>(input.isHeld(GLFW_KEY_W) + input.isPressedOnce(GLFW_KEY_UP));
     {
-        const bool does_move = bool((move_direction.x != 0.f) + (move_direction.y != 0.f));
+        const bool does_move = static_cast<bool>((move_direction.x != 0.f) + (move_direction.y != 0.f));
         if(does_move)
         {
             const std::int32_t is_next_frame = m_hero.getTexture()->nextFrame();

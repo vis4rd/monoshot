@@ -102,7 +102,7 @@ Renderer::Renderer()
 
     const auto make_bytes = [](auto&&... args) -> std::array<std::byte, sizeof...(args)>
     {
-        return {std::byte(std::forward<decltype(args)>(args))...};
+        return {static_cast<std::byte>(std::forward<decltype(args)>(args))...};
     };
 
     const auto color = make_bytes(0xff, 0xff, 0xff, 0xff);

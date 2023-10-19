@@ -30,7 +30,7 @@ inline void drawOverlay(
     ImGui::Begin("Gameplay Overlay", nullptr, layout.windowFlags | ImGuiWindowFlags_NoBackground);
     {
         ImGui::Image(
-            (void*)(std::intptr_t)weapon_texture_indices.at(weapon_index),
+            (void*)static_cast<std::uintptr_t>(weapon_texture_indices.at(weapon_index)),
             {256 * layout.viewportW / 1920.f, 128 * layout.viewportH / 1080.f});
         ImGui::Text("%u/%u", current_ammo, total_ammo);
         ImGui::Text("+ %d/%d", hero_health, max_hero_health);
