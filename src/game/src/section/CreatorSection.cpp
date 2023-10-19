@@ -314,7 +314,7 @@ void CreatorSection::render() noexcept
             {
                 if(ImGui::Selectable(
                        (blockToString(block_id) + std::string("##unique_id")).c_str(),
-                       &(checks[block_id - BlockID::FIRST_BLOCK - 1])))
+                       &(checks.at(block_id - BlockID::FIRST_BLOCK - 1))))
                 {
                     spdlog::debug("Selected Block '{}'", blockToString(block_id));
                     selectedMapItem = block_id;
@@ -327,7 +327,7 @@ void CreatorSection::render() noexcept
             {
                 if(ImGui::Selectable(
                        (objectIdToString(object_id) + std::string("##unique_id")).c_str(),
-                       &(checks[BlockID::BLOCK_COUNT + object_id - ObjectID::FIRST_OBJECT - 1])))
+                       &(checks.at(BlockID::BLOCK_COUNT + object_id - ObjectID::FIRST_OBJECT - 1))))
                 {
                     spdlog::debug("Selected MapObject '{}'", objectIdToString(object_id));
                     selectedMapItem = object_id;

@@ -294,15 +294,15 @@ void Renderer::drawQuad(
         m_data.textureSlots.push_back(texture);
         m_data.textureSlotsTakenCount++;
     }
-    m_data.textureFrameCounts[texture_slot] = texture->getTextureData().numberOfSubs;
-    m_data.textureFrameRowLengths[texture_slot] = texture->getTextureData().numberOfSubsInOneRow;
-    m_data.textureFrameCurrentIndex[texture_slot] = texture->getTextureData().currentSub;
+    m_data.textureFrameCounts.at(texture_slot) = texture->getTextureData().numberOfSubs;
+    m_data.textureFrameRowLengths.at(texture_slot) = texture->getTextureData().numberOfSubsInOneRow;
+    m_data.textureFrameCurrentIndex.at(texture_slot) = texture->getTextureData().currentSub;
 
     for(std::size_t i = 0; i < 4; i++)
     {
-        m_data.quadBufferIter->position = model_matrix * quadVertexPositions[i];
+        m_data.quadBufferIter->position = model_matrix * quadVertexPositions.at(i);
         m_data.quadBufferIter->color = color;
-        m_data.quadBufferIter->texCoords = quadTexturePositions[i];
+        m_data.quadBufferIter->texCoords = quadTexturePositions.at(i);
         m_data.quadBufferIter->texIndex = texture_slot;
         m_data.quadBufferIter++;
         /*spdlog::trace("Renderer: quad vertex {}: position = {}, color = {}, texCoords = {},

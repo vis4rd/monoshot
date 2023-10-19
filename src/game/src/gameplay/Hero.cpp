@@ -89,12 +89,12 @@ const std::size_t& Hero::getCurrentItemIndex() const
 
 bool Hero::holdsWeapon() const
 {
-    return (m_currentItem < 2) && m_availableItems[m_currentItem];
+    return (m_currentItem < 2) && m_availableItems.at(m_currentItem);
 }
 
 bool Hero::holdsFood() const
 {
-    return (m_currentItem == 2) && m_availableItems[m_currentItem];
+    return (m_currentItem == 2) && m_availableItems.at(m_currentItem);
 }
 
 bool Hero::hasItem(const std::size_t& id) const

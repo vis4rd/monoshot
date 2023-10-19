@@ -21,16 +21,16 @@ namespace util
 
 constexpr const char *logSourceStr(std::uint32_t source)
 {
-    return sources[std::min(
+    return sources.at(std::min(
         source - GL_DEBUG_SOURCE_API,
-        static_cast<std::uint32_t>(sizeof(sources) / sizeof(const char *)))];
+        static_cast<std::uint32_t>(sizeof(sources) / sizeof(const char *))));
 }
 
 constexpr const char *logTypeStr(std::uint32_t type)
 {
-    return types[std::min(
+    return types.at(std::min(
         type - GL_DEBUG_TYPE_ERROR,
-        static_cast<std::uint32_t>(sizeof(types) / sizeof(const char *)))];
+        static_cast<std::uint32_t>(sizeof(types) / sizeof(const char *))));
 }
 
 void openGLDebugMessageCallback(
