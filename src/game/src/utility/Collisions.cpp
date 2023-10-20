@@ -41,7 +41,7 @@ glm::vec2 findCollisionSat(
     auto resolve = [&overlap](Polygon& poly1, Polygon& poly2) mutable -> bool {
         for(int a = 0; a < poly1.points.size(); a++)
         {
-            int b = (a + 1) % poly1.points.size();
+            int b = (a + 1) % static_cast<std::int32_t>(poly1.points.size());
             glm::vec2 axis_proj = glm::normalize(glm::vec2{
                 -(poly1.points[b].y - poly1.points[a].y),
                 poly1.points[b].x - poly1.points[a].x});

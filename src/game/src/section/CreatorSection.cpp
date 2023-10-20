@@ -159,19 +159,19 @@ void CreatorSection::update() noexcept
     {
         if(input.isHeld(GLFW_KEY_UP))
         {
-            endAreaSize.y += (delta_time * sizeVel);
+            endAreaSize.y += (static_cast<float>(delta_time) * sizeVel);
         }
         if(input.isHeld(GLFW_KEY_DOWN))
         {
-            endAreaSize.y -= (delta_time * sizeVel);
+            endAreaSize.y -= (static_cast<float>(delta_time) * sizeVel);
         }
         if(input.isHeld(GLFW_KEY_RIGHT))
         {
-            endAreaSize.x += (delta_time * sizeVel);
+            endAreaSize.x += (static_cast<float>(delta_time) * sizeVel);
         }
         if(input.isHeld(GLFW_KEY_LEFT))
         {
-            endAreaSize.x -= (delta_time * sizeVel);
+            endAreaSize.x -= (static_cast<float>(delta_time) * sizeVel);
         }
     }
     endAreaSize = glm::max(endAreaSize, 1.f);
@@ -404,8 +404,8 @@ glm::vec2 CreatorSection::mouseScreenPosToWorldPos(const glm::vec2& mouse_pos, C
     const auto& window_w = window_size.x;
     const auto& window_h = window_size.y;
 
-    const float norm_mouse_x = (2.f * mouse_x / window_w) - 1.f;
-    const float norm_mouse_y = 1.f - (2.f * mouse_y / window_h);
+    const float norm_mouse_x = (2.f * mouse_x / static_cast<float>(window_w)) - 1.f;
+    const float norm_mouse_y = 1.f - (2.f * mouse_y / static_cast<float>(window_h));
 
     glm::vec3 norm_mouse_vector = glm::vec3(norm_mouse_x, norm_mouse_y, 1.f);
     glm::vec4 ray_clip = glm::vec4(norm_mouse_vector.x, norm_mouse_vector.y, -1.f, 1.f);

@@ -97,7 +97,7 @@ void enableOpenGlLogging()
             GL_DEBUG_SOURCE_API,
             GL_DEBUG_TYPE_OTHER,
             GL_DONT_CARE,
-            useless_codes.size(),
+            static_cast<std::int32_t>(useless_codes.size()),
             useless_codes.data(),
             GL_FALSE);
         glDebugMessageCallback(static_cast<GLDEBUGPROC>(openGLDebugMessageCallback), nullptr);

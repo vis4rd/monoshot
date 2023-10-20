@@ -56,7 +56,7 @@ void Map::addObject(const glm::vec2& position, const float& rotation, ObjectID o
 void Map::removeObject(const glm::vec2& position)
 {
     std::size_t dynamic_size = m_objects.size();
-    for(std::size_t i = 0; i < dynamic_size; i++)
+    for(std::int64_t i = 0; i < dynamic_size; i++)
     {
         const bool col = AABB::isColliding(
             position,

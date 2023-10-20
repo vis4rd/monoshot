@@ -24,8 +24,8 @@ class Window final : public NativeWindow
     Window();
     Window(
         const std::string &title,
-        std::uint32_t width,
-        std::uint32_t height,
+        std::int32_t width,
+        std::int32_t height,
         bool fullscreen = true,
         bool vsync = true);
     ~Window() override;
@@ -46,7 +46,7 @@ class Window final : public NativeWindow
     void setMaximized(bool maximized = true);
     void setMinimized(bool minimized = true);
     void setVerticalSync(bool vsync = true);
-    void setRefreshRate(std::uint32_t hz);
+    void setRefreshRate(std::int32_t hz);
 
     bool update(UpdateableTrait auto &&...updateables) noexcept;
     void render(RenderableTrait auto &&...renderables) noexcept;

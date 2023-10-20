@@ -43,7 +43,7 @@ bool isCollidingWithAnything(
 void moveBullets(entt::registry& registry)
 {
     using namespace ecs::component;
-    const float& delta_time = ResourceManager::timer->deltaTime();
+    const float& delta_time = static_cast<float>(ResourceManager::timer->deltaTime());
     auto view = registry.view<const Rotation, const MaxVelocity, const Acceleration>(
         entt::exclude<ecs::component::Destroyed>);
     for(auto&& [bullet, rot, mvel, acc] : view.each())
@@ -181,7 +181,7 @@ void moveHeroWithCollisions(entt::registry& registry, Hero& hero, glm::vec2& her
                || (one.y > 0.f && two.y < 0.f) || (one.y < 0.f && two.y > 0.f);
     };
 
-    const float& delta_time = ResourceManager::timer->deltaTime();
+    const float& delta_time = static_cast<float>(ResourceManager::timer->deltaTime());
 
     // sort map tiles by distance to the hero
     registry.sort<ecs::component::Position>([&hero](const auto& lhs, const auto& rhs) {
@@ -196,7 +196,8 @@ void moveHeroWithCollisions(entt::registry& registry, Hero& hero, glm::vec2& her
         hero_move_direction = glm::normalize(hero_move_direction);
         hero.velocity =
             (hero.velocity + hero.m_acceleration * delta_time)
-            * (not isOppositeDirectionVector(hero_move_direction, hero.walkingDirection));
+            * static_cast<float>(
+                not isOppositeDirectionVector(hero_move_direction, hero.walkingDirection));
         hero.velocity = std::min(hero.velocity, hero.m_maxVelocity);
         hero.walkingDirection = hero_move_direction;
         // spdlog::trace("Hero moves");

@@ -11,8 +11,8 @@ Window::Window()
 
 Window::Window(
     const std::string &title,
-    std::uint32_t width,
-    std::uint32_t height,
+    std::int32_t width,
+    std::int32_t height,
     bool fullscreen,
     bool vsync)
     : NativeWindow(title, width, height)
@@ -174,8 +174,8 @@ void Window::setFullscreen(bool fullscreen)
         glfwSetWindowMonitor(
             m_window,
             nullptr,
-            (lr.x - sr.x) / 2.f,
-            (lr.y - sr.y) / 2.f,
+            (lr.x - sr.x) / 2,
+            (lr.y - sr.y) / 2,
             sr.x,
             sr.y,
             GLFW_DONT_CARE);
@@ -235,7 +235,7 @@ void Window::setVerticalSync(bool vsync)
     glfwSwapInterval(static_cast<int>(vsync));
 }
 
-void Window::setRefreshRate(std::uint32_t hz)
+void Window::setRefreshRate(std::int32_t hz)
 {
     if(this->isFullscreen())
     {

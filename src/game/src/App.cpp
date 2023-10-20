@@ -145,17 +145,19 @@ void App::initFonts() noexcept
     const auto& window_width = res::window->getSize().x;
 
     // TODO: change title font size to resize dynamically or set it up just for fullscreen
-    res::uiTitleFontSize = std::make_shared<float>(100.f * window_width / 1920.f);
+    res::uiTitleFontSize =
+        std::make_shared<float>(100.f * static_cast<float>(window_width) / 1920.f);
     res::uiTitleFont =
         std::make_shared<Font>("../res/fonts/prisma/Prisma.ttf", *res::uiTitleFontSize);
     // res::uiButtonFontSize = std::make_shared<float>(20.f * window_width / 1920.f);
     // res::uiButtonFont = std::make_shared<Font>("../res/fonts/abandoned/Abandoned-Bold.ttf",
     // *res::uiButtonFontSize);
-    res::uiButtonFontSize = std::make_shared<float>(20.f * window_width / 1920.f);
+    res::uiButtonFontSize =
+        std::make_shared<float>(20.f * static_cast<float>(window_width) / 1920.f);
     res::uiButtonFont = std::make_shared<Font>(
         "../res/fonts/brass-mono/regular_comfortable.otf",
         *res::uiButtonFontSize);
-    res::uiAmmoFontSize = std::make_shared<float>(25.f * window_width / 1920.f);
+    res::uiAmmoFontSize = std::make_shared<float>(25.f * static_cast<float>(window_width) / 1920.f);
     res::uiAmmoFont =
         std::make_shared<Font>("../res/fonts/gunplay/GUNPLAY_.ttf", *res::uiAmmoFontSize);
 }

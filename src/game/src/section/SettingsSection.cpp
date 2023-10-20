@@ -51,7 +51,7 @@ void SettingsSection::render() noexcept
                {m_layout.buttonW, m_layout.buttonH}))
         {
             const auto resolutions = window->queryMonitorResolutions();
-            const int32_t mode_count = resolutions.size();
+            const std::size_t mode_count = resolutions.size();
 
             std::vector<bool> states(mode_count);
             for(int32_t i = 0; i < mode_count; i++)
@@ -79,7 +79,7 @@ void SettingsSection::render() noexcept
                {m_layout.buttonW, m_layout.buttonH}))
         {
             const auto refresh_rates = window->queryMonitorRefreshRates();
-            const int32_t mode_count = refresh_rates.size();
+            const std::size_t mode_count = refresh_rates.size();
 
             std::vector<bool> states(mode_count);
             for(int32_t i = 0; i < mode_count; i++)
@@ -89,7 +89,7 @@ void SettingsSection::render() noexcept
                 if(ImGui::Selectable(temp_refresh_rate.c_str(), states[i]))
                 {
                     current_refresh_rate = temp_refresh_rate;
-                    window->setRefreshRate(refresh_rate);
+                    window->setRefreshRate(static_cast<std::int32_t>(refresh_rate));
                 }
             }
             ImGui::EndCombo();

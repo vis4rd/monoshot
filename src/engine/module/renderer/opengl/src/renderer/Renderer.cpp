@@ -33,10 +33,10 @@ Renderer::Renderer()
     //// Quads
     // data
     // TODO(vis4rd): use std::vector instead of c-style array
-    // NOLINTNEXTLINE(modernize-avoid-c-arrays)
-    std::uint32_t quad_indices[m_data.MAX_INDEX_COUNT];
+    // NOLINTNEXTLINE(modernize-avoid-c-arrays,cppcoreguidelines-avoid-c-arrays)
+    std::uint32_t quad_indices[m_data.maxIndexCount];
     std::uint32_t offset = 0;
-    for(std::size_t i = 0; i < m_data.MAX_INDEX_COUNT; i += 6)
+    for(std::size_t i = 0; i < m_data.maxIndexCount; i += 6)
     {
         quad_indices[i + 0] = 0 + offset;
         quad_indices[i + 1] = 1 + offset;
@@ -51,8 +51,8 @@ Renderer::Renderer()
 
     // buffers
     m_data.quadVao = std::make_shared<mono::VertexArray>();
-    auto quad_vbo = mono::VertexBuffer(m_data.MAX_VERTEX_COUNT * sizeof(QuadVertex));
-    auto quad_ebo = mono::ElementBuffer(quad_indices, m_data.MAX_INDEX_COUNT);
+    auto quad_vbo = mono::VertexBuffer(m_data.maxVertexCount * sizeof(QuadVertex));
+    auto quad_ebo = mono::ElementBuffer(quad_indices, m_data.maxIndexCount);
 
     // attributes
     mono::BufferLayout quad_layout = {
@@ -75,7 +75,7 @@ Renderer::Renderer()
     //// Lines
     // buffers
     m_data.lineVao = std::make_shared<mono::VertexArray>();
-    auto line_vbo = mono::VertexBuffer(m_data.MAX_VERTEX_COUNT * sizeof(LineVertex));
+    auto line_vbo = mono::VertexBuffer(m_data.maxVertexCount * sizeof(LineVertex));
 
     // attributes
     mono::BufferLayout line_layout = {
@@ -259,8 +259,8 @@ void Renderer::drawQuad(
     // spdlog::trace("Renderer: drawing a Quad, position = ({}, {}), size = ({}, {}), rotation =
     // {}", position.x, position.y, size.x, size.y, rotation);
 
-    if(m_stats.indexCount >= m_data.MAX_INDEX_COUNT
-       || m_data.textureSlotsTakenCount >= m_data.MAX_TEXTURES)
+    if(m_stats.indexCount >= m_data.maxIndexCount
+       || m_data.textureSlotsTakenCount >= m_data.maxTextures)
     {
         endBatch(m_data.lastProjectionMatrix, m_data.lastViewMatrix);
         beginBatch();
@@ -274,23 +274,23 @@ void Renderer::drawQuad(
 
     auto find_slot = [&m_data = m_data](
                          const std::vector<Texture::Texture>& slots,
-                         const std::uint32_t& texture_id) -> float {
-        for(std::size_t slot = 0; slot < m_data.textureSlots.size(); slot++)
+                         const std::uint32_t& texture_id) -> std::int64_t {
+        for(std::int64_t slot = 0; slot < m_data.textureSlots.size(); slot++)
         {
             if(m_data.textureSlots[slot]->getID() == texture_id)
             {
-                return static_cast<float>(slot);
+                return slot;
             }
         }
-        return -1.f;
+        return -1;
     };
 
-    float texture_slot = find_slot(m_data.textureSlots, texture->getID());
+    std::int64_t texture_slot = find_slot(m_data.textureSlots, texture->getID());
     // spdlog::trace("texture_slot = {} of texture_id {}", texture_slot, texture->getID());
 
-    if(texture_slot == -1.f)
+    if(texture_slot == -1)
     {
-        texture_slot = static_cast<float>(m_data.textureSlotsTakenCount);
+        texture_slot = m_data.textureSlotsTakenCount;
         m_data.textureSlots.push_back(texture);
         m_data.textureSlotsTakenCount++;
     }
@@ -303,7 +303,7 @@ void Renderer::drawQuad(
         m_data.quadBufferIter->position = model_matrix * quadVertexPositions.at(i);
         m_data.quadBufferIter->color = color;
         m_data.quadBufferIter->texCoords = quadTexturePositions.at(i);
-        m_data.quadBufferIter->texIndex = texture_slot;
+        m_data.quadBufferIter->texIndex = static_cast<float>(texture_slot);
         m_data.quadBufferIter++;
         /*spdlog::trace("Renderer: quad vertex {}: position = {}, color = {}, texCoords = {},
            texIndex = {}", i, util::vec3str(m_data.quadBufferIter->position),

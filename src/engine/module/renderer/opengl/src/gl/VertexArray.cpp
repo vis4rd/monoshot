@@ -97,7 +97,7 @@ void VertexArray::addVertexBuffer(VertexBuffer&& vertex_buffer)
         /*vbo index for this vao*/ m_vertexBuffers.size(),
         /*vbo id*/ vertex_buffer,
         /*offset*/ 0,
-        sum_size);
+        static_cast<std::int32_t>(sum_size));
 
     const auto& layout = vertex_buffer.getLayout();
     for(const auto& element : layout)
@@ -114,7 +114,7 @@ void VertexArray::addVertexBuffer(VertexBuffer&& vertex_buffer)
                 glVertexArrayAttribFormat(
                     m_id,
                     m_vertexBufferIndex,
-                    element.getComponentCount(),
+                    static_cast<std::int32_t>(element.getComponentCount()),
                     shaderDataTypeToOpenGLBaseType(element.getShaderDataType()),
                     element.isNormalized(),
                     element.getOffset());
@@ -133,7 +133,7 @@ void VertexArray::addVertexBuffer(VertexBuffer&& vertex_buffer)
                 glVertexArrayAttribIFormat(
                     m_id,
                     m_vertexBufferIndex,
-                    element.getComponentCount(),
+                    static_cast<std::int32_t>(element.getComponentCount()),
                     shaderDataTypeToOpenGLBaseType(element.getShaderDataType()),
                     element.getOffset());
                 glVertexArrayAttribBinding(m_id, m_vertexBufferIndex, m_vertexBuffers.size());
@@ -151,7 +151,7 @@ void VertexArray::addVertexBuffer(VertexBuffer&& vertex_buffer)
                     glVertexArrayAttribFormat(
                         m_id,
                         m_vertexBufferIndex,
-                        element.getComponentCount(),
+                        static_cast<std::int32_t>(element.getComponentCount()),
                         shaderDataTypeToOpenGLBaseType(element.getShaderDataType()),
                         element.isNormalized(),
                         (element.getOffset() + sizeof(float) * count * i));

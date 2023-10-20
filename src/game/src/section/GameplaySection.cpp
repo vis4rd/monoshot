@@ -65,10 +65,10 @@ void GameplaySection::update() noexcept
 
     // poll next move events
     glm::vec2 move_direction = {0.f, 0.f};
-    move_direction.x -= static_cast<bool>(input.isHeld(GLFW_KEY_A) + input.isPressedOnce(GLFW_KEY_LEFT));
-    move_direction.x += static_cast<bool>(input.isHeld(GLFW_KEY_D) + input.isPressedOnce(GLFW_KEY_RIGHT));
-    move_direction.y -= static_cast<bool>(input.isHeld(GLFW_KEY_S) + input.isPressedOnce(GLFW_KEY_DOWN));
-    move_direction.y += static_cast<bool>(input.isHeld(GLFW_KEY_W) + input.isPressedOnce(GLFW_KEY_UP));
+    move_direction.x -= static_cast<float>(input.isHeld(GLFW_KEY_A) + input.isPressedOnce(GLFW_KEY_LEFT));
+    move_direction.x += static_cast<float>(input.isHeld(GLFW_KEY_D) + input.isPressedOnce(GLFW_KEY_RIGHT));
+    move_direction.y -= static_cast<float>(input.isHeld(GLFW_KEY_S) + input.isPressedOnce(GLFW_KEY_DOWN));
+    move_direction.y += static_cast<float>(input.isHeld(GLFW_KEY_W) + input.isPressedOnce(GLFW_KEY_UP));
     {
         const bool does_move = static_cast<bool>((move_direction.x != 0.f) + (move_direction.y != 0.f));
         if(does_move)
@@ -201,7 +201,7 @@ void GameplaySection::render() noexcept
     if(m_onLeaveStarted)
     {
         const auto text_centered = [](const char* text, auto&&... args) {
-            float font_size = ImGui::GetFontSize() * strlen(text) / 2;
+            float font_size = ImGui::GetFontSize() * static_cast<float>(std::strlen(text)) / 2;
             ImGui::SameLine(ImGui::GetWindowSize().x / 2 - font_size + (font_size / 2));
 
             ImGui::Text("%s", text, args...);
@@ -260,8 +260,8 @@ glm::vec2 GameplaySection::mouseScreenPosToWorldPos(const glm::vec2& mouse_pos, 
     const auto& window_w = window_size.x;
     const auto& window_h = window_size.y;
 
-    const float norm_mouse_x = (2.f * mouse_x / window_w) - 1.f;
-    const float norm_mouse_y = 1.f - (2.f * mouse_y / window_h);
+    const float norm_mouse_x = (2.f * mouse_x / static_cast<float>(window_w)) - 1.f;
+    const float norm_mouse_y = 1.f - (2.f * mouse_y / static_cast<float>(window_h));
 
     glm::vec3 norm_mouse_vector = glm::vec3(norm_mouse_x, norm_mouse_y, 1.f);
     glm::vec4 ray_clip = glm::vec4(norm_mouse_vector.x, norm_mouse_vector.y, -1.f, 1.f);

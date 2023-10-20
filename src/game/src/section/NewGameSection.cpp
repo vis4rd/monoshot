@@ -45,7 +45,8 @@ void NewGameSection::render() noexcept
     auto title_font_guard = title_font->use();
     ImGui::SetNextWindowPos({m_layout.menuX, m_layout.menuY - title_font_size - 100.f});
     ImGui::SetNextWindowSize(
-        {ResourceManager::window->getSize().x - 200.f, title_font->get()->FontSize + 50.f});
+        {static_cast<float>(ResourceManager::window->getSize().x) - 200.f,
+         title_font->get()->FontSize + 50.f});
     ImGui::Begin("NewGameMenuGameTitle", nullptr, m_layout.windowFlags);
     {
         auto next_y = ImGui::GetCursorScreenPos().y;

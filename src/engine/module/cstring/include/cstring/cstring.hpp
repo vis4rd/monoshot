@@ -94,7 +94,7 @@ class cstring final  // NOLINT(readability-identifier-naming)
 
     private:
     template<size_type... I>
-    // NOLINTNEXTLINE(modernize-avoid-c-arrays)
+    // NOLINTNEXTLINE(modernize-avoid-c-arrays,cppcoreguidelines-avoid-c-arrays)
     constexpr cstring(const value_type (&str)[N], std::integer_sequence<size_type, I...>)
         : m_data{str[I]...}
     { }

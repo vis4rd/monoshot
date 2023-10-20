@@ -11,7 +11,11 @@ ElementBuffer::ElementBuffer(const std::uint32_t* indices, std::uint32_t count)
     , m_isInit(true)
 {
     glCreateBuffers(1, &m_id);
-    glNamedBufferData(m_id, m_count * sizeof(std::uint32_t), indices, GL_STATIC_DRAW);
+    glNamedBufferData(
+        m_id,
+        static_cast<std::int64_t>(m_count * sizeof(std::uint32_t)),
+        indices,
+        GL_STATIC_DRAW);
     spdlog::debug("Created ElementBuffer instance with ID = {} and count = {}", m_id, m_count);
 }
 
@@ -58,7 +62,11 @@ void ElementBuffer::setData(std::uint32_t* indices, std::uint32_t count)
 {
     m_isInit = true;
     glCreateBuffers(1, &m_id);
-    glNamedBufferData(m_id, m_count * sizeof(std::uint32_t), indices, GL_STATIC_DRAW);
+    glNamedBufferData(
+        m_id,
+        static_cast<std::int64_t>(m_count * sizeof(std::uint32_t)),
+        indices,
+        GL_STATIC_DRAW);
 }
 
 bool ElementBuffer::isInitialized() const
