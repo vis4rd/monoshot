@@ -21,6 +21,7 @@ Checks: |
   -cppcoreguidelines-avoid-magic-numbers,
   -cppcoreguidelines-non-private-member-variables-in-classes,
   -cppcoreguidelines-pro-type-union-access,
+  -cppcoreguidelines-pro-type-vararg,
   -modernize-pass-by-value,
   -modernize-use-nodiscard,
   -modernize-use-trailing-return-type
