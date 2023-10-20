@@ -148,6 +148,7 @@ void Texture::load(
     this->safeDelete();
     spdlog::trace("Loading Texture data from a file '{}'", source_path);
     m_sourcePath = source_path;
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     m_data = reinterpret_cast<std::byte*>(stbi_load(
         m_sourcePath.c_str(),
         &m_textureData.widthTotal,

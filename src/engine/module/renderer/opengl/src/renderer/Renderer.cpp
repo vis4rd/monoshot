@@ -152,12 +152,14 @@ void Renderer::endBatch(const glm::mat4& projection, const glm::mat4& view)
     {
         // spdlog::trace("Renderer: filling up VB, sending data to gpu");  // commented for
         // performance reasons
+        // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
         GLsizeiptr size = static_cast<std::uint32_t>(
             reinterpret_cast<std::uint8_t*>(&*m_data.quadBufferIter)
             - reinterpret_cast<std::uint8_t*>(&*(m_data.quadBuffer.begin())));
         m_data.quadVao->getVertexBuffers().at(0).setData(
             reinterpret_cast<const void*>(m_data.quadBuffer.data()),
             size);
+        // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
 
         // spdlog::trace("Renderer: binding texture IDs");  // commented for performance reasons
         // spdlog::trace("slots taken: {}", m_data.textureSlotsTakenCount);  // commented for
@@ -202,12 +204,14 @@ void Renderer::endBatch(const glm::mat4& projection, const glm::mat4& view)
     if(m_stats.lineCount > 0)
     {
         // spdlog::trace("Renderer: drawing lines");  // commented for performance reasons
+        // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
         GLsizeiptr size = static_cast<std::uint32_t>(
             reinterpret_cast<std::uint8_t*>(&*m_data.lineBufferIter)
             - reinterpret_cast<std::uint8_t*>(&*(m_data.lineBuffer.begin())));
         m_data.lineVao->getVertexBuffers().at(0).setData(
             reinterpret_cast<const void*>(m_data.lineBuffer.data()),
             size);
+        // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
 
         // spdlog::trace("Renderer: binding shader 'line'");  // commented for performance reasons
         auto& line_shader = mono::gl::ShaderManager::get().useShader("line");

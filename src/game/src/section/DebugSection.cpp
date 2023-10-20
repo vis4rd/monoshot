@@ -507,8 +507,7 @@ void DebugSection::showDebugUI(bool& draw_area, bool& draw_bounding_boxes)
         ImGui::Checkbox("Draw bounding boxes", &draw_bounding_boxes);
 
         auto& clear_color = ResourceManager::mapThemeBackgroundColor;
-        float* cc = reinterpret_cast<float*>(&clear_color);
-        if(ImGui::ColorEdit3("clear color", cc))
+        if(ImGui::ColorEdit3("clear color", &(clear_color.x)))
         {
             glClearColor(
                 clear_color.r * clear_color.a,
