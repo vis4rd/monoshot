@@ -8,8 +8,6 @@
 #include "../../include/ecs/systems.hpp"
 #include "../../include/ui/GameplayOverlay.hpp"
 
-static bool s_show_debug_info = false;
-
 GameplaySection::GameplaySection()
     : Section()
     , m_camera(glm::vec3(0.f, 0.f, 50.f), ResourceManager::window->getSize())
@@ -56,7 +54,7 @@ void GameplaySection::update() noexcept
     }
     if(input.isPressedOnce(GLFW_KEY_F10))
     {
-        s_show_debug_info = !s_show_debug_info;
+        m_showDebugInfo = !m_showDebugInfo;
     }
 
     m_layout.update(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize);
@@ -226,7 +224,7 @@ void GameplaySection::render() noexcept
 
     if constexpr(not mono::config::constant::debugMode)
     {
-        if(s_show_debug_info)
+        if(m_showDebugInfo)
         {
             ImGui::Begin("Release Mode Statistics");
             {

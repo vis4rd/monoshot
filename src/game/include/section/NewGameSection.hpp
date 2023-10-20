@@ -17,4 +17,5 @@ class NewGameSection final : public Section
     private:
     UI::NewGameLayout m_layout;
     UI::LowerNavigationBoxLayout m_navLayout;
+    bool m_showDebugLevel = false;
 };

@@ -350,15 +350,15 @@ void Map::saveToFile(const std::string& filename, const entt::registry& enemy_re
 
 void Map::setTheme(const MapTheme& new_theme)
 {
-    m_theme = new_theme;
-    ResourceManager::mapThemeBackgroundColor = m_theme.backgroundColor;
-    const auto& clear_color = m_theme.backgroundColor;
+    m_theme = &new_theme;
+    ResourceManager::mapThemeBackgroundColor = m_theme->backgroundColor;
+    const auto& clear_color = m_theme->backgroundColor;
     glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a);
 }
 
 const MapTheme& Map::getCurrentTheme() const
 {
-    return m_theme;
+    return *m_theme;
 }
 
 void Map::setEndArea(const glm::vec2& pos, const glm::vec2& size)
@@ -414,7 +414,7 @@ void Map::drawTiles(bool area, bool show_solid)
             0.f,
             {0.3f, 0.3f, 0.3f, 1.f});  // background area
     }
-    const auto& [wall_block, wall_color, wall_texture] = m_theme.wallBlock;
+    const auto& [wall_block, wall_color, wall_texture] = m_theme->wallBlock;
     for(const auto& tile : m_tiles)
     {
         if(tile.blockId == BlockID::Wall)
@@ -439,7 +439,7 @@ void Map::drawTiles(bool area, bool show_solid)
 void Map::drawObjects(const glm::vec2& hero_pos, bool show_solid)
 {
     spdlog::trace("Drawing Map objects...");
-    const auto& [wall_block, wall_color, wall_texture] = m_theme.wallBlock;
+    const auto& [wall_block, wall_color, wall_texture] = m_theme->wallBlock;
     for(const auto& object : m_objects)
     {
         const bool col =
@@ -462,7 +462,7 @@ void Map::drawEndArea()
     if(m_endArea)
     {
         spdlog::trace("Drawing Map end area...");
-        const auto& [wall_block, wall_color, wall_texture] = m_theme.wallBlock;
+        const auto& [wall_block, wall_color, wall_texture] = m_theme->wallBlock;
         m_renderer.drawRect(m_endArea->position, m_endArea->size, 0.f, wall_color);
     }
 }

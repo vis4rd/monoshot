@@ -26,7 +26,7 @@ class DebugSection final : public Section
     glm::vec2 mouseScreenPosToWorldPos(const glm::vec2& mouse_pos, Camera& camera);
     bool onEnter();
     bool onLeave();
-    void showDebugUI();
+    void showDebugUI(bool& draw_area, bool& draw_bounding_boxes);
 
     private:
     // VertexArray VAO;

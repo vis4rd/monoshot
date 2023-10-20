@@ -224,15 +224,15 @@ void DebugSection::update() noexcept
     // clang-format on
 }
 
-static bool drawArea = false;
-static bool drawBbs = false;
-
 void DebugSection::render() noexcept
 {
     spdlog::trace("Rendering DebugSection");
 
     m_renderer.beginBatch();
-    m_map.drawTiles(drawArea, drawBbs);
+
+    static bool draw_area = false;
+    static bool draw_bounding_boxes = false;
+    m_map.drawTiles(draw_area, draw_bounding_boxes);
 
     // Renderer::drawQuad({0.f, 10.f}, tile_size, 0.f, {1.f, 0.5f, 0.5f, 1.f});
     // Renderer::drawQuad({0.f, 8.f}, tile_size, 0.f, {1.f, 0.5f, 0.5f, 1.f});
@@ -247,7 +247,7 @@ void DebugSection::render() noexcept
     const auto& theme_color = std::get<1>(m_map.getCurrentTheme().wallBlock);
     m_renderer.drawQuad({pos.x, pos.y}, m_hero.m_size, rot, m_hero.getTexture(), theme_color);
 
-    m_map.drawObjects({pos.x, pos.y}, drawBbs);
+    m_map.drawObjects({pos.x, pos.y}, draw_bounding_boxes);
 
     const auto bullet_view = m_bulletRegistry.view<
         const ecs::component::Position,
@@ -324,7 +324,7 @@ void DebugSection::render() noexcept
         font_guard.popFont();
     }
 
-    this->showDebugUI();
+    this->showDebugUI(draw_area, draw_bounding_boxes);
 }
 
 // returns world coordinates at 0 height
@@ -418,7 +418,7 @@ bool DebugSection::onLeave()
     return false;
 }
 
-void DebugSection::showDebugUI()
+void DebugSection::showDebugUI(bool& draw_area, bool& draw_bounding_boxes)
 {
     const glm::vec2& pos = m_hero.position;
     float& rot = m_hero.rotation;
@@ -503,8 +503,8 @@ void DebugSection::showDebugUI()
             }
             ImGui::EndCombo();
         }
-        ImGui::Checkbox("Draw map area", &drawArea);
-        ImGui::Checkbox("Draw bounding boxes", &drawBbs);
+        ImGui::Checkbox("Draw map area", &draw_area);
+        ImGui::Checkbox("Draw bounding boxes", &draw_bounding_boxes);
 
         auto& clear_color = ResourceManager::mapThemeBackgroundColor;
         float* cc = reinterpret_cast<float*>(&clear_color);

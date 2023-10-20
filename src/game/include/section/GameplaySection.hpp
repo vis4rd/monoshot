@@ -40,4 +40,5 @@ class GameplaySection : public Section
     double m_enterFinishTimestamp = Timer::getTotalTime() + m_entranceDuration;
     const double m_leaveDuration = 5.0;
     double m_leaveStartTimestamp = 0.0;
+    bool m_showDebugInfo = false;
 };

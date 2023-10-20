@@ -1,5 +1,6 @@
 #include "../include/resource/ResourceManager.hpp"
 
+// NOLINTBEGIN(cppcoreguidelines-avoid-non-const-global-variables)
 std::shared_ptr<mono::Window> ResourceManager::window;
 std::shared_ptr<Timer> ResourceManager::timer;
 glm::vec4 ResourceManager::mapThemeBackgroundColor;
@@ -27,3 +28,4 @@ std::shared_ptr<Font> ResourceManager::uiAmmoFont;
 std::shared_ptr<float> ResourceManager::uiAmmoFontSize;
 
 std::shared_ptr<FramerateLimiter> ResourceManager::framerateLimiter;
+// NOLINTEND(cppcoreguidelines-avoid-non-const-global-variables)

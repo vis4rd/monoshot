@@ -8,8 +8,6 @@
 #include "../../include/section/WinterMapSection.hpp"
 #include "../../include/ui/LowerNavigationBox.hpp"
 
-static bool showDebugLevel = false;
-
 NewGameSection::NewGameSection()
     : Section()
     , m_layout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize)
@@ -31,7 +29,7 @@ void NewGameSection::update() noexcept
     }
     if(input.isPressedOnce(GLFW_KEY_F10))
     {
-        showDebugLevel = !showDebugLevel;
+        m_showDebugLevel = !m_showDebugLevel;
     }
 }
 
@@ -90,7 +88,7 @@ void NewGameSection::render() noexcept
             auto& sm = SectionManager::get();
             sm.emplaceSection<WinterMapSection>();
         }
-        if(showDebugLevel)
+        if(m_showDebugLevel)
         {
             ImGui::SetCursorScreenPos(
                 {m_layout.menuX + m_layout.buttonWS,
