@@ -18,17 +18,17 @@ inline constexpr ImVec2 operator*(const ImVec2& first, const float multiplier)
 }
 }  // namespace helpers
 
-using namespace ::ImGui;
-using namespace helpers;
-
 bool ImGui::BeginCombo(
     const char* label,
     const char* preview_value,
     const ImVec2& size_arg,
     ImGuiComboFlags flags)
 {
+    using helpers::operator+;
+    using helpers::operator*;
+
     ImGuiContext& ctx = *GImGui;
-    ImGuiWindow& window = *GetCurrentWindow();
+    ImGuiWindow& window = *::ImGui::GetCurrentWindow();
 
     ImGuiNextWindowDataFlags backup_next_window_data_flags = ctx.NextWindowData.Flags;
     ctx.NextWindowData.ClearFlags();  // We behave like Begin() and need to consume those values
@@ -44,11 +44,12 @@ bool ImGui::BeginCombo(
         != (ImGuiComboFlags_NoArrowButton
             | ImGuiComboFlags_NoPreview));  // Can't use both flags together
 
-    const float arrow_size = (flags & ImGuiComboFlags_NoArrowButton) ? 0.0f : GetFrameHeight();
-    const ImVec2 preview_size = CalcTextSize(preview_value, NULL, true);
+    const float arrow_size =
+        (flags & ImGuiComboFlags_NoArrowButton) ? 0.0f : ::ImGui::GetFrameHeight();
+    const ImVec2 preview_size = ::ImGui::CalcTextSize(preview_value, nullptr, true);
     const ImVec2 preview_size_with_padding = preview_size + (style.FramePadding * 2.f);
     const ImVec2 size =
-        CalcItemSize(size_arg, preview_size_with_padding.x, preview_size_with_padding.y);
+        ::ImGui::CalcItemSize(size_arg, preview_size_with_padding.x, preview_size_with_padding.y);
 
     const ImRect bounding_box(window.DC.CursorPos, window.DC.CursorPos + size);
     const ImRect total_bounding_box(
@@ -56,27 +57,28 @@ bool ImGui::BeginCombo(
         ImVec2(
             bounding_box.Max.x + (preview_size.x * style.ItemInnerSpacing.x) + preview_size.x,
             bounding_box.Max.y));
-    ItemSize(total_bounding_box, style.FramePadding.y);
-    if(!ItemAdd(total_bounding_box, id, &bounding_box))
+    ::ImGui::ItemSize(total_bounding_box, style.FramePadding.y);
+    if(!::ImGui::ItemAdd(total_bounding_box, id, &bounding_box))
     {
         return false;
     }
 
     // Open on click
     bool hovered, held;
-    bool pressed = ButtonBehavior(bounding_box, id, &hovered, &held);
+    bool pressed = ::ImGui::ButtonBehavior(bounding_box, id, &hovered, &held);
     const ImGuiID popup_id = ImHashStr("##ComboPopup", 0, id);
-    bool popup_open = IsPopupOpen(popup_id, ImGuiPopupFlags_None);
+    bool popup_open = ::ImGui::IsPopupOpen(popup_id, ImGuiPopupFlags_None);
     if(pressed && !popup_open)
     {
-        OpenPopupEx(popup_id, ImGuiPopupFlags_None);
+        ::ImGui::OpenPopupEx(popup_id, ImGuiPopupFlags_None);
         popup_open = true;
     }
 
     // Render shape
-    const ImU32 frame_col = GetColorU32(hovered ? ImGuiCol_FrameBgHovered : ImGuiCol_FrameBg);
+    const ImU32 frame_col =
+        ::ImGui::GetColorU32(hovered ? ImGuiCol_FrameBgHovered : ImGuiCol_FrameBg);
     const float value_x2 = ImMax(bounding_box.Min.x, bounding_box.Max.x - arrow_size);
-    RenderNavHighlight(bounding_box, id);
+    ::ImGui::RenderNavHighlight(bounding_box, id);
     if(!(flags & ImGuiComboFlags_NoPreview))
     {
         window.DrawList->AddRectFilled(
@@ -89,9 +91,9 @@ bool ImGui::BeginCombo(
     }
     if(!(flags & ImGuiComboFlags_NoArrowButton))
     {
-        ImU32 bg_col =
-            GetColorU32((popup_open || hovered) ? ImGuiCol_ButtonHovered : ImGuiCol_Button);
-        ImU32 text_col = GetColorU32(ImGuiCol_Text);
+        ImU32 bg_col = ::ImGui::GetColorU32(
+            (popup_open || hovered) ? ImGuiCol_ButtonHovered : ImGuiCol_Button);
+        ImU32 text_col = ::ImGui::GetColorU32(ImGuiCol_Text);
         window.DrawList->AddRectFilled(
             ImVec2(value_x2, bounding_box.Min.y),
             bounding_box.Max,
@@ -100,7 +102,7 @@ bool ImGui::BeginCombo(
             (size.x <= arrow_size) ? ImDrawFlags_RoundCornersAll : ImDrawFlags_RoundCornersRight);
         if(value_x2 + arrow_size - style.FramePadding.x <= bounding_box.Max.x)
         {
-            RenderArrow(
+            ::ImGui::RenderArrow(
                 window.DrawList,
                 ImVec2(
                     value_x2 + style.FramePadding.y,
@@ -110,7 +112,7 @@ bool ImGui::BeginCombo(
                 1.0f);
         }
     }
-    RenderFrameBorder(bounding_box.Min, bounding_box.Max, style.FrameRounding);
+    ::ImGui::RenderFrameBorder(bounding_box.Min, bounding_box.Max, style.FrameRounding);
 
     // Custom preview
     if(flags & ImGuiComboFlags_CustomPreview)
@@ -126,9 +128,9 @@ bool ImGui::BeginCombo(
     {
         if(ctx.LogEnabled)
         {
-            LogSetNextTextDecoration("{", "}");
+            ::ImGui::LogSetNextTextDecoration("{", "}");
         }
-        RenderTextClipped(
+        ::ImGui::RenderTextClipped(
             ImVec2(bounding_box.Min.x, bounding_box.Min.y + style.FramePadding.y),
             ImVec2(
                 bounding_box.Max.x - style.FramePadding.x,
@@ -141,7 +143,7 @@ bool ImGui::BeginCombo(
     }
     if(preview_size.x > 0)
     {
-        RenderText(
+        ::ImGui::RenderText(
             ImVec2(
                 bounding_box.Max.x + style.ItemInnerSpacing.x,
                 bounding_box.Min.y + style.FramePadding.y + ((size.y - arrow_size) / 2.0f)),
@@ -154,7 +156,7 @@ bool ImGui::BeginCombo(
     }
 
     ctx.NextWindowData.Flags = backup_next_window_data_flags;
-    return BeginComboPopup(popup_id, bounding_box, flags);
+    return ::ImGui::BeginComboPopup(popup_id, bounding_box, flags);
 }
 
 }  // namespace Custom

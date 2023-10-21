@@ -16,9 +16,9 @@ bool isCollidingWithAnything(
     const glm::vec2& entity_size,
     const glm::vec2& next_pos)
 {
-    using namespace ecs::component;
-    auto view = registry.view<const Position, const Rotation, const Size>();
-    view.use<const Position>();
+    namespace ec = ecs::component;
+    auto view = registry.view<const ec::Position, const ec::Rotation, const ec::Size>();
+    view.use<const ec::Position>();
     // const float& hero_rot = registry.get<const rotation>(entity);
     for(std::int32_t iter = 0; auto&& [element, el_pos, el_rot, el_size] : view.each())
     {
@@ -42,13 +42,13 @@ bool isCollidingWithAnything(
 
 void moveBullets(entt::registry& registry)
 {
-    using namespace ecs::component;
+    namespace ec = ecs::component;
     const float& delta_time = static_cast<float>(ResourceManager::timer->deltaTime());
-    auto view = registry.view<const Rotation, const MaxVelocity, const Acceleration>(
-        entt::exclude<ecs::component::Destroyed>);
+    auto view = registry.view<const ec::Rotation, const ec::MaxVelocity, const ec::Acceleration>(
+        entt::exclude<ec::Destroyed>);
     for(auto&& [bullet, rot, mvel, acc] : view.each())
     {
-        const auto& vel = registry.patch<Velocity>(
+        const auto& vel = registry.patch<ec::Velocity>(
             bullet,
             [&acc = acc.data, &mvel = mvel.data, delta_time](float& vel) {
                 vel = glm::max(glm::min(vel + acc * delta_time, mvel), 0.f);
@@ -56,7 +56,7 @@ void moveBullets(entt::registry& registry)
 
         const auto rad = glm::radians(rot.data);
         glm::vec2 rot_vec = {glm::cos(rad), glm::sin(rad)};
-        registry.patch<Position>(bullet, [&vel, rot_vec, delta_time](glm::vec2& pos) {
+        registry.patch<ec::Position>(bullet, [&vel, rot_vec, delta_time](glm::vec2& pos) {
             pos += (vel.data * rot_vec * delta_time);
         });
     }
