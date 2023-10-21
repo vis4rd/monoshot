@@ -2,6 +2,8 @@
 
 # Semver 2.0 is respected, see https://semver.org/
 
+include_guard()
+
 set(VERSION_CACHE_FILE "${MONOSHOT_BINARY_DIR}/version.txt")
 
 # ensure file exists
