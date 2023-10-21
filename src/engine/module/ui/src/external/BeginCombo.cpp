@@ -64,7 +64,8 @@ bool ImGui::BeginCombo(
     }
 
     // Open on click
-    bool hovered, held;
+    bool hovered{};
+    bool held{};
     bool pressed = ::ImGui::ButtonBehavior(bounding_box, id, &hovered, &held);
     const ImGuiID popup_id = ImHashStr("##ComboPopup", 0, id);
     bool popup_open = ::ImGui::IsPopupOpen(popup_id, ImGuiPopupFlags_None);
@@ -119,12 +120,12 @@ bool ImGui::BeginCombo(
     {
         ctx.ComboPreviewData.PreviewRect =
             ImRect(bounding_box.Min.x, bounding_box.Min.y, bounding_box.Min.x, bounding_box.Max.y);
-        IM_ASSERT(preview_value == NULL || preview_value[0] == 0);
-        preview_value = NULL;
+        IM_ASSERT(preview_value == nullptr || preview_value[0] == 0);
+        preview_value = nullptr;
     }
 
     // Render preview and label
-    if(preview_value != NULL && !(flags & ImGuiComboFlags_NoPreview))
+    if(preview_value != nullptr && !(flags & ImGuiComboFlags_NoPreview))
     {
         if(ctx.LogEnabled)
         {
@@ -136,7 +137,7 @@ bool ImGui::BeginCombo(
                 bounding_box.Max.x - style.FramePadding.x,
                 bounding_box.Max.y - style.FramePadding.y),
             preview_value,
-            NULL,
+            nullptr,
             &preview_size,
             style.ButtonTextAlign,
             &bounding_box);

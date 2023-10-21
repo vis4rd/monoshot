@@ -16,6 +16,9 @@ class VertexArray
     VertexArray(VertexArray&& move) noexcept;
     ~VertexArray();
 
+    VertexArray& operator=(const VertexArray& copy) = default;
+    VertexArray& operator=(VertexArray&& move) noexcept;
+
     void bind() const;
     void unbind() const;
 

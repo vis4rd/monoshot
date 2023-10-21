@@ -11,7 +11,12 @@ class CreatorSection final : public Section
 {
     public:
     CreatorSection();
-    ~CreatorSection();
+    CreatorSection(const CreatorSection&) = delete;
+    CreatorSection(CreatorSection&&) = delete;
+    ~CreatorSection() override;
+
+    CreatorSection& operator=(const CreatorSection&) = delete;
+    CreatorSection& operator=(CreatorSection&&) = delete;
 
     void update() noexcept override;
     void render() noexcept override;

@@ -10,7 +10,12 @@ class ElementBuffer
     public:
     ElementBuffer() = default;
     ElementBuffer(const std::uint32_t* indices, std::uint32_t count);
+    ElementBuffer(const ElementBuffer&) = default;
+    ElementBuffer(ElementBuffer&&) = default;
     ~ElementBuffer();
+
+    ElementBuffer& operator=(const ElementBuffer&) = default;
+    ElementBuffer& operator=(ElementBuffer&&) = default;
 
     void bind() const;
     void unbind() const;

@@ -27,7 +27,8 @@ bool isCollidingWithAnything(
             break;
         }
 
-        // TODO: unfortunately entity rotation sometimes causes the character to get stuck, pls fix
+        // TODO(vis4rd): unfortunately entity rotation sometimes causes the character to get stuck,
+        // pls fix
         if(OBB::findCollision(next_pos, entity_size, /*entity_rot*/ 0.f, el_pos, el_size, el_rot))
         {
             return true;
@@ -191,7 +192,7 @@ void moveHeroWithCollisions(entt::registry& registry, Hero& hero, glm::vec2& her
 
     // resolve movement variables
     const bool does_hero_move = ((hero_move_direction.x != 0.f) | (hero_move_direction.y != 0.f));
-    if(does_hero_move)  // TODO: this branch can be most probably removed
+    if(does_hero_move)  // TODO(vis4rd): this branch can be most probably removed
     {
         hero_move_direction = glm::normalize(hero_move_direction);
         hero.velocity =

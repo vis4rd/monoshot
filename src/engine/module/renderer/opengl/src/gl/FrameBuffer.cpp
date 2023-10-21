@@ -132,7 +132,7 @@ void FrameBuffer::initStencil()
     glCreateRenderbuffers(1, &m_stencilAttachment);
     glBindRenderbuffer(
         GL_RENDERBUFFER,
-        m_stencilAttachment);  // TODO: try not to call this when everything works
+        m_stencilAttachment);  // TODO(vis4rd): try not to call this when everything works
     glNamedRenderbufferStorage(m_stencilAttachment, GL_STENCIL_INDEX, m_width, m_height);
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }

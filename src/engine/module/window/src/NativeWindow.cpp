@@ -91,7 +91,7 @@ std::pair<const GLFWvidmode *, int> NativeWindow::getVideoModes()
     {
         return std::make_pair(nullptr, 0);
     }
-    int count;
+    int count{};
     const GLFWvidmode *modes = glfwGetVideoModes(monitor, &count);
     return std::make_pair(modes, count);
 }

@@ -32,10 +32,6 @@ VertexBuffer::VertexBuffer(const float* vertices, std::uint32_t size)
     spdlog::debug("Creating VertexBuffer...");
     glCreateBuffers(1, &m_id);
     glNamedBufferData(m_id, size, vertices, GL_STATIC_DRAW);
-    for(int i = 0; i < size / sizeof(float); i++)
-    {
-        spdlog::trace("Vertex {} = {}", i, vertices[i]);
-    }
     spdlog::debug(
         "Created VertexBuffer instance with ID = {}, size = {} and pre-computed vertices",
         m_id,

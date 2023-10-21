@@ -55,7 +55,6 @@ CreatorSection::~CreatorSection()
 void CreatorSection::update() noexcept
 {
     auto& input = InputManager::get();
-    auto* window = ResourceManager::window->getNativeWindow();
     auto& pos = m_camera.getPosition();
     auto& delta_time = ResourceManager::timer->deltaTime();
     const double base_velocity = 1.f;
@@ -199,7 +198,8 @@ void CreatorSection::render() noexcept
             static_cast<ObjectID>(selectedMapItem),
             mouseWorldPos,
             randomizedRotation);
-        if(map_object.getTexture())  // TODO: remove this branch when all textures are initialized
+        if(map_object.getTexture())  // TODO(vis4rd): remove this branch when all textures are
+                                     // initialized
         {
             m_renderer.drawQuad(
                 map_object.getPosition(),
@@ -306,7 +306,7 @@ void CreatorSection::render() noexcept
             bool,
             static_cast<std::size_t>(BlockID::BLOCK_COUNT)
                 + static_cast<std::size_t>(ObjectID::OBJECT_COUNT) + 1 + 1>
-            checks = {0};
+            checks = {false};
         if(ImGui::BeginCombo("Blocks", preview.c_str()))
         {
             for(std::size_t block_id = BlockID::FIRST_BLOCK + 1; block_id < BlockID::LAST_BLOCK;

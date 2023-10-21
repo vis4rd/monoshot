@@ -11,7 +11,12 @@ class FrameBuffer
 {
     public:
     FrameBuffer(const std::int32_t& width, const std::int32_t& height);
+    FrameBuffer(const FrameBuffer&) = delete;
+    FrameBuffer(FrameBuffer&&) = delete;
     ~FrameBuffer();
+
+    FrameBuffer& operator=(const FrameBuffer&) = delete;
+    FrameBuffer& operator=(FrameBuffer&&) = delete;
 
     void bind() const;
     void unbind() const;

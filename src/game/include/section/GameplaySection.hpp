@@ -14,7 +14,12 @@ class GameplaySection : public Section
 {
     public:
     GameplaySection();
-    virtual ~GameplaySection();
+    GameplaySection(const GameplaySection&) = delete;
+    GameplaySection(GameplaySection&&) = delete;
+    ~GameplaySection() override;
+
+    GameplaySection& operator=(const GameplaySection&) = delete;
+    GameplaySection& operator=(GameplaySection&&) = delete;
 
     void update() noexcept override;
     void render() noexcept override;

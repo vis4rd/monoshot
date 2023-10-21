@@ -144,7 +144,7 @@ void App::initFonts() noexcept
 
     const auto& window_width = res::window->getSize().x;
 
-    // TODO: change title font size to resize dynamically or set it up just for fullscreen
+    // TODO(vis4rd): change title font size to resize dynamically or set it up just for fullscreen
     res::uiTitleFontSize =
         std::make_shared<float>(100.f * static_cast<float>(window_width) / 1920.f);
     res::uiTitleFont =

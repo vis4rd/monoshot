@@ -17,7 +17,12 @@ class MapObject
         float rotation = 0.f,
         bool has_collision = true,
         float opacity_on_collision = 1.f);
+    MapObject(const MapObject& copy) = default;
+    MapObject(MapObject&& move) noexcept = default;
     ~MapObject() = default;
+
+    MapObject& operator=(const MapObject& copy) = default;
+    MapObject& operator=(MapObject&& move) noexcept = default;
 
     const glm::vec2& getPosition() const;
     const glm::vec2& getSize() const;

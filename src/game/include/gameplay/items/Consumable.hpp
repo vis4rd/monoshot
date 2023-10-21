@@ -17,7 +17,7 @@ class Consumable : public Item
 
     protected:
     void use() override;
-    virtual bool canBeUsed(double timestamp = 0.0) final;
+    virtual bool canBeUsed(double timestamp) final;
 
     virtual const double& getUseDelay() const final;
     virtual const double& getLastUseTimestamp() const final;

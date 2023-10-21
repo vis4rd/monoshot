@@ -17,6 +17,9 @@ class ConfigLoader final
     ConfigLoader(const ConfigLoader&) = delete;
     ConfigLoader(ConfigLoader&&) = delete;
 
+    ConfigLoader& operator=(const ConfigLoader&) = delete;
+    ConfigLoader& operator=(ConfigLoader&&) = delete;
+
     bool loadFromFile(const std::filesystem::path& path);
 
     private:

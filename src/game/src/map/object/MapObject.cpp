@@ -15,9 +15,8 @@ MapObject::MapObject(
     , m_texture(std::move(texture))
     , hasCollision(has_collision)
     , opacityOnCollision(opacity_on_collision)
-{
-    id = ObjectID::FIRST_OBJECT;
-}
+    , id(ObjectID::FIRST_OBJECT)
+{ }
 
 const glm::vec2& MapObject::getPosition() const
 {

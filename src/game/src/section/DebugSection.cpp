@@ -156,7 +156,7 @@ void DebugSection::update() noexcept
         const bool does_move = static_cast<bool>((move_direction.x != 0.f) + (move_direction.y != 0.f));
         if(does_move)
         {
-            const std::int32_t is_next_frame = m_hero.getTexture()->nextFrame();
+            m_hero.getTexture()->nextFrame();
         }
         else
         {
@@ -460,7 +460,7 @@ void DebugSection::showDebugUI(bool& draw_area, bool& draw_bounding_boxes)
         // const auto* weapon = dynamic_cast<Weapon*>(&*(m_hero.currentItem));
         if(!m_hero.isInventoryEmpty())
         {
-            ImGui::Text("Selected item: %lu", m_hero.getCurrentItemIndex());
+            ImGui::Text("Selected item: %llu", m_hero.getCurrentItemIndex());
             if(m_hero.holdsWeapon())
             {
                 const auto& weapon = m_hero.getCurrentItem<Weapon>();
@@ -473,10 +473,10 @@ void DebugSection::showDebugUI(bool& draw_area, bool& draw_bounding_boxes)
         }
         ImGui::Separator();
         ImGui::Text(
-            "Map elements count: %ld",
+            "Map elements count: %lld",
             m_mapElementsRegistry.storage<ecs::component::Position>().size());
         ImGui::Text(
-            "Bullet count: %ld",
+            "Bullet count: %lld",
             m_bulletRegistry.storage<ecs::component::Position>().size());
 
         static std::string preview = "Forest Theme";

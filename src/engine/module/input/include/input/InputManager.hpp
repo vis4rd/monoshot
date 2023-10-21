@@ -12,6 +12,9 @@ class InputManager
     InputManager(InputManager&&) = delete;
     InputManager& operator=(const InputManager&) = delete;
     InputManager& operator=(InputManager&&) = delete;
+
+    ~InputManager() = default;
+
     static InputManager& get();
 
     // callback interface

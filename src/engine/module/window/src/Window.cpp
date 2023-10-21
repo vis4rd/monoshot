@@ -25,6 +25,7 @@ Window::Window(
 
     this->setFullscreen(fullscreen);
     this->setVerticalSync(vsync);
+    // NOLINTNEXTLINE(cppcoreguidelines-prefer-member-initializer)
     m_isMaximized = static_cast<bool>(glfwGetWindowAttrib(m_window, GLFW_MAXIMIZED));
 
     constexpr std::array<float, 16> screenVertexBuffer =

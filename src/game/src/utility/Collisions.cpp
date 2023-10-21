@@ -48,18 +48,18 @@ glm::vec2 findCollisionSat(
 
             float min_r1 = inf;
             float max_r1 = -inf;
-            for(int p = 0; p < poly1.points.size(); p++)
+            for(auto& point : poly1.points)
             {
-                float q = (poly1.points[p].x * axis_proj.x) + (poly1.points[p].y * axis_proj.y);
+                float q = (point.x * axis_proj.x) + (point.y * axis_proj.y);
                 min_r1 = glm::min(min_r1, q);
                 max_r1 = glm::max(max_r1, q);
             }
 
             float min_r2 = inf;
             float max_r2 = -inf;
-            for(int p = 0; p < poly2.points.size(); p++)
+            for(auto& point : poly2.points)
             {
-                float q = (poly2.points[p].x * axis_proj.x) + (poly2.points[p].y * axis_proj.y);
+                float q = (point.x * axis_proj.x) + (point.y * axis_proj.y);
                 min_r2 = glm::min(min_r2, q);
                 max_r2 = glm::max(max_r2, q);
             }
@@ -122,8 +122,8 @@ bool findCollision(
                                             const glm::vec2& line1_e,
                                             const glm::vec2& line2_s,
                                             const glm::vec2& line2_e) -> bool {
-        // TODO: seems like this code does not cover some corner cases, possibly replace it with
-        // some more refined one
+        // TODO(vis4rd): seems like this code does not cover some corner cases, possibly replace it
+        // with some more refined one
         return (((line2_s.x - line1_s.x) * (line1_e.y - line1_s.y)
                  - (line2_s.y - line1_s.y) * (line1_e.x - line1_s.x))
                     * ((line2_e.x - line1_s.x) * (line1_e.y - line1_s.y)
@@ -136,7 +136,7 @@ bool findCollision(
                    < 0);
     };
 
-    // TODO: remove Polygons and simplify this function if possible
+    // TODO(vis4rd): remove Polygons and simplify this function if possible
     const Polygon poly1(pos1, size1, rotation1);
     const Polygon poly2(pos2, size2, rotation2);
 

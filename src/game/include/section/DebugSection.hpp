@@ -17,7 +17,12 @@ class DebugSection final : public Section
 {
     public:
     DebugSection();
-    ~DebugSection();
+    DebugSection(const DebugSection&) = delete;
+    DebugSection(DebugSection&&) = delete;
+    ~DebugSection() override;
+
+    DebugSection& operator=(const DebugSection&) = delete;
+    DebugSection& operator=(DebugSection&&) = delete;
 
     void update() noexcept override;
     void render() noexcept override;

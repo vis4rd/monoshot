@@ -17,7 +17,12 @@ class NativeWindow
 {
     public:
     NativeWindow(const std::string &title, std::int32_t width, std::int32_t height);
+    NativeWindow(const NativeWindow &) = delete;
+    NativeWindow(NativeWindow &&) = delete;
     virtual ~NativeWindow();
+
+    NativeWindow &operator=(const NativeWindow &) = delete;
+    NativeWindow &operator=(NativeWindow &&) = delete;
 
     GLFWwindow *getNativeWindow();
     const std::string &getTitle() const;

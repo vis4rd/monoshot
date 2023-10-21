@@ -9,7 +9,7 @@
 
 #include "../../../../traits/include/traits/Scalar.hpp"
 
-// TODO: change this comment formatting to comply with doxygen
+// TODO(vis4rd): change this comment formatting to comply with doxygen
 //! params with predefined values:
 //?     GL_DEPTH_STENCIL_TEXTURE_MODE,
 //          GL_DEPTH_COMPONENT,

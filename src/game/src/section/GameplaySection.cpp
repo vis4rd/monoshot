@@ -71,7 +71,7 @@ void GameplaySection::update() noexcept
         const bool does_move = static_cast<bool>((move_direction.x != 0.f) + (move_direction.y != 0.f));
         if(does_move)
         {
-            const std::int32_t is_next_frame = m_hero.getTexture()->nextFrame();
+            m_hero.getTexture()->nextFrame();
         }
         else
         {

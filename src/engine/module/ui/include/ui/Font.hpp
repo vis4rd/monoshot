@@ -8,11 +8,16 @@ class ImFont;
 namespace impl
 {
 
-class FontUsageGuard
+class FontUsageGuard final
 {
     public:
     explicit FontUsageGuard(ImFont* font);
+    FontUsageGuard(const FontUsageGuard& copy) = default;
+    FontUsageGuard(FontUsageGuard&& move) noexcept = default;
     ~FontUsageGuard();
+
+    FontUsageGuard& operator=(const FontUsageGuard& copy) = default;
+    FontUsageGuard& operator=(FontUsageGuard&& move) noexcept = default;
 
     void popFont();
 

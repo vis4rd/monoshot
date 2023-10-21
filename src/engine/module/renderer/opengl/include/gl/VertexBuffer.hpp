@@ -31,8 +31,8 @@ class VertexBuffer
     operator std::uint32_t() const;
 
     private:
-    std::uint32_t m_id;
-    BufferLayout m_layout;
+    std::uint32_t m_id{};
+    BufferLayout m_layout{};
 };
 
 }  // namespace mono

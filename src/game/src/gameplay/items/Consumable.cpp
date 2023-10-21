@@ -20,7 +20,7 @@ Consumable& Consumable::operator=(Consumable&& move) noexcept
 
 bool Consumable::useDelayed()
 {
-    if(!this->canBeUsed())
+    if(!this->canBeUsed(0.0))
     {
         return false;
     }

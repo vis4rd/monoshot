@@ -11,6 +11,12 @@ namespace UI
 struct BaseLayout
 {
     inline BaseLayout(const ImVec2& workpos, const ImVec2& worksize);
+    inline BaseLayout(const BaseLayout& copy) = default;
+    inline BaseLayout(BaseLayout&& move) noexcept = default;
+    virtual inline ~BaseLayout() = default;
+
+    inline BaseLayout& operator=(const BaseLayout& copy) = default;
+    inline BaseLayout& operator=(BaseLayout&& move) noexcept = default;
     virtual inline void update(const ImVec2& workpos, const ImVec2& worksize);
 
     protected:
