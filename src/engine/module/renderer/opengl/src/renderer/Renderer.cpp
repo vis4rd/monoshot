@@ -20,14 +20,14 @@ static constexpr std::array<glm::vec2, 4> quadTexturePositions = {
     glm::vec2{0.0f, 1.0f}
 };
 
+Renderer& Renderer::get()
+{
+    static Renderer renderer;
+    return renderer;
+}
+
 Renderer::Renderer()
 {
-    if(m_isInit == true)
-    {
-        return;
-    }
-    m_isInit = true;
-
     spdlog::debug("Renderer: creating OpenGL backend");
 
     //// Quads
@@ -115,19 +115,7 @@ Renderer::Renderer()
 
 Renderer::~Renderer()
 {
-    if(!m_isInit)
-    {
-        return;
-    }
-    spdlog::debug("Renderer: shutting down...");
-
-    // spdlog::debug("Renderer: deleting quadBuffer");
-    // s_data.quadBuffer.fill({});
-    // spdlog::debug("Renderer: deleting lineBuffer");
-    // s_data.lineBuffer.fill({});
-    spdlog::debug("Renderer: deleting all RendererData");
     m_data = RendererData();
-    Renderer::m_isInit = false;
     spdlog::debug("Renderer: shutdown complete");
 }
 

@@ -26,7 +26,7 @@ class CreatorSection final : public Section
 
     private:
     entt::registry m_entities{};
-    Renderer m_renderer;
+    Renderer& m_renderer;
     Map m_map;
     PerspectiveCamera m_camera;
     std::size_t m_selectedMapItem{BlockID::Wall};

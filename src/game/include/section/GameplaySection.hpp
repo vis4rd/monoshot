@@ -34,10 +34,10 @@ class GameplaySection : public Section
     entt::registry m_bulletRegistry{};
     entt::registry m_enemyRegistry{};
     PerspectiveCamera m_camera;
+    Renderer& m_renderer;
     Map m_map;
     Hero m_hero;
     UI::GameplayLayout m_layout;
-    Renderer m_renderer;
 
     bool m_onEnterFinished = false;
     bool m_onLeaveStarted = false;

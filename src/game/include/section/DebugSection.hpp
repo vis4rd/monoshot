@@ -47,7 +47,7 @@ class DebugSection final : public Section
     entt::registry m_bulletRegistry{};
     entt::registry m_enemyRegistry{};
     PerspectiveCamera m_camera;
-    Renderer m_renderer;
+    Renderer& m_renderer;
     Map m_map;
     Hero m_hero;
     UI::GameplayLayout m_layout;
