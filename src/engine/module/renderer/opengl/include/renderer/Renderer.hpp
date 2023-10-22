@@ -15,7 +15,7 @@
 class Renderer final
 {
     public:
-    Renderer();
+    static Renderer& get();
     ~Renderer();
     Renderer(const Renderer&) = delete;
     Renderer(Renderer&&) = delete;
@@ -65,10 +65,10 @@ class Renderer final
     void resetStats();
 
     private:
+    Renderer();
     RendererData& getData();
 
     private:
-    bool m_isInit{false};
     RendererData m_data{};
     RendererStats m_stats{};
 };
