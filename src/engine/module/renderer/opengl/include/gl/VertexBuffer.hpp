@@ -18,6 +18,9 @@ class VertexBuffer
     VertexBuffer(VertexBuffer&& move) noexcept;
     ~VertexBuffer();
 
+    VertexBuffer& operator=(const VertexBuffer& copy) = default;
+    VertexBuffer& operator=(VertexBuffer&& move) noexcept;
+
     void bind() const;
     void unbind() const;
 

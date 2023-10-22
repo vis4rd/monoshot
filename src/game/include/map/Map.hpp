@@ -23,7 +23,12 @@ class Map final
 {
     public:
     Map(Renderer& renderer, const std::size_t& width, const std::size_t& height);
+    Map(const Map&) = delete;
+    Map(Map&&) = delete;
     ~Map();
+
+    Map& operator=(const Map&) = delete;
+    Map& operator=(Map&&) = delete;
 
     std::size_t getSize() const;
     const std::size_t& getWidth() const;

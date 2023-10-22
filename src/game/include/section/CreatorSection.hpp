@@ -29,4 +29,9 @@ class CreatorSection final : public Section
     Renderer m_renderer;
     Map m_map;
     PerspectiveCamera m_camera;
+    std::size_t m_selectedMapItem{BlockID::Wall};
+    bool m_selectedSolid{false};
+    glm::vec2 m_mouseWorldPos{0.f, 0.f};
+    float m_randomizedRotation{};
+    glm::vec2 m_endAreaSize{10.f, 10.f};
 };

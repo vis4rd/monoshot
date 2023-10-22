@@ -43,6 +43,13 @@ VertexBuffer::~VertexBuffer()
     spdlog::debug("Calling destructor of VertexBuffer with ID = {} (no destroy)", m_id);
 }
 
+VertexBuffer& VertexBuffer::operator=(VertexBuffer&& move) noexcept
+{
+    m_id = move.m_id;
+    m_layout = std::move(move.m_layout);
+    return *this;
+}
+
 void VertexBuffer::bind() const
 {
     spdlog::trace("Binding VertexBuffer with ID = {}", m_id);

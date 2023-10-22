@@ -6,11 +6,16 @@
 #include <ui/MainMenuStyle.hpp>
 #include <window/Window.hpp>
 
-class App
+class App final
 {
     public:
     App(const std::string& window_title, uint32_t width, uint32_t height);
-    virtual ~App() noexcept;
+    App(const App&) = delete;
+    App(App&&) = delete;
+    ~App() noexcept;
+
+    App& operator=(const App&) = delete;
+    App& operator=(App&&) = delete;
 
     static void initLogger() noexcept;
     void initTextures() noexcept;

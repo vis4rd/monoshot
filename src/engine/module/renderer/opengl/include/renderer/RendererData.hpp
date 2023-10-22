@@ -29,9 +29,9 @@ struct RendererData
     std::vector<LineVertex>::iterator lineBufferIter{};
 
     std::vector<Texture::Texture> textureSlots;  // slot = vec index, unit = tex ID
-    // TODO: if shaders can't stand almost 100 uniforms, yeet arrays below to an array of
+    // TODO(vis4rd): if shaders can't stand almost 100 uniforms, yeet arrays below to an array of
     // structs...
-    // TODO: ... and use this: https://www.khronos.org/opengl/wiki/Interface_Block_(GLSL)
+    // TODO(vis4rd): ... and use this: https://www.khronos.org/opengl/wiki/Interface_Block_(GLSL)
     std::array<std::int32_t, maxTextures> textureSamplers = {0};
     std::array<std::uint32_t, maxTextures> textureFrameCounts = {1};
     std::array<std::uint32_t, maxTextures> textureFrameRowLengths = {1};

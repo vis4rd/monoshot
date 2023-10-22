@@ -20,6 +20,9 @@ class Renderer final
     Renderer(const Renderer&) = delete;
     Renderer(Renderer&&) = delete;
 
+    Renderer& operator=(const Renderer&) = delete;
+    Renderer& operator=(Renderer&&) = delete;
+
     void beginBatch();
     void endBatch(const glm::mat4& projection, const glm::mat4& view);
 
