@@ -34,7 +34,7 @@ class VertexArray
 
     private:
     std::uint32_t m_id = 0u;
-    std::uint32_t m_vertexBufferIndex = 0u;
+    std::uint32_t m_attributeBindingCount = 0u;
     std::vector<VertexBuffer> m_vertexBuffers{};
     ElementBuffer m_elementBuffer{};
 };

@@ -8,7 +8,10 @@
 #include "MapTheme.hpp"
 #include "object/MapObject.hpp"
 
+namespace mono
+{
 class Renderer;
+}
 
 struct Tile
 {
@@ -22,7 +25,7 @@ struct Tile
 class Map final
 {
     public:
-    Map(Renderer& renderer, const std::size_t& width, const std::size_t& height);
+    Map(mono::Renderer& renderer, const std::size_t& width, const std::size_t& height);
     Map(const Map&) = delete;
     Map(Map&&) = delete;
     ~Map();
@@ -81,5 +84,5 @@ class Map final
     std::vector<MapObject> m_objects{};
     std::unique_ptr<OBB::Polygon> m_endArea{};
     const MapTheme* m_theme = &MapThemes::forestTheme;
-    Renderer& m_renderer;
+    mono::Renderer& m_renderer;
 };

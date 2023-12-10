@@ -9,7 +9,7 @@
 #include "../../include/ecs/actions.hpp"
 #include "../../include/ecs/systems.hpp"
 
-Map::Map(Renderer& renderer, const std::size_t& width, const std::size_t& height)
+Map::Map(mono::Renderer& renderer, const std::size_t& width, const std::size_t& height)
     : m_width(width)
     , m_height(height)
     , m_tiles()

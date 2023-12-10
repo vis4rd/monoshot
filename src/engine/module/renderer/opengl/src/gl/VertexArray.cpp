@@ -41,7 +41,7 @@ VertexArray::VertexArray()
 
 VertexArray::VertexArray(VertexArray&& move) noexcept
     : m_id(move.m_id)
-    , m_vertexBufferIndex(move.m_vertexBufferIndex)
+    , m_attributeBindingCount(move.m_attributeBindingCount)
     , m_vertexBuffers(std::move(move.m_vertexBuffers))
     , m_elementBuffer(std::move(move.m_elementBuffer))
 { }
@@ -67,7 +67,7 @@ VertexArray::~VertexArray()
 VertexArray& VertexArray::operator=(VertexArray&& move) noexcept
 {
     m_id = move.m_id;
-    m_vertexBufferIndex = move.m_vertexBufferIndex;
+    m_attributeBindingCount = move.m_attributeBindingCount;
     m_vertexBuffers = std::move(move.m_vertexBuffers);
     m_elementBuffer = std::move(move.m_elementBuffer);
     return *this;
@@ -90,7 +90,7 @@ void VertexArray::addVertexBuffer(VertexBuffer&& vertex_buffer)
         "Adding a VertexBuffer with ID = {} to VertexArray with ID = {}",
         vertex_buffer.getID(),
         m_id);
-    if(vertex_buffer.getLayout().getElements().empty())
+    if(vertex_buffer.getLayout().getAttributes().empty())
     {
         spdlog::error("Given VertexBuffer does not have a specified layout");
         throw std::runtime_error("Given VertexBuffer does not have a specified layout");
@@ -122,14 +122,25 @@ void VertexArray::addVertexBuffer(VertexBuffer&& vertex_buffer)
                 spdlog::debug("VertexArray: VertexBuffer element's type is a float");
                 glVertexArrayAttribFormat(
                     m_id,
-                    m_vertexBufferIndex,
+                    m_attributeBindingCount,
                     static_cast<std::int32_t>(element.getComponentCount()),
                     shaderDataTypeToOpenGLBaseType(element.getShaderDataType()),
                     element.isNormalized(),
                     element.getOffset());
-                glVertexArrayAttribBinding(m_id, m_vertexBufferIndex, m_vertexBuffers.size());
-                glEnableVertexArrayAttrib(m_id, m_vertexBufferIndex);
-                m_vertexBufferIndex++;
+                glVertexArrayAttribBinding(m_id, m_attributeBindingCount, m_vertexBuffers.size());
+                // glBindVertexArray(m_id);
+                // glVertexAttribDivisor(
+                //     m_attributeBindingCount,
+                //     static_cast<GLuint>(element.getUpdateFrequency()));
+                // glBindVertexArray(0);
+                //! glVertexArrayBindingDivisor sets step size for whole vbo binding, not the single
+                //! attribute
+                glVertexArrayBindingDivisor(
+                    m_id,
+                    m_vertexBuffers.size(),
+                    static_cast<GLuint>(element.getUpdateFrequency()));
+                glEnableVertexArrayAttrib(m_id, m_attributeBindingCount);
+                m_attributeBindingCount++;
                 break;
             }
             case ShaderDataType::INT1:
@@ -141,33 +152,58 @@ void VertexArray::addVertexBuffer(VertexBuffer&& vertex_buffer)
                 spdlog::debug("VertexArray: VertexBuffer element's type is an integer");
                 glVertexArrayAttribIFormat(
                     m_id,
-                    m_vertexBufferIndex,
+                    m_attributeBindingCount,
                     static_cast<std::int32_t>(element.getComponentCount()),
                     shaderDataTypeToOpenGLBaseType(element.getShaderDataType()),
                     element.getOffset());
-                glVertexArrayAttribBinding(m_id, m_vertexBufferIndex, m_vertexBuffers.size());
-                glEnableVertexArrayAttrib(m_id, m_vertexBufferIndex);
-                m_vertexBufferIndex++;
+                glVertexArrayAttribBinding(m_id, m_attributeBindingCount, m_vertexBuffers.size());
+                glBindVertexArray(m_id);
+                // glVertexAttribDivisor(
+                //     m_attributeBindingCount,
+                //     static_cast<GLuint>(element.getUpdateFrequency()));
+                // glBindVertexArray(0);
+                //! glVertexArrayBindingDivisor sets step size for whole vbo binding, not the single
+                //! attribute
+                glVertexArrayBindingDivisor(
+                    m_id,
+                    m_vertexBuffers.size(),
+                    static_cast<GLuint>(element.getUpdateFrequency()));
+                glEnableVertexArrayAttrib(m_id, m_attributeBindingCount);
+                m_attributeBindingCount++;
                 break;
             }
             case ShaderDataType::MAT3:
             case ShaderDataType::MAT4:
             {
                 spdlog::debug("VertexArray: VertexBuffer element's type is a matrix");
-                std::uint8_t count = element.getComponentCount();
+                const std::uint8_t count = element.getComponentCount();
                 for(std::uint8_t i = 0; i < count; i++)
                 {
                     glVertexArrayAttribFormat(
                         m_id,
-                        m_vertexBufferIndex,
-                        static_cast<std::int32_t>(element.getComponentCount()),
+                        m_attributeBindingCount,
+                        static_cast<GLint>(element.getComponentCount()),
                         shaderDataTypeToOpenGLBaseType(element.getShaderDataType()),
                         element.isNormalized(),
                         (element.getOffset() + sizeof(float) * count * i));
-                    glVertexArrayAttribBinding(m_id, m_vertexBufferIndex, m_vertexBuffers.size());
-                    glEnableVertexArrayAttrib(m_id, m_vertexBufferIndex);
-                    glVertexAttribDivisor(m_vertexBufferIndex, 1);
-                    m_vertexBufferIndex++;
+
+                    glVertexArrayAttribBinding(
+                        m_id,
+                        m_attributeBindingCount,
+                        m_vertexBuffers.size());
+                    // glBindVertexArray(m_id);
+                    // glVertexAttribDivisor(
+                    //     m_attributeBindingCount,
+                    //     static_cast<GLuint>(element.getUpdateFrequency()));
+                    // glBindVertexArray(0);
+                    //! glVertexArrayBindingDivisor sets step size for whole vbo binding, not the
+                    //! single attribute
+                    glVertexArrayBindingDivisor(
+                        m_id,
+                        m_vertexBuffers.size(),
+                        static_cast<GLuint>(element.getUpdateFrequency()));
+                    glEnableVertexArrayAttrib(m_id, m_attributeBindingCount);
+                    m_attributeBindingCount++;
                 }
                 break;
             }

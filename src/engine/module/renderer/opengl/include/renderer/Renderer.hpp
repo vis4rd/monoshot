@@ -12,6 +12,9 @@
 #include "RendererData.hpp"
 #include "RendererStats.hpp"
 
+namespace mono
+{
+
 class Renderer final
 {
     public:
@@ -61,14 +64,16 @@ class Renderer final
         const float& rotation,
         const glm::vec4& color);  // center and size
 
-    RendererStats& getStats();
+    mono::RendererStats& getStats();
     void resetStats();
 
     private:
     Renderer();
-    RendererData& getData();
+    mono::RendererData& getData();
 
     private:
-    RendererData m_data{};
-    RendererStats m_stats{};
+    mono::RendererData m_data{};
+    mono::RendererStats m_stats{};
 };
+
+}  // namespace mono

@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "BufferLayout.hpp"
+#include "ShaderAttributeLayout.hpp"
 
 namespace mono
 {
@@ -25,17 +25,17 @@ class VertexBuffer
     void unbind() const;
 
     const std::uint32_t& getID() const;
-    const BufferLayout& getLayout() const;
+    ShaderAttributeLayout& getLayout();
 
     void setData(const void* data, const std::uint32_t& size);
-    void setLayout(const BufferLayout& layout);
+    void setLayout(const ShaderAttributeLayout& layout);
 
     // NOLINTNEXTLINE(google-explicit-constructor)
     operator std::uint32_t() const;
 
     private:
     std::uint32_t m_id{};
-    BufferLayout m_layout{};
+    ShaderAttributeLayout m_layout{};
 };
 
 }  // namespace mono

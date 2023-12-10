@@ -66,7 +66,7 @@ const std::uint32_t& VertexBuffer::getID() const
     return m_id;
 }
 
-const BufferLayout& VertexBuffer::getLayout() const
+ShaderAttributeLayout& VertexBuffer::getLayout()
 {
     return m_layout;
 }
@@ -77,7 +77,7 @@ void VertexBuffer::setData(const void* data, const std::uint32_t& size)
     glNamedBufferSubData(m_id, 0, size, data);
 }
 
-void VertexBuffer::setLayout(const BufferLayout& layout)
+void VertexBuffer::setLayout(const ShaderAttributeLayout& layout)
 {
     m_layout = layout;
 }

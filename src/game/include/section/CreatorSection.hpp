@@ -1,11 +1,15 @@
 #pragma once
 
 #include <camera/PerspectiveCamera.hpp>
-#include <renderer/Renderer.hpp>
 #include <section/Section.hpp>
 #include <texture/Texture.hpp>
 
 #include "../map/Map.hpp"
+
+namespace mono
+{
+class Renderer;
+}
 
 class CreatorSection final : public Section
 {
@@ -26,7 +30,7 @@ class CreatorSection final : public Section
 
     private:
     entt::registry m_entities{};
-    Renderer& m_renderer;
+    mono::Renderer& m_renderer;
     Map m_map;
     PerspectiveCamera m_camera;
     std::size_t m_selectedMapItem{BlockID::Wall};

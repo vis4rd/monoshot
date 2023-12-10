@@ -5,39 +5,19 @@
 #include <stbi/stb_image.h>
 
 #include "../../include/ecs/actions.hpp"
+#include "../../include/ecs/systems.hpp"
 #include "../../include/ui/GameplayOverlay.hpp"
 #include "../../include/utility/Collisions.hpp"
 
 DebugSection::DebugSection()
     : Section()
-    // , VAO()
     , m_camera(glm::vec3(0.f, 0.f, 50.f), ResourceManager::window->getSize())
-    , m_renderer(Renderer::get())
+    , m_renderer(mono::Renderer::get())
     , m_map(m_renderer, 5, 5)
     , m_hero(100)
     , m_layout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize)
 {
     m_name = "DebugSection";
-
-    // float colors[] = {1.f, 0.f, 0.f, 1.f, 0.f, 1.f, 0.f, 1.f, 0.f, 0.f, 1.f, 1.f, 0.5f, 0.5f,
-    // 0.5f, 1.f}; float vertices[12] = {-0.5f, -0.5f, 0.f, 0.5f, -0.5f, 0.f, 0.5f, 0.5f, 0.f,
-    // -0.5f, 0.5f, 0.f}; uint32_t indices[6] = {0, 1, 2, 2, 3, 0};
-
-    // ElementBuffer EBO(indices, 6);
-
-    // VertexBuffer VBO1(sizeof(vertices));
-    // BufferLayout layout({BufferElement(ShaderDataType::float3, "aPos")});
-    // VBO1.setLayout(layout);
-    // VBO1.setData(vertices, sizeof(vertices));
-
-    // VertexBuffer VBO2(sizeof(colors));
-    // BufferLayout layout2({BufferElement(ShaderDataType::float4, "aColor")});
-    // VBO2.setLayout(layout2);
-    // VBO2.setData(colors, sizeof(colors));
-
-    // VAO.addVertexBuffer(std::move(VBO1));
-    // VAO.addVertexBuffer(std::move(VBO2));
-    // VAO.addElementBuffer(EBO);
 
     // So the structure looks more or less like this:
     // VAO
@@ -63,56 +43,23 @@ DebugSection::DebugSection()
     // vertex; p - position; x, y, z - position axes; c - color; r, g, b, a - color channels
     //     vbo_data = [v1x, v1y, v1z, v1r, v1g, v1b, v1a,, v2p, v2c, v3p, v3c,, v4, ..., vn]
 
-
-    // ShaderManager::addShaderProgram("../res/shaders", "triangle_zoom");
-
-    m_map.loadFromFile("testMap.map", m_enemyRegistry);
-
-    // firstTexture = std::make_shared<Texture2D>(16, 16);
-    // firstTexture->load("../res/textures/first_texture.png");
-
-    // glm::vec3 first = {vertices[0], vertices[1], vertices[2]};
-    // glm::vec3 second = {vertices[3], vertices[4], vertices[5]};
-    // glm::vec3 third = {vertices[6], vertices[7], vertices[8]};
-    // glm::vec3 fourth = {vertices[9], vertices[10], vertices[11]};
-    // spdlog::debug("Triangle:");
-    // spdlog::debug("Object space: {}, {}, {}, {}", util::vec3str(first), util::vec3str(second),
-    // util::vec3str(third), util::vec3str(fourth)); first = model_matrix * glm::vec4(first, 1.f);
-    // second = model_matrix * glm::vec4(second, 1.f);
-    // third = model_matrix * glm::vec4(third, 1.f);
-    // fourth = model_matrix * glm::vec4(fourth, 1.f);
-    // spdlog::debug("World space: {}, {}, {}, {}", util::vec3str(first), util::vec3str(second),
-    // util::vec3str(third), util::vec3str(fourth)); first = m_camera.getViewMatrix() *
-    // glm::vec4(first, 1.f); second = m_camera.getViewMatrix() * glm::vec4(second, 1.f); third =
-    // m_camera.getViewMatrix() * glm::vec4(third, 1.f); fourth = m_camera.getViewMatrix() *
-    // glm::vec4(fourth, 1.f); spdlog::debug("Camera space: {}, {}, {}, {}", util::vec3str(first),
-    // util::vec3str(second), util::vec3str(third), util::vec3str(fourth)); first =
-    // m_camera.getProjectionMatrix() * glm::vec4(first, 1.f); second =
-    // m_camera.getProjectionMatrix() * glm::vec4(second, 1.f); third =
-    // m_camera.getProjectionMatrix() * glm::vec4(third, 1.f); fourth =
-    // m_camera.getProjectionMatrix() * glm::vec4(fourth, 1.f); spdlog::debug("Screen space: {}, {},
-    // {}, {}", util::vec3str(first), util::vec3str(second), util::vec3str(third),
-    // util::vec3str(fourth));
+    m_map.setTile(5, 5, 0, BlockID::Wall, true);
 
     m_hero.addItem(std::move(Weapon(10, 31, 76, 35.f, 0.3)));
     m_hero.addItem(std::move(Weapon(10, 70, 20000, 10.f, 0.05)));
 
     // ecs
     m_map.addTilesToRegistry(m_mapElementsRegistry);
-
-    // ecs::action::spawn_enemy(m_enemyRegistry, {4.f, 0.f});
 }
 
 DebugSection::~DebugSection()
 {
     spdlog::trace("Destroying DebugSection");
-    // firstTexture->destroy();
     m_mapElementsRegistry.clear();
 }
 
 void DebugSection::update() noexcept
 {
-    // spdlog::trace("Updating DebugSection");
     const glm::vec2& pos = m_hero.position;
     float& rot = m_hero.rotation;
 
@@ -121,19 +68,15 @@ void DebugSection::update() noexcept
     const auto mouse_world_pos = this->mouseScreenPosToWorldPos(mouse_screen_pos, m_camera);
     rot = glm::degrees(std::atan2(mouse_world_pos.y - pos.y, mouse_world_pos.x - pos.x));
 
-    if(const bool is_during_entrance = this->onEnter(); is_during_entrance)
-    {
-        return;
-    }
+    // if(const bool is_during_entrance = this->onEnter(); is_during_entrance)
+    // {
+    //     return;
+    // }
     if(const bool is_leave_finished = this->onLeave(); is_leave_finished)
     {
         SectionManager::get().popSection();
         return;
     }
-
-    // model_matrix = glm::translate(glm::mat4(1.f), position);
-    // model_matrix = glm::rotate(model_matrix, glm::radians(rotation), glm::vec3(0.f, 0.f, 1.f));
-    // model_matrix = glm::scale(model_matrix, scale);
 
     auto& input = InputManager::get();
     if(input.isPressedOnce(GLFW_KEY_ESCAPE))
@@ -206,7 +149,6 @@ void DebugSection::update() noexcept
     m_camera.setPosition({pos, m_camera.getPosition().z});
     m_camera.setTarget({pos, 0.f});
 
-    // ecs::system::remove_dead_entities(m_registry);
     ecs::system::updateAis(m_enemyRegistry, m_hero.position, m_bulletRegistry);
     ecs::system::moveHeroWithCollisions(m_mapElementsRegistry, m_hero, move_direction);
     ecs::system::moveBullets(m_bulletRegistry);
@@ -233,12 +175,6 @@ void DebugSection::render() noexcept
     static bool draw_area = false;
     static bool draw_bounding_boxes = false;
     m_map.drawTiles(draw_area, draw_bounding_boxes);
-
-    // Renderer::drawQuad({0.f, 10.f}, tile_size, 0.f, {1.f, 0.5f, 0.5f, 1.f});
-    // Renderer::drawQuad({0.f, 8.f}, tile_size, 0.f, {1.f, 0.5f, 0.5f, 1.f});
-    // Renderer::drawQuad({9.f, 12.f}, tile_size, 45.f, {1.f, 0.5f, 0.5f, 1.f});
-    // Renderer::drawQuad({1.f, -1.f}, tile_size, 45.f, firstTexture, {1.f, 1.f, 1.f, 1.f});
-    // Renderer::drawQuad({-46.f, 0.f}, tile_size, 90.f, firstTexture, {1.f, 1.f, 1.f, 1.f});
 
     glm::vec2& pos = m_hero.position;
     float& rot = m_hero.rotation;
@@ -272,13 +208,6 @@ void DebugSection::render() noexcept
         });
 
     m_renderer.endBatch(m_camera.getProjectionMatrix(), m_camera.getViewMatrix());
-
-    // auto& triangle_zoom_shader = ShaderManager::useShader("triangle_zoom");
-    // triangle_zoom_shader.uploadMat4("uTransform", model_matrix, 0);
-    // triangle_zoom_shader.uploadMat4("uProjection", m_camera.getProjectionMatrix(), 1);
-    // triangle_zoom_shader.uploadMat4("uView", m_camera.getViewMatrix(), 2);
-    // VAO.bind();
-    // glDrawElements(GL_TRIANGLES, VAO.getElementBuffer().getElementCount(), GL_UNSIGNED_INT, 0);
 
     if(m_onEnterFinished && (not m_onLeaveStarted))
     {
@@ -332,19 +261,15 @@ glm::vec2 DebugSection::mouseScreenPosToWorldPos(const glm::vec2& mouse_pos, Cam
 {
     const auto& inverse_projection_matrix = camera.getInverseProjectionMatrix();
     const auto& inverse_view_matrix = camera.getInverseViewMatrix();
-    // spdlog::trace("Inverse projection matrix = {}", util::mat4str(inverse_projection_matrix));
-    // spdlog::trace("Inverse view matrix = {}", util::mat4str(inverse_view_matrix));
 
     const auto& mouse_x = mouse_pos.x;
     const auto& mouse_y = mouse_pos.y;
     const auto& window_size = ResourceManager::window->getSize();
     const auto& window_w = window_size.x;
     const auto& window_h = window_size.y;
-    // spdlog::trace("Window size = ({}, {})", window_w, window_h);
 
     const float norm_mouse_x = (2.f * mouse_x / static_cast<float>(window_w)) - 1.f;
     const float norm_mouse_y = 1.f - (2.f * mouse_y / static_cast<float>(window_h));
-    // spdlog::trace("Normalized mouse position = ({}, {})", norm_mouse_x, norm_mouse_y);
 
     glm::vec3 norm_mouse_vector = glm::vec3(norm_mouse_x, norm_mouse_y, 1.f);
     glm::vec4 ray_clip = glm::vec4(norm_mouse_vector.x, norm_mouse_vector.y, -1.f, 1.f);
@@ -352,10 +277,8 @@ glm::vec2 DebugSection::mouseScreenPosToWorldPos(const glm::vec2& mouse_pos, Cam
     ray_eye = glm::vec4(ray_eye.x, ray_eye.y, -1.f, 0.f);
     glm::vec3 ray_world = glm::vec3((inverse_view_matrix * ray_eye));
     ray_world = glm::normalize(ray_world);
-    // spdlog::trace("Ray world = {}", util::vec3str(ray_world));
 
     float l = -(camera.getPosition().z / ray_world.z);
-    // spdlog::trace("L = {}", l);
 
     return {camera.getPosition().x + l * ray_world.x, camera.getPosition().y + l * ray_world.y};
 }
@@ -433,7 +356,6 @@ void DebugSection::showDebugUI(bool& draw_area, bool& draw_bounding_boxes)
         // ImGui::SliderFloat2("position", reinterpret_cast<float*>(&position), -10.f, 10.f);
         if(ImGui::SliderFloat("camera zoom", &zoom, 0.1f, 200.f, "x%.1f"))
         {
-            // m_camera.setZoom(zoom);
             const auto& camera_pos = m_camera.getPosition();
             m_camera.setPosition({camera_pos.x, camera_pos.y, zoom});
         }

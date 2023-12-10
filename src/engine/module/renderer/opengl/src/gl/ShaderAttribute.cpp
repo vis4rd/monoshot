@@ -1,4 +1,4 @@
-#include "../../include/gl/BufferElement.hpp"
+#include "../../include/gl/ShaderAttribute.hpp"
 
 #include <spdlog/spdlog.h>
 
@@ -30,39 +30,46 @@ inline static std::uint32_t sizeofShaderDataType(const ShaderDataType& type)
     }
 }
 
-BufferElement::BufferElement(const ShaderDataType& type, const std::string& name, bool normalized)
+ShaderAttribute::ShaderAttribute(
+    const ShaderDataType& type,
+    const std::string& name,
+    bool normalized,
+    ShaderAttributeUpdateFrequency frequency,
+    std::size_t offset)
     : m_name(name)
     , m_shaderType(type)
     , m_size(sizeofShaderDataType(type))
+    , m_offset(offset)
     , m_normalized(normalized)
+    , m_frequency(frequency)
 { }
 
-const std::string& BufferElement::getName() const
+const std::string& ShaderAttribute::getName() const
 {
     return m_name;
 }
 
-const ShaderDataType& BufferElement::getShaderDataType() const
+const ShaderDataType& ShaderAttribute::getShaderDataType() const
 {
     return m_shaderType;
 }
 
-std::uint32_t BufferElement::getSize() const
+std::uint32_t ShaderAttribute::getSize() const
 {
     return m_size;
 }
 
-std::size_t BufferElement::getOffset() const
+std::size_t ShaderAttribute::getOffset() const
 {
     return m_offset;
 }
 
-bool BufferElement::isNormalized() const
+bool ShaderAttribute::isNormalized() const
 {
     return m_normalized;
 }
 
-std::uint32_t BufferElement::getComponentCount() const
+std::uint32_t ShaderAttribute::getComponentCount() const
 {
     switch(m_shaderType)
     {
@@ -85,14 +92,24 @@ std::uint32_t BufferElement::getComponentCount() const
     }
 }
 
-void BufferElement::setSize(const std::uint32_t& size)
+ShaderAttributeUpdateFrequency ShaderAttribute::getUpdateFrequency() const
+{
+    return m_frequency;
+}
+
+void ShaderAttribute::setSize(const std::uint32_t& size)
 {
     m_size = size;
 }
 
-void BufferElement::setOffset(const std::size_t& offset)
+void ShaderAttribute::setOffset(const std::size_t& offset)
 {
     m_offset = offset;
+}
+
+void ShaderAttribute::setUpdateFrequency(ShaderAttributeUpdateFrequency frequency)
+{
+    m_frequency = frequency;
 }
 
 }  // namespace mono

@@ -9,24 +9,26 @@
 
 #include "../gl/VertexArray.hpp"
 #include "../texture/Texture.hpp"
-#include "LineVertex.hpp"
-#include "QuadVertex.hpp"
+#include "LinePrimitive.hpp"
+#include "QuadPrimitive.hpp"
+
+namespace mono
+{
 
 struct RendererData
 {
     static constexpr std::size_t maxLineCount = 10000;
     static constexpr std::size_t maxQuadCount = 10000;
     static constexpr std::size_t maxVertexCount = maxQuadCount * 4;
-    static constexpr std::size_t maxIndexCount = maxQuadCount * 6;
+    static constexpr std::size_t maxElementsCount = maxQuadCount * 6;
     static constexpr std::size_t maxTextures = 32;
 
     std::shared_ptr<mono::VertexArray> quadVao = nullptr;
-    std::vector<QuadVertex> quadBuffer = std::vector<QuadVertex>(maxVertexCount);
-    std::vector<QuadVertex>::iterator quadBufferIter{};
+    std::vector<mono::QuadInstanceData> quadInstanceBuffer{};
 
     std::shared_ptr<mono::VertexArray> lineVao = nullptr;
-    std::vector<LineVertex> lineBuffer = std::vector<LineVertex>(maxLineCount * 2);
-    std::vector<LineVertex>::iterator lineBufferIter{};
+    std::vector<mono::LineVertex> lineBuffer = std::vector<mono::LineVertex>(maxLineCount * 2);
+    std::vector<mono::LineVertex>::iterator lineBufferIter{};
 
     std::vector<Texture::Texture> textureSlots;  // slot = vec index, unit = tex ID
     // TODO(vis4rd): if shaders can't stand almost 100 uniforms, yeet arrays below to an array of
@@ -41,3 +43,5 @@ struct RendererData
     glm::mat4 lastProjectionMatrix{};
     glm::mat4 lastViewMatrix{};
 };
+
+}  // namespace mono
