@@ -33,7 +33,7 @@ Window::Window(
     constexpr std::array<std::uint32_t, 6> screenElementBuffer = {0, 1, 2, 2, 3, 0};
 
     VertexBuffer screen_vb(screenVertexBuffer.data(), screenVertexBuffer.size() * sizeof(float));
-    BufferLayout layout = {
+    ShaderAttributeLayout layout = {
         {ShaderDataType::FLOAT2, "aPos"      },
         {ShaderDataType::FLOAT2, "aTexCoords"},
     };

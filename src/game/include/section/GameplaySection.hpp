@@ -2,13 +2,17 @@
 
 #include <camera/PerspectiveCamera.hpp>
 #include <entt/entity/registry.hpp>
-#include <renderer/Renderer.hpp>
 #include <section/Section.hpp>
 #include <time/Timer.hpp>
 
 #include "../gameplay/Hero.hpp"
 #include "../map/Map.hpp"
 #include "../ui/GameplayLayout.hpp"
+
+namespace mono
+{
+class Renderer;
+}
 
 class GameplaySection : public Section
 {
@@ -34,7 +38,7 @@ class GameplaySection : public Section
     entt::registry m_bulletRegistry{};
     entt::registry m_enemyRegistry{};
     PerspectiveCamera m_camera;
-    Renderer& m_renderer;
+    mono::Renderer& m_renderer;
     Map m_map;
     Hero m_hero;
     UI::GameplayLayout m_layout;

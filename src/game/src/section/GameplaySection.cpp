@@ -11,7 +11,7 @@
 GameplaySection::GameplaySection()
     : Section()
     , m_camera(glm::vec3(0.f, 0.f, 50.f), ResourceManager::window->getSize())
-    , m_renderer(Renderer::get())
+    , m_renderer(mono::Renderer::get())
     , m_map(m_renderer, 5, 5)
     , m_hero(100)
     , m_layout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize)
