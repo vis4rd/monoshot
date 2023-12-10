@@ -16,8 +16,8 @@ target_compile_features(mono_module_renderer_opengl_backend
 )
 
 target_sources(mono_module_renderer_opengl_backend
-    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/gl/BufferElement.cpp"
-            "${CMAKE_CURRENT_SOURCE_DIR}/src/gl/BufferLayout.cpp"
+    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/gl/ShaderAttribute.cpp"
+            "${CMAKE_CURRENT_SOURCE_DIR}/src/gl/ShaderAttributeLayout.cpp"
             "${CMAKE_CURRENT_SOURCE_DIR}/src/gl/ElementBuffer.cpp"
             "${CMAKE_CURRENT_SOURCE_DIR}/src/gl/FrameBuffer.cpp"
             "${CMAKE_CURRENT_SOURCE_DIR}/src/gl/VertexArray.cpp"
