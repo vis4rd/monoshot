@@ -36,7 +36,7 @@ class Window final : public NativeWindow
     Window &operator=(Window &&) = delete;
 
     const ImGuiIO &getImGuiIo() const;
-    FrameBuffer &getFramebuffer();
+    mono::gl::FrameBuffer &getFramebuffer();
     glm::vec2 getMousePosition() const;
 
     bool isFullscreen() const;
@@ -66,8 +66,8 @@ class Window final : public NativeWindow
     bool m_isMaximized = false;
     bool m_isMinimized = false;
     bool m_isVSyncEnabled = false;
-    VertexArray m_screenVa;
-    FrameBuffer m_screenFb;
+    mono::gl::VertexArray m_screenVa;
+    mono::gl::FrameBuffer m_screenFb;
     SectionManager &m_sectionManager = SectionManager::get();
 };
 

@@ -4,13 +4,10 @@
 
 #include "Texture.hpp"
 
-namespace Texture
+namespace mono
 {
 
-namespace impl
-{
-
-class Animation : public Texture
+class Animation : public mono::Texture
 {
     public:
     Animation();
@@ -43,8 +40,4 @@ class Animation : public Texture
                                               // Timer::getTotalTime() then it can be used again
 };
 
-}  // namespace impl
-
-using Animation = std::shared_ptr<impl::Animation>;
-
-}  // namespace Texture
+}  // namespace mono

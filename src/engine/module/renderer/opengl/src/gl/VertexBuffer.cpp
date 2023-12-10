@@ -3,7 +3,7 @@
 #include <glad/gl.h>
 #include <spdlog/spdlog.h>
 
-namespace mono
+namespace mono::gl
 {
 
 VertexBuffer::VertexBuffer(std::uint32_t size)
@@ -87,4 +87,4 @@ VertexBuffer::operator std::uint32_t() const
     return m_id;
 }
 
-}  // namespace mono
+}  // namespace mono::gl
