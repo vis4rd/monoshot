@@ -6,7 +6,7 @@
 #include "ShaderAttributeUpdateFrequency.hpp"
 #include "ShaderDataType.hpp"
 
-namespace mono
+namespace mono::gl
 {
 
 class ShaderAttribute
@@ -41,4 +41,4 @@ class ShaderAttribute
     ShaderAttributeUpdateFrequency m_frequency{ShaderAttributeUpdateFrequency::EACH_VERTEX};
 };
 
-}  // namespace mono
+}  // namespace mono::gl

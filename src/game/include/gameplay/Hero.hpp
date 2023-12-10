@@ -46,7 +46,7 @@ class Hero final
     bool holdsFood() const;
     bool hasItem(const std::size_t& id) const;
 
-    Texture::Animation& getTexture();
+    std::shared_ptr<mono::Animation>& getTexture();
 
     public:
     const std::int32_t m_maxHealth;
@@ -65,7 +65,7 @@ class Hero final
     std::array<bool, 3> m_availableItems;
     std::size_t m_currentItem = 3;
 
-    Texture::Animation m_texture;
+    std::shared_ptr<mono::Animation> m_texture;
 };
 
 template<impl::IsConsumableC T>

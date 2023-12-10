@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace mono
+namespace mono::gl
 {
 
 class ElementBuffer
@@ -35,4 +35,4 @@ class ElementBuffer
     bool m_isInit = false;
 };
 
-}  // namespace mono
+}  // namespace mono::gl

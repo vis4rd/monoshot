@@ -1,6 +1,6 @@
 #pragma once
 
-namespace mono
+namespace mono::gl
 {
 
 enum class ShaderDataType
@@ -19,4 +19,4 @@ enum class ShaderDataType
     BOOL1
 };
 
-}  // namespace mono
+}  // namespace mono::gl

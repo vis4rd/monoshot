@@ -1,6 +1,6 @@
 #pragma once
 
-namespace mono
+namespace mono::gl
 {
 
 enum class ShaderAttributeUpdateFrequency
@@ -9,4 +9,4 @@ enum class ShaderAttributeUpdateFrequency
     EACH_INSTANCE = 1,
 };
 
-}  // namespace mono
+}  // namespace mono::gl
