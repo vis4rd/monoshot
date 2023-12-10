@@ -38,7 +38,7 @@ class Renderer final
         const glm::vec2& position,
         const glm::vec2& size,
         const float& rotation,
-        const Texture::Texture& texture,
+        const std::shared_ptr<mono::Texture>& texture,
         const glm::vec4& color = {1.f, 1.f, 1.f, 1.f});
 
     void drawLine(const glm::vec2& pos1, const glm::vec2& pos2, const glm::vec4& color);
@@ -64,16 +64,16 @@ class Renderer final
         const float& rotation,
         const glm::vec4& color);  // center and size
 
-    mono::RendererStats& getStats();
+    RendererStats& getStats();
     void resetStats();
 
     private:
     Renderer();
-    mono::RendererData& getData();
+    RendererData& getData();
 
     private:
-    mono::RendererData m_data{};
-    mono::RendererStats m_stats{};
+    RendererData m_data{};
+    RendererStats m_stats{};
 };
 
 }  // namespace mono

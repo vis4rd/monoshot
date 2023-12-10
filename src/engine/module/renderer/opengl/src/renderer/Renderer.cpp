@@ -40,25 +40,25 @@ Renderer::Renderer()
     }
 
     // buffers
-    m_data.quadVao = std::make_shared<mono::VertexArray>();
-    auto quad_constant_vbo = mono::VertexBuffer(
-        reinterpret_cast<const float*>(mono::quadConstantVertexData.data()),
-        sizeof(mono::quadConstantVertexData));
+    m_data.quadVao = std::make_shared<mono::gl::VertexArray>();
+    auto quad_constant_vbo = mono::gl::VertexBuffer(
+        reinterpret_cast<const float*>(mono::gl::quadConstantVertexData.data()),
+        sizeof(mono::gl::quadConstantVertexData));
     auto quad_instance_vbo =
-        mono::VertexBuffer(m_data.maxQuadCount * sizeof(mono::QuadInstanceData));
-    auto quad_ebo = mono::ElementBuffer(quad_elements, m_data.maxElementsCount);
+        mono::gl::VertexBuffer(m_data.maxQuadCount * sizeof(mono::gl::QuadInstanceData));
+    auto quad_ebo = mono::gl::ElementBuffer(quad_elements, m_data.maxElementsCount);
 
     // attributes
-    using dtype = mono::ShaderDataType;
-    using upd_freq = mono::ShaderAttributeUpdateFrequency;
+    using dtype = mono::gl::ShaderDataType;
+    using upd_freq = mono::gl::ShaderAttributeUpdateFrequency;
 
-    mono::ShaderAttributeLayout quad_constant_layout = {
+    mono::gl::ShaderAttributeLayout quad_constant_layout = {
         {dtype::FLOAT2, "acPos"},
         {dtype::FLOAT2, "acUv" }
     };
     quad_constant_vbo.setLayout(quad_constant_layout);
 
-    mono::ShaderAttributeLayout quad_instance_layout = {
+    mono::gl::ShaderAttributeLayout quad_instance_layout = {
         {dtype::FLOAT4, "aiColor",    false, upd_freq::EACH_INSTANCE},
         {dtype::FLOAT1, "aiTexIndex", false, upd_freq::EACH_INSTANCE},
         {dtype::MAT4,   "aiModel",    false, upd_freq::EACH_INSTANCE},
@@ -77,11 +77,11 @@ Renderer::Renderer()
 
     //// Lines
     // buffers
-    m_data.lineVao = std::make_shared<mono::VertexArray>();
-    auto line_vbo = mono::VertexBuffer(m_data.maxVertexCount * sizeof(mono::LineVertex));
+    m_data.lineVao = std::make_shared<mono::gl::VertexArray>();
+    auto line_vbo = mono::gl::VertexBuffer(m_data.maxVertexCount * sizeof(mono::gl::LineVertex));
 
     // attributes
-    mono::ShaderAttributeLayout line_layout = {
+    mono::gl::ShaderAttributeLayout line_layout = {
         {dtype::FLOAT3, "aPos"  },
         {dtype::FLOAT4, "aColor"},
     };
@@ -109,7 +109,7 @@ Renderer::Renderer()
     };
 
     const auto color = make_bytes(0xff, 0xff, 0xff, 0xff);
-    Texture::Texture texture = Resource::create<Texture::impl::Texture>(color.data(), 1, 1);
+    std::shared_ptr<mono::Texture> texture = Resource::create<mono::Texture>(color.data(), 1, 1);
 
     m_data.textureSlots.reserve(32);
     m_data.textureSlots.push_back(texture);
@@ -148,7 +148,7 @@ void Renderer::endBatch(const glm::mat4& projection, const glm::mat4& view)
     {
         // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
         const GLsizeiptr instance_size = static_cast<std::uint32_t>(
-            m_data.quadInstanceBuffer.size() * sizeof(mono::QuadInstanceData));
+            m_data.quadInstanceBuffer.size() * sizeof(mono::gl::QuadInstanceData));
 
         m_data.quadVao->getVertexBuffers().at(1).setData(
             reinterpret_cast<const void*>(m_data.quadInstanceBuffer.data()),
@@ -227,7 +227,7 @@ void Renderer::drawQuad(
     const glm::vec2& position,
     const glm::vec2& size,
     const float& rotation,
-    const Texture::Texture& texture,
+    const std::shared_ptr<mono::Texture>& texture,
     const glm::vec4& color)
 {
     // spdlog::trace(
@@ -251,7 +251,7 @@ void Renderer::drawQuad(
                              * glm::scale(identity, glm::vec3(size, 1.f));
 
     const auto find_slot = [&m_data = m_data](
-                               const std::vector<Texture::Texture>& slots,
+                               const std::vector<std::shared_ptr<mono::Texture>>& slots,
                                const std::uint32_t& texture_id) -> std::int64_t {
         for(std::int64_t slot = 0; slot < m_data.textureSlots.size(); slot++)
         {
@@ -337,10 +337,14 @@ void Renderer::drawRect(
         glm::translate(glm::identity<glm::mat4>(), glm::vec3(center, 0.f))
         * glm::rotate(glm::identity<glm::mat4>(), glm::radians(rotation), {0.f, 0.f, 1.f})
         * glm::scale(glm::identity<glm::mat4>(), glm::vec3(size, 1.f));
-    const auto bl = glm::vec2(model_matrix * glm::vec4(mono::quadConstantVertexData[0], 0.0, 1.0));
-    const auto br = glm::vec2(model_matrix * glm::vec4(mono::quadConstantVertexData[2], 0.0, 1.0));
-    const auto ur = glm::vec2(model_matrix * glm::vec4(mono::quadConstantVertexData[4], 0.0, 1.0));
-    const auto ul = glm::vec2(model_matrix * glm::vec4(mono::quadConstantVertexData[6], 0.0, 1.0));
+    const auto bl =
+        glm::vec2(model_matrix * glm::vec4(mono::gl::quadConstantVertexData[0], 0.0, 1.0));
+    const auto br =
+        glm::vec2(model_matrix * glm::vec4(mono::gl::quadConstantVertexData[2], 0.0, 1.0));
+    const auto ur =
+        glm::vec2(model_matrix * glm::vec4(mono::gl::quadConstantVertexData[4], 0.0, 1.0));
+    const auto ul =
+        glm::vec2(model_matrix * glm::vec4(mono::gl::quadConstantVertexData[6], 0.0, 1.0));
     Renderer::drawRect(ul, ur, br, bl, color);
 }
 

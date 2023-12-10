@@ -9,7 +9,7 @@
 #include "config/StaticConfiguration.hpp"
 #include "log/Logging.hpp"
 
-namespace Texture::impl
+namespace mono
 {
 
 Texture::Texture(
@@ -314,4 +314,4 @@ void Texture::tryCopyExternalMemory(const std::byte* memory, const std::size_t& 
     }
 }
 
-}  // namespace Texture::impl
+}  // namespace mono

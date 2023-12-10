@@ -1,6 +1,6 @@
 #include "../../include/gl/ShaderAttributeLayout.hpp"
 
-namespace mono
+namespace mono::gl
 {
 
 ShaderAttributeLayout::ShaderAttributeLayout(std::initializer_list<ShaderAttribute> attributes)
@@ -77,4 +77,4 @@ void ShaderAttributeLayout::calculateOffsetAndStride()
     }
 }
 
-}  // namespace mono
+}  // namespace mono::gl

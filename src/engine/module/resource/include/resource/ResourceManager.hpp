@@ -20,20 +20,20 @@ struct ResourceManager
     static std::shared_ptr<Timer> timer;
     static glm::vec4 mapThemeBackgroundColor;
 
-    static Texture::Texture carTexture;
-    static Texture::Texture destroyedCarTexture;
-    static Texture::Texture chairTexture;
-    static Texture::Texture outdoorBenchTexture;
-    static Texture::Texture tableTexture;
-    static Texture::Texture smallTreeTexture;
-    static Texture::Texture largeTreeTexture;
-    static Texture::Texture smallBushTexture;
-    static Texture::Texture largeBushTexture;
+    static std::shared_ptr<mono::Texture> carTexture;
+    static std::shared_ptr<mono::Texture> destroyedCarTexture;
+    static std::shared_ptr<mono::Texture> chairTexture;
+    static std::shared_ptr<mono::Texture> outdoorBenchTexture;
+    static std::shared_ptr<mono::Texture> tableTexture;
+    static std::shared_ptr<mono::Texture> smallTreeTexture;
+    static std::shared_ptr<mono::Texture> largeTreeTexture;
+    static std::shared_ptr<mono::Texture> smallBushTexture;
+    static std::shared_ptr<mono::Texture> largeBushTexture;
 
-    static Texture::Texture rifleInventoryTexture;
-    static Texture::Texture pistolInventoryTexture;
+    static std::shared_ptr<mono::Texture> rifleInventoryTexture;
+    static std::shared_ptr<mono::Texture> pistolInventoryTexture;
 
-    static Texture::Texture enemyTexture;
+    static std::shared_ptr<mono::Texture> enemyTexture;
 
     static std::shared_ptr<Font> uiTitleFont;
     static std::shared_ptr<float> uiTitleFontSize;

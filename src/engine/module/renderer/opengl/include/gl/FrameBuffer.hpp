@@ -4,7 +4,7 @@
 
 #include <glm/glm.hpp>
 
-namespace mono
+namespace mono::gl
 {
 
 class FrameBuffer
@@ -43,4 +43,4 @@ class FrameBuffer
     std::uint32_t m_stencilAttachment = 0u;
 };
 
-}  // namespace mono
+}  // namespace mono::gl

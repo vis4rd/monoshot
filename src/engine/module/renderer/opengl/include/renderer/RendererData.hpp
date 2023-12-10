@@ -23,14 +23,15 @@ struct RendererData
     static constexpr std::size_t maxElementsCount = maxQuadCount * 6;
     static constexpr std::size_t maxTextures = 32;
 
-    std::shared_ptr<mono::VertexArray> quadVao = nullptr;
-    std::vector<mono::QuadInstanceData> quadInstanceBuffer{};
+    std::shared_ptr<mono::gl::VertexArray> quadVao = nullptr;
+    std::vector<mono::gl::QuadInstanceData> quadInstanceBuffer{};
 
-    std::shared_ptr<mono::VertexArray> lineVao = nullptr;
-    std::vector<mono::LineVertex> lineBuffer = std::vector<mono::LineVertex>(maxLineCount * 2);
-    std::vector<mono::LineVertex>::iterator lineBufferIter{};
+    std::shared_ptr<mono::gl::VertexArray> lineVao = nullptr;
+    std::vector<mono::gl::LineVertex> lineBuffer =
+        std::vector<mono::gl::LineVertex>(maxLineCount * 2);
+    std::vector<mono::gl::LineVertex>::iterator lineBufferIter{};
 
-    std::vector<Texture::Texture> textureSlots;  // slot = vec index, unit = tex ID
+    std::vector<std::shared_ptr<mono::Texture>> textureSlots;  // slot = vec index, unit = tex ID
     // TODO(vis4rd): if shaders can't stand almost 100 uniforms, yeet arrays below to an array of
     // structs...
     // TODO(vis4rd): ... and use this: https://www.khronos.org/opengl/wiki/Interface_Block_(GLSL)

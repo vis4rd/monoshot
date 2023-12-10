@@ -104,31 +104,29 @@ void App::initTextures() noexcept
 {
     using res = ResourceManager;
     res::largeTreeTexture =
-        Resource::create<Texture::impl::Texture>("../res/textures/large_tree.png", 128, 128);
+        Resource::create<mono::Texture>("../res/textures/large_tree.png", 128, 128);
     res::smallTreeTexture =
-        Resource::create<Texture::impl::Texture>("../res/textures/small_tree.png", 64, 64);
+        Resource::create<mono::Texture>("../res/textures/small_tree.png", 64, 64);
     res::outdoorBenchTexture =
-        Resource::create<Texture::impl::Texture>("../res/textures/outdoors_bench.png", 48, 16);
-    res::chairTexture =
-        Resource::create<Texture::impl::Texture>("../res/textures/chair.png", 16, 16);
-    res::tableTexture =
-        Resource::create<Texture::impl::Texture>("../res/textures/table.png", 32, 32);
+        Resource::create<mono::Texture>("../res/textures/outdoors_bench.png", 48, 16);
+    res::chairTexture = Resource::create<mono::Texture>("../res/textures/chair.png", 16, 16);
+    res::tableTexture = Resource::create<mono::Texture>("../res/textures/table.png", 32, 32);
     res::smallBushTexture =
-        Resource::create<Texture::impl::Texture>("../res/textures/small_bush.png", 48, 48);
+        Resource::create<mono::Texture>("../res/textures/small_bush.png", 48, 48);
     res::largeBushTexture =
-        Resource::create<Texture::impl::Texture>("../res/textures/large_bush.png", 56, 56);
-    res::carTexture = Resource::create<Texture::impl::Texture>("../res/textures/car.png", 32, 64);
+        Resource::create<mono::Texture>("../res/textures/large_bush.png", 56, 56);
+    res::carTexture = Resource::create<mono::Texture>("../res/textures/car.png", 32, 64);
     res::destroyedCarTexture =
-        Resource::create<Texture::impl::Texture>("../res/textures/destroyed_car.png", 32, 64);
+        Resource::create<mono::Texture>("../res/textures/destroyed_car.png", 32, 64);
 
     res::rifleInventoryTexture =
-        Resource::create<Texture::impl::Texture>("../res/textures/gun_inventory.png", 256, 128);
+        Resource::create<mono::Texture>("../res/textures/gun_inventory.png", 256, 128);
     res::pistolInventoryTexture =
-        Resource::create<Texture::impl::Texture>("../res/textures/pistol_inventory.png", 256, 128);
+        Resource::create<mono::Texture>("../res/textures/pistol_inventory.png", 256, 128);
 
-    res::enemyTexture = Resource::create<Texture::impl::Texture>(
+    res::enemyTexture = Resource::create<mono::Texture>(
         "../res/textures/entities/player.png",
-        TextureData{
+        mono::TextureData{
             .widthTotal = 192,
             .heightTotal = 16,
             .widthSub = 16,

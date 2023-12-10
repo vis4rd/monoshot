@@ -5,7 +5,7 @@
 #include "ElementBuffer.hpp"
 #include "VertexBuffer.hpp"
 
-namespace mono
+namespace mono::gl
 {
 
 class VertexArray
@@ -39,4 +39,4 @@ class VertexArray
     ElementBuffer m_elementBuffer{};
 };
 
-}  // namespace mono
+}  // namespace mono::gl

@@ -6,7 +6,7 @@
 
 #include "ShaderAttribute.hpp"
 
-namespace mono
+namespace mono::gl
 {
 
 class ShaderAttributeLayout
@@ -32,4 +32,4 @@ class ShaderAttributeLayout
 };
 
 
-}  // namespace mono
+}  // namespace mono::gl

@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 
-namespace mono
+namespace mono::gl
 {
 
 struct LineVertex
@@ -11,4 +11,4 @@ struct LineVertex
     glm::vec4 color;
 };
 
-}  // namespace mono
+}  // namespace mono::gl

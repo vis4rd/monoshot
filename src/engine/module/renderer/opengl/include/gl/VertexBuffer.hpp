@@ -6,7 +6,7 @@
 
 #include "ShaderAttributeLayout.hpp"
 
-namespace mono
+namespace mono::gl
 {
 
 class VertexBuffer
@@ -38,4 +38,4 @@ class VertexBuffer
     ShaderAttributeLayout m_layout{};
 };
 
-}  // namespace mono
+}  // namespace mono::gl

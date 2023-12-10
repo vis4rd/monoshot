@@ -3,7 +3,7 @@
 #include <glad/gl.h>
 #include <spdlog/spdlog.h>
 
-namespace mono
+namespace mono::gl
 {
 
 FrameBuffer::FrameBuffer(const std::int32_t& width, const std::int32_t& height)
@@ -158,4 +158,4 @@ void FrameBuffer::bindAttachments()
         m_stencilAttachment);
 }
 
-}  // namespace mono
+}  // namespace mono::gl

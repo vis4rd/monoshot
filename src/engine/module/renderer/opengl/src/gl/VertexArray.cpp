@@ -7,7 +7,7 @@
 
 #include "../../include/gl/ShaderDataType.hpp"
 
-namespace mono
+namespace mono::gl
 {
 
 static GLenum shaderDataTypeToOpenGLBaseType(const ShaderDataType& type)
@@ -253,4 +253,4 @@ VertexArray::operator std::uint32_t()
     return m_id;
 }
 
-}  // namespace mono
+}  // namespace mono::gl

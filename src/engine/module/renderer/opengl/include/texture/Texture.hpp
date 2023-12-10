@@ -6,10 +6,7 @@
 
 #include "TextureData.hpp"
 
-namespace Texture
-{
-
-namespace impl
+namespace mono
 {
 
 class Texture
@@ -75,8 +72,4 @@ class Texture
     std::byte* m_data = nullptr;
 };
 
-}  // namespace impl
-
-using Texture = std::shared_ptr<impl::Texture>;
-
-}  // namespace Texture
+}  // namespace mono

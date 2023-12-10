@@ -4,7 +4,7 @@
 
 #include "../../include/gl/ShaderDataType.hpp"
 
-namespace mono
+namespace mono::gl
 {
 
 inline static std::uint32_t sizeofShaderDataType(const ShaderDataType& type)
@@ -112,4 +112,4 @@ void ShaderAttribute::setUpdateFrequency(ShaderAttributeUpdateFrequency frequenc
     m_frequency = frequency;
 }
 
-}  // namespace mono
+}  // namespace mono::gl

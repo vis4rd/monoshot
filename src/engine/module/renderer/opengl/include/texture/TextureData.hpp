@@ -4,6 +4,9 @@
 
 #include "TextureParameter.hpp"
 
+namespace mono
+{
+
 struct TextureData
 {
     using TextureIdType = GLuint;
@@ -21,11 +24,14 @@ struct TextureData
     IntType numberOfSubsInOneRow = numberOfSubs;
     FormatType pixelDataFormat = GL_RGBA;
     FormatType dataType = GL_UNSIGNED_BYTE;
-    std::vector<std::pair<Texture::ParameterName, Texture::ParameterIntValue>> parameters = {
-        {Texture::Parameter::TEXTURE_MIN_FILTER, Texture::TextureMinFilter::NEAREST_MIPMAP_NEAREST},
-        {Texture::Parameter::TEXTURE_MAG_FILTER, Texture::TextureMagFilter::NEAREST               },
-        {Texture::Parameter::TEXTURE_WRAP_S,     Texture::TextureWrapS::CLAMP_TO_EDGE             },
-        {Texture::Parameter::TEXTURE_WRAP_T,     Texture::TextureWrapT::CLAMP_TO_EDGE             },
+    std::vector<std::pair<mono::TextureParameterName, mono::TextureParameterIntValue>> parameters =
+        {
+            {mono::Parameter::TEXTURE_MIN_FILTER, mono::TextureMinFilter::NEAREST_MIPMAP_NEAREST},
+            {mono::Parameter::TEXTURE_MAG_FILTER, mono::TextureMagFilter::NEAREST               },
+            {mono::Parameter::TEXTURE_WRAP_S,     mono::TextureWrapS::CLAMP_TO_EDGE             },
+            {mono::Parameter::TEXTURE_WRAP_T,     mono::TextureWrapT::CLAMP_TO_EDGE             },
     };
     IntType currentSub = 0;
 };
+
+}  // namespace mono

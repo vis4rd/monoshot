@@ -4,7 +4,7 @@
 
 #include <glm/glm.hpp>
 
-namespace mono
+namespace mono::gl
 {
 
 struct QuadInstanceData
@@ -25,4 +25,4 @@ static constexpr std::array<glm::vec2, 8> quadConstantVertexData = {
     glm::vec2{0.0f,  1.0f }, // tex left-bottom
 };
 
-}  // namespace mono
+}  // namespace mono::gl

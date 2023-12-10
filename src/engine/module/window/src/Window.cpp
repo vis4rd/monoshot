@@ -32,14 +32,16 @@ Window::Window(
         {-1.f, -1.f, 0.f, 0.f, 1.f, -1.f, 1.f, 0.f, 1.f, 1.f, 1.f, 1.f, -1.f, 1.f, 0.f, 1.f};
     constexpr std::array<std::uint32_t, 6> screenElementBuffer = {0, 1, 2, 2, 3, 0};
 
-    VertexBuffer screen_vb(screenVertexBuffer.data(), screenVertexBuffer.size() * sizeof(float));
-    ShaderAttributeLayout layout = {
-        {ShaderDataType::FLOAT2, "aPos"      },
-        {ShaderDataType::FLOAT2, "aTexCoords"},
+    mono::gl::VertexBuffer screen_vb(
+        screenVertexBuffer.data(),
+        screenVertexBuffer.size() * sizeof(float));
+    mono::gl::ShaderAttributeLayout layout = {
+        {mono::gl::ShaderDataType::FLOAT2, "aPos"      },
+        {mono::gl::ShaderDataType::FLOAT2, "aTexCoords"},
     };
     screen_vb.setLayout(layout);
 
-    ElementBuffer screen_eb(screenElementBuffer.data(), 6);
+    mono::gl::ElementBuffer screen_eb(screenElementBuffer.data(), 6);
     m_screenVa.addVertexBuffer(std::move(screen_vb));
     m_screenVa.addElementBuffer(screen_eb);
 
@@ -106,7 +108,7 @@ const ImGuiIO &Window::getImGuiIo() const
     return m_io;
 }
 
-FrameBuffer &Window::getFramebuffer()
+mono::gl::FrameBuffer &Window::getFramebuffer()
 {
     return m_screenFb;
 }
