@@ -111,7 +111,7 @@ void VertexArray::addVertexBuffer(VertexBuffer&& vertex_buffer)
     const auto& layout = vertex_buffer.getLayout();
     for(const auto& element : layout)
     {
-        auto& type = element.getShaderDataType();
+        auto type = element.getShaderDataType();
         switch(type)
         {
             case ShaderDataType::FLOAT1:
