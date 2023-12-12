@@ -4,10 +4,8 @@
 #include <format>
 
 #include <spdlog/fmt/bin_to_hex.h>
+#include <spdlog/spdlog.h>
 #include <stbi/stb_image.h>
-
-#include "config/StaticConfiguration.hpp"
-#include "log/Logging.hpp"
 
 namespace mono
 {
@@ -215,11 +213,6 @@ void Texture::nextSub()
     auto& index = m_textureData.currentSub;
     const auto& max = m_textureData.numberOfSubs;
     index = (index + 1) % max;
-    // TextureData::IntType index_x = index % m_textureData.numberOfSubsInOneRow;
-    // TextureData::IntType index_y = index / m_textureData.numberOfSubsInOneRow;
-    // glTextureSubImage2D(m_id, 0, index_x * m_textureData.widthSub, index_y *
-    // m_textureData.heightSub, m_textureData.widthSub, m_textureData.heightSub,
-    // m_textureData.pixelDataFormat, m_textureData.dataType, m_data);
 }
 
 void Texture::resetSub()
@@ -235,13 +228,9 @@ void Texture::uploadToGpu()
                                          // doesn't do that for some reason)
     for(const auto& [param, value] : m_textureData.parameters)
     {
-        // setParameter<param, value>(m_id);
         glTextureParameteri(m_id, param, value);
     }
 
-    // void glTextureStorage2D(id, mipmap_count, internal_texture_format, width_total,
-    // height_total); void glTextureSubImage2D(id, mipmap_level, x_offset, y_offset, subimage_width,
-    // subimage_height, pixel_data_format, data_type, data_ptr);
     glTextureStorage2D(
         m_id,
         m_textureData.mipmapLevel,
