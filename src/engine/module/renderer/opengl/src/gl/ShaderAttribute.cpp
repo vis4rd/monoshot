@@ -7,7 +7,7 @@
 namespace mono::gl
 {
 
-inline static std::uint32_t sizeofShaderDataType(const ShaderDataType& type)
+inline static std::uint32_t sizeofShaderDataType(ShaderDataType type)
 {
     switch(type)
     {
@@ -30,8 +30,14 @@ inline static std::uint32_t sizeofShaderDataType(const ShaderDataType& type)
     }
 }
 
+ShaderAttribute::ShaderAttribute(ShaderDataType type, const std::string& name)
+    : m_name(name)
+    , m_shaderType(type)
+    , m_size(sizeofShaderDataType(type))
+{ }
+
 ShaderAttribute::ShaderAttribute(
-    const ShaderDataType& type,
+    ShaderDataType type,
     const std::string& name,
     bool normalized,
     ShaderAttributeUpdateFrequency frequency,
@@ -44,12 +50,30 @@ ShaderAttribute::ShaderAttribute(
     , m_frequency(frequency)
 { }
 
+ShaderAttribute::ShaderAttribute(
+    ShaderDataType type,
+    const std::string& name,
+    ShaderAttributeUpdateFrequency frequency,
+    std::size_t offset,
+    bool normalized)
+    : ShaderAttribute(type, name, normalized, frequency, offset)
+{ }
+
+ShaderAttribute::ShaderAttribute(
+    ShaderDataType type,
+    const std::string& name,
+    std::size_t offset,
+    bool normalized,
+    ShaderAttributeUpdateFrequency frequency)
+    : ShaderAttribute(type, name, normalized, frequency, offset)
+{ }
+
 const std::string& ShaderAttribute::getName() const
 {
     return m_name;
 }
 
-const ShaderDataType& ShaderAttribute::getShaderDataType() const
+ShaderDataType ShaderAttribute::getShaderDataType() const
 {
     return m_shaderType;
 }

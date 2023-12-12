@@ -59,9 +59,9 @@ Renderer::Renderer()
     quad_constant_vbo.setLayout(quad_constant_layout);
 
     mono::gl::ShaderAttributeLayout quad_instance_layout = {
-        {dtype::FLOAT4, "aiColor",    false, upd_freq::EACH_INSTANCE},
-        {dtype::FLOAT1, "aiTexIndex", false, upd_freq::EACH_INSTANCE},
-        {dtype::MAT4,   "aiModel",    false, upd_freq::EACH_INSTANCE},
+        {dtype::FLOAT4, "aiColor",    upd_freq::EACH_INSTANCE},
+        {dtype::FLOAT1, "aiTexIndex", upd_freq::EACH_INSTANCE},
+        {dtype::MAT4,   "aiModel",    upd_freq::EACH_INSTANCE},
     };
     quad_instance_vbo.setLayout(quad_instance_layout);
 
