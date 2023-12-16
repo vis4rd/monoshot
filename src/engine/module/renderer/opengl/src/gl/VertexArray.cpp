@@ -5,33 +5,10 @@
 #include <glad/gl.h>
 #include <spdlog/spdlog.h>
 
-#include "../../include/gl/ShaderDataType.hpp"
+#include "../../include/gl/ShaderAttributeType.hpp"
 
 namespace mono::gl
 {
-
-static GLenum shaderDataTypeToOpenGLBaseType(const ShaderDataType& type)
-{
-    switch(type)
-    {
-        case ShaderDataType::FLOAT1: return GL_FLOAT;
-        case ShaderDataType::FLOAT2: return GL_FLOAT;
-        case ShaderDataType::FLOAT3: return GL_FLOAT;
-        case ShaderDataType::FLOAT4: return GL_FLOAT;
-        case ShaderDataType::MAT3: return GL_FLOAT;
-        case ShaderDataType::MAT4: return GL_FLOAT;
-        case ShaderDataType::INT1: return GL_INT;
-        case ShaderDataType::INT2: return GL_INT;
-        case ShaderDataType::INT3: return GL_INT;
-        case ShaderDataType::INT4: return GL_INT;
-        case ShaderDataType::BOOL1: return GL_BOOL;
-        default:
-        {
-            spdlog::error("Unknown ShaderDataType, returning 0");
-            return 0;
-        }
-    }
-}
 
 VertexArray::VertexArray()
 {
@@ -99,7 +76,7 @@ void VertexArray::addVertexBuffer(VertexBuffer&& vertex_buffer)
     std::uint32_t sum_size = 0;
     for(const auto& element : vertex_buffer.getLayout())
     {
-        sum_size += element.getSize();
+        sum_size += element.getBytesize();
     }
     glVertexArrayVertexBuffer(
         m_id,
@@ -109,109 +86,73 @@ void VertexArray::addVertexBuffer(VertexBuffer&& vertex_buffer)
         static_cast<std::int32_t>(sum_size));
 
     const auto& layout = vertex_buffer.getLayout();
-    for(const auto& element : layout)
+    for(const auto& attribute : layout)
     {
-        auto type = element.getShaderDataType();
-        switch(type)
+        //* set after attrib binding
+        // glBindVertexArray(m_id);
+        // glVertexAttribDivisor(
+        //     m_attributeBindingCount,
+        //     static_cast<GLuint>(element.getUpdateFrequency()));
+        // glBindVertexArray(0);
+        //*
+        // new here
+        auto type = attribute.getType();
+        const auto count = attribute.getComponentCount();
+        for(std::uint32_t i = 0; i < count; i++)
         {
-            case ShaderDataType::FLOAT1:
-            case ShaderDataType::FLOAT2:
-            case ShaderDataType::FLOAT3:
-            case ShaderDataType::FLOAT4:
+            switch(type.glType)
             {
-                spdlog::debug("VertexArray: VertexBuffer element's type is a float");
-                glVertexArrayAttribFormat(
-                    m_id,
-                    m_attributeBindingCount,
-                    static_cast<std::int32_t>(element.getComponentCount()),
-                    shaderDataTypeToOpenGLBaseType(element.getShaderDataType()),
-                    element.isNormalized(),
-                    element.getOffset());
-                glVertexArrayAttribBinding(m_id, m_attributeBindingCount, m_vertexBuffers.size());
-                // glBindVertexArray(m_id);
-                // glVertexAttribDivisor(
-                //     m_attributeBindingCount,
-                //     static_cast<GLuint>(element.getUpdateFrequency()));
-                // glBindVertexArray(0);
-                //! glVertexArrayBindingDivisor sets step size for whole vbo binding, not the single
-                //! attribute
-                glVertexArrayBindingDivisor(
-                    m_id,
-                    m_vertexBuffers.size(),
-                    static_cast<GLuint>(element.getUpdateFrequency()));
-                glEnableVertexArrayAttrib(m_id, m_attributeBindingCount);
-                m_attributeBindingCount++;
-                break;
-            }
-            case ShaderDataType::INT1:
-            case ShaderDataType::INT2:
-            case ShaderDataType::INT3:
-            case ShaderDataType::INT4:
-            case ShaderDataType::BOOL1:
-            {
-                spdlog::debug("VertexArray: VertexBuffer element's type is an integer");
-                glVertexArrayAttribIFormat(
-                    m_id,
-                    m_attributeBindingCount,
-                    static_cast<std::int32_t>(element.getComponentCount()),
-                    shaderDataTypeToOpenGLBaseType(element.getShaderDataType()),
-                    element.getOffset());
-                glVertexArrayAttribBinding(m_id, m_attributeBindingCount, m_vertexBuffers.size());
-                glBindVertexArray(m_id);
-                // glVertexAttribDivisor(
-                //     m_attributeBindingCount,
-                //     static_cast<GLuint>(element.getUpdateFrequency()));
-                // glBindVertexArray(0);
-                //! glVertexArrayBindingDivisor sets step size for whole vbo binding, not the single
-                //! attribute
-                glVertexArrayBindingDivisor(
-                    m_id,
-                    m_vertexBuffers.size(),
-                    static_cast<GLuint>(element.getUpdateFrequency()));
-                glEnableVertexArrayAttrib(m_id, m_attributeBindingCount);
-                m_attributeBindingCount++;
-                break;
-            }
-            case ShaderDataType::MAT3:
-            case ShaderDataType::MAT4:
-            {
-                spdlog::debug("VertexArray: VertexBuffer element's type is a matrix");
-                const std::uint8_t count = element.getComponentCount();
-                for(std::uint8_t i = 0; i < count; i++)
+                case GL_BOOL:
+                case GL_INT:
+                case GL_INT_2_10_10_10_REV:
+                case GL_UNSIGNED_INT:
+                case GL_UNSIGNED_INT_2_10_10_10_REV:
+                {
+                    glVertexArrayAttribIFormat(
+                        m_id,
+                        m_attributeBindingCount,
+                        type.valuesPerVertex,
+                        type.glType,
+                        attribute.getOffset() + type.sizeofNativeType * count * i);
+                    break;
+                }
+                case GL_DOUBLE:
+                {
+                    glVertexArrayAttribLFormat(
+                        m_id,
+                        m_attributeBindingCount,
+                        type.valuesPerVertex,
+                        type.glType,
+                        attribute.getOffset() + type.sizeofNativeType * count * i);
+                    break;
+                }
+                case GL_BYTE:
+                case GL_FIXED:
+                case GL_FLOAT:
+                case GL_HALF_FLOAT:
+                case GL_SHORT:
+                case GL_UNSIGNED_BYTE:
+                case GL_UNSIGNED_INT_10F_11F_11F_REV:
+                case GL_UNSIGNED_SHORT:
+                default:
                 {
                     glVertexArrayAttribFormat(
                         m_id,
                         m_attributeBindingCount,
-                        static_cast<GLint>(element.getComponentCount()),
-                        shaderDataTypeToOpenGLBaseType(element.getShaderDataType()),
-                        element.isNormalized(),
-                        (element.getOffset() + sizeof(float) * count * i));
-
-                    glVertexArrayAttribBinding(
-                        m_id,
-                        m_attributeBindingCount,
-                        m_vertexBuffers.size());
-                    // glBindVertexArray(m_id);
-                    // glVertexAttribDivisor(
-                    //     m_attributeBindingCount,
-                    //     static_cast<GLuint>(element.getUpdateFrequency()));
-                    // glBindVertexArray(0);
-                    //! glVertexArrayBindingDivisor sets step size for whole vbo binding, not the
-                    //! single attribute
-                    glVertexArrayBindingDivisor(
-                        m_id,
-                        m_vertexBuffers.size(),
-                        static_cast<GLuint>(element.getUpdateFrequency()));
-                    glEnableVertexArrayAttrib(m_id, m_attributeBindingCount);
-                    m_attributeBindingCount++;
+                        type.valuesPerVertex,
+                        type.glType,
+                        attribute.isNormalized(),
+                        attribute.getOffset() + type.sizeofNativeType * count * i);
+                    break;
                 }
-                break;
             }
-            default:
-            {
-                spdlog::error("Unknown ShaderDataType");
-                break;
-            }
+            glVertexArrayAttribBinding(m_id, m_attributeBindingCount, m_vertexBuffers.size());
+            glVertexArrayBindingDivisor(
+                m_id,
+                m_vertexBuffers.size(),
+                static_cast<GLuint>(attribute.getUpdateFrequency()));
+            glEnableVertexArrayAttrib(m_id, m_attributeBindingCount);
+            m_attributeBindingCount++;
         }
     }
     m_vertexBuffers.push_back(std::move(vertex_buffer));

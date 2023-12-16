@@ -6,33 +6,6 @@ namespace mono::gl
 ShaderAttributeLayout::ShaderAttributeLayout(std::initializer_list<ShaderAttribute> attributes)
     : m_attributes(attributes)
 {
-    // for(std::int32_t i = 0; i < m_attributes.size(); i++)
-    // {
-    //     const auto& element = m_attributes.at(i);
-    //     ShaderDataType target_data_type{};
-    //     std::int32_t target_attribute_count{};
-    //     if(element.getShaderDataType() == ShaderDataType::MAT3)
-    //     {
-    //         target_data_type = ShaderDataType::FLOAT3;
-    //         target_attribute_count = 3;
-    //     }
-    //     else if(element.getShaderDataType() == ShaderDataType::MAT4)
-    //     {
-    //         target_data_type = ShaderDataType::FLOAT4;
-    //         target_attribute_count = 4;
-    //     }
-    //     for(std::int32_t j = 0; j < target_attribute_count; j++)
-    //     {
-    //         m_attributes.emplace(
-    //             m_attributes.begin() + i + j + 1,
-    //             target_data_type,
-    //             element.getName(),
-    //             false,
-    //             element.getUpdateFrequency(),
-    //             element.getOffset() + sizeof(float) * target_attribute_count * j);
-    //     }
-    //     m_attributes.erase(m_attributes.begin() + i);
-    // }
     this->calculateOffsetAndStride();
 }
 
@@ -72,8 +45,8 @@ void ShaderAttributeLayout::calculateOffsetAndStride()
     for(auto& attribute : m_attributes)
     {
         attribute.setOffset(offset);
-        offset += attribute.getSize();
-        m_stride += attribute.getSize();
+        offset += attribute.getBytesize();
+        m_stride += attribute.getBytesize();
     }
 }
 
