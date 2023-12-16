@@ -228,7 +228,7 @@ void Texture::uploadToGpu()
                                          // doesn't do that for some reason)
     for(const auto& [param, value] : m_textureData.parameters)
     {
-        glTextureParameteri(m_id, param, value);
+        glTextureParameteri(m_id, static_cast<GLenum>(param), static_cast<GLint>(value));
     }
 
     glTextureStorage2D(

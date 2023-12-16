@@ -1,8 +1,9 @@
 #pragma once
 
+#include <tuple>
 #include <vector>
 
-#include "TextureParameter.hpp"
+#include <glad/gl.h>
 
 namespace mono
 {
@@ -24,12 +25,11 @@ struct TextureData
     IntType numberOfSubsInOneRow = numberOfSubs;
     FormatType pixelDataFormat = GL_RGBA;
     FormatType dataType = GL_UNSIGNED_BYTE;
-    std::vector<std::pair<mono::TextureParameterName, mono::TextureParameterIntValue>> parameters =
-        {
-            {mono::Parameter::TEXTURE_MIN_FILTER, mono::TextureMinFilter::NEAREST_MIPMAP_NEAREST},
-            {mono::Parameter::TEXTURE_MAG_FILTER, mono::TextureMagFilter::NEAREST               },
-            {mono::Parameter::TEXTURE_WRAP_S,     mono::TextureWrapS::CLAMP_TO_EDGE             },
-            {mono::Parameter::TEXTURE_WRAP_T,     mono::TextureWrapT::CLAMP_TO_EDGE             },
+    std::vector<std::pair<GLenum, GLint>> parameters = {
+        {GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST},
+        {GL_TEXTURE_MAG_FILTER, GL_NEAREST               },
+        {GL_TEXTURE_WRAP_S,     GL_CLAMP_TO_EDGE         },
+        {GL_TEXTURE_WRAP_T,     GL_CLAMP_TO_EDGE         },
     };
     IntType currentSub = 0;
 };
