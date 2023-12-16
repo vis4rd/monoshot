@@ -36,8 +36,8 @@ Window::Window(
         screenVertexBuffer.data(),
         screenVertexBuffer.size() * sizeof(float));
     mono::gl::ShaderAttributeLayout layout = {
-        {mono::gl::ShaderDataType::FLOAT2, "aPos"      },
-        {mono::gl::ShaderDataType::FLOAT2, "aTexCoords"},
+        {mono::gl::ShaderAttributeType::FLOAT(2), "aPos"      },
+        {mono::gl::ShaderAttributeType::FLOAT(2), "aTexCoords"},
     };
     screen_vb.setLayout(layout);
 

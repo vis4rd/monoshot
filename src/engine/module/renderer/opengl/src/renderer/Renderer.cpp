@@ -4,6 +4,7 @@
 #include <glm/gtx/string_cast.hpp>
 #include <spdlog/spdlog.h>
 
+#include "../../include/gl/ShaderAttributeType.hpp"
 #include "../../include/shader/ShaderManager.hpp"
 #include "resource/Resource.hpp"
 
@@ -49,19 +50,19 @@ Renderer::Renderer()
     auto quad_ebo = mono::gl::ElementBuffer(quad_elements, m_data.maxElementsCount);
 
     // attributes
-    using dtype = mono::gl::ShaderDataType;
+    namespace dtype = mono::gl::ShaderAttributeType;
     using upd_freq = mono::gl::ShaderAttributeUpdateFrequency;
 
     mono::gl::ShaderAttributeLayout quad_constant_layout = {
-        {dtype::FLOAT2, "acPos"},
-        {dtype::FLOAT2, "acUv" }
+        {dtype::FLOAT(2), "acPos"},
+        {dtype::FLOAT(2), "acUv" }
     };
     quad_constant_vbo.setLayout(quad_constant_layout);
 
     mono::gl::ShaderAttributeLayout quad_instance_layout = {
-        {dtype::FLOAT4, "aiColor",    upd_freq::EACH_INSTANCE},
-        {dtype::FLOAT1, "aiTexIndex", upd_freq::EACH_INSTANCE},
-        {dtype::MAT4,   "aiModel",    upd_freq::EACH_INSTANCE},
+        {dtype::FLOAT(4), "aiColor",    upd_freq::EACH_INSTANCE},
+        {dtype::FLOAT(1), "aiTexIndex", upd_freq::EACH_INSTANCE},
+        {dtype::MAT4,     "aiModel",    upd_freq::EACH_INSTANCE},
     };
     quad_instance_vbo.setLayout(quad_instance_layout);
 
@@ -82,8 +83,8 @@ Renderer::Renderer()
 
     // attributes
     mono::gl::ShaderAttributeLayout line_layout = {
-        {dtype::FLOAT3, "aPos"  },
-        {dtype::FLOAT4, "aColor"},
+        {dtype::FLOAT(3), "aPos"  },
+        {dtype::FLOAT(4), "aColor"},
     };
     line_vbo.setLayout(line_layout);
 
