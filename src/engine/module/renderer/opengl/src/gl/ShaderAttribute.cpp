@@ -14,31 +14,19 @@ ShaderAttribute::ShaderAttribute(
     const ShaderAttributeTypeInfo& type,
     const std::string& name,
     bool normalized,
-    ShaderAttributeUpdateFrequency frequency,
     std::size_t offset)
     : m_name(name)
     , m_shaderType(type)
     , m_offset(offset)
     , m_normalized(normalized)
-    , m_frequency(frequency)
 { }
 
 ShaderAttribute::ShaderAttribute(
     const ShaderAttributeTypeInfo& type,
     const std::string& name,
-    ShaderAttributeUpdateFrequency frequency,
     std::size_t offset,
     bool normalized)
-    : ShaderAttribute(type, name, normalized, frequency, offset)
-{ }
-
-ShaderAttribute::ShaderAttribute(
-    const ShaderAttributeTypeInfo& type,
-    const std::string& name,
-    std::size_t offset,
-    bool normalized,
-    ShaderAttributeUpdateFrequency frequency)
-    : ShaderAttribute(type, name, normalized, frequency, offset)
+    : ShaderAttribute(type, name, normalized, offset)
 { }
 
 const std::string& ShaderAttribute::getName() const
@@ -71,19 +59,9 @@ std::uint32_t ShaderAttribute::getComponentCount() const
     return m_shaderType.componentCount;
 }
 
-ShaderAttributeUpdateFrequency ShaderAttribute::getUpdateFrequency() const
-{
-    return m_frequency;
-}
-
 void ShaderAttribute::setOffset(const std::size_t& offset)
 {
     m_offset = offset;
-}
-
-void ShaderAttribute::setUpdateFrequency(ShaderAttributeUpdateFrequency frequency)
-{
-    m_frequency = frequency;
 }
 
 }  // namespace mono::gl

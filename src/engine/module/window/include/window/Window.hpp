@@ -10,6 +10,7 @@
 #include "gl/FrameBuffer.hpp"
 #include "gl/VertexArray.hpp"
 #include "input/InputManager.hpp"
+#include "renderer/Renderer.hpp"
 #include "section/SectionManager.hpp"
 #include "shader/ShaderManager.hpp"
 #include "traits/Renderable.hpp"
@@ -230,6 +231,8 @@ void Window::render(RenderableTrait auto &&...renderables) noexcept
     m_screenVa.bind();
     glBindTexture(GL_TEXTURE_2D, m_screenFb.getColorID());
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+
+    Renderer::get().getStats().drawCount = 0;
 
     // Replace previous frame with the current one
     glfwSwapBuffers(m_window);
