@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "ElementBuffer.hpp"
+#include "ShaderAttributeUpdateFrequency.hpp"
 #include "VertexBuffer.hpp"
 
 namespace mono::gl
@@ -22,7 +23,9 @@ class VertexArray
     void bind() const;
     void unbind() const;
 
-    void addVertexBuffer(VertexBuffer&& vertex_buffer);
+    void addVertexBuffer(
+        VertexBuffer&& vertex_buffer,
+        ShaderAttributeUpdateFrequency frequency = ShaderAttributeUpdateFrequency::EACH_VERTEX);
     void addElementBuffer(const ElementBuffer& element_buffer);
 
     std::vector<VertexBuffer>& getVertexBuffers();

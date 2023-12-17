@@ -5,8 +5,6 @@
 #include <glad/gl.h>
 #include <spdlog/spdlog.h>
 
-#include "../../include/gl/ShaderAttributeType.hpp"
-
 namespace mono::gl
 {
 
@@ -61,7 +59,9 @@ void VertexArray::unbind() const
     glBindVertexArray(0);
 }
 
-void VertexArray::addVertexBuffer(VertexBuffer&& vertex_buffer)
+void VertexArray::addVertexBuffer(
+    VertexBuffer&& vertex_buffer,
+    ShaderAttributeUpdateFrequency frequency)
 {
     spdlog::debug(
         "Adding a VertexBuffer with ID = {} to VertexArray with ID = {}",
@@ -85,17 +85,18 @@ void VertexArray::addVertexBuffer(VertexBuffer&& vertex_buffer)
         /*offset*/ 0,
         static_cast<std::int32_t>(sum_size));
 
+    if(frequency != ShaderAttributeUpdateFrequency::EACH_VERTEX)
+    {
+        spdlog::debug(
+            "Setting divisor to {} in VertexArray with ID = {} for VertexBuffer with ID = {}",
+            static_cast<std::int32_t>(frequency),
+            m_id,
+            vertex_buffer.getID());
+        glVertexArrayBindingDivisor(m_id, m_vertexBuffers.size(), static_cast<GLuint>(frequency));
+    }
     const auto& layout = vertex_buffer.getLayout();
     for(const auto& attribute : layout)
     {
-        //* set after attrib binding
-        // glBindVertexArray(m_id);
-        // glVertexAttribDivisor(
-        //     m_attributeBindingCount,
-        //     static_cast<GLuint>(element.getUpdateFrequency()));
-        // glBindVertexArray(0);
-        //*
-        // new here
         auto type = attribute.getType();
         const auto count = attribute.getComponentCount();
         for(std::uint32_t i = 0; i < count; i++)
@@ -147,10 +148,6 @@ void VertexArray::addVertexBuffer(VertexBuffer&& vertex_buffer)
                 }
             }
             glVertexArrayAttribBinding(m_id, m_attributeBindingCount, m_vertexBuffers.size());
-            glVertexArrayBindingDivisor(
-                m_id,
-                m_vertexBuffers.size(),
-                static_cast<GLuint>(attribute.getUpdateFrequency()));
             glEnableVertexArrayAttrib(m_id, m_attributeBindingCount);
             m_attributeBindingCount++;
         }
