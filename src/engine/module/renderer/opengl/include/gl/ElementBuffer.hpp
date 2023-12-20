@@ -2,6 +2,11 @@
 
 #include <cstdint>
 
+#include <glad/gl.h>
+#include <spdlog/spdlog.h>
+
+#include "traits/ContiguousContainer.hpp"
+
 namespace mono::gl
 {
 
@@ -9,7 +14,8 @@ class ElementBuffer
 {
     public:
     ElementBuffer() = default;
-    ElementBuffer(const std::uint32_t* indices, std::uint32_t count);
+    [[deprecated]] ElementBuffer(const std::uint32_t* elements, std::uint32_t count);
+    explicit constexpr ElementBuffer(const ContiguousContainerTrait<std::uint32_t> auto& elements);
     ElementBuffer(const ElementBuffer&) = default;
     ElementBuffer(ElementBuffer&&) = default;
     ~ElementBuffer();
@@ -20,19 +26,29 @@ class ElementBuffer
     void bind() const;
     void unbind() const;
 
-    const std::uint32_t& getID() const;
+    const GLuint& getID() const;
     std::uint32_t getElementCount() const;
 
-    void setData(std::uint32_t* indices, std::uint32_t count);
-    bool isInitialized() const;
-
     // NOLINTNEXTLINE(google-explicit-constructor)
-    operator std::uint32_t() const;
+    operator GLuint() const;
 
     private:
-    std::uint32_t m_id{};
+    GLuint m_id{};
     std::uint32_t m_count{};
-    bool m_isInit = false;
 };
+
+constexpr ElementBuffer::ElementBuffer(const ContiguousContainerTrait<std::uint32_t> auto& elements)
+    : m_count(elements.size())
+{
+    using value_type = std::remove_cvref_t<decltype(elements)>::value_type;
+
+    glCreateBuffers(1, &m_id);
+    glNamedBufferData(
+        m_id,
+        static_cast<GLsizeiptr>(m_count * sizeof(value_type)),
+        elements.data(),
+        GL_STATIC_DRAW);
+    spdlog::debug("Created ElementBuffer instance with ID = {} and count = {}", m_id, m_count);
+}
 
 }  // namespace mono::gl

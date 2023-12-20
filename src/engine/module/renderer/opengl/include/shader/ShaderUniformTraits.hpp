@@ -7,24 +7,12 @@
 #include <glm/ext/matrix_float3x3.hpp>
 #include <glm/ext/matrix_float4x4.hpp>
 
+#include "traits/ContiguousContainer.hpp"
+
 namespace mono::gl
 {
 
-template<typename T, typename E>
-concept ContiguousContainerTrait = requires(T t) {
-    {
-        t.begin()
-    } -> std::contiguous_iterator;
-    {
-        t[0]
-    } -> std::same_as<E&>;
-    {
-        t.size()
-    } -> std::integral;
-    {
-        t.data()
-    } -> std::same_as<E*>;
-};
+// TODO(vis4rd): move these traits to traits module
 
 template<typename T, typename E>
 concept TwoElementVariableTrait = requires(T t) {
