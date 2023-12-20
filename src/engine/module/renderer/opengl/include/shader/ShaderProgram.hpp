@@ -71,11 +71,11 @@ void ShaderProgram::uploadUniform(
     }
     else if constexpr(ThreeElementVariableTrait<T, std::int32_t>)
     {
-        glUniform3i(m_varLocations[var_name], var.x, var.y);
+        glUniform3i(m_varLocations[var_name], var.x, var.y, var.z);
     }
     else if constexpr(FourElementVariableTrait<T, std::int32_t>)
     {
-        glUniform4i(m_varLocations[var_name], var.x, var.y);
+        glUniform4i(m_varLocations[var_name], var.x, var.y, var.z, var.w);
     }
     else if constexpr(std::is_same_v<T, float>)
     {
