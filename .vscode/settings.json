@@ -27,8 +27,6 @@
     "git.ignoreSubmodules": true,
     "git.suggestSmartCommit": false,
     //
-    "terminal.integrated.defaultProfile.windows": "Git Bash",
-    //
     "[cpp]": {
         "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd",
         "editor.formatOnSave": true,
