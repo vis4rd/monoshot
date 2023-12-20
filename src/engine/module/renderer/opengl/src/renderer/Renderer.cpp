@@ -23,9 +23,7 @@ Renderer::Renderer()
 
     //// Quads
     // data
-    // TODO(vis4rd): use std::vector instead of c-style array
-    // NOLINTNEXTLINE(modernize-avoid-c-arrays,cppcoreguidelines-avoid-c-arrays)
-    std::uint32_t quad_elements[m_data.maxElementsCount];
+    std::vector<std::uint32_t> quad_elements(m_data.maxElementsCount);
     std::uint32_t offset = 0;
     for(std::size_t i = 0; i < m_data.maxElementsCount; i += 6)
     {
@@ -47,7 +45,7 @@ Renderer::Renderer()
         sizeof(mono::gl::quadConstantVertexData));
     auto quad_instance_vbo =
         mono::gl::VertexBuffer(m_data.maxQuadCount * sizeof(mono::gl::QuadInstanceData));
-    auto quad_ebo = mono::gl::ElementBuffer(quad_elements, m_data.maxElementsCount);
+    auto quad_ebo = mono::gl::ElementBuffer(quad_elements);
 
     // attributes
     namespace dtype = mono::gl::ShaderAttributeType;

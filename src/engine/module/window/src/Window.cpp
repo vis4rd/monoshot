@@ -28,20 +28,20 @@ Window::Window(
     // NOLINTNEXTLINE(cppcoreguidelines-prefer-member-initializer)
     m_isMaximized = static_cast<bool>(glfwGetWindowAttrib(m_window, GLFW_MAXIMIZED));
 
-    constexpr std::array<float, 16> screenVertexBuffer =
+    constexpr std::array<float, 16> screen_vertex_buffer =
         {-1.f, -1.f, 0.f, 0.f, 1.f, -1.f, 1.f, 0.f, 1.f, 1.f, 1.f, 1.f, -1.f, 1.f, 0.f, 1.f};
-    constexpr std::array<std::uint32_t, 6> screenElementBuffer = {0, 1, 2, 2, 3, 0};
+    constexpr std::array<std::uint32_t, 6> screen_element_buffer = {0, 1, 2, 2, 3, 0};
 
     mono::gl::VertexBuffer screen_vb(
-        screenVertexBuffer.data(),
-        screenVertexBuffer.size() * sizeof(float));
+        screen_vertex_buffer.data(),
+        screen_vertex_buffer.size() * sizeof(float));
     mono::gl::ShaderAttributeLayout layout = {
         {mono::gl::ShaderAttributeType::FLOAT(2), "aPos"      },
         {mono::gl::ShaderAttributeType::FLOAT(2), "aTexCoords"},
     };
     screen_vb.setLayout(layout);
 
-    mono::gl::ElementBuffer screen_eb(screenElementBuffer.data(), 6);
+    mono::gl::ElementBuffer screen_eb(screen_element_buffer);
     m_screenVa.addVertexBuffer(std::move(screen_vb));
     m_screenVa.addElementBuffer(screen_eb);
 

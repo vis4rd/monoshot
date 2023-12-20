@@ -23,18 +23,17 @@ VertexArray::VertexArray(VertexArray&& move) noexcept
 
 VertexArray::~VertexArray()
 {
-    spdlog::debug("Deleting VertexArray instance with ID = {}", m_id);
     for(const auto& vb : m_vertexBuffers)
     {
         spdlog::debug("Deleting VertexBuffer object with ID = {}", vb.getID());
         glDeleteBuffers(1, &vb.getID());
     }
     m_vertexBuffers.clear();
-    if(m_elementBuffer.isInitialized())
-    {
-        spdlog::debug("Deleting ElementBuffer object with ID = {}", m_elementBuffer.getID());
-        glDeleteBuffers(1, &m_elementBuffer.getID());
-    }
+
+    spdlog::debug("Deleting ElementBuffer object with ID = {}", m_elementBuffer.getID());
+    glDeleteBuffers(1, &m_elementBuffer.getID());
+
+    spdlog::debug("Deleting VertexArray instance with ID = {}", m_id);
     glDeleteVertexArrays(1, &m_id);
     this->unbind();
 }
@@ -161,11 +160,6 @@ void VertexArray::addElementBuffer(const ElementBuffer& element_buffer)
         "Adding ElementBuffer with ID = {} to VertexArray with ID = {}",
         element_buffer.getID(),
         m_id);
-    if(!element_buffer.isInitialized())
-    {
-        spdlog::error(
-            "Given ElementBuffer is not initialized! Pass data to it on construction or through setData() method");
-    }
     glVertexArrayElementBuffer(m_id, element_buffer);
 
     m_elementBuffer = element_buffer;
