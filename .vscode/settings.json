@@ -10,7 +10,9 @@
     "cmake.configureOnEdit": false,
     "cmake.configureOnOpen": false,
     "cmake.languageSupport.enableFileAPI": true,
-    "cmake.statusbar.visibility": "compact",
+    //
+    "doxdocgen.generic.briefTemplate": "@brief {text}.",
+    "doxdocgen.generic.paramTemplate": "@param {param} ",
     //
     "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
     "editor.codeActionsOnSave": {
