@@ -32,9 +32,7 @@ Window::Window(
         {-1.f, -1.f, 0.f, 0.f, 1.f, -1.f, 1.f, 0.f, 1.f, 1.f, 1.f, 1.f, -1.f, 1.f, 0.f, 1.f};
     constexpr std::array<std::uint32_t, 6> screen_element_buffer = {0, 1, 2, 2, 3, 0};
 
-    mono::gl::VertexBuffer screen_vb(
-        screen_vertex_buffer.data(),
-        screen_vertex_buffer.size() * sizeof(float));
+    mono::gl::VertexBuffer screen_vb(screen_vertex_buffer);
     mono::gl::ShaderAttributeLayout layout = {
         {mono::gl::ShaderAttributeType::FLOAT(2), "aPos"      },
         {mono::gl::ShaderAttributeType::FLOAT(2), "aTexCoords"},
