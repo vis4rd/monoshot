@@ -40,11 +40,9 @@ Renderer::Renderer()
 
     // buffers
     m_data.quadVao = std::make_shared<mono::gl::VertexArray>();
-    auto quad_constant_vbo = mono::gl::VertexBuffer(
-        reinterpret_cast<const float*>(mono::gl::quadConstantVertexData.data()),
-        sizeof(mono::gl::quadConstantVertexData));
-    auto quad_instance_vbo =
-        mono::gl::VertexBuffer(m_data.maxQuadCount * sizeof(mono::gl::QuadInstanceData));
+    auto quad_constant_vbo = mono::gl::VertexBuffer(mono::gl::quadConstantVertexData);
+    auto quad_instance_vbo = mono::gl::VertexBuffer(
+        static_cast<GLsizeiptr>(m_data.maxQuadCount * sizeof(mono::gl::QuadInstanceData)));
     auto quad_ebo = mono::gl::ElementBuffer(quad_elements);
 
     // attributes
@@ -78,7 +76,8 @@ Renderer::Renderer()
     //// Lines
     // buffers
     m_data.lineVao = std::make_shared<mono::gl::VertexArray>();
-    auto line_vbo = mono::gl::VertexBuffer(m_data.maxVertexCount * sizeof(mono::gl::LineVertex));
+    auto line_vbo = mono::gl::VertexBuffer(
+        static_cast<GLsizeiptr>(m_data.maxVertexCount * sizeof(mono::gl::LineVertex)));
 
     // attributes
     mono::gl::ShaderAttributeLayout line_layout = {
@@ -146,14 +145,7 @@ void Renderer::endBatch(const glm::mat4& projection, const glm::mat4& view)
     // quads
     if(m_stats.indexCount > 0)  // TODO(vis4rd): possibly can be removed in favor of just quadCount
     {
-        // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
-        const GLsizeiptr instance_size = static_cast<std::uint32_t>(
-            m_data.quadInstanceBuffer.size() * sizeof(mono::gl::QuadInstanceData));
-
-        m_data.quadVao->getVertexBuffers().at(1).setData(
-            reinterpret_cast<const void*>(m_data.quadInstanceBuffer.data()),
-            instance_size);
-        // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
+        m_data.quadVao->getVertexBuffers().at(1).setData(m_data.quadInstanceBuffer);
 
         for(std::size_t slot = 0; slot < m_data.textureSlots.size(); slot++)
         {
