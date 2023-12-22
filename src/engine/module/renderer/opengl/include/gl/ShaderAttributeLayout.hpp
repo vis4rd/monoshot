@@ -9,12 +9,20 @@
 namespace mono::gl
 {
 
+/**
+ * @brief Representation of group of attributes which are specified for VBO bound to VAO.
+ * ShaderAttributes can be simply passed as initializer list when creating a layout.
+ */
 class ShaderAttributeLayout
 {
     public:
     ShaderAttributeLayout() = default;
     ShaderAttributeLayout(std::initializer_list<ShaderAttribute> attributes);
 
+    /**
+     * @brief Get the stride of this layout. It specifies how many bytes are specified for each
+     *        vertex.
+     */
     std::uint32_t getStride() const;
     std::vector<ShaderAttribute>& getAttributes();
 
