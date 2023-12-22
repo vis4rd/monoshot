@@ -12,6 +12,13 @@
     "cmake.languageSupport.enableFileAPI": true,
     //
     "doxdocgen.generic.briefTemplate": "@brief {text}.",
+    "doxdocgen.generic.order": [
+        "brief",
+        "tparam",
+        "param",
+        "return",
+        "custom"
+    ],
     "doxdocgen.generic.paramTemplate": "@param {param} ",
     //
     "editor.bracketPairColorization.independentColorPoolPerBracketType": true,

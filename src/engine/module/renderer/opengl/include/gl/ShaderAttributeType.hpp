@@ -5,6 +5,12 @@
 namespace mono::gl
 {
 
+/**
+ * @brief Builder pattern class used to create templates for ShaderAttributes.
+ * @tparam NATIVE_TYPE Native type of the values in the buffer for given attribute.
+ * @tparam COMPONENT_COUNT Number of attributes this attribute should be split into.
+ * @tparam OPENGL_TYPE Enum value of the OpenGL type of the attribute.
+ */
 template<typename NATIVE_TYPE, std::size_t COMPONENT_COUNT, std::size_t OPENGL_TYPE>
 class ShaderAttributeTypeBuilder
 {
