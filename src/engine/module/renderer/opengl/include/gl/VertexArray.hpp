@@ -23,10 +23,10 @@ class VertexArray
     void bind() const;
     void unbind() const;
 
-    void addVertexBuffer(
+    void bindVertexBuffer(
         VertexBuffer&& vertex_buffer,
         ShaderAttributeUpdateFrequency frequency = ShaderAttributeUpdateFrequency::EACH_VERTEX);
-    void addElementBuffer(const ElementBuffer& element_buffer);
+    void bindElementBuffer(const ElementBuffer& element_buffer);
 
     std::vector<VertexBuffer>& getVertexBuffers();
     const std::vector<VertexBuffer>& getVertexBuffers() const;

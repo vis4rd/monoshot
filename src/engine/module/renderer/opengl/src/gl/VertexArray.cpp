@@ -58,7 +58,7 @@ void VertexArray::unbind() const
     glBindVertexArray(0);
 }
 
-void VertexArray::addVertexBuffer(
+void VertexArray::bindVertexBuffer(
     VertexBuffer&& vertex_buffer,
     ShaderAttributeUpdateFrequency frequency)
 {
@@ -154,7 +154,7 @@ void VertexArray::addVertexBuffer(
     m_vertexBuffers.push_back(std::move(vertex_buffer));
 }
 
-void VertexArray::addElementBuffer(const ElementBuffer& element_buffer)
+void VertexArray::bindElementBuffer(const ElementBuffer& element_buffer)
 {
     spdlog::debug(
         "Adding ElementBuffer with ID = {} to VertexArray with ID = {}",

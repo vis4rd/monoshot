@@ -61,11 +61,11 @@ Renderer::Renderer()
     };
     quad_instance_vbo.setLayout(quad_instance_layout);
 
-    m_data.quadVao->addVertexBuffer(std::move(quad_constant_vbo));
-    m_data.quadVao->addVertexBuffer(
+    m_data.quadVao->bindVertexBuffer(std::move(quad_constant_vbo));
+    m_data.quadVao->bindVertexBuffer(
         std::move(quad_instance_vbo),
         mono::gl::ShaderAttributeUpdateFrequency::EACH_INSTANCE);
-    m_data.quadVao->addElementBuffer(quad_ebo);
+    m_data.quadVao->bindElementBuffer(quad_ebo);
 
     // shaders
     mono::gl::ShaderManager::get().addShaderProgram(
@@ -86,7 +86,7 @@ Renderer::Renderer()
     };
     line_vbo.setLayout(line_layout);
 
-    m_data.lineVao->addVertexBuffer(std::move(line_vbo));
+    m_data.lineVao->bindVertexBuffer(std::move(line_vbo));
 
     // shaders
     mono::gl::ShaderManager::get().addShaderProgram(
