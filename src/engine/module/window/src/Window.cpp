@@ -40,8 +40,8 @@ Window::Window(
     screen_vb.setLayout(layout);
 
     mono::gl::ElementBuffer screen_eb(screen_element_buffer);
-    m_screenVa.addVertexBuffer(std::move(screen_vb));
-    m_screenVa.addElementBuffer(screen_eb);
+    m_screenVa.bindVertexBuffer(std::move(screen_vb));
+    m_screenVa.bindElementBuffer(screen_eb);
 
     mono::gl::ShaderManager::get().addShaderProgram(
         "screen",
