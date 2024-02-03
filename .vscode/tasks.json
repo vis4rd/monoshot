@@ -53,5 +53,29 @@
                 "showReuseMessage": false,
             },
         },
+        {
+            "label": "Setup hooks",
+            "detail": "Copy git hooks to .git/hooks/ directory.",
+            "type": "shell",
+            "linux": {
+                "command": "cp -r .githooks/* .git/hooks/ --exclude='.*'",
+            },
+            "windows": {
+                "command": "Copy-Item -Path '.githooks/*' -Destination '.git/hooks/' -Exclude '.*'",
+            },
+            "icon": {
+                "color": "terminal.ansiYellow",
+                "id": "git-branch"
+            },
+            "presentation": {
+                "clear": true,
+                "reveal": "silent",
+                "showReuseMessage": false,
+            },
+            "hide": true,
+            "runOptions": {
+                "runOn": "folderOpen"
+            }
+        }
     ]
 }
