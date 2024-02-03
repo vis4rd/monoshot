@@ -37,9 +37,6 @@ class VertexBuffer
     constexpr void setData(
         const std::ranges::contiguous_range auto& data,
         GLintptr buffer_offset = 0);
-    // TODO(vis4rd): Add setData for partial buffer update.
-    // Remember that when changin the buffer size, there is a possibility to lose existing buffer
-    // contents that are not overwritten.
     void setLayout(const ShaderAttributeLayout& layout);
 
     // NOLINTNEXTLINE(google-explicit-constructor)

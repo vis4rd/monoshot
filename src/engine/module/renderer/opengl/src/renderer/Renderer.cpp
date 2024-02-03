@@ -184,19 +184,11 @@ void Renderer::endBatch(const glm::mat4& projection, const glm::mat4& view)
     // lines
     if(m_stats.lineCount > 0)
     {
-        // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
-        GLsizeiptr size = static_cast<std::uint32_t>(
-            reinterpret_cast<std::uint8_t*>(&*m_data.lineBufferIter)
-            - reinterpret_cast<std::uint8_t*>(&*(m_data.lineBuffer.begin())));
-        m_data.lineVao->getVertexBuffers().at(0).setData(
-            reinterpret_cast<const void*>(m_data.lineBuffer.data()),
-            size);
-        // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
+        m_data.lineVao->getVertexBuffers().at(0).setData(m_data.lineBuffer);
 
         auto& line_shader = mono::gl::ShaderManager::get().useShader("line");
 
         m_data.lineVao->bind();
-
         glDrawArrays(GL_LINES, 0, m_stats.lineCount * 2);
 
         line_shader.uploadUniform("uProjection", projection, 0);
