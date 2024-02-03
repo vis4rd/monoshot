@@ -51,6 +51,7 @@
         "files.insertFinalNewline": true,
     },
     "[markdown]": {
+        "editor.formatOnSave": true,
         "files.insertFinalNewline": true,
     },
     "[yaml]": {
