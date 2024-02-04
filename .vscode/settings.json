@@ -14,7 +14,7 @@
     //
     "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
     "editor.codeActionsOnSave": {
-        "source.organizeImports": true,
+        "source.organizeImports": "explicit"
     },
     "editor.inlayHints.enabled": "offUnlessPressed",
     "editor.renderLineHighlight": "gutter",

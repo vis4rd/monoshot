@@ -23,7 +23,7 @@
             "label": "Run clang-tidy",
             "detail": "Run clang-tidy on all C++ files in src/ directory.",
             "type": "shell",
-            "command": "find src/ -type f | grep -vi lib/* | grep -e .*\\.[ch]pp | xargs clang-tidy --config-file=.clang-tidy --extra-arg='--std=c++20' --use-color --header-filter='^src/(engine/module/|game/include/)' -p='build/'",
+            "command": "cmake -P ./cmake/clang-tidy.cmake",
             "icon": {
                 "color": "terminal.ansiCyan",
                 "id": "sparkle",
