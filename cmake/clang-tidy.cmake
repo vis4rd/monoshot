@@ -1,0 +1,37 @@
+find_program(CLANG_TIDY_CMD NAMES "clang-tidy")
+
+if(NOT CLANG_TIDY_CMD)
+    message(FATAL_ERROR "clang-tidy not found, aborting...")
+endif()
+
+file(GLOB_RECURSE CT_ENGINE_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/engine/module/*.[ch]pp")
+file(GLOB_RECURSE CT_GAME_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/game/*.[ch]pp")
+set(CT_SOURCES "${CT_ENGINE_SOURCES};${CT_GAME_SOURCES}")
+
+include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/utils/split_list.cmake")
+
+set(CT_PROCESS_NUM 16)
+split_list(CT_SOURCES ${CT_PROCESS_NUM} CT_SOURCES_CHUNKS)
+
+set(CT_FULL_COMMAND ${CLANG_TIDY_CMD} --quiet --config-file=.clang-tidy --extra-arg=--std=c++20 -p=build/)
+
+message(STATUS "Launching ${CT_PROCESS_NUM} processes of clang-tidy.")
+execute_process(
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMAND ${CT_FULL_COMMAND} ${CHUNK_0}
+    COMMAND ${CT_FULL_COMMAND} ${CHUNK_1}
+    COMMAND ${CT_FULL_COMMAND} ${CHUNK_2}
+    COMMAND ${CT_FULL_COMMAND} ${CHUNK_3}
+    COMMAND ${CT_FULL_COMMAND} ${CHUNK_4}
+    COMMAND ${CT_FULL_COMMAND} ${CHUNK_5}
+    COMMAND ${CT_FULL_COMMAND} ${CHUNK_6}
+    COMMAND ${CT_FULL_COMMAND} ${CHUNK_7}
+    COMMAND ${CT_FULL_COMMAND} ${CHUNK_8}
+    COMMAND ${CT_FULL_COMMAND} ${CHUNK_9}
+    COMMAND ${CT_FULL_COMMAND} ${CHUNK_10}
+    COMMAND ${CT_FULL_COMMAND} ${CHUNK_11}
+    COMMAND ${CT_FULL_COMMAND} ${CHUNK_12}
+    COMMAND ${CT_FULL_COMMAND} ${CHUNK_13}
+    COMMAND ${CT_FULL_COMMAND} ${CHUNK_14}
+    COMMAND ${CT_FULL_COMMAND} ${CHUNK_15}
+)
