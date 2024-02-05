@@ -8,9 +8,10 @@
             "label": "Run clang-format",
             "detail": "Run clang-format on all C++ files in src/ directory.",
             "type": "shell",
-            "command": "find src/ -type f | grep -vi lib/* | grep -e .*\\.[ch]pp | xargs clang-format -i",
+            "command": "cmake -P ./cmake/clang-format.cmake",
             "icon": {
-                "color": "terminal.ansiCyan"
+                "color": "terminal.ansiCyan",
+                "id": "edit"
             },
             "presentation": {
                 "clear": true,
