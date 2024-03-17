@@ -3,7 +3,10 @@
 #include <filesystem>
 
 #include <cstring/cstring.hpp>
+#include <opengl/renderer/RenderPass.hpp>
+#include <opengl/renderer/RenderPipeline.hpp>
 #include <opengl/texture/Texture.hpp>
+#include <renderer/Renderer.hpp>
 #include <resource/Resource.hpp>
 #include <resource/ResourceManager.hpp>
 #include <spdlog/sinks/basic_file_sink.h>
@@ -30,6 +33,11 @@ App::App(const std::string& window_title, uint32_t width, uint32_t height)
         m_window = std::make_shared<mono::Window>(window_title, width, height, true, false);
     }
     ResourceManager::window = m_window;
+
+    mono::RenderPipeline default_pipeline{90};
+    mono::RenderPass default_pass{"quad", RenderTarget::CURRENT_PRIMITIVE};
+    default_pipeline.addRenderPass(std::move(default_pass));
+    mono::renderer::createPipeline(std::move(default_pipeline));
 
     m_timer = std::make_shared<Timer>();
     ResourceManager::timer = m_timer;
