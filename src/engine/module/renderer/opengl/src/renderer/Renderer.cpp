@@ -113,11 +113,6 @@ Renderer::Renderer()
     // m_data.textureSlots.reserve(32);
     // m_data.textureSlots.push_back(texture);
     // m_data.textureSlotsTakenCount++;
-
-    RenderPipeline default_pipeline{90};
-    RenderPass default_pass{"quad", RenderTarget::CURRENT_PRIMITIVE};
-    default_pipeline.addRenderPass(std::move(default_pass));
-    this->addRenderPipeline(std::move(default_pipeline));
 }
 
 Renderer::~Renderer()
@@ -452,6 +447,11 @@ void Renderer::addRenderPipeline(RenderPipeline&& pipeline)
     {
         spdlog::error("Renderer: pipeline with id {} already exists", pipeline.id);
         return;
+    }
+
+    if(m_pipelines.empty())
+    {
+        m_currentPipelineId = pipeline.id;
     }
 
     m_pipelines.emplace(pipeline.id, std::move(pipeline));
