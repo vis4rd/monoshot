@@ -202,10 +202,8 @@ void App::destroyTextures() noexcept
     res::largeTreeTexture.reset();
     res::smallBushTexture.reset();
     res::largeBushTexture.reset();
-
     res::rifleInventoryTexture.reset();
     res::pistolInventoryTexture.reset();
-
     res::enemyTexture.reset();
 }
 
