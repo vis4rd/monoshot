@@ -19,7 +19,7 @@ class Texture
 
     Texture(const Texture& copy) = default;
     Texture(Texture&& move) noexcept = default;
-    virtual ~Texture() = default;
+    virtual ~Texture();
 
     Texture& operator=(const Texture& copy) = default;
     Texture& operator=(Texture&& move) noexcept = default;
