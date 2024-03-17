@@ -57,6 +57,11 @@ Texture::Texture(std::string_view file_path, const TextureData& texture_data)
     this->load(file_path, m_textureData.widthTotal, m_textureData.heightTotal);
 }
 
+Texture::~Texture()
+{
+    this->unloadFromGpu();
+}
+
 void Texture::load(std::string_view source_path, std::int32_t width, std::int32_t height)
 {
     m_textureData.widthTotal = width;

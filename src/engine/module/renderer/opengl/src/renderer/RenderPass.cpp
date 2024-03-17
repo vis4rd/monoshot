@@ -6,9 +6,8 @@
 namespace mono
 {
 
-RenderPass::RenderPass(const std::string& shader_name, RenderTarget render_target)
+RenderPass::RenderPass(const std::string& shader_name)
     : m_shaderName(shader_name)
-    , m_renderTarget(render_target)
     , m_quadVao(std::make_shared<gl::VertexArray>())
     , m_lineVao(std::make_shared<gl::VertexArray>())
 {
@@ -19,11 +18,6 @@ RenderPass::RenderPass(const std::string& shader_name, RenderTarget render_targe
 std::string_view RenderPass::getShaderName() const
 {
     return m_shaderName;
-}
-
-RenderTarget RenderPass::getRenderTarget() const
-{
-    return m_renderTarget;
 }
 
 std::shared_ptr<gl::VertexArray> RenderPass::getLineVao()
