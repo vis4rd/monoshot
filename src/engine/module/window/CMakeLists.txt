@@ -35,6 +35,7 @@ target_link_libraries(mono_module_window
            mono::section
            mono::input
            mono::log
+           mono::renderer
 )
 
 # if(CMAKE_HOST_WIN32)

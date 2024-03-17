@@ -38,7 +38,6 @@ class GameplaySection : public Section
     entt::registry m_bulletRegistry{};
     entt::registry m_enemyRegistry{};
     PerspectiveCamera m_camera;
-    mono::Renderer& m_renderer;
     Map m_map;
     Hero m_hero;
     UI::GameplayLayout m_layout;

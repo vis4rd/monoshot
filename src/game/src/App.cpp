@@ -3,11 +3,11 @@
 #include <filesystem>
 
 #include <cstring/cstring.hpp>
+#include <opengl/texture/Texture.hpp>
 #include <resource/Resource.hpp>
 #include <resource/ResourceManager.hpp>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
-#include <texture/Texture.hpp>
 #include <ui/Font.hpp>
 
 #include "../include/section/MainMenuSection.hpp"
@@ -58,15 +58,15 @@ void App::initLogger() noexcept
     namespace fs = std::filesystem;
     fs::create_directory("../logs");
 
-    constexpr mono::cstring infoPattern{"[%Y-%m-%d %T.%e][%^%l%$] %v"};
-    constexpr mono::cstring debugPattern{"[%Y-%m-%d %T.%e][%^%l%$][thread %t][%s:%#] %v"};
+    constexpr mono::cstring info_pattern{"[%Y-%m-%d %T.%e][%^%l%$] %v"};
+    constexpr mono::cstring debug_pattern{"[%Y-%m-%d %T.%e][%^%l%$][thread %t][%s:%#] %v"};
     spdlog::level log_level{spdlog::level::info};
-    std::string log_pattern{infoPattern};
+    std::string log_pattern{info_pattern};
 
     if constexpr(mono::config::constant::debugMode)
     {
         log_level = spdlog::level::debug;
-        log_pattern = debugPattern;
+        log_pattern = debug_pattern;
     }
 
     auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();

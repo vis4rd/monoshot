@@ -3,7 +3,7 @@
 #include <memory>
 
 #include <glm/glm.hpp>
-#include <texture/Texture.hpp>
+#include <opengl/texture/Texture.hpp>
 
 #include "../ObjectID.hpp"
 

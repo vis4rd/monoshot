@@ -10,8 +10,7 @@
 
 CreatorSection::CreatorSection()
     : Section()
-    , m_renderer(mono::Renderer::get())
-    , m_map(m_renderer, 5, 5)
+    , m_map(5, 5)
     , m_camera(glm::vec3(0.f, 0.f, 50.f), ResourceManager::window->getSize())
     , m_randomizedRotation(util::random::getRandomNumber(0.f, 360.f))
 {
@@ -188,7 +187,7 @@ void CreatorSection::render() noexcept
         draw_bbs,
         draw_end_area);
 
-    m_renderer.beginBatch();
+    // m_renderer.beginBatch();
     if(m_selectedMapItem > ObjectID::FIRST_OBJECT && m_selectedMapItem < ObjectID::LAST_OBJECT)
     {
         // hovered object highlight
@@ -199,7 +198,7 @@ void CreatorSection::render() noexcept
         if(map_object.getTexture())  // TODO(vis4rd): remove this branch when all textures are
                                      // initialized
         {
-            m_renderer.drawQuad(
+            mono::renderer::drawQuad(
                 map_object.getPosition(),
                 map_object.getSize(),
                 map_object.getRotation(),
@@ -210,7 +209,7 @@ void CreatorSection::render() noexcept
     else if(m_selectedMapItem > BlockID::FIRST_BLOCK && m_selectedMapItem < BlockID::LAST_BLOCK)
     {
         // hovered tile highlight
-        m_renderer.drawQuad(
+        mono::renderer::drawQuad(
             {std::round(m_mouseWorldPos.x), std::round(m_mouseWorldPos.y)},
             {1.f, 1.f},
             0.f,
@@ -218,7 +217,7 @@ void CreatorSection::render() noexcept
     }
     else if(m_selectedMapItem == 9999)
     {
-        m_renderer.drawRect(
+        mono::renderer::drawRect(
             {m_mouseWorldPos.x, m_mouseWorldPos.y},
             m_endAreaSize,
             0.f,
@@ -226,7 +225,7 @@ void CreatorSection::render() noexcept
     }
     else if(m_selectedMapItem == 10000)
     {
-        m_renderer.drawQuad(
+        mono::renderer::drawQuad(
             {m_mouseWorldPos.x, m_mouseWorldPos.y},
             {1.f, 1.f},
             m_randomizedRotation,
@@ -237,7 +236,7 @@ void CreatorSection::render() noexcept
     auto view = m_entities.view<const ecs::component::Position, const ecs::component::Rotation>();
     for(auto&& [enemy, pos, rot] : view.each())
     {
-        m_renderer.drawQuad(
+        mono::renderer::drawQuad(
             pos,
             {1.f, 1.f},
             rot.data,
@@ -254,7 +253,7 @@ void CreatorSection::render() noexcept
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     }
-    m_renderer.endBatch(m_camera.getProjectionMatrix(), m_camera.getViewMatrix());
+    mono::renderer::render(m_camera.getProjectionMatrix(), m_camera.getViewMatrix());
     if(draw_bbs)
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

@@ -12,8 +12,7 @@
 DebugSection::DebugSection()
     : Section()
     , m_camera(glm::vec3(0.f, 0.f, 50.f), ResourceManager::window->getSize())
-    , m_renderer(mono::Renderer::get())
-    , m_map(m_renderer, 5, 5)
+    , m_map(5, 5)
     , m_hero(100)
     , m_layout(ImGui::GetMainViewport()->WorkPos, ImGui::GetMainViewport()->WorkSize)
 {
@@ -170,7 +169,7 @@ void DebugSection::render() noexcept
 {
     spdlog::trace("Rendering DebugSection");
 
-    m_renderer.beginBatch();
+    // m_renderer.beginBatch();
 
     static bool draw_area = false;
     static bool draw_bounding_boxes = false;
@@ -181,7 +180,7 @@ void DebugSection::render() noexcept
     float& vel = m_hero.velocity;
     const float& acc = m_hero.m_acceleration;
     const auto& theme_color = std::get<1>(m_map.getCurrentTheme().wallBlock);
-    m_renderer.drawQuad({pos.x, pos.y}, m_hero.m_size, rot, m_hero.getTexture(), theme_color);
+    mono::renderer::drawQuad({pos.x, pos.y}, m_hero.m_size, rot, m_hero.getTexture(), theme_color);
 
     m_map.drawObjects({pos.x, pos.y}, draw_bounding_boxes);
 
@@ -189,25 +188,25 @@ void DebugSection::render() noexcept
         const ecs::component::Position,
         const ecs::component::Size,
         const ecs::component::Rotation>(entt::exclude<ecs::component::Destroyed>);
-    bullet_view.each(
-        [&theme_color,
-         &m_renderer = m_renderer](const auto& b_pos, const auto& b_size, const auto& b_rot) {
-            m_renderer.drawQuad({b_pos.x, b_pos.y}, b_size, b_rot, theme_color);
-        });
+    bullet_view.each([&theme_color](const auto& b_pos, const auto& b_size, const auto& b_rot) {
+        mono::renderer::drawQuad({b_pos.x, b_pos.y}, b_size, b_rot, theme_color);
+    });
 
     const auto& enemy_texture = ResourceManager::enemyTexture;
     const auto enemy_view = m_enemyRegistry.view<
         const ecs::component::Position,
         const ecs::component::Size,
         const ecs::component::Rotation>();
-    enemy_view.each(
-        [&enemy_texture,
-         &m_renderer = m_renderer](const auto& e_pos, const auto& e_size, const auto& e_rot) {
-            m_renderer
-                .drawQuad({e_pos.x, e_pos.y}, e_size, e_rot, enemy_texture, {1.f, 0.4f, 0.4f, 1.f});
-        });
+    enemy_view.each([&enemy_texture](const auto& e_pos, const auto& e_size, const auto& e_rot) {
+        mono::renderer::drawQuad(
+            {e_pos.x, e_pos.y},
+            e_size,
+            e_rot,
+            enemy_texture,
+            {1.f, 0.4f, 0.4f, 1.f});
+    });
 
-    m_renderer.endBatch(m_camera.getProjectionMatrix(), m_camera.getViewMatrix());
+    mono::renderer::render(m_camera.getProjectionMatrix(), m_camera.getViewMatrix());
 
     if(m_onEnterFinished && (not m_onLeaveStarted))
     {

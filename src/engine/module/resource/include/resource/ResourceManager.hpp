@@ -4,7 +4,7 @@
 
 #include <glm/glm.hpp>
 
-#include "texture/Texture.hpp"
+#include "opengl/texture/Texture.hpp"
 #include "time/FramerateLimiter.hpp"
 #include "time/Timer.hpp"
 #include "ui/Font.hpp"

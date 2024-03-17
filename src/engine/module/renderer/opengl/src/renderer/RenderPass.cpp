@@ -1,7 +1,7 @@
-#include "../../include/renderer/RenderPass.hpp"
+#include "../../include/opengl/renderer/RenderPass.hpp"
 
-#include "../../include/gl/ShaderAttributeType.hpp"
-#include "../../include/gl/VertexBuffer.hpp"
+#include "opengl/gl/ShaderAttributeType.hpp"
+#include "opengl/gl/VertexBuffer.hpp"
 
 namespace mono
 {

@@ -1,8 +1,8 @@
 #pragma once
 
 #include <entt/entity/registry.hpp>
-#include <shader/ShaderManager.hpp>
-#include <texture/Texture.hpp>
+#include <opengl/shader/ShaderManager.hpp>
+#include <opengl/texture/Texture.hpp>
 
 #include "../utility/Collisions.hpp"
 #include "MapTheme.hpp"
@@ -25,7 +25,7 @@ struct Tile
 class Map final
 {
     public:
-    Map(mono::Renderer& renderer, const std::size_t& width, const std::size_t& height);
+    Map(const std::size_t& width, const std::size_t& height);
     Map(const Map&) = delete;
     Map(Map&&) = delete;
     ~Map();
@@ -84,5 +84,4 @@ class Map final
     std::vector<MapObject> m_objects{};
     std::unique_ptr<OBB::Polygon> m_endArea{};
     const MapTheme* m_theme = &MapThemes::forestTheme;
-    mono::Renderer& m_renderer;
 };

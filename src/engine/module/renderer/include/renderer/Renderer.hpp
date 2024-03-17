@@ -4,8 +4,8 @@
 
 #include <glm/glm.hpp>
 
-#include "renderer/RenderPipeline.hpp"
-#include "texture/Texture.hpp"
+#include "opengl/renderer/RenderPipeline.hpp"
+#include "opengl/texture/Texture.hpp"
 
 // Current plan:
 // - This file is a namespace of all drawing functions and pipeline setup.
@@ -62,13 +62,16 @@
 
 namespace mono::renderer
 {
-void setProjection(const glm::mat4& projection);
-void setView(const glm::mat4& view);
+// TODO(vis4rd): Figure out if these are needed
+// void setProjection(const glm::mat4& projection);
+// void setView(const glm::mat4& view);
 
 void createPipeline(RenderPipeline&& pipeline);
 void setPipeline(const RenderPipeline& pipeline);  // calls createPipeline and sets the pipeline
 void setPipeline(std::int32_t pipeline_id);
-void render();  // renders the current frame with set pipeline
+
+// renders the current frame with set pipeline
+void render(const glm::mat4& projection, const glm::mat4& view);
 
 
 // DRAWING FUNCTIONS
