@@ -7,12 +7,12 @@
 
 #include "NativeWindow.hpp"
 #include "config/StaticConfiguration.hpp"
-#include "gl/FrameBuffer.hpp"
-#include "gl/VertexArray.hpp"
 #include "input/InputManager.hpp"
-#include "renderer/Renderer.hpp"
+#include "opengl/gl/FrameBuffer.hpp"
+#include "opengl/gl/VertexArray.hpp"
+#include "opengl/shader/ShaderManager.hpp"
+// #include "renderer/Renderer.hpp"
 #include "section/SectionManager.hpp"
-#include "shader/ShaderManager.hpp"
 #include "traits/Renderable.hpp"
 #include "traits/Updateable.hpp"
 
@@ -227,12 +227,12 @@ void Window::render(RenderableTrait auto &&...renderables) noexcept
     glViewport(0, 0, m_width, m_height);  // set the main viewport to window size
 
     // use screen shader
-    mono::gl::ShaderManager::get().useShader("screen");
+    gl::ShaderManager::get().useShader("screen");
     m_screenVa.bind();
     glBindTexture(GL_TEXTURE_2D, m_screenFb.getColorID());
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
-    Renderer::get().getStats().drawCount = 0;
+    // Renderer::get().getStats().drawCount = 0;
 
     // Replace previous frame with the current one
     glfwSwapBuffers(m_window);

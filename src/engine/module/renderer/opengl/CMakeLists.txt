@@ -33,7 +33,7 @@ target_sources(mono_module_renderer_opengl_backend
 )
 
 target_include_directories(mono_module_renderer_opengl_backend
-    INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include"
+    PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 
 target_link_libraries(mono_module_renderer_opengl_backend

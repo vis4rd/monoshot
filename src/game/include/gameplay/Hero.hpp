@@ -7,7 +7,7 @@
 #include <optional>
 
 #include <glm/glm.hpp>
-#include <texture/Animation.hpp>
+#include <opengl/texture/Animation.hpp>
 
 #include "items/Food.hpp"
 #include "items/Weapon.hpp"

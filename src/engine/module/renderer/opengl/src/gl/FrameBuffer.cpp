@@ -1,4 +1,4 @@
-#include "../../include/gl/FrameBuffer.hpp"
+#include "../../include/opengl/gl/FrameBuffer.hpp"
 
 #include <glad/gl.h>
 #include <spdlog/spdlog.h>

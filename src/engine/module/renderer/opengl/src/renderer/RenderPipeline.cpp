@@ -1,4 +1,4 @@
-#include "../../include/renderer/RenderPipeline.hpp"
+#include "../../include/opengl/renderer/RenderPipeline.hpp"
 
 namespace mono
 {
@@ -67,7 +67,7 @@ void RenderPipeline::setNextRenderPass()
             m_currentRenderPass - m_renderPasses.cbegin() + 1);
         return;
     }
-    m_currentRenderPass->clearRenderStorage();
+    // m_currentRenderPass->clearRenderStorage(); //? storage should be cleared on draw call submit
     ++m_currentRenderPass;
 }
 

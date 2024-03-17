@@ -1,8 +1,8 @@
-#include "../../include/shader/ShaderProgram.hpp"
+#include "../../include/opengl/shader/ShaderProgram.hpp"
 
 #include <array>
 
-#include "../../include/shader/Shader.hpp"
+#include "opengl/shader/Shader.hpp"
 
 namespace mono::gl
 {

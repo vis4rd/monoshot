@@ -9,12 +9,11 @@
 #include "../../include/ecs/actions.hpp"
 #include "../../include/ecs/systems.hpp"
 
-Map::Map(mono::Renderer& renderer, const std::size_t& width, const std::size_t& height)
+Map::Map(const std::size_t& width, const std::size_t& height)
     : m_width(width)
     , m_height(height)
     , m_tiles()
     , m_objects()
-    , m_renderer(renderer)
 {
     m_tiles.reserve(width * height);
 
@@ -363,10 +362,11 @@ void Map::render(
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     }
-    m_renderer.beginBatch();
+    // m_renderer.beginBatch();
     this->drawTiles(area, show_solid);
     this->drawObjects({}, show_solid);
-    m_renderer.endBatch(projection, view);
+
+    mono::renderer::render(projection, view);
     if(show_solid)
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -382,7 +382,7 @@ void Map::drawTiles(bool area, bool show_solid)
         {
             if(wall_texture != nullptr)
             {
-                m_renderer.drawQuad(
+                mono::renderer::drawQuad(
                     {tile.x, tile.y},
                     {1.f, 1.f},
                     tile.rotation,
@@ -391,7 +391,7 @@ void Map::drawTiles(bool area, bool show_solid)
             }
             else
             {
-                m_renderer.drawQuad({tile.x, tile.y}, {1.f, 1.f}, tile.rotation, wall_color);
+                mono::renderer::drawQuad({tile.x, tile.y}, {1.f, 1.f}, tile.rotation, wall_color);
             }
         }
     }
@@ -402,7 +402,7 @@ void Map::drawObjects(const glm::vec2& hero_pos, bool show_solid)
     const auto& [wall_block, wall_color, wall_texture] = m_theme->wallBlock;
     for(const auto& object : m_objects)
     {
-        m_renderer.drawQuad(
+        mono::renderer::drawQuad(
             object.getPosition(),
             object.getSize(),
             object.getRotation(),

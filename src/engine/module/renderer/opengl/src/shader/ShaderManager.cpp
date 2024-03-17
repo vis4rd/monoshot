@@ -1,11 +1,11 @@
-#include "../../include/shader/ShaderManager.hpp"
+#include "../../include/opengl/shader/ShaderManager.hpp"
 
 #include <map>
 
 #include <spdlog/spdlog.h>
 
-#include "../../include/shader/Shader.hpp"
-#include "../../include/shader/ShaderType.hpp"
+#include "opengl/shader/Shader.hpp"
+#include "opengl/shader/ShaderType.hpp"
 
 namespace mono::gl
 {

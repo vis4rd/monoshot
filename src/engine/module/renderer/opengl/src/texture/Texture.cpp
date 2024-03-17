@@ -1,4 +1,4 @@
-#include "../../include/texture/Texture.hpp"
+#include "../../include/opengl/texture/Texture.hpp"
 
 #include <cstring>
 #include <format>

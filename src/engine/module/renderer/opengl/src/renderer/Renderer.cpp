@@ -1,11 +1,11 @@
-#include "../../include/renderer/Renderer.hpp"
+#include "../../include/opengl/renderer/Renderer.hpp"
 
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <spdlog/spdlog.h>
 
-#include "../../include/gl/ShaderAttributeType.hpp"
-#include "../../include/shader/ShaderManager.hpp"
+// #include "opengl/gl/ShaderAttributeType.hpp"
+#include "opengl/shader/ShaderManager.hpp"
 #include "resource/Resource.hpp"
 
 namespace mono
@@ -113,6 +113,11 @@ Renderer::Renderer()
     // m_data.textureSlots.reserve(32);
     // m_data.textureSlots.push_back(texture);
     // m_data.textureSlotsTakenCount++;
+
+    RenderPipeline default_pipeline{90};
+    RenderPass default_pass{"quad", RenderTarget::CURRENT_PRIMITIVE};
+    default_pipeline.addRenderPass(std::move(default_pass));
+    this->addRenderPipeline(std::move(default_pipeline));
 }
 
 Renderer::~Renderer()
@@ -152,6 +157,7 @@ void Renderer::submitDraws(const glm::mat4& projection, const glm::mat4& view)
             auto& quad_shader =
                 mono::gl::ShaderManager::get().useShader(std::string{pass.getShaderName()});
 
+            // TODO(vis4rd): check if uploading uniforms works if called once outside the loop
             quad_shader.uploadUniform("uProjection", projection, 0);
             quad_shader.uploadUniform("uView", view, 1);
             //// quad_shader.uploadUniform("uTextures", m_data.textureSamplers, 2);
@@ -198,6 +204,7 @@ void Renderer::submitDraws(const glm::mat4& projection, const glm::mat4& view)
 
             m_stats.drawCount++;
         }
+        pass.clearRenderStorage();
     }
 }
 
