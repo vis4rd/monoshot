@@ -1,8 +1,7 @@
 #pragma once
 
 #include <cstdint>
-#include <memory>
-#include <string>
+#include <string_view>
 
 #include "TextureData.hpp"
 
@@ -13,63 +12,35 @@ class Texture
 {
     public:
     Texture() = default;
-    Texture(
-        const std::string_view& file_path,
-        const std::int32_t& width,
-        const std::int32_t& height,
-        const std::int32_t& channel_count = 4);
-    Texture(
-        const std::byte* data,
-        const std::int32_t& width,
-        const std::int32_t& height,
-        const std::int32_t& channel_count = 4);
-    explicit Texture(
-        const std::string_view& file_path,
-        const TextureData& texture_data = TextureData());
-    Texture(const Texture& copy);
-    Texture(Texture&& move) noexcept;
-    virtual ~Texture();
+    Texture(std::string_view file_path, std::int32_t width, std::int32_t height);
+    // TODO(vis4rd): use range concept or std::span instead of raw pointer
+    Texture(const std::byte* data, std::int32_t width, std::int32_t height);
+    explicit Texture(std::string_view file_path, const TextureData& texture_data = TextureData());
 
-    Texture& operator=(const Texture& copy);
-    Texture& operator=(Texture&& move) noexcept;
+    Texture(const Texture& copy) = default;
+    Texture(Texture&& move) noexcept = default;
+    virtual ~Texture() = default;
+
+    Texture& operator=(const Texture& copy) = default;
+    Texture& operator=(Texture&& move) noexcept = default;
 
     const std::uint32_t& getID() const;
-    const std::int32_t& getWidth() const;
-    const std::int32_t& getHeight() const;
-    const std::int32_t& getNumberOfChannels() const;
-    const std::string& getSourcePath() const;
     const TextureData& getTextureData() const;
-    const std::byte* const getData() const;
 
-    void load(
-        const std::string_view& source_path,
-        const std::int32_t& width,
-        const std::int32_t& height,
-        const std::int32_t& channel_count = 4);
-    void load(
-        const std::byte* data,
-        const std::int32_t& width,
-        const std::int32_t& height,
-        const std::int32_t& channel_count = 4);
     void nextSub();
     void resetSub();
 
     private:
-    void uploadToGpu();
+    void load(std::string_view source_path, std::int32_t width, std::int32_t height);
+    void load(const std::byte* data, std::int32_t width, std::int32_t height);
+    void uploadToGpu(const std::byte* data);
     void unloadFromGpu();
-    void safeDelete();
-    void tryCopyExternalMemory(const std::byte* memory, const std::size_t& size);
 
     protected:
     TextureData m_textureData;
 
     private:
     std::uint32_t m_id = 0;
-    std::int32_t m_numberOfChannels =
-        4;  // out value of stbi_load indicating number of rgba channels
-    std::string m_sourcePath = "";
-    bool m_isLoadedByStbi = false;
-    std::byte* m_data = nullptr;
 };
 
 }  // namespace mono
