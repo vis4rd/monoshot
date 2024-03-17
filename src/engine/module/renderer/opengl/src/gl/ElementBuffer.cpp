@@ -1,4 +1,4 @@
-#include "../../include/gl/ElementBuffer.hpp"
+#include "../../include/opengl/gl/ElementBuffer.hpp"
 
 namespace mono::gl
 {

@@ -1,4 +1,4 @@
-#include "../../include/gl/VertexBuffer.hpp"
+#include "../../include/opengl/gl/VertexBuffer.hpp"
 
 namespace mono::gl
 {

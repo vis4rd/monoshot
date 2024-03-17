@@ -1,4 +1,4 @@
-#include "../../include/gl/VertexArray.hpp"
+#include "../../include/opengl/gl/VertexArray.hpp"
 
 #include <stdexcept>
 

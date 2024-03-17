@@ -1,4 +1,4 @@
-#include "../../include/shader/Shader.hpp"
+#include "../../include/opengl/shader/Shader.hpp"
 
 #include <array>
 #include <fstream>
@@ -6,7 +6,7 @@
 #include <glad/gl.h>
 #include <spdlog/spdlog.h>
 
-#include "../../include/shader/ShaderType.hpp"
+#include "opengl/shader/ShaderType.hpp"
 
 namespace mono::gl
 {

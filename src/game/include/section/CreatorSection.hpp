@@ -1,8 +1,8 @@
 #pragma once
 
 #include <camera/PerspectiveCamera.hpp>
+#include <opengl/texture/Texture.hpp>
 #include <section/Section.hpp>
-#include <texture/Texture.hpp>
 
 #include "../map/Map.hpp"
 
@@ -30,7 +30,6 @@ class CreatorSection final : public Section
 
     private:
     entt::registry m_entities{};
-    mono::Renderer& m_renderer;
     Map m_map;
     PerspectiveCamera m_camera;
     std::size_t m_selectedMapItem{BlockID::Wall};

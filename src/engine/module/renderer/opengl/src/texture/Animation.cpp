@@ -1,4 +1,4 @@
-#include "../../include/texture/Animation.hpp"
+#include "../../include/opengl/texture/Animation.hpp"
 
 #include "time/Timer.hpp"
 

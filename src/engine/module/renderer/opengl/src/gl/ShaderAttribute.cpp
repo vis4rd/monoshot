@@ -1,4 +1,4 @@
-#include "../../include/gl/ShaderAttribute.hpp"
+#include "../../include/opengl/gl/ShaderAttribute.hpp"
 
 #include <spdlog/spdlog.h>
 
