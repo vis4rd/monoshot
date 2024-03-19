@@ -44,6 +44,7 @@ void RenderPass::clearRenderStorage()
 {
     m_renderStorage.quads.clear();
     m_renderStorage.lines.clear();
+    m_renderStorage.textureSlots.clear();
 }
 
 void RenderPass::prepareQuadVao()
