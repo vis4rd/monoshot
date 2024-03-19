@@ -35,17 +35,17 @@ class Renderer final
     // void beginBatch();
     // void endBatch(const glm::mat4& projection, const glm::mat4& view);
 
-    // void drawQuad(
-    //     const glm::vec2& position,
-    //     const glm::vec2& size,
-    //     const float& rotation,
-    //     const glm::vec4& color);
-    // void drawQuad(
-    //     const glm::vec2& position,
-    //     const glm::vec2& size,
-    //     const float& rotation,
-    //     const std::shared_ptr<mono::Texture>& texture,
-    //     const glm::vec4& color = {1.f, 1.f, 1.f, 1.f});
+    void drawQuad(
+        const glm::vec2& position,
+        const glm::vec2& size,
+        float rotation,
+        const glm::vec4& color);
+    void drawQuad(
+        const glm::vec2& position,
+        const glm::vec2& size,
+        float rotation,
+        std::shared_ptr<mono::Texture> texture,
+        const glm::vec4& color = {1.f, 1.f, 1.f, 1.f});
 
     void drawLine(const glm::vec2& pos1, const glm::vec2& pos2, const glm::vec4& color);
     void drawLine(
