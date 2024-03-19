@@ -46,9 +46,9 @@ void drawQuad(
     const float& rotation,
     const glm::vec4& color)
 {
-    // auto& renderer = mono::Renderer::get();
-    // renderer.drawQuad(position, size, rotation, color);
-    drawRect(position, size, rotation, color);  //! TEMPORARY
+    auto& renderer = mono::Renderer::get();
+    renderer.drawQuad(position, size, rotation, color);
+    // drawRect(position, size, rotation, color);  //! TEMPORARY
 }
 
 void drawQuad(
@@ -58,9 +58,9 @@ void drawQuad(
     const std::shared_ptr<mono::Texture>& texture,
     const glm::vec4& color)
 {
-    // auto& renderer = mono::Renderer::get();
-    // renderer.drawQuad(position, size, rotation, texture, color);
-    drawRect(position, size, rotation, color);  //! TEMPORARY
+    auto& renderer = mono::Renderer::get();
+    renderer.drawQuad(position, size, rotation, texture, color);
+    // drawRect(position, size, rotation, color);  //! TEMPORARY
 }
 
 void drawLine(const glm::vec2& pos1, const glm::vec2& pos2, const glm::vec4& color)
