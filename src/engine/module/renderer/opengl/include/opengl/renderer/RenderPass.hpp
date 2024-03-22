@@ -7,7 +7,7 @@
 #include "../gl/VertexArray.hpp"
 #include "RenderStorage.hpp"
 
-namespace mono
+namespace mono::gl
 {
 
 class RenderPass
@@ -26,7 +26,6 @@ class RenderPass
     std::shared_ptr<gl::VertexArray> getQuadVao();
     RenderStorage& getRenderStorage();
     const RenderStorage& getRenderStorage() const;
-    void clearRenderStorage();
 
     private:
     void prepareQuadVao();
@@ -39,4 +38,4 @@ class RenderPass
     RenderStorage m_renderStorage;
 };
 
-}  // namespace mono
+}  // namespace mono::gl

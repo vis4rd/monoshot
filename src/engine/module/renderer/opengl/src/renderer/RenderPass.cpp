@@ -3,7 +3,7 @@
 #include "opengl/gl/ShaderAttributeType.hpp"
 #include "opengl/gl/VertexBuffer.hpp"
 
-namespace mono
+namespace mono::gl
 {
 
 RenderPass::RenderPass(const std::string& shader_name)
@@ -38,13 +38,6 @@ RenderStorage& RenderPass::getRenderStorage()
 const RenderStorage& RenderPass::getRenderStorage() const
 {
     return m_renderStorage;
-}
-
-void RenderPass::clearRenderStorage()
-{
-    m_renderStorage.quads.clear();
-    m_renderStorage.lines.clear();
-    m_renderStorage.textureSlots.clear();
 }
 
 void RenderPass::prepareQuadVao()
@@ -90,4 +83,4 @@ void RenderPass::prepareLineVao()
     m_lineVao->bindVertexBuffer(std::move(line_vbo));
 }
 
-}  // namespace mono
+}  // namespace mono::gl

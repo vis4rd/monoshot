@@ -1,6 +1,6 @@
 #include "../../include/opengl/renderer/RenderPipeline.hpp"
 
-namespace mono
+namespace mono::gl
 {
 
 RenderPipeline::RenderPipeline(std::int32_t id)
@@ -94,4 +94,4 @@ void RenderPipeline::prepareEbo()
     m_elementBuffer = mono::gl::ElementBuffer(quad_elements);
 }
 
-}  // namespace mono
+}  // namespace mono::gl

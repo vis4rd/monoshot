@@ -8,11 +8,24 @@
 #include "QuadPrimitive.hpp"
 
 // TODO(vis4rd): add namespace >:(
-
-struct RenderStorage
+namespace mono::gl
 {
+
+class RenderStorage
+{
+    public:
+    void clear()
+    {
+        quads.clear();
+        textureSlots.clear();
+        lines.clear();
+    }
+
+    public:
     std::vector<mono::gl::QuadInstanceData> quads{};
     std::vector<std::shared_ptr<mono::Texture>> textureSlots{};
 
     std::vector<mono::gl::LineVertex> lines{};
 };
+
+}  // namespace mono::gl

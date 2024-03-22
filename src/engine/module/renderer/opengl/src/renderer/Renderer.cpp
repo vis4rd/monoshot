@@ -4,11 +4,10 @@
 #include <glm/gtx/string_cast.hpp>
 #include <spdlog/spdlog.h>
 
-// #include "opengl/gl/ShaderAttributeType.hpp"
 #include "opengl/shader/ShaderManager.hpp"
 #include "resource/Resource.hpp"
 
-namespace mono
+namespace mono::gl
 {
 
 Renderer& Renderer::get()
@@ -46,7 +45,7 @@ void Renderer::submitDraws(const glm::mat4& projection, const glm::mat4& view)
     auto& pipeline = m_pipelines.at(m_currentPipelineId);
     for(auto& pass : pipeline.getRenderPasses())
     {
-        const auto& storage = pass.getRenderStorage();
+        auto& storage = pass.getRenderStorage();
 
         {  // QUADS
             auto quad_vao = pass.getQuadVao();
@@ -131,7 +130,7 @@ void Renderer::submitDraws(const glm::mat4& projection, const glm::mat4& view)
 
             m_stats.drawCount++;
         }
-        pass.clearRenderStorage();
+        storage.clear();
     }
     this->resetDrawStats();
 }
@@ -321,4 +320,4 @@ mono::RendererData& Renderer::getData()
     return m_data;
 }
 
-}  // namespace mono
+}  // namespace mono::gl
