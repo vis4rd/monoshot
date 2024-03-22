@@ -47,7 +47,7 @@ class Camera
     glm::mat4 m_inverseViewMatrix = glm::identity<glm::mat4>();
     glm::mat4 m_inverseProjectionMatrix = glm::identity<glm::mat4>();
     float m_nearPlane = 0.1f;
-    float m_farPlane = 100.f;
+    float m_farPlane = 1000.f;
     glm::vec2 m_resolution{};
     bool m_viewMatrixNeedsUpdate = false;
     bool m_projectionMatrixNeedsUpdate = false;
