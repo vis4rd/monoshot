@@ -62,12 +62,9 @@
 
 namespace mono::renderer
 {
-// TODO(vis4rd): Figure out if these are needed
-// void setProjection(const glm::mat4& projection);
-// void setView(const glm::mat4& view);
-
-void createPipeline(RenderPipeline&& pipeline);
-void setPipeline(const RenderPipeline& pipeline);  // calls createPipeline and sets the pipeline
+void createPipeline(mono::gl::RenderPipeline&& pipeline);
+void setPipeline(
+    const mono::gl::RenderPipeline& pipeline);  // calls createPipeline and sets the pipeline
 void setPipeline(std::int32_t pipeline_id);
 
 // renders the current frame with set pipeline
