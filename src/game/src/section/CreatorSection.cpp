@@ -22,16 +22,15 @@ CreatorSection::CreatorSection()
     glfwSetScrollCallback(window, [](GLFWwindow* window, double xoffset, double yoffset) {
         auto camera = static_cast<PerspectiveCamera*>(glfwGetWindowUserPointer(window));
         const auto& pos = camera->getPosition();
-        const auto& delta_time = ResourceManager::timer->deltaTime();
 
-        auto new_pos_z = pos.z - yoffset * delta_time * 100.f /* zoom velocity*/;
+        auto new_pos_z = pos.z - yoffset;
         if(new_pos_z < 0.1f)
         {
             new_pos_z = 0.1f;
         }
-        else if(new_pos_z > 100.f)
+        else if(new_pos_z > 1000.f)
         {
-            new_pos_z = 100.f;
+            new_pos_z = 1000.f;
         }
         camera->setPosition({pos.x, pos.y, new_pos_z});
     });
@@ -40,9 +39,8 @@ CreatorSection::CreatorSection()
 CreatorSection::~CreatorSection()
 {
     auto window = ResourceManager::window->getNativeWindow();
-    glfwSetWindowUserPointer(window, nullptr);
     glfwSetScrollCallback(window, nullptr);
-    InputManager::get().removeGroup(m_name);
+    glfwSetWindowUserPointer(window, nullptr);
 }
 
 void CreatorSection::update() noexcept

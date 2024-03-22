@@ -395,7 +395,6 @@ void Map::render(
     {
         this->drawEndArea();
     }
-    mono::renderer::render(projection, view);
     if(show_solid)
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
