@@ -2,10 +2,10 @@
 
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
+#include <imgui/imgui.h>
 #include <spdlog/spdlog.h>
 
 #include "opengl/shader/ShaderManager.hpp"
-#include "resource/Resource.hpp"
 
 namespace mono::gl
 {
@@ -20,27 +20,14 @@ Renderer::Renderer()
 {
     spdlog::debug("Renderer: creating OpenGL backend");
 
-    mono::gl::ShaderManager::get().addShaderProgram(
-        "quad",
-        "../res/shaders/quad.vert",
-        "../res/shaders/quad.frag");
-
-    mono::gl::ShaderManager::get().addShaderProgram(
-        "line",
-        "../res/shaders/line.vert",
-        "../res/shaders/line.frag");
-}
-
-Renderer::~Renderer()
-{
-    m_data = mono::RendererData();
-    spdlog::debug("Renderer: shutdown complete");
+    auto& shader_manager = ShaderManager::get();
+    shader_manager.addShaderProgram("quad", "../res/shaders/quad.vert", "../res/shaders/quad.frag");
+    shader_manager.addShaderProgram("line", "../res/shaders/line.vert", "../res/shaders/line.frag");
 }
 
 void Renderer::submitDraws(const glm::mat4& projection, const glm::mat4& view)
 {
-    m_data.lastProjectionMatrix = projection;
-    m_data.lastViewMatrix = view;
+    m_stats.clear();
 
     auto& pipeline = m_pipelines.at(m_currentPipelineId);
     for(auto& pass : pipeline.getRenderPasses())
@@ -52,6 +39,7 @@ void Renderer::submitDraws(const glm::mat4& projection, const glm::mat4& view)
 
             // below line may be can be delegated to RenderPass
             quad_vao->getVertexBuffers().at(1).setData(storage.quads);
+            m_stats.geometryUpdateSize += (storage.quads.size() * sizeof(QuadInstanceData));
 
             // prepare uniform data
             constexpr std::array<std::int32_t, 32> samplers{
@@ -81,8 +69,7 @@ void Renderer::submitDraws(const glm::mat4& projection, const glm::mat4& view)
             //               multiple primitives?) maybe shader name should be stored in render
             //               storage per-primitive. For now: use shader name for quads, hardcoded
             //               for lines.
-            auto& quad_shader =
-                mono::gl::ShaderManager::get().useShader(std::string{pass.getShaderName()});
+            auto& quad_shader = ShaderManager::get().useShader(std::string{pass.getShaderName()});
 
             quad_shader.uploadUniform("uProjection", projection, 0);
             quad_shader.uploadUniform("uView", view, 1);
@@ -95,12 +82,12 @@ void Renderer::submitDraws(const glm::mat4& projection, const glm::mat4& view)
             quad_vao->bind();
             glDrawElementsInstanced(
                 GL_TRIANGLES,
-                m_stats.indexCount,  // TODO(vis4rd): this should be taken from render pass
+                static_cast<GLsizei>(quad_vao->getElementBuffer().getElementCount()),
                 GL_UNSIGNED_INT,
                 nullptr,
-                m_stats.instanceCount  // TODO(vis4rd): this should be taken from render pass
-            );
+                static_cast<GLsizei>(storage.quads.size()));
             quad_vao->unbind();
+            m_stats.drawCalls++;
 
             glDisable(GL_BLEND);
 
@@ -112,42 +99,24 @@ void Renderer::submitDraws(const glm::mat4& projection, const glm::mat4& view)
 
         {  // LINES
             auto line_vao = pass.getLineVao();
-            if(m_stats.lineCount > 0)  // TODO(vis4rd): this should be taken from render pass
+            if(not storage.lines.empty())
             {
                 line_vao->getVertexBuffers().at(0).setData(storage.lines);
+                m_stats.geometryUpdateSize += (storage.lines.size() * sizeof(LineVertex));
 
-                auto& line_shader = mono::gl::ShaderManager::get().useShader("line");
+                auto& line_shader = ShaderManager::get().useShader("line");
 
                 line_vao->bind();
-                glDrawArrays(
-                    GL_LINES,
-                    0,
-                    m_stats.lineCount * 2);  // TODO(vis4rd): count should be taken from render pass
+                glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(storage.lines.size()));
+                m_stats.drawCalls++;
 
                 line_shader.uploadUniform("uProjection", projection, 0);
                 line_shader.uploadUniform("uView", view, 1);
             }
-
-            m_stats.drawCount++;
         }
         storage.clear();
     }
-    this->resetDrawStats();
-}
-
-void Renderer::resetDrawData()
-{
-    // m_data.lineBufferIter = m_data.lineBuffer.begin();
-    // m_data.quadInstanceBuffer.clear();
-}
-
-void Renderer::resetDrawStats()
-{
-    m_stats.drawCount = 0;
-    m_stats.indexCount = 0;
-    m_stats.instanceCount = 0;
-    m_stats.lineCount = 0;
-    m_stats.quadCount = 0;
+    this->displayStats();
 }
 
 void Renderer::drawQuad(
@@ -156,7 +125,7 @@ void Renderer::drawQuad(
     float rotation,
     const glm::vec4& color)
 {
-    static std::shared_ptr<mono::Texture> white_texture = std::make_shared<mono::Texture>(
+    static std::shared_ptr<Texture> white_texture = std::make_shared<Texture>(
         std::array<std::byte, 4>{std::byte{0xff}, std::byte{0xff}, std::byte{0xff}, std::byte{0xff}}
             .data(),
         1,
@@ -168,16 +137,9 @@ void Renderer::drawQuad(
     const glm::vec2& position,
     const glm::vec2& size,
     float rotation,
-    std::shared_ptr<mono::Texture> texture,
+    std::shared_ptr<Texture> texture,
     const glm::vec4& color)
 {
-    // if((m_stats.indexCount >= m_data.maxElementsCount)
-    //    or (m_data.textureSlotsTakenCount >= m_data.maxTextures))
-    // {
-    //     endBatch(m_data.lastProjectionMatrix, m_data.lastViewMatrix);
-    //     beginBatch();
-    // }
-
     const auto identity = glm::identity<glm::mat4>();
     glm::mat4 model_matrix = glm::translate(identity, glm::vec3(position, 0.f))
                              * glm::rotate(identity, glm::radians(rotation), {0.f, 0.f, 1.f})
@@ -187,7 +149,7 @@ void Renderer::drawQuad(
     auto& storage = m_pipelines.at(m_currentPipelineId).currentRenderPass()->getRenderStorage();
     const std::size_t texture_slot = [&storage, &texture]() {
         // TODO(visard): change this lambda to STL algorithm
-        constexpr auto find_slot = [](const std::vector<std::shared_ptr<mono::Texture>>& slots,
+        constexpr auto find_slot = [](const std::vector<std::shared_ptr<Texture>>& slots,
                                       const std::uint32_t& texture_id) -> std::size_t {
             for(std::int64_t slot = 0; slot < slots.size(); slot++)
             {
@@ -208,10 +170,6 @@ void Renderer::drawQuad(
     }();
 
     storage.quads.emplace_back(color, static_cast<float>(texture_slot), model_matrix);
-
-    m_stats.indexCount += 6;
-    m_stats.instanceCount++;
-    m_stats.quadCount++;
 }
 
 void Renderer::drawLine(const glm::vec2& pos1, const glm::vec2& pos2, const glm::vec4& color)
@@ -231,8 +189,6 @@ void Renderer::drawLine(
     auto& storage = m_pipelines.at(m_currentPipelineId).currentRenderPass()->getRenderStorage();
     storage.lines.push_back(vrtx1);
     storage.lines.push_back(vrtx2);
-
-    m_stats.lineCount++;  // TODO(vis4rd): this should be set in render pass
 }
 
 void Renderer::drawRect(
@@ -261,32 +217,23 @@ void Renderer::drawRect(
 void Renderer::drawRect(
     const glm::vec2& center,
     const glm::vec2& size,
-    const float& rotation,
+    float rotation,
     const glm::vec4& color)  // center and size
 {
     glm::mat4 model_matrix =
         glm::translate(glm::identity<glm::mat4>(), glm::vec3(center, 0.f))
         * glm::rotate(glm::identity<glm::mat4>(), glm::radians(rotation), {0.f, 0.f, 1.f})
         * glm::scale(glm::identity<glm::mat4>(), glm::vec3(size, 1.f));
-    const auto bl =
-        glm::vec2(model_matrix * glm::vec4(mono::gl::quadConstantVertexData[0], 0.0, 1.0));
-    const auto br =
-        glm::vec2(model_matrix * glm::vec4(mono::gl::quadConstantVertexData[2], 0.0, 1.0));
-    const auto ur =
-        glm::vec2(model_matrix * glm::vec4(mono::gl::quadConstantVertexData[4], 0.0, 1.0));
-    const auto ul =
-        glm::vec2(model_matrix * glm::vec4(mono::gl::quadConstantVertexData[6], 0.0, 1.0));
+    const auto bl = glm::vec2(model_matrix * glm::vec4(quadConstantVertexData[0], 0.0, 1.0));
+    const auto br = glm::vec2(model_matrix * glm::vec4(quadConstantVertexData[2], 0.0, 1.0));
+    const auto ur = glm::vec2(model_matrix * glm::vec4(quadConstantVertexData[4], 0.0, 1.0));
+    const auto ul = glm::vec2(model_matrix * glm::vec4(quadConstantVertexData[6], 0.0, 1.0));
     Renderer::drawRect(ul, ur, br, bl, color);
 }
 
-mono::RendererStats& Renderer::getStats()
+const RendererStats& Renderer::getStats() const
 {
     return m_stats;
-}
-
-void Renderer::resetStats()
-{
-    m_stats = mono::RendererStats();
 }
 
 void Renderer::addRenderPipeline(RenderPipeline&& pipeline)
@@ -315,9 +262,32 @@ void Renderer::setRenderPipeline(std::int32_t pipeline_id)
     m_currentPipelineId = pipeline_id;
 }
 
-mono::RendererData& Renderer::getData()
+void Renderer::displayStats() const
 {
-    return m_data;
+    if(ImGui::Begin("Renderer Statistics"))
+    {
+        ImGui::Text("Draw Calls: %d", m_stats.drawCalls);
+
+        {
+            std::string size_unit = "B";
+            auto geometry_update_size = m_stats.geometryUpdateSize;
+            if(geometry_update_size > 1e6)
+            {
+                geometry_update_size /= 1e6;
+                size_unit = "MB";
+            }
+            else if(geometry_update_size > 1e3)
+            {
+                geometry_update_size /= 1e3;
+                size_unit = "KB";
+            }
+            ImGui::Text(
+                "Geometry Update Size Per Frame: %d %s",
+                geometry_update_size,
+                size_unit.c_str());
+        }
+        ImGui::End();
+    }
 }
 
 }  // namespace mono::gl
