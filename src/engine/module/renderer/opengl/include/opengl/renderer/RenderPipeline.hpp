@@ -4,7 +4,7 @@
 
 #include "RenderPass.hpp"
 
-namespace mono
+namespace mono::gl
 {
 
 class RenderPipeline
@@ -41,4 +41,4 @@ class RenderPipeline
     gl::ElementBuffer m_elementBuffer;
 };
 
-}  // namespace mono
+}  // namespace mono::gl

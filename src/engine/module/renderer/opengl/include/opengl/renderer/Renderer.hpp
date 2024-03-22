@@ -1,11 +1,7 @@
 #pragma once
 
-#include <array>
 #include <map>
 #include <memory>
-#include <numeric>
-#include <unordered_map>
-#include <unordered_set>
 
 #include <glm/glm.hpp>
 
@@ -14,7 +10,7 @@
 #include "RendererData.hpp"
 #include "RendererStats.hpp"
 
-namespace mono
+namespace mono::gl
 {
 
 class Renderer final
@@ -87,4 +83,4 @@ class Renderer final
     std::int32_t m_currentPipelineId{-1};
 };
 
-}  // namespace mono
+}  // namespace mono::gl
