@@ -7,7 +7,6 @@
 
 #include "../texture/Texture.hpp"
 #include "RenderPipeline.hpp"
-#include "RendererData.hpp"
 #include "RendererStats.hpp"
 
 namespace mono::gl
@@ -17,7 +16,7 @@ class Renderer final
 {
     public:
     static Renderer& get();
-    ~Renderer();
+    ~Renderer() noexcept = default;
     Renderer(const Renderer&) = delete;
     Renderer(Renderer&&) = delete;
 
@@ -25,11 +24,6 @@ class Renderer final
     Renderer& operator=(Renderer&&) = delete;
 
     void submitDraws(const glm::mat4& projection, const glm::mat4& view);
-    void resetDrawData();
-    void resetDrawStats();
-
-    // void beginBatch();
-    // void endBatch(const glm::mat4& projection, const glm::mat4& view);
 
     void drawQuad(
         const glm::vec2& position,
@@ -63,21 +57,19 @@ class Renderer final
     void drawRect(
         const glm::vec2& center,
         const glm::vec2& size,
-        const float& rotation,
+        float rotation,
         const glm::vec4& color);  // center and size
 
-    RendererStats& getStats();
-    void resetStats();
+    const RendererStats& getStats() const;
 
     void addRenderPipeline(RenderPipeline&& pipeline);
     void setRenderPipeline(std::int32_t pipeline_id);
 
     private:
     Renderer();
-    RendererData& getData();
+    void displayStats() const;
 
     private:
-    RendererData m_data{};
     RendererStats m_stats{};
     std::map<std::int32_t, RenderPipeline> m_pipelines{};
     std::int32_t m_currentPipelineId{-1};

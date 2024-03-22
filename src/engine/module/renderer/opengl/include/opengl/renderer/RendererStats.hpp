@@ -5,14 +5,18 @@
 namespace mono
 {
 
-struct RendererStats
+class RendererStats
 {
-    std::uint32_t drawCount = 0;
-    std::int32_t indexCount = 0;
-    std::int32_t instanceCount = 0;
+    public:
+    void clear()
+    {
+        drawCalls = 0;
+        geometryUpdateSize = 0;
+    }
 
-    std::uint32_t quadCount = 0;
-    std::int32_t lineCount = 0;
+    public:
+    std::uint32_t drawCalls{};
+    std::uint32_t geometryUpdateSize{};
 };
 
 }  // namespace mono
