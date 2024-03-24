@@ -11,7 +11,6 @@
 #include "opengl/gl/FrameBuffer.hpp"
 #include "opengl/gl/VertexArray.hpp"
 #include "opengl/shader/ShaderManager.hpp"
-// #include "renderer/Renderer.hpp"
 #include "section/SectionManager.hpp"
 #include "traits/Renderable.hpp"
 #include "traits/Updateable.hpp"
@@ -153,7 +152,7 @@ void Window::render(RenderableTrait auto &&...renderables) noexcept
     m_screenFb.bind();
     glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    // set framebuffer viewport to its size
+    // set viewport to framebuffer's size
     glViewport(0, 0, m_screenFb.getSize().x, m_screenFb.getSize().y);
 
     // Render
