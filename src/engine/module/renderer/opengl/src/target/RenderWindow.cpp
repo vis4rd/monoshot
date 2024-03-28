@@ -1,11 +1,13 @@
 #include "../../include/opengl/target/RenderWindow.hpp"
 
-#include <config/StaticConfiguration.hpp>
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
 #include <imgui/imgui.h>
-#include <log/Logging.hpp>
 #include <spdlog/spdlog.h>
+
+#include "config/StaticConfiguration.hpp"
+#include "log/Logging.hpp"
+#include "resource/ResourceManager.hpp"
 
 namespace mono::gl
 {
@@ -13,6 +15,8 @@ namespace mono::gl
 RenderWindow::RenderWindow(GLsizei width, GLsizei height, std::string_view title)
     : RenderTarget(width, height)
 {
+    // BUG: Window crashes because we use gl functions before initializing glad.
+    // TODO(vis4rd): Create separate class for initializing glfw and glad.
     spdlog::info("Creating RenderWindow '{}' with size {}x{}", title, width, height);
 
     this->initGlfw();
@@ -25,7 +29,7 @@ RenderWindow::RenderWindow(GLsizei width, GLsizei height, std::string_view title
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
     m_windowHandle =
-        unique_window_ptr{glfwCreateWindow(width, height, title.data(), nullptr, nullptr)};
+        window_handle_t{glfwCreateWindow(width, height, title.data(), nullptr, nullptr)};
     if(not m_windowHandle)
     {
         spdlog::critical("Failed to initialize RenderWindow native handle");
@@ -41,6 +45,7 @@ RenderWindow::RenderWindow(GLsizei width, GLsizei height, std::string_view title
     this->initGL();
     this->initImGui();
     this->initFlags();
+    this->initEventCallbacks();
 }
 
 bool RenderWindow::isFullscreen() const
@@ -201,6 +206,18 @@ std::string_view RenderWindow::getTitle() const
     // return glfwGetWindowTitle(m_windowHandle.get());
 }
 
+GLFWwindow *RenderWindow::getNativeWindow() const
+{
+    return m_windowHandle.get();
+}
+
+glm::vec2 RenderWindow::getMousePosition() const
+{
+    glm::dvec2 mouse_pos;
+    glfwGetCursorPos(m_windowHandle.get(), &(mouse_pos.x), &(mouse_pos.y));
+    return mouse_pos;
+}
+
 std::span<const GLFWvidmode> RenderWindow::queryVideoModes()
 {
     auto *monitor = glfwGetPrimaryMonitor();
@@ -316,6 +333,48 @@ void RenderWindow::initFlags()
     // vsync
     glfwSwapInterval(0);  // by default, vsync is disabled
     m_flags[0] = false;
+}
+
+void RenderWindow::initEventCallbacks()
+{
+    // update internal size tracking for UI and framebuffer size when user resizes the window
+    glfwSetWindowSizeCallback(
+        m_windowHandle.get(),
+        [](GLFWwindow *window, int new_width, int new_height) -> void {
+            spdlog::debug("New window size = {}x{} in screen coordinates", new_width, new_height);
+            auto &self = ResourceManager::window;
+            self->setSize(new_width, new_height);
+        });
+
+    glfwSetWindowMaximizeCallback(
+        m_windowHandle.get(),
+        [](GLFWwindow *window, int maximized) -> void {
+            auto &self = ResourceManager::window;
+            self->setMaximized(static_cast<bool>(maximized));
+            if(self->isMaximized())
+            {
+                spdlog::debug("Window has been maximized");
+            }
+            else
+            {
+                spdlog::debug("Window has been restored");
+            }
+        });
+
+    glfwSetWindowIconifyCallback(
+        m_windowHandle.get(),
+        [](GLFWwindow *window, int minimized) -> void {
+            auto &self = ResourceManager::window;
+            self->setMinimized(static_cast<bool>(minimized));
+            if(self->isMinimized())
+            {
+                spdlog::debug("Window has been minimized");
+            }
+            else
+            {
+                spdlog::debug("Window has been restored");
+            }
+        });
 }
 
 }  // namespace mono::gl

@@ -28,6 +28,8 @@ target_sources(mono_module_renderer_opengl_backend
             "${CMAKE_CURRENT_SOURCE_DIR}/src/shader/Shader.cpp"
             "${CMAKE_CURRENT_SOURCE_DIR}/src/shader/ShaderManager.cpp"
             "${CMAKE_CURRENT_SOURCE_DIR}/src/shader/ShaderProgram.cpp"
+            "${CMAKE_CURRENT_SOURCE_DIR}/src/target/RenderTarget.cpp"
+            "${CMAKE_CURRENT_SOURCE_DIR}/src/target/RenderWindow.cpp"
             "${CMAKE_CURRENT_SOURCE_DIR}/src/texture/Animation.cpp"
             "${CMAKE_CURRENT_SOURCE_DIR}/src/texture/Texture.cpp"
 )

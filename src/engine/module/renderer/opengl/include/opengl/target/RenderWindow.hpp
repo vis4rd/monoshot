@@ -10,6 +10,10 @@
 namespace mono::gl
 {
 
+using window_handle_t = std::unique_ptr<GLFWwindow, decltype([](GLFWwindow* window) {
+                                            glfwDestroyWindow(window);
+                                        })>;
+
 class RenderWindow final : public RenderTarget
 {
     public:
@@ -36,7 +40,9 @@ class RenderWindow final : public RenderTarget
     void setRefreshRate(std::int32_t hz);
     void setTitle(std::string_view title);
 
-    std::string_view getTitle() const;
+    [[nodiscard]] std::string_view getTitle() const;
+    [[nodiscard]] GLFWwindow* getNativeWindow() const;
+    [[nodiscard]] glm::vec2 getMousePosition() const;
 
     [[nodiscard]] static std::span<const GLFWvidmode> queryVideoModes();
     [[nodiscard]] static std::vector<glm::ivec2> queryMonitorResolutions();
@@ -47,13 +53,10 @@ class RenderWindow final : public RenderTarget
     void initGL() const;
     void initImGui() const;
     void initFlags();
-    using RenderTarget::render;
+    void initEventCallbacks();
+    // using RenderTarget::render;
 
     private:
-    using unique_window_ptr = std::unique_ptr<GLFWwindow, decltype([](GLFWwindow* window) {
-                                                  glfwDestroyWindow(window);
-                                              })>;
-
     enum WindowFlag
     {
         VSYNC = 0,
@@ -63,7 +66,7 @@ class RenderWindow final : public RenderTarget
     };
 
     private:
-    unique_window_ptr m_windowHandle = nullptr;
+    window_handle_t m_windowHandle = nullptr;
     /**
      * @brief Flags used to monitor window's state.
      *

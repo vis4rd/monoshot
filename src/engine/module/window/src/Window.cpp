@@ -49,41 +49,40 @@ Window::Window(
         "../res/shaders/screen.frag");
 
     // update internal size tracking for UI and framebuffer size when user resizes the window
-    glfwSetWindowSizeCallback(
-        m_window,
-        [](GLFWwindow *window, int new_width, int new_height) -> void {
-            spdlog::debug("New window size = {}x{} in screen coordinates", new_width, new_height);
-            auto &self = ResourceManager::window;
-            self->m_width = new_width;
-            self->m_height = new_height;
-            self->setFramebufferSize({new_width, new_height});
-        });
+    // glfwSetWindowSizeCallback(
+    //     m_window,
+    //     [](GLFWwindow *window, int new_width, int new_height) -> void {
+    //         spdlog::debug("New window size = {}x{} in screen coordinates", new_width,
+    //         new_height); auto &self = ResourceManager::window; self->m_width = new_width;
+    //         self->m_height = new_height;
+    //         self->setFramebufferSize({new_width, new_height});
+    //     });
 
-    glfwSetWindowMaximizeCallback(m_window, [](GLFWwindow *window, int maximized) -> void {
-        auto &self = ResourceManager::window;
-        self->m_isMaximized = static_cast<bool>(maximized);
-        if(self->m_isMaximized)
-        {
-            spdlog::debug("Window has been maximized");
-        }
-        else
-        {
-            spdlog::debug("Window has been restored");
-        }
-    });
+    // glfwSetWindowMaximizeCallback(m_window, [](GLFWwindow *window, int maximized) -> void {
+    //     auto &self = ResourceManager::window;
+    //     self->m_isMaximized = static_cast<bool>(maximized);
+    //     if(self->m_isMaximized)
+    //     {
+    //         spdlog::debug("Window has been maximized");
+    //     }
+    //     else
+    //     {
+    //         spdlog::debug("Window has been restored");
+    //     }
+    // });
 
-    glfwSetWindowIconifyCallback(m_window, [](GLFWwindow *window, int minimized) -> void {
-        auto &self = ResourceManager::window;
-        self->m_isMinimized = static_cast<bool>(minimized);
-        if(self->m_isMinimized)
-        {
-            spdlog::debug("Window has been minimized");
-        }
-        else
-        {
-            spdlog::debug("Window has been restored");
-        }
-    });
+    // glfwSetWindowIconifyCallback(m_window, [](GLFWwindow *window, int minimized) -> void {
+    //     auto &self = ResourceManager::window;
+    //     self->m_isMinimized = static_cast<bool>(minimized);
+    //     if(self->m_isMinimized)
+    //     {
+    //         spdlog::debug("Window has been minimized");
+    //     }
+    //     else
+    //     {
+    //         spdlog::debug("Window has been restored");
+    //     }
+    // });
 
     glm::vec4 clear_color = glm::vec4(0.f, 0.f, 0.f, 1.f);
     glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a);

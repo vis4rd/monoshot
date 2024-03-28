@@ -1,7 +1,10 @@
 #include "../../include/section/CreatorSection.hpp"
 
+#include <imgui/imgui.h>
+#include <input/InputManager.hpp>
 #include <renderer/Renderer.hpp>
 #include <resource/ResourceManager.hpp>
+#include <section/SectionManager.hpp>
 #include <tinyfiledialogs/tinyfiledialogs.h>
 
 #include "../../include/ecs/actions.hpp"

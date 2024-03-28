@@ -4,11 +4,12 @@
 
 #include <glm/glm.hpp>
 
+#include "opengl/target/RenderWindow.hpp"
 #include "opengl/texture/Texture.hpp"
 #include "time/FramerateLimiter.hpp"
 #include "time/Timer.hpp"
 #include "ui/Font.hpp"
-#include "window/Window.hpp"
+// #include "window/Window.hpp"
 
 class Timer;
 class FramerateLimiter;
@@ -16,7 +17,7 @@ class FramerateLimiter;
 struct ResourceManager
 {
     // NOLINTBEGIN(readability-identifier-naming,cppcoreguidelines-avoid-non-const-global-variables)
-    static std::shared_ptr<mono::Window> window;
+    static std::shared_ptr<mono::gl::RenderWindow> window;
     static std::shared_ptr<Timer> timer;
     static glm::vec4 mapThemeBackgroundColor;
 

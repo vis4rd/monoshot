@@ -22,15 +22,19 @@ App::App(const std::string& window_title, uint32_t width, uint32_t height)
 {
     spdlog::info("App version: {}", MONOSHOT_VERSION);
 
+    m_window = std::make_shared<mono::gl::RenderWindow>(width, height, window_title);
+
     if constexpr(mono::config::constant::debugMode)  // Debug Build
     {
         // windowed, vsync
-        m_window = std::make_shared<mono::Window>(window_title, width, height, false, true);
+        m_window->setFullscreen(false);
+        m_window->setVerticalSync(true);
     }
     else  // Release Build
     {
         // fullscreen, no-vsync
-        m_window = std::make_shared<mono::Window>(window_title, width, height, true, false);
+        m_window->setFullscreen(true);
+        m_window->setVerticalSync(false);
     }
     ResourceManager::window = m_window;
 
@@ -168,26 +172,22 @@ void App::initFonts() noexcept
         std::make_shared<Font>("../res/fonts/gunplay/GUNPLAY_.ttf", *res::uiAmmoFontSize);
 }
 
-mono::Window& App::getWindow()
-{
-    return *m_window;
-}
-
-const mono::Window& App::getWindow() const
-{
-    return *m_window;
-}
-
 void App::run() noexcept
 {
     spdlog::info("Starting main application loop");
-    while(m_window->update(m_sectionManager))
+    while(true)
     {
+        this->update(m_sectionManager);
+        if(m_shouldClose)
+        {
+            break;
+        }
         m_timer->update();
         ResourceManager::framerateLimiter->wait();
-        m_window->render(m_sectionManager);
+        // m_window->render(m_sectionManager);
+        this->render(m_sectionManager);
     }
-    spdlog::info("Halted main application loop");
+    spdlog::info("Stopped main application loop");
 }
 
 void App::terminate(int code) noexcept
