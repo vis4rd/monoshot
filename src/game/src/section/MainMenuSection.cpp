@@ -1,6 +1,8 @@
 #include "../../include/section/MainMenuSection.hpp"
 
+#include <input/InputManager.hpp>
 #include <resource/ResourceManager.hpp>
+#include <section/SectionManager.hpp>
 
 #include "../../include/section/CreatorSection.hpp"
 #include "../../include/section/NewGameSection.hpp"

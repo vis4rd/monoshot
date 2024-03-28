@@ -1,7 +1,7 @@
 #include "../include/resource/ResourceManager.hpp"
 
 // NOLINTBEGIN(cppcoreguidelines-avoid-non-const-global-variables)
-std::shared_ptr<mono::Window> ResourceManager::window;
+std::shared_ptr<mono::gl::RenderWindow> ResourceManager::window;
 std::shared_ptr<Timer> ResourceManager::timer;
 glm::vec4 ResourceManager::mapThemeBackgroundColor;
 
