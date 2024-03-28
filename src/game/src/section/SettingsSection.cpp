@@ -1,6 +1,8 @@
 #include "../../include/section/SettingsSection.hpp"
 
+#include <input/InputManager.hpp>
 #include <resource/ResourceManager.hpp>
+#include <section/SectionManager.hpp>
 #include <ui/external/BeginCombo.hpp>
 
 #include "../../include/ui/LowerNavigationBox.hpp"
@@ -50,7 +52,7 @@ void SettingsSection::render() noexcept
                current_resolution.c_str(),
                {m_layout.buttonW, m_layout.buttonH}))
         {
-            const auto resolutions = window->queryMonitorResolutions();
+            const auto resolutions = mono::gl::RenderWindow::queryMonitorResolutions();
             const std::size_t mode_count = resolutions.size();
 
             std::vector<bool> states(mode_count);
@@ -62,43 +64,15 @@ void SettingsSection::render() noexcept
                 if(ImGui::Selectable(temp_resolution.c_str(), states[i]))
                 {
                     current_resolution = temp_resolution;
-                    window->setSize({temp_w, temp_h});
+                    window->setSize(temp_w, temp_h);
                 }
             }
             ImGui::EndCombo();
         }
-
-        // Refresh Rate
-        ImGui::BeginDisabled(!window->isFullscreen());
-        std::string current_refresh_rate = std::to_string(window->getRefreshRate()) + "Hz";
-        auto next_y = ImGui::GetCursorScreenPos().y;
-        ImGui::SetCursorScreenPos({m_layout.menuX + m_layout.buttonWS, next_y});
-        if(Custom::ImGui::BeginCombo(
-               "Rate ",
-               current_refresh_rate.c_str(),
-               {m_layout.buttonW, m_layout.buttonH}))
-        {
-            const auto refresh_rates = window->queryMonitorRefreshRates();
-            const std::size_t mode_count = refresh_rates.size();
-
-            std::vector<bool> states(mode_count);
-            for(int32_t i = 0; i < mode_count; i++)
-            {
-                const auto refresh_rate = refresh_rates[i];
-                std::string temp_refresh_rate = std::to_string(refresh_rate) + "Hz";
-                if(ImGui::Selectable(temp_refresh_rate.c_str(), states[i]))
-                {
-                    current_refresh_rate = temp_refresh_rate;
-                    window->setRefreshRate(static_cast<std::int32_t>(refresh_rate));
-                }
-            }
-            ImGui::EndCombo();
-        }
-        ImGui::EndDisabled();
 
         // Fullscreen
         std::string current_window_mode = window->isFullscreen() ? "Fullscreen" : "Windowed";
-        next_y = ImGui::GetCursorScreenPos().y;
+        auto next_y = ImGui::GetCursorScreenPos().y;
         ImGui::SetCursorScreenPos({m_layout.menuX + m_layout.buttonWS, next_y});
         if(Custom::ImGui::BeginCombo(
                "Window Mode",

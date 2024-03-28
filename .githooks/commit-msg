@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# UTILS
+
+function print_error() {
+    # Define color codes
+    local BOLD="\033[1m"
+    local RED="\033[0;31m$BOLD" # Error
+    local RESET="\033[0m"       # Reset color to default
+
+    # Print the error mesage
+    echo -e "${RED}Git Hook Error:${RESET} $1"
+}
+
+function get_repo_root_path() {
+    local repository_root_path=$(git rev-parse --show-toplevel)
+    repository_root_path="${repository_root_path,,}" # convert path to lowercase
+    repository_root_path=$(echo "/$repository_root_path" | sed 's/://') # replace C:/ with /c/ on windows
+    echo "$repository_root_path"
+}
+
+# CHECKS
+
+function check_gitmoji() {
+    local commit_msg=$1
+    local repository_root_path=$(get_repo_root_path)
+    local gitmoji_list_file="$repository_root_path/.githooks/.gitmoji_list.txt"
+
+    # Read the gitmoji list from the file and construct a regex
+    local gitmoji_list=$(<"$gitmoji_list_file")
+    local regex="^[$gitmoji_list][[:space:]].*$"
+
+    if [[ "$commit_msg" =~ $regex ]]; then
+        exit 0
+    else
+        print_error "Commit message must start with a gitmoji followed by whitespace. See \"$gitmoji_list_file\" for available gitmojis."
+        exit 1
+    fi
+}
+
+commit_msg=$(<"$1")
+
+# Check if the commit message starts with a gitmoji followed by whitespace
+check_gitmoji "$commit_msg"

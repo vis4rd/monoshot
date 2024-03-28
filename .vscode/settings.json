@@ -10,7 +10,16 @@
     "cmake.configureOnEdit": false,
     "cmake.configureOnOpen": false,
     "cmake.languageSupport.enableFileAPI": true,
-    "cmake.statusbar.visibility": "compact",
+    //
+    "doxdocgen.generic.briefTemplate": "@brief {text}.",
+    "doxdocgen.generic.order": [
+        "brief",
+        "tparam",
+        "param",
+        "return",
+        "custom"
+    ],
+    "doxdocgen.generic.paramTemplate": "@param {param} ",
     //
     "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
     "editor.codeActionsOnSave": {
@@ -27,8 +36,6 @@
     "git.ignoreSubmodules": true,
     "git.suggestSmartCommit": false,
     //
-    "terminal.integrated.defaultProfile.windows": "Git Bash",
-    //
     "[cpp]": {
         "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd",
         "editor.formatOnSave": true,
@@ -44,6 +51,7 @@
         "files.insertFinalNewline": true,
     },
     "[markdown]": {
+        "editor.formatOnSave": true,
         "files.insertFinalNewline": true,
     },
     "[yaml]": {

@@ -11,10 +11,10 @@ Hero::Hero(
     , m_maxHealth(health)
     , m_items{nullptr, nullptr, nullptr}
     , m_availableItems{false, false, false}
-    , m_texture{Resource::create<Texture::impl::Animation>(
+    , m_texture{Resource::create<mono::Animation>(
           "../res/textures/entities/player.png",
           0.03,
-          TextureData{
+          mono::TextureData{
               .widthTotal = 192,
               .heightTotal = 16,
               .widthSub = 16,
@@ -109,7 +109,7 @@ bool Hero::hasItem(const std::size_t& id) const
     return false;
 }
 
-Texture::Animation& Hero::getTexture()
+std::shared_ptr<mono::Animation>& Hero::getTexture()
 {
     return m_texture;
 }

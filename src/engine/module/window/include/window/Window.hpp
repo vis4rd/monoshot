@@ -7,11 +7,11 @@
 
 #include "NativeWindow.hpp"
 #include "config/StaticConfiguration.hpp"
-#include "gl/FrameBuffer.hpp"
-#include "gl/VertexArray.hpp"
 #include "input/InputManager.hpp"
+#include "opengl/gl/FrameBuffer.hpp"
+#include "opengl/gl/VertexArray.hpp"
+#include "opengl/shader/ShaderManager.hpp"
 #include "section/SectionManager.hpp"
-#include "shader/ShaderManager.hpp"
 #include "traits/Renderable.hpp"
 #include "traits/Updateable.hpp"
 
@@ -36,7 +36,7 @@ class Window final : public NativeWindow
     Window &operator=(Window &&) = delete;
 
     const ImGuiIO &getImGuiIo() const;
-    FrameBuffer &getFramebuffer();
+    mono::gl::FrameBuffer &getFramebuffer();
     glm::vec2 getMousePosition() const;
 
     bool isFullscreen() const;
@@ -66,8 +66,8 @@ class Window final : public NativeWindow
     bool m_isMaximized = false;
     bool m_isMinimized = false;
     bool m_isVSyncEnabled = false;
-    VertexArray m_screenVa;
-    FrameBuffer m_screenFb;
+    mono::gl::VertexArray m_screenVa;
+    mono::gl::FrameBuffer m_screenFb;
     SectionManager &m_sectionManager = SectionManager::get();
 };
 
@@ -152,7 +152,7 @@ void Window::render(RenderableTrait auto &&...renderables) noexcept
     m_screenFb.bind();
     glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    // set framebuffer viewport to its size
+    // set viewport to framebuffer's size
     glViewport(0, 0, m_screenFb.getSize().x, m_screenFb.getSize().y);
 
     // Render
@@ -226,10 +226,12 @@ void Window::render(RenderableTrait auto &&...renderables) noexcept
     glViewport(0, 0, m_width, m_height);  // set the main viewport to window size
 
     // use screen shader
-    mono::gl::ShaderManager::get().useShader("screen");
+    gl::ShaderManager::get().useShader("screen");
     m_screenVa.bind();
     glBindTexture(GL_TEXTURE_2D, m_screenFb.getColorID());
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+
+    // Renderer::get().getStats().drawCount = 0;
 
     // Replace previous frame with the current one
     glfwSwapBuffers(m_window);

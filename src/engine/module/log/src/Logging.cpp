@@ -81,7 +81,7 @@ void openGLDebugMessageCallback(
 
 void enableOpenGlLogging()
 {
-    if(glDebugMessageControl != nullptr)
+    if(glad_glDebugMessageControl != nullptr)
     {
         // 131169 - ???
         // 131185 - ???

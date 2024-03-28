@@ -1,5 +1,6 @@
 #pragma once
 
+#include <section/SectionManager.hpp>
 #include <ui/external/BeginCombo.hpp>
 
 #include "MainMenuLayout.hpp"

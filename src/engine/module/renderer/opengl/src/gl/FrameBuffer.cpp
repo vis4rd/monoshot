@@ -1,12 +1,11 @@
-#include "../../include/gl/FrameBuffer.hpp"
+#include "../../include/opengl/gl/FrameBuffer.hpp"
 
-#include <glad/gl.h>
 #include <spdlog/spdlog.h>
 
-namespace mono
+namespace mono::gl
 {
 
-FrameBuffer::FrameBuffer(const std::int32_t& width, const std::int32_t& height)
+FrameBuffer::FrameBuffer(GLsizei width, GLsizei height)
     : m_width(width)
     , m_height(height)
 {
@@ -50,15 +49,13 @@ FrameBuffer::FrameBuffer(const std::int32_t& width, const std::int32_t& height)
     this->initStencil();
     this->bindAttachments();
 
-    if(glCheckNamedFramebufferStatus(m_id, GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
-    {
-        spdlog::debug("Framebuffer creation is complete");
-    }
-    else
+    if(glCheckNamedFramebufferStatus(m_id, GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     {
         spdlog::critical("Framebuffer creation is not complete");
         throw std::runtime_error("Framebuffer creation is not complete");
     }
+
+    spdlog::debug("Framebuffer creation is complete");
 }
 
 FrameBuffer::~FrameBuffer()
@@ -78,7 +75,7 @@ void FrameBuffer::unbind() const
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void FrameBuffer::resize(const std::int32_t& width, const std::int32_t& height)
+void FrameBuffer::resize(GLsizei width, GLsizei height)
 {
     // destory old attachments
     this->destroyTexture();
@@ -96,17 +93,17 @@ void FrameBuffer::resize(const std::int32_t& width, const std::int32_t& height)
     glViewport(0, 0, m_width, m_height);
 }
 
-const std::uint32_t& FrameBuffer::getID() const
+GLuint FrameBuffer::getID() const
 {
     return m_id;
 }
 
-const std::uint32_t& FrameBuffer::getColorID() const
+GLenum FrameBuffer::getColorID() const
 {
     return m_colorAttachment;
 }
 
-const std::uint32_t& FrameBuffer::getStencilID() const
+GLuint FrameBuffer::getStencilID() const
 {
     return m_stencilAttachment;
 }
@@ -158,4 +155,4 @@ void FrameBuffer::bindAttachments()
         m_stencilAttachment);
 }
 
-}  // namespace mono
+}  // namespace mono::gl

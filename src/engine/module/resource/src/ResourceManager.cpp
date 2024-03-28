@@ -1,24 +1,24 @@
 #include "../include/resource/ResourceManager.hpp"
 
 // NOLINTBEGIN(cppcoreguidelines-avoid-non-const-global-variables)
-std::shared_ptr<mono::Window> ResourceManager::window;
+std::shared_ptr<mono::gl::RenderWindow> ResourceManager::window;
 std::shared_ptr<Timer> ResourceManager::timer;
 glm::vec4 ResourceManager::mapThemeBackgroundColor;
 
-Texture::Texture ResourceManager::carTexture;
-Texture::Texture ResourceManager::destroyedCarTexture;
-Texture::Texture ResourceManager::chairTexture;
-Texture::Texture ResourceManager::outdoorBenchTexture;
-Texture::Texture ResourceManager::tableTexture;
-Texture::Texture ResourceManager::smallTreeTexture;
-Texture::Texture ResourceManager::largeTreeTexture;
-Texture::Texture ResourceManager::smallBushTexture;
-Texture::Texture ResourceManager::largeBushTexture;
+std::shared_ptr<mono::Texture> ResourceManager::carTexture;
+std::shared_ptr<mono::Texture> ResourceManager::destroyedCarTexture;
+std::shared_ptr<mono::Texture> ResourceManager::chairTexture;
+std::shared_ptr<mono::Texture> ResourceManager::outdoorBenchTexture;
+std::shared_ptr<mono::Texture> ResourceManager::tableTexture;
+std::shared_ptr<mono::Texture> ResourceManager::smallTreeTexture;
+std::shared_ptr<mono::Texture> ResourceManager::largeTreeTexture;
+std::shared_ptr<mono::Texture> ResourceManager::smallBushTexture;
+std::shared_ptr<mono::Texture> ResourceManager::largeBushTexture;
 
-Texture::Texture ResourceManager::rifleInventoryTexture;
-Texture::Texture ResourceManager::pistolInventoryTexture;
+std::shared_ptr<mono::Texture> ResourceManager::rifleInventoryTexture;
+std::shared_ptr<mono::Texture> ResourceManager::pistolInventoryTexture;
 
-Texture::Texture ResourceManager::enemyTexture;
+std::shared_ptr<mono::Texture> ResourceManager::enemyTexture;
 
 std::shared_ptr<Font> ResourceManager::uiTitleFont;
 std::shared_ptr<float> ResourceManager::uiTitleFontSize;

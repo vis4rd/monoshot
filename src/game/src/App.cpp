@@ -3,11 +3,14 @@
 #include <filesystem>
 
 #include <cstring/cstring.hpp>
+#include <opengl/renderer/RenderPass.hpp>
+#include <opengl/renderer/RenderPipeline.hpp>
+#include <opengl/texture/Texture.hpp>
+#include <renderer/Renderer.hpp>
 #include <resource/Resource.hpp>
 #include <resource/ResourceManager.hpp>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
-#include <texture/Texture.hpp>
 #include <ui/Font.hpp>
 
 #include "../include/section/MainMenuSection.hpp"
@@ -19,17 +22,26 @@ App::App(const std::string& window_title, uint32_t width, uint32_t height)
 {
     spdlog::info("App version: {}", MONOSHOT_VERSION);
 
+    m_window = std::make_shared<mono::gl::RenderWindow>(width, height, window_title);
+
     if constexpr(mono::config::constant::debugMode)  // Debug Build
     {
         // windowed, vsync
-        m_window = std::make_shared<mono::Window>(window_title, width, height, false, true);
+        m_window->setFullscreen(false);
+        m_window->setVerticalSync(true);
     }
     else  // Release Build
     {
         // fullscreen, no-vsync
-        m_window = std::make_shared<mono::Window>(window_title, width, height, true, false);
+        m_window->setFullscreen(true);
+        m_window->setVerticalSync(false);
     }
     ResourceManager::window = m_window;
+
+    mono::gl::RenderPipeline default_pipeline{90};
+    mono::gl::RenderPass default_pass{"quad"};
+    default_pipeline.addRenderPass(std::move(default_pass));
+    mono::renderer::createPipeline(std::move(default_pipeline));
 
     m_timer = std::make_shared<Timer>();
     ResourceManager::timer = m_timer;
@@ -58,15 +70,15 @@ void App::initLogger() noexcept
     namespace fs = std::filesystem;
     fs::create_directory("../logs");
 
-    constexpr mono::cstring infoPattern{"[%Y-%m-%d %T.%e][%^%l%$] %v"};
-    constexpr mono::cstring debugPattern{"[%Y-%m-%d %T.%e][%^%l%$][thread %t][%s:%#] %v"};
+    constexpr mono::cstring info_pattern{"[%Y-%m-%d %T.%e][%^%l%$] %v"};
+    constexpr mono::cstring debug_pattern{"[%Y-%m-%d %T.%e][%^%l%$][thread %t][%s:%#] %v"};
     spdlog::level log_level{spdlog::level::info};
-    std::string log_pattern{infoPattern};
+    std::string log_pattern{info_pattern};
 
     if constexpr(mono::config::constant::debugMode)
     {
         log_level = spdlog::level::debug;
-        log_pattern = debugPattern;
+        log_pattern = debug_pattern;
     }
 
     auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
@@ -104,31 +116,29 @@ void App::initTextures() noexcept
 {
     using res = ResourceManager;
     res::largeTreeTexture =
-        Resource::create<Texture::impl::Texture>("../res/textures/large_tree.png", 128, 128);
+        Resource::create<mono::Texture>("../res/textures/large_tree.png", 128, 128);
     res::smallTreeTexture =
-        Resource::create<Texture::impl::Texture>("../res/textures/small_tree.png", 64, 64);
+        Resource::create<mono::Texture>("../res/textures/small_tree.png", 64, 64);
     res::outdoorBenchTexture =
-        Resource::create<Texture::impl::Texture>("../res/textures/outdoors_bench.png", 48, 16);
-    res::chairTexture =
-        Resource::create<Texture::impl::Texture>("../res/textures/chair.png", 16, 16);
-    res::tableTexture =
-        Resource::create<Texture::impl::Texture>("../res/textures/table.png", 32, 32);
+        Resource::create<mono::Texture>("../res/textures/outdoors_bench.png", 48, 16);
+    res::chairTexture = Resource::create<mono::Texture>("../res/textures/chair.png", 16, 16);
+    res::tableTexture = Resource::create<mono::Texture>("../res/textures/table.png", 32, 32);
     res::smallBushTexture =
-        Resource::create<Texture::impl::Texture>("../res/textures/small_bush.png", 48, 48);
+        Resource::create<mono::Texture>("../res/textures/small_bush.png", 48, 48);
     res::largeBushTexture =
-        Resource::create<Texture::impl::Texture>("../res/textures/large_bush.png", 56, 56);
-    res::carTexture = Resource::create<Texture::impl::Texture>("../res/textures/car.png", 32, 64);
+        Resource::create<mono::Texture>("../res/textures/large_bush.png", 56, 56);
+    res::carTexture = Resource::create<mono::Texture>("../res/textures/car.png", 32, 64);
     res::destroyedCarTexture =
-        Resource::create<Texture::impl::Texture>("../res/textures/destroyed_car.png", 32, 64);
+        Resource::create<mono::Texture>("../res/textures/destroyed_car.png", 32, 64);
 
     res::rifleInventoryTexture =
-        Resource::create<Texture::impl::Texture>("../res/textures/gun_inventory.png", 256, 128);
+        Resource::create<mono::Texture>("../res/textures/gun_inventory.png", 256, 128);
     res::pistolInventoryTexture =
-        Resource::create<Texture::impl::Texture>("../res/textures/pistol_inventory.png", 256, 128);
+        Resource::create<mono::Texture>("../res/textures/pistol_inventory.png", 256, 128);
 
-    res::enemyTexture = Resource::create<Texture::impl::Texture>(
+    res::enemyTexture = Resource::create<mono::Texture>(
         "../res/textures/entities/player.png",
-        TextureData{
+        mono::TextureData{
             .widthTotal = 192,
             .heightTotal = 16,
             .widthSub = 16,
@@ -162,26 +172,22 @@ void App::initFonts() noexcept
         std::make_shared<Font>("../res/fonts/gunplay/GUNPLAY_.ttf", *res::uiAmmoFontSize);
 }
 
-mono::Window& App::getWindow()
-{
-    return *m_window;
-}
-
-const mono::Window& App::getWindow() const
-{
-    return *m_window;
-}
-
 void App::run() noexcept
 {
     spdlog::info("Starting main application loop");
-    while(m_window->update(m_sectionManager))
+    while(true)
     {
+        this->update(m_sectionManager);
+        if(m_shouldClose)
+        {
+            break;
+        }
         m_timer->update();
         ResourceManager::framerateLimiter->wait();
-        m_window->render(m_sectionManager);
+        // m_window->render(m_sectionManager);
+        this->render(m_sectionManager);
     }
-    spdlog::info("Halted main application loop");
+    spdlog::info("Stopped main application loop");
 }
 
 void App::terminate(int code) noexcept
@@ -201,10 +207,8 @@ void App::destroyTextures() noexcept
     res::largeTreeTexture.reset();
     res::smallBushTexture.reset();
     res::largeBushTexture.reset();
-
     res::rifleInventoryTexture.reset();
     res::pistolInventoryTexture.reset();
-
     res::enemyTexture.reset();
 }
 

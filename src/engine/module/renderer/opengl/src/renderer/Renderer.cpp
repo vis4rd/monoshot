@@ -1,323 +1,175 @@
-#include "../../include/renderer/Renderer.hpp"
+#include "../../include/opengl/renderer/Renderer.hpp"
 
 #include <glm/ext/matrix_transform.hpp>
+#include <glm/gtx/string_cast.hpp>
+#include <imgui/imgui.h>
 #include <spdlog/spdlog.h>
 
-#include "../../include/shader/ShaderManager.hpp"
-#include "resource/Resource.hpp"
+#include "opengl/shader/ShaderManager.hpp"
 
-static constexpr std::array<glm::vec4, 4> quadVertexPositions = {
-    glm::vec4{-0.5f, -0.5f, 0.f, 1.f},
-    glm::vec4{0.5f,  -0.5f, 0.f, 1.f},
-    glm::vec4{0.5f,  0.5f,  0.f, 1.f},
-    glm::vec4{-0.5f, 0.5f,  0.f, 1.f}
-};
+namespace mono::gl
+{
 
-static constexpr std::array<glm::vec2, 4> quadTexturePositions = {
-    glm::vec2{0.0f, 0.0f},
-    glm::vec2{1.0f, 0.0f},
-    glm::vec2{1.0f, 1.0f},
-    glm::vec2{0.0f, 1.0f}
-};
+Renderer& Renderer::get()
+{
+    static Renderer renderer;
+    return renderer;
+}
 
 Renderer::Renderer()
 {
-    if(m_isInit == true)
-    {
-        return;
-    }
-    m_isInit = true;
-
     spdlog::debug("Renderer: creating OpenGL backend");
 
-    //// Quads
-    // data
-    // TODO(vis4rd): use std::vector instead of c-style array
-    // NOLINTNEXTLINE(modernize-avoid-c-arrays,cppcoreguidelines-avoid-c-arrays)
-    std::uint32_t quad_indices[m_data.maxIndexCount];
-    std::uint32_t offset = 0;
-    for(std::size_t i = 0; i < m_data.maxIndexCount; i += 6)
-    {
-        quad_indices[i + 0] = 0 + offset;
-        quad_indices[i + 1] = 1 + offset;
-        quad_indices[i + 2] = 2 + offset;
-
-        quad_indices[i + 3] = 2 + offset;
-        quad_indices[i + 4] = 3 + offset;
-        quad_indices[i + 5] = 0 + offset;
-
-        offset += 4;
-    }
-
-    // buffers
-    m_data.quadVao = std::make_shared<mono::VertexArray>();
-    auto quad_vbo = mono::VertexBuffer(m_data.maxVertexCount * sizeof(QuadVertex));
-    auto quad_ebo = mono::ElementBuffer(quad_indices, m_data.maxIndexCount);
-
-    // attributes
-    mono::BufferLayout quad_layout = {
-        {mono::ShaderDataType::FLOAT3, "aPos"      },
-        {mono::ShaderDataType::FLOAT4, "aColor"    },
-        {mono::ShaderDataType::FLOAT2, "aTexCoords"},
-        {mono::ShaderDataType::FLOAT1, "aTexIndex" },
-    };
-    quad_vbo.setLayout(quad_layout);
-
-    m_data.quadVao->addVertexBuffer(std::move(quad_vbo));
-    m_data.quadVao->addElementBuffer(quad_ebo);
-
-    // shaders
-    mono::gl::ShaderManager::get().addShaderProgram(
-        "quad",
-        "../res/shaders/quad.vert",
-        "../res/shaders/quad.frag");
-
-    //// Lines
-    // buffers
-    m_data.lineVao = std::make_shared<mono::VertexArray>();
-    auto line_vbo = mono::VertexBuffer(m_data.maxVertexCount * sizeof(LineVertex));
-
-    // attributes
-    mono::BufferLayout line_layout = {
-        {mono::ShaderDataType::FLOAT3, "aPos"  },
-        {mono::ShaderDataType::FLOAT4, "aColor"},
-    };
-    line_vbo.setLayout(line_layout);
-
-    m_data.lineVao->addVertexBuffer(std::move(line_vbo));
-
-    // shaders
-    mono::gl::ShaderManager::get().addShaderProgram(
-        "line",
-        "../res/shaders/line.vert",
-        "../res/shaders/line.frag");
-
-
-    // textures
-    // iota: fill textureSamplers with 0, 1, 2, ..., 31
-    std::iota(m_data.textureSamplers.begin(), m_data.textureSamplers.end(), 0);
-    std::fill(m_data.textureFrameCounts.begin(), m_data.textureFrameCounts.end(), 1);
-    std::fill(m_data.textureFrameRowLengths.begin(), m_data.textureFrameRowLengths.end(), 1);
-    std::fill(m_data.textureFrameCurrentIndex.begin(), m_data.textureFrameCurrentIndex.end(), 0);
-
-    const auto make_bytes = [](auto&&... args) -> std::array<std::byte, sizeof...(args)>
-    {
-        return {static_cast<std::byte>(std::forward<decltype(args)>(args))...};
-    };
-
-    const auto color = make_bytes(0xff, 0xff, 0xff, 0xff);
-    Texture::Texture texture = Resource::create<Texture::impl::Texture>(color.data(), 1, 1);
-
-    m_data.textureSlots.reserve(32);
-    m_data.textureSlots.push_back(texture);
-    m_data.textureSlotsTakenCount++;
+    auto& shader_manager = ShaderManager::get();
+    shader_manager.addShaderProgram("quad", "../res/shaders/quad.vert", "../res/shaders/quad.frag");
+    shader_manager.addShaderProgram("line", "../res/shaders/line.vert", "../res/shaders/line.frag");
 }
 
-Renderer::~Renderer()
+void Renderer::submitDraws(const glm::mat4& projection, const glm::mat4& view)
 {
-    if(!m_isInit)
+    m_stats.clear();
+
+    auto& pipeline = m_pipelines.at(m_currentPipelineId);
+    for(auto& pass : pipeline.getRenderPasses())
     {
-        return;
-    }
-    spdlog::debug("Renderer: shutting down...");
+        auto& storage = pass.getRenderStorage();
 
-    // spdlog::debug("Renderer: deleting quadBuffer");
-    // s_data.quadBuffer.fill({});
-    // spdlog::debug("Renderer: deleting lineBuffer");
-    // s_data.lineBuffer.fill({});
-    spdlog::debug("Renderer: deleting all RendererData");
-    m_data = RendererData();
-    Renderer::m_isInit = false;
-    spdlog::debug("Renderer: shutdown complete");
-}
+        {  // QUADS
+            auto quad_vao = pass.getQuadVao();
 
-void Renderer::beginBatch()
-{
-    spdlog::trace("Renderer: beginning a new batch, index_count = {}", m_stats.indexCount);
-    m_stats.indexCount = 0;
-    m_stats.quadCount = 0;
-    m_stats.lineCount = 0;
-    m_data.quadBufferIter = m_data.quadBuffer.begin();
-    m_data.lineBufferIter = m_data.lineBuffer.begin();
-}
+            // below line may be can be delegated to RenderPass
+            quad_vao->getVertexBuffers().at(1).setData(storage.quads);
+            m_stats.geometryUpdateSize += (storage.quads.size() * sizeof(QuadInstanceData));
 
-void Renderer::endBatch(const glm::mat4& projection, const glm::mat4& view)
-{
-    // spdlog::trace("Renderer: ending a batch");  // commented for performance reasons
-    m_data.lastProjectionMatrix = projection;
-    m_data.lastViewMatrix = view;
+            // prepare uniform data
+            constexpr std::array<std::int32_t, 32> samplers{
+                0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15,
+                16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31};
+            std::array<std::uint32_t, 32> frame_counts{};
+            std::array<std::uint32_t, 32> frame_row_lengths{};
+            std::array<std::uint32_t, 32> frame_current_indices{};
 
-    // quads
-    if(m_stats.indexCount > 0)  // TODO(vis4rd): possibly can be removed in favor of just quadCount
-    {
-        // spdlog::trace("Renderer: filling up VB, sending data to gpu");  // commented for
-        // performance reasons
-        // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
-        GLsizeiptr size = static_cast<std::uint32_t>(
-            reinterpret_cast<std::uint8_t*>(&*m_data.quadBufferIter)
-            - reinterpret_cast<std::uint8_t*>(&*(m_data.quadBuffer.begin())));
-        m_data.quadVao->getVertexBuffers().at(0).setData(
-            reinterpret_cast<const void*>(m_data.quadBuffer.data()),
-            size);
-        // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
+            for(std::size_t slot = 0; slot < storage.textureSlots.size(); slot++)
+            {
+                //! TODO(vis4rd): CAN GO OUT OF BOUND IF MORE THAN 32 TEXTURES!
+                const auto& texture = storage.textureSlots[slot];
+                const auto& id = texture->getID();
+                glBindTextureUnit(slot, id);  // slot = unit
 
-        // spdlog::trace("Renderer: binding texture IDs");  // commented for performance reasons
-        // spdlog::trace("slots taken: {}", m_data.textureSlotsTakenCount);  // commented for
-        // performance reasons
+                const auto& tex_data = texture->getTextureData();
+                frame_counts.at(slot) = tex_data.numberOfSubs;
+                frame_row_lengths.at(slot) = tex_data.numberOfSubsInOneRow;
+                frame_current_indices.at(slot) = tex_data.currentSub;
+            }
 
-        for(std::size_t slot = 0; slot < m_data.textureSlots.size(); slot++)
-        {
-            const auto& id = m_data.textureSlots[slot]->getID();
-            // spdlog::trace("Binding texture slot {} to unit {}", slot, id);  // commented for
-            // performance reasons
-            glBindTextureUnit(slot, id);  // slot = unit
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+            // TODO(vis4rd): is this correct though?? (one shader name per pass even though it has
+            //               multiple primitives?) maybe shader name should be stored in render
+            //               storage per-primitive. For now: use shader name for quads, hardcoded
+            //               for lines.
+            auto& quad_shader = ShaderManager::get().useShader(std::string{pass.getShaderName()});
+
+            quad_shader.uploadUniform("uProjection", projection, 0);
+            quad_shader.uploadUniform("uView", view, 1);
+
+            quad_shader.uploadUniform("uTextures", samplers, 2);
+            quad_shader.uploadUniform("uFrameCount", frame_counts, 34);
+            quad_shader.uploadUniform("uFrameRowLength", frame_row_lengths, 66);
+            quad_shader.uploadUniform("uFrameCurrentIndex", frame_current_indices, 98);
+
+            quad_vao->bind();
+            glDrawElementsInstanced(
+                GL_TRIANGLES,
+                static_cast<GLsizei>(quad_vao->getElementBuffer().getElementCount()),
+                GL_UNSIGNED_INT,
+                nullptr,
+                static_cast<GLsizei>(storage.quads.size()));
+            quad_vao->unbind();
+            m_stats.drawCalls++;
+
+            glDisable(GL_BLEND);
+
+            for(std::size_t slot = 0; slot < storage.textureSlots.size(); slot++)
+            {
+                glBindTextureUnit(slot, 0);
+            }
         }
 
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        {  // LINES
+            auto line_vao = pass.getLineVao();
+            if(not storage.lines.empty())
+            {
+                line_vao->getVertexBuffers().at(0).setData(storage.lines);
+                m_stats.geometryUpdateSize += (storage.lines.size() * sizeof(LineVertex));
 
-        // spdlog::trace("Renderer: binding shader 'quad'");  // commented for performance reasons
-        auto& quad_shader = mono::gl::ShaderManager::get().useShader("quad");
+                auto& line_shader = ShaderManager::get().useShader("line");
 
-        // spdlog::trace("Renderer: binding quad VAO");  // commented for performance reasons
-        m_data.quadVao->bind();
-        glDrawElements(GL_TRIANGLES, m_stats.indexCount, GL_UNSIGNED_INT, nullptr);
+                line_vao->bind();
+                glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(storage.lines.size()));
+                m_stats.drawCalls++;
 
-        quad_shader.uploadUniform("uTextures", m_data.textureSamplers, 2);
-        quad_shader.uploadUniform("uProjection", projection, 0);
-        quad_shader.uploadUniform("uView", view, 1);
-        quad_shader.uploadUniform("uFrameCount", m_data.textureFrameCounts, 34);
-        quad_shader.uploadUniform("uFrameRowLength", m_data.textureFrameRowLengths, 66);
-        quad_shader.uploadUniform("uFrameCurrentIndex", m_data.textureFrameCurrentIndex, 98);
-
-        glDisable(GL_BLEND);
-
-        // spdlog::trace("Renderer: unbinding texture IDs from slots");  // commented for
-        // performance reasons
-        for(std::size_t slot = 0; slot < m_data.textureSlots.size(); slot++)
-        {
-            glBindTextureUnit(slot, 0);
+                line_shader.uploadUniform("uProjection", projection, 0);
+                line_shader.uploadUniform("uView", view, 1);
+            }
         }
+        storage.clear();
     }
-
-    // lines
-    if(m_stats.lineCount > 0)
-    {
-        // spdlog::trace("Renderer: drawing lines");  // commented for performance reasons
-        // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
-        GLsizeiptr size = static_cast<std::uint32_t>(
-            reinterpret_cast<std::uint8_t*>(&*m_data.lineBufferIter)
-            - reinterpret_cast<std::uint8_t*>(&*(m_data.lineBuffer.begin())));
-        m_data.lineVao->getVertexBuffers().at(0).setData(
-            reinterpret_cast<const void*>(m_data.lineBuffer.data()),
-            size);
-        // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
-
-        // spdlog::trace("Renderer: binding shader 'line'");  // commented for performance reasons
-        auto& line_shader = mono::gl::ShaderManager::get().useShader("line");
-
-        // spdlog::trace("Renderer: binding line VAO");  // commented for performance reasons
-        m_data.lineVao->bind();
-
-        // spdlog::trace("Renderer: drawing line arrays");  // commented for performance reasons
-        glDrawArrays(GL_LINES, 0, m_stats.lineCount * 2);
-
-        // spdlog::trace("Renderer: uploading uniforms");  // commented for performance reasons
-        line_shader.uploadUniform("uProjection", projection, 0);
-        line_shader.uploadUniform("uView", view, 1);
-    }
-
-    m_stats.drawCount++;
-    // spdlog::trace("Renderer: finished batch");  // commented for performance reasons
+    this->displayStats();
 }
 
 void Renderer::drawQuad(
     const glm::vec2& position,
     const glm::vec2& size,
-    const float& rotation,
+    float rotation,
     const glm::vec4& color)
 {
-    drawQuad(position, size, rotation, m_data.textureSlots.at(0), color);
+    static std::shared_ptr<Texture> white_texture = std::make_shared<Texture>(
+        std::array<std::byte, 4>{std::byte{0xff}, std::byte{0xff}, std::byte{0xff}, std::byte{0xff}}
+            .data(),
+        1,
+        1);
+    drawQuad(position, size, rotation, white_texture, color);
 }
-
-// static float findSlot(const std::vector<Texture::Texture>& slots, const std::uint32_t&
-// texture_id)
-// {
-//     for(std::size_t slot = 0; slot < m_data.textureSlots.size(); slot++)
-//     {
-//         if(m_data.textureSlots[slot]->getID() == texture_id)
-//         {
-//             return static_cast<float>(slot);
-//         }
-//     }
-//     return -1.f;
-// }
 
 void Renderer::drawQuad(
     const glm::vec2& position,
     const glm::vec2& size,
-    const float& rotation,
-    const Texture::Texture& texture,
+    float rotation,
+    std::shared_ptr<Texture> texture,
     const glm::vec4& color)
 {
-    // spdlog::trace("Renderer: drawing a Quad, position = ({}, {}), size = ({}, {}), rotation =
-    // {}", position.x, position.y, size.x, size.y, rotation);
-
-    if(m_stats.indexCount >= m_data.maxIndexCount
-       || m_data.textureSlotsTakenCount >= m_data.maxTextures)
-    {
-        endBatch(m_data.lastProjectionMatrix, m_data.lastViewMatrix);
-        beginBatch();
-    }
-
     const auto identity = glm::identity<glm::mat4>();
     glm::mat4 model_matrix = glm::translate(identity, glm::vec3(position, 0.f))
                              * glm::rotate(identity, glm::radians(rotation), {0.f, 0.f, 1.f})
                              * glm::scale(identity, glm::vec3(size, 1.f));
-    // spdlog::trace("Renderer: model_matrix:\n{}", util::mat4str(model_matrix));
 
-    auto find_slot = [&m_data = m_data](
-                         const std::vector<Texture::Texture>& slots,
-                         const std::uint32_t& texture_id) -> std::int64_t {
-        for(std::int64_t slot = 0; slot < m_data.textureSlots.size(); slot++)
-        {
-            if(m_data.textureSlots[slot]->getID() == texture_id)
+
+    auto& storage = m_pipelines.at(m_currentPipelineId).currentRenderPass()->getRenderStorage();
+    const std::size_t texture_slot = [&storage, &texture]() {
+        // TODO(visard): change this lambda to STL algorithm
+        constexpr auto find_slot = [](const std::vector<std::shared_ptr<Texture>>& slots,
+                                      const std::uint32_t& texture_id) -> std::size_t {
+            for(std::int64_t slot = 0; slot < slots.size(); slot++)
             {
-                return slot;
+                if(slots[slot]->getID() == texture_id)
+                {
+                    return slot;
+                }
             }
+            return 9999999;
+        };
+        std::size_t slot = find_slot(storage.textureSlots, texture->getID());
+        if(slot > 9999998)
+        {
+            storage.textureSlots.push_back(std::move(texture));
+            slot = storage.textureSlots.size() - 1;
         }
-        return -1;
-    };
+        return slot;
+    }();
 
-    std::int64_t texture_slot = find_slot(m_data.textureSlots, texture->getID());
-    // spdlog::trace("texture_slot = {} of texture_id {}", texture_slot, texture->getID());
-
-    if(texture_slot == -1)
-    {
-        texture_slot = m_data.textureSlotsTakenCount;
-        m_data.textureSlots.push_back(texture);
-        m_data.textureSlotsTakenCount++;
-    }
-    m_data.textureFrameCounts.at(texture_slot) = texture->getTextureData().numberOfSubs;
-    m_data.textureFrameRowLengths.at(texture_slot) = texture->getTextureData().numberOfSubsInOneRow;
-    m_data.textureFrameCurrentIndex.at(texture_slot) = texture->getTextureData().currentSub;
-
-    for(std::size_t i = 0; i < 4; i++)
-    {
-        m_data.quadBufferIter->position = model_matrix * quadVertexPositions.at(i);
-        m_data.quadBufferIter->color = color;
-        m_data.quadBufferIter->texCoords = quadTexturePositions.at(i);
-        m_data.quadBufferIter->texIndex = static_cast<float>(texture_slot);
-        m_data.quadBufferIter++;
-        /*spdlog::trace("Renderer: quad vertex {}: position = {}, color = {}, texCoords = {},
-           texIndex = {}", i, util::vec3str(m_data.quadBufferIter->position),
-            util::vec4str(m_data.quadBufferIter->color),
-            util::vec2str(m_data.quadBufferIter->texCoords),
-            m_data.quadBufferIter->texIndex);*/
-    }
-
-    m_stats.indexCount += 6;
-    m_stats.quadCount++;
+    storage.quads.emplace_back(color, static_cast<float>(texture_slot), model_matrix);
 }
 
 void Renderer::drawLine(const glm::vec2& pos1, const glm::vec2& pos2, const glm::vec4& color)
@@ -331,15 +183,12 @@ void Renderer::drawLine(
     const glm::vec4& color1,
     const glm::vec4& color2)
 {
-    m_data.lineBufferIter->position = glm::vec3(pos1, 0.f);
-    m_data.lineBufferIter->color = color1;
-    m_data.lineBufferIter++;
+    auto vrtx1 = gl::LineVertex{glm::vec3(pos1, 0.f), color1};
+    auto vrtx2 = gl::LineVertex{glm::vec3(pos2, 0.f), color2};
 
-    m_data.lineBufferIter->position = glm::vec3(pos2, 0.f);
-    m_data.lineBufferIter->color = color2;
-    m_data.lineBufferIter++;
-
-    m_stats.lineCount++;
+    auto& storage = m_pipelines.at(m_currentPipelineId).currentRenderPass()->getRenderStorage();
+    storage.lines.push_back(vrtx1);
+    storage.lines.push_back(vrtx2);
 }
 
 void Renderer::drawRect(
@@ -368,31 +217,77 @@ void Renderer::drawRect(
 void Renderer::drawRect(
     const glm::vec2& center,
     const glm::vec2& size,
-    const float& rotation,
+    float rotation,
     const glm::vec4& color)  // center and size
 {
     glm::mat4 model_matrix =
         glm::translate(glm::identity<glm::mat4>(), glm::vec3(center, 0.f))
         * glm::rotate(glm::identity<glm::mat4>(), glm::radians(rotation), {0.f, 0.f, 1.f})
         * glm::scale(glm::identity<glm::mat4>(), glm::vec3(size, 1.f));
-    const auto bl = glm::vec2(model_matrix * quadVertexPositions[0]);
-    const auto br = glm::vec2(model_matrix * quadVertexPositions[1]);
-    const auto ur = glm::vec2(model_matrix * quadVertexPositions[2]);
-    const auto ul = glm::vec2(model_matrix * quadVertexPositions[3]);
+    const auto bl = glm::vec2(model_matrix * glm::vec4(quadConstantVertexData[0], 0.0, 1.0));
+    const auto br = glm::vec2(model_matrix * glm::vec4(quadConstantVertexData[2], 0.0, 1.0));
+    const auto ur = glm::vec2(model_matrix * glm::vec4(quadConstantVertexData[4], 0.0, 1.0));
+    const auto ul = glm::vec2(model_matrix * glm::vec4(quadConstantVertexData[6], 0.0, 1.0));
     Renderer::drawRect(ul, ur, br, bl, color);
 }
 
-RendererStats& Renderer::getStats()
+const RendererStats& Renderer::getStats() const
 {
     return m_stats;
 }
 
-void Renderer::resetStats()
+void Renderer::addRenderPipeline(RenderPipeline&& pipeline)
 {
-    m_stats = RendererStats();
+    if(m_pipelines.contains(pipeline.id))
+    {
+        spdlog::error("Renderer: pipeline with id {} already exists", pipeline.id);
+        return;
+    }
+
+    if(m_pipelines.empty())
+    {
+        m_currentPipelineId = pipeline.id;
+    }
+
+    m_pipelines.emplace(pipeline.id, std::move(pipeline));
 }
 
-RendererData& Renderer::getData()
+void Renderer::setRenderPipeline(std::int32_t pipeline_id)
 {
-    return m_data;
+    if(not m_pipelines.contains(pipeline_id))
+    {
+        spdlog::error("Renderer: pipeline with id {} does not exist", pipeline_id);
+        return;
+    }
+    m_currentPipelineId = pipeline_id;
 }
+
+void Renderer::displayStats() const
+{
+    if(ImGui::Begin("Renderer Statistics"))
+    {
+        ImGui::Text("Draw Calls: %d", m_stats.drawCalls);
+
+        {
+            std::string size_unit = "B";
+            auto geometry_update_size = m_stats.geometryUpdateSize;
+            if(geometry_update_size > 1e6)
+            {
+                geometry_update_size /= 1e6;
+                size_unit = "MB";
+            }
+            else if(geometry_update_size > 1e3)
+            {
+                geometry_update_size /= 1e3;
+                size_unit = "KB";
+            }
+            ImGui::Text(
+                "Geometry Update Size Per Frame: %d %s",
+                geometry_update_size,
+                size_unit.c_str());
+        }
+        ImGui::End();
+    }
+}
+
+}  // namespace mono::gl

@@ -35,23 +35,24 @@ target_link_libraries(mono_module_window
            mono::section
            mono::input
            mono::log
+           mono::renderer
 )
 
-if(CMAKE_HOST_WIN32)
-    target_link_libraries(mono_module_window
-        PUBLIC opengl32
-               comdlg32
-               ole32
-    )
-    message(STATUS "WIN32 system detected.")
-elseif(CMAKE_HOST_UNIX)
-    target_link_libraries(mono_module_window
-        PUBLIC GL
-               X11
-               pthread
-               Xrandr
-               Xi
-               dl
-    )
-    message(STATUS "UNIX system detected.")
-endif()
+# if(CMAKE_HOST_WIN32)
+#     target_link_libraries(mono_module_window
+#         PUBLIC opengl32
+#                comdlg32
+#                ole32
+#     )
+#     message(STATUS "WIN32 system detected.")
+# elseif(CMAKE_HOST_UNIX)
+#     target_link_libraries(mono_module_window
+#         PUBLIC GL
+#                X11
+#                pthread
+#                Xrandr
+#                Xi
+#                dl
+#     )
+#     message(STATUS "UNIX system detected.")
+# endif()

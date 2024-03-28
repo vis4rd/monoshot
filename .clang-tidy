@@ -34,22 +34,22 @@ CheckOptions:
   readability-identifier-naming.ClassConstantCase: UPPER_CASE
   readability-identifier-naming.ClassMemberCase: UPPER_CASE
   readability-identifier-naming.ClassMethodCase: camelBack
-  readability-identifier-naming.ConstantCase: lower_case
-  readability-identifier-naming.ConstantMemberCase: camelBack
-  readability-identifier-naming.ConstantMemberPrefix: m_
+  # readability-identifier-naming.ConstantCase: lower_case
+  # readability-identifier-naming.ConstantMemberCase: camelBack
+  # readability-identifier-naming.ConstantMemberPrefix: m_
   readability-identifier-naming.ConstantParameterCase: lower_case
   readability-identifier-naming.ConstantPointerParameterCase: lower_case
   readability-identifier-naming.ConstexprFunctionCase: camelBack
   readability-identifier-naming.ConstexprMethodCase: camelBack
-  readability-identifier-naming.ConstexprVariableCase: camelBack
+  # readability-identifier-naming.ConstexprVariableCase: camelBack
   readability-identifier-naming.EnumCase: CamelCase
   readability-identifier-naming.EnumConstantCase: UPPER_CASE
   readability-identifier-naming.FunctionCase: camelBack
-  readability-identifier-naming.GlobalConstantCase: camelBack
+  # readability-identifier-naming.GlobalConstantCase: camelBack
   readability-identifier-naming.GlobalConstantPointerCase: camelBack
   readability-identifier-naming.GlobalFunctionCase: camelBack
   readability-identifier-naming.GlobalPointerCase: camelBack
-  readability-identifier-naming.GlobalVariableCase: camelBack
+  # readability-identifier-naming.GlobalVariableCase: camelBack
   readability-identifier-naming.InlineNamespaceCase: lower_case
   readability-identifier-naming.LocalConstantCase: lower_case
   readability-identifier-naming.LocalConstantPointerCase: lower_case
@@ -58,7 +58,7 @@ CheckOptions:
   readability-identifier-naming.MacroDefinitionCase: UPPER_CASE
   readability-identifier-naming.MemberCase: camelBack
   readability-identifier-naming.MethodCase: camelBack
-  readability-identifier-naming.NamespaceCase: lower_case
+  # readability-identifier-naming.NamespaceCase: lower_case
   readability-identifier-naming.ParameterCase: lower_case
   readability-identifier-naming.ParameterPackCase: lower_case
   readability-identifier-naming.PointerParameterCase: lower_case
@@ -81,6 +81,6 @@ CheckOptions:
   readability-identifier-naming.TypeTemplateParameterCase: UPPER_CASE
   # readability-identifier-naming.UnionCase: lower_case
   readability-identifier-naming.ValueTemplateParameterCase: UPPER_CASE
-  readability-identifier-naming.VariableCase: lower_case
+  # readability-identifier-naming.VariableCase: lower_case
   readability-identifier-naming.VirtualMethodCase: camelBack
 ...

@@ -5,7 +5,7 @@
 #include <tuple>
 
 #include <glm/glm.hpp>
-#include <texture/Texture.hpp>
+#include <opengl/texture/Texture.hpp>
 
 #include "BlockID.hpp"
 
@@ -14,7 +14,7 @@
 struct MapTheme
 {
     using Color = glm::vec4;
-    using BlockData = std::tuple<BlockID, Color, Texture::Texture>;
+    using BlockData = std::tuple<BlockID, Color, std::shared_ptr<mono::Texture>>;
 
     Color backgroundColor;
     BlockData wallBlock;

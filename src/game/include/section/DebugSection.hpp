@@ -1,17 +1,18 @@
 #pragma once
 
-// #include "../utility/VertexArray.hpp"
-// #include "../texture/Texture2D.hpp"
 #include <camera/PerspectiveCamera.hpp>
 #include <entt/entity/registry.hpp>
-#include <renderer/Renderer.hpp>
 #include <section/Section.hpp>
 #include <time/Timer.hpp>
 
-#include "../ecs/systems.hpp"
 #include "../gameplay/Hero.hpp"
 #include "../map/Map.hpp"
 #include "../ui/GameplayLayout.hpp"
+
+namespace mono
+{
+class Renderer;
+}
 
 class DebugSection final : public Section
 {
@@ -34,20 +35,10 @@ class DebugSection final : public Section
     void showDebugUI(bool& draw_area, bool& draw_bounding_boxes);
 
     private:
-    // VertexArray VAO;
-
-    // content variables
-    // glm::vec3 scale = {1.f, 1.f, 1.f};
-    // float rotation = 0.f;
-    // glm::vec3 position = {0.f, 0.f, 0.f};
-    // glm::mat4 model_matrix = glm::identity<glm::mat4>();
-    // std::shared_ptr<Texture2D> firstTexture;
-
     entt::registry m_mapElementsRegistry{};
     entt::registry m_bulletRegistry{};
     entt::registry m_enemyRegistry{};
     PerspectiveCamera m_camera;
-    Renderer m_renderer;
     Map m_map;
     Hero m_hero;
     UI::GameplayLayout m_layout;

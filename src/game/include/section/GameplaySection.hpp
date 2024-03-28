@@ -2,13 +2,17 @@
 
 #include <camera/PerspectiveCamera.hpp>
 #include <entt/entity/registry.hpp>
-#include <renderer/Renderer.hpp>
 #include <section/Section.hpp>
 #include <time/Timer.hpp>
 
 #include "../gameplay/Hero.hpp"
 #include "../map/Map.hpp"
 #include "../ui/GameplayLayout.hpp"
+
+namespace mono
+{
+class Renderer;
+}
 
 class GameplaySection : public Section
 {
@@ -37,7 +41,6 @@ class GameplaySection : public Section
     Map m_map;
     Hero m_hero;
     UI::GameplayLayout m_layout;
-    Renderer m_renderer;
 
     bool m_onEnterFinished = false;
     bool m_onLeaveStarted = false;

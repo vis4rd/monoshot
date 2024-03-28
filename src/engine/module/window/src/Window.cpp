@@ -28,20 +28,20 @@ Window::Window(
     // NOLINTNEXTLINE(cppcoreguidelines-prefer-member-initializer)
     m_isMaximized = static_cast<bool>(glfwGetWindowAttrib(m_window, GLFW_MAXIMIZED));
 
-    constexpr std::array<float, 16> screenVertexBuffer =
+    constexpr std::array<float, 16> screen_vertex_buffer =
         {-1.f, -1.f, 0.f, 0.f, 1.f, -1.f, 1.f, 0.f, 1.f, 1.f, 1.f, 1.f, -1.f, 1.f, 0.f, 1.f};
-    constexpr std::array<std::uint32_t, 6> screenElementBuffer = {0, 1, 2, 2, 3, 0};
+    constexpr std::array<std::uint32_t, 6> screen_element_buffer = {0, 1, 2, 2, 3, 0};
 
-    VertexBuffer screen_vb(screenVertexBuffer.data(), screenVertexBuffer.size() * sizeof(float));
-    BufferLayout layout = {
-        {ShaderDataType::FLOAT2, "aPos"      },
-        {ShaderDataType::FLOAT2, "aTexCoords"},
+    mono::gl::VertexBuffer screen_vb(screen_vertex_buffer);
+    mono::gl::ShaderAttributeLayout layout = {
+        {mono::gl::ShaderAttributeType::FLOAT(2), "aPos"      },
+        {mono::gl::ShaderAttributeType::FLOAT(2), "aTexCoords"},
     };
     screen_vb.setLayout(layout);
 
-    ElementBuffer screen_eb(screenElementBuffer.data(), 6);
-    m_screenVa.addVertexBuffer(std::move(screen_vb));
-    m_screenVa.addElementBuffer(screen_eb);
+    mono::gl::ElementBuffer screen_eb(screen_element_buffer);
+    m_screenVa.bindVertexBuffer(std::move(screen_vb));
+    m_screenVa.bindElementBuffer(screen_eb);
 
     mono::gl::ShaderManager::get().addShaderProgram(
         "screen",
@@ -49,41 +49,40 @@ Window::Window(
         "../res/shaders/screen.frag");
 
     // update internal size tracking for UI and framebuffer size when user resizes the window
-    glfwSetWindowSizeCallback(
-        m_window,
-        [](GLFWwindow *window, int new_width, int new_height) -> void {
-            spdlog::debug("New window size = {}x{} in screen coordinates", new_width, new_height);
-            auto &self = ResourceManager::window;
-            self->m_width = new_width;
-            self->m_height = new_height;
-            self->setFramebufferSize({new_width, new_height});
-        });
+    // glfwSetWindowSizeCallback(
+    //     m_window,
+    //     [](GLFWwindow *window, int new_width, int new_height) -> void {
+    //         spdlog::debug("New window size = {}x{} in screen coordinates", new_width,
+    //         new_height); auto &self = ResourceManager::window; self->m_width = new_width;
+    //         self->m_height = new_height;
+    //         self->setFramebufferSize({new_width, new_height});
+    //     });
 
-    glfwSetWindowMaximizeCallback(m_window, [](GLFWwindow *window, int maximized) -> void {
-        auto &self = ResourceManager::window;
-        self->m_isMaximized = static_cast<bool>(maximized);
-        if(self->m_isMaximized)
-        {
-            spdlog::debug("Window has been maximized");
-        }
-        else
-        {
-            spdlog::debug("Window has been restored");
-        }
-    });
+    // glfwSetWindowMaximizeCallback(m_window, [](GLFWwindow *window, int maximized) -> void {
+    //     auto &self = ResourceManager::window;
+    //     self->m_isMaximized = static_cast<bool>(maximized);
+    //     if(self->m_isMaximized)
+    //     {
+    //         spdlog::debug("Window has been maximized");
+    //     }
+    //     else
+    //     {
+    //         spdlog::debug("Window has been restored");
+    //     }
+    // });
 
-    glfwSetWindowIconifyCallback(m_window, [](GLFWwindow *window, int minimized) -> void {
-        auto &self = ResourceManager::window;
-        self->m_isMinimized = static_cast<bool>(minimized);
-        if(self->m_isMinimized)
-        {
-            spdlog::debug("Window has been minimized");
-        }
-        else
-        {
-            spdlog::debug("Window has been restored");
-        }
-    });
+    // glfwSetWindowIconifyCallback(m_window, [](GLFWwindow *window, int minimized) -> void {
+    //     auto &self = ResourceManager::window;
+    //     self->m_isMinimized = static_cast<bool>(minimized);
+    //     if(self->m_isMinimized)
+    //     {
+    //         spdlog::debug("Window has been minimized");
+    //     }
+    //     else
+    //     {
+    //         spdlog::debug("Window has been restored");
+    //     }
+    // });
 
     glm::vec4 clear_color = glm::vec4(0.f, 0.f, 0.f, 1.f);
     glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a);
@@ -106,7 +105,7 @@ const ImGuiIO &Window::getImGuiIo() const
     return m_io;
 }
 
-FrameBuffer &Window::getFramebuffer()
+mono::gl::FrameBuffer &Window::getFramebuffer()
 {
     return m_screenFb;
 }

@@ -1,8 +1,8 @@
-#include "../../include/texture/Animation.hpp"
+#include "../../include/opengl/texture/Animation.hpp"
 
 #include "time/Timer.hpp"
 
-namespace Texture::impl
+namespace mono
 {
 
 Animation::Animation()
@@ -70,4 +70,4 @@ bool Animation::canChangeFrame()
     return (m_lastFrameChangeTimestamp + m_frameDuration) < Timer::getTotalTime();
 }
 
-}  // namespace Texture::impl
+}  // namespace mono
