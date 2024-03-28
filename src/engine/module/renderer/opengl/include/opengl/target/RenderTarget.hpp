@@ -58,6 +58,9 @@ class RenderTarget
     void render() const;
 
     protected:
+    RenderTarget() = default;
+
+    protected:
     mono::gl::FrameBuffer m_framebuffer;
     mono::gl::VertexArray m_vao;
 };

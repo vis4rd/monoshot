@@ -1,7 +1,9 @@
 #include "../../include/section/DebugSection.hpp"
 
+#include <input/InputManager.hpp>
 #include <renderer/Renderer.hpp>
 #include <resource/ResourceManager.hpp>
+#include <section/SectionManager.hpp>
 #include <stbi/stb_image.h>
 
 #include "../../include/ecs/actions.hpp"

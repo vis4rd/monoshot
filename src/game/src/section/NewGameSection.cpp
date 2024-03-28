@@ -1,5 +1,6 @@
 #include "../../include/section/NewGameSection.hpp"
 
+#include <input/InputManager.hpp>
 #include <resource/ResourceManager.hpp>
 
 #include "../../include/section/DebugSection.hpp"
