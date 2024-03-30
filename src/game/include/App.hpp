@@ -2,11 +2,17 @@
 
 #include <GLFW/glfw3.h>
 #include <config/ConfigLoader.hpp>
+#include <config/StaticConfiguration.hpp>
+#include <imgui/backends/imgui_impl_glfw.h>
+#include <imgui/backends/imgui_impl_opengl3.h>
+#include <input/InputManager.hpp>
+#include <opengl/shader/ShaderManager.hpp>
 #include <opengl/target/RenderWindow.hpp>
+#include <section/SectionManager.hpp>
 #include <time/Timer.hpp>
+#include <traits/Renderable.hpp>
 #include <traits/Updateable.hpp>
 #include <ui/MainMenuStyle.hpp>
-#include <window/Window.hpp>
 
 class App final
 {

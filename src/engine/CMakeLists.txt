@@ -69,7 +69,6 @@ add_subdirectory("${PROJECT_SOURCE_DIR}/module/ui")
 add_subdirectory("${PROJECT_SOURCE_DIR}/module/resource")
 add_subdirectory("${PROJECT_SOURCE_DIR}/module/time")
 add_subdirectory("${PROJECT_SOURCE_DIR}/module/config")
-add_subdirectory("${PROJECT_SOURCE_DIR}/module/window")
 
 
 # Use mold linker if present in the system (to speed up linking time)
