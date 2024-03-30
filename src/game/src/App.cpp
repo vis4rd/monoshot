@@ -23,6 +23,7 @@ App::App(const std::string& window_title, uint32_t width, uint32_t height)
     spdlog::info("App version: {}", MONOSHOT_VERSION);
 
     m_window = std::make_shared<mono::gl::RenderWindow>(width, height, window_title);
+    ResourceManager::window = m_window;
 
     if constexpr(mono::config::constant::debugMode)  // Debug Build
     {
@@ -36,7 +37,6 @@ App::App(const std::string& window_title, uint32_t width, uint32_t height)
         m_window->setFullscreen(true);
         m_window->setVerticalSync(false);
     }
-    ResourceManager::window = m_window;
 
     mono::gl::RenderPipeline default_pipeline{90};
     mono::gl::RenderPass default_pass{"quad"};

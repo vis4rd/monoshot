@@ -12,11 +12,18 @@
 namespace mono::gl
 {
 
+RenderWindow::RenderWindow()
+    : RenderTarget()
+{ }
+
 RenderWindow::RenderWindow(GLsizei width, GLsizei height, std::string_view title)
-    : RenderTarget(width, height)
+    : RenderTarget()
 {
-    // BUG: Window crashes because we use gl functions before initializing glad.
-    // TODO(vis4rd): Create separate class for initializing glfw and glad.
+    this->create(width, height, title);
+}
+
+void RenderWindow::create(GLsizei width, GLsizei height, std::string_view title)
+{
     spdlog::info("Creating RenderWindow '{}' with size {}x{}", title, width, height);
 
     this->initGlfw();
@@ -26,7 +33,7 @@ RenderWindow::RenderWindow(GLsizei width, GLsizei height, std::string_view title
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
     glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
     m_windowHandle =
         window_handle_t{glfwCreateWindow(width, height, title.data(), nullptr, nullptr)};
@@ -42,7 +49,9 @@ RenderWindow::RenderWindow(GLsizei width, GLsizei height, std::string_view title
     const auto lr = valid_resolutions.back();  // largest_resolution
     glfwSetWindowSizeLimits(m_windowHandle.get(), sr.x, sr.y, lr.x, lr.y);
 
-    this->initGL();
+    this->initGlad();
+    this->RenderTarget::create(width, height);
+    this->initGl();
     this->initImGui();
     this->initFlags();
     this->initEventCallbacks();
@@ -109,6 +118,11 @@ void RenderWindow::setFullscreen(bool fullscreen)
         new_pos_x = GLFW_DONT_CARE;
         new_pos_y = GLFW_DONT_CARE;
         new_refresh_rate = RenderWindow::getRefreshRate();
+
+        // Update window size to match the new resolution in fullscreen, so that the switch is
+        // much faster. This should be set by glfwSetWindowMonitor, but for some reason it chooses
+        // the smallest video mode.
+        glfwSetWindowSize(m_windowHandle.get(), new_x, new_y);
     }
 
     glfwSetWindowMonitor(
@@ -269,16 +283,18 @@ void RenderWindow::initGlfw() const
     }
 }
 
-void RenderWindow::initGL() const
+void RenderWindow::initGlad() const
 {
     spdlog::debug("Initializing GLAD");
-
 
     if(int success = gladLoadGL(glfwGetProcAddress); not success)
     {
         spdlog::critical("Failed to initialize GLAD");
     }
+}
 
+void RenderWindow::initGl() const
+{
     // logging
     if constexpr(mono::config::constant::debugMode)
     {
@@ -286,7 +302,7 @@ void RenderWindow::initGL() const
     }
 
     // viewport
-    const auto size = m_framebuffer.getSize();
+    const auto size = m_framebuffer->getSize();
     glViewport(0, 0, size.x, size.y);
 }
 
