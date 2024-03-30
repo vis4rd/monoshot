@@ -10,6 +10,7 @@
 namespace mono::gl
 {
 
+// TODO(vis4rd): Create small wrapper for GLFWwindow, remove this unique_ptr usage
 using window_handle_t = std::unique_ptr<GLFWwindow, decltype([](GLFWwindow* window) {
                                             glfwDestroyWindow(window);
                                         })>;
@@ -17,6 +18,13 @@ using window_handle_t = std::unique_ptr<GLFWwindow, decltype([](GLFWwindow* wind
 class RenderWindow final : public RenderTarget
 {
     public:
+    /**
+     * @brief Construct empty RenderWindow.
+     *
+     * This constructor does not create any resources. Call `create()` to properly initialize the
+     * object.
+     */
+    RenderWindow();
     RenderWindow(GLsizei width, GLsizei height, std::string_view title);
     RenderWindow(const RenderWindow& copy) = delete;
     RenderWindow(RenderWindow&& move) = default;
@@ -24,6 +32,8 @@ class RenderWindow final : public RenderTarget
 
     RenderWindow& operator=(const RenderWindow& copy) = delete;
     RenderWindow& operator=(RenderWindow&& move) = default;
+
+    void create(GLsizei width, GLsizei height, std::string_view title);
 
     [[nodiscard]] bool isFullscreen() const;
     [[nodiscard]] bool isMaximized() const;
@@ -50,11 +60,11 @@ class RenderWindow final : public RenderTarget
 
     private:
     void initGlfw() const;
-    void initGL() const;
+    void initGlad() const;
+    void initGl() const;
     void initImGui() const;
     void initFlags();
     void initEventCallbacks();
-    // using RenderTarget::render;
 
     private:
     enum WindowFlag

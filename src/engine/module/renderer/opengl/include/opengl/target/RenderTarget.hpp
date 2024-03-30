@@ -10,13 +10,22 @@ namespace mono::gl
 class RenderTarget
 {
     public:
+    /**
+     * @brief Construct empty RenderTarget.
+     *
+     * This constructor does not create any resources. Call `create()` to properly initialize the
+     * object.
+     */
+    RenderTarget() = default;
     RenderTarget(GLsizei width, GLsizei height);
     RenderTarget(const RenderTarget& copy) = delete;
     RenderTarget(RenderTarget&& move) = default;
-    ~RenderTarget() = default;
+    virtual ~RenderTarget() = default;
 
     RenderTarget& operator=(const RenderTarget& copy) = delete;
     RenderTarget& operator=(RenderTarget&& move) = default;
+
+    void create(GLsizei width, GLsizei height);
 
     void setSize(GLsizei width, GLsizei height);
     glm::ivec2 getSize() const;
@@ -58,11 +67,8 @@ class RenderTarget
     void render() const;
 
     protected:
-    RenderTarget() = default;
-
-    protected:
-    mono::gl::FrameBuffer m_framebuffer;
-    mono::gl::VertexArray m_vao;
+    std::unique_ptr<FrameBuffer> m_framebuffer{nullptr};
+    std::unique_ptr<VertexArray> m_vao{nullptr};
 };
 
 }  // namespace mono::gl
