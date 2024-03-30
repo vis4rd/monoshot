@@ -1,10 +1,7 @@
 {
-    "clangd.arguments": [
-        "--header-insertion",
-        "never"
-    ],
-    //
-    "C_Cpp.intelliSenseEngine": "disabled",
+    "C_Cpp.autoAddFileAssociations": false,
+    "C_Cpp.debugShortcut": false,
+    "C_Cpp.intelliSenseEngine": "default",
     //
     "cmake.buildBeforeRun": false,
     "cmake.configureOnEdit": false,
@@ -37,7 +34,7 @@
     "git.suggestSmartCommit": false,
     //
     "[cpp]": {
-        "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd",
+        "editor.defaultFormatter": "ms-vscode.cpptools",
         "editor.formatOnSave": true,
         "files.insertFinalNewline": true,
     },
