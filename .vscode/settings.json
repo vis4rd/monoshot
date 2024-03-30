@@ -2,6 +2,7 @@
     "C_Cpp.autoAddFileAssociations": false,
     "C_Cpp.debugShortcut": false,
     "C_Cpp.intelliSenseEngine": "default",
+    "C_Cpp.refactoring.includeHeader": "never",
     //
     "cmake.buildBeforeRun": false,
     "cmake.configureOnEdit": false,
