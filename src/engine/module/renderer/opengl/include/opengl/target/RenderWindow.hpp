@@ -42,7 +42,7 @@ class RenderWindow final : public RenderTarget
 
     void toggleFullscreen();
 
-    void setSize(GLsizei width, GLsizei height);
+    void setSize(GLsizei width, GLsizei height) override;
     void setFullscreen(bool fullscreen = true);
     void setMaximized(bool maximized = true);
     void setMinimized(bool minimized = true);
@@ -54,6 +54,56 @@ class RenderWindow final : public RenderTarget
     [[nodiscard]] GLFWwindow* getNativeWindow() const;
     [[nodiscard]] glm::vec2 getMousePosition() const;
 
+    /**
+     * @brief Prepare next frame for rendering.
+     *
+     * @remark This function can be called multiple times before calling `render()`.
+     *
+     * @note This function does NOT render anything to the screen. Use `render()` or
+     *       `renderCustom()` to submit geometry.
+     */
+    void prepareRender();
+
+    /**
+     * @brief Render the geometry to the screen.
+     *
+     * This function uses a default shader program, which is a simple passthrough.
+     * If you want to use a custom shader program (i.e. for post-processing), use `renderCustom()`
+     * instead.
+     *
+     * @attention This function should be called after `prepareRender()`.
+     */
+    void render() const override final;
+
+    /**
+     * @brief Render the geometry to the screen using user-defined custom shader.
+     *
+     * @note The user is responsible for calling `glUseProgram` with the desired shader program
+     *       before calling this function.
+     *
+     * @attention Fragment shader in the specified shader program must declare `sampler2D` uniform
+     *            variable at location `0` to be bound at unit `0`.
+     *
+     * @attention This function should be called after `prepareRender()`.
+     */
+    void renderCustom() const;
+
+    /**
+     * @brief Ask the RenderWindow to terminate gracefully.
+     *
+     * This function sets the flag to close the window. When the flag is set, render function does
+     * not do anyting. The application should check the status of the window every frame using
+     * `shouldClose()` and leave the event loop when necessary.
+     */
+    void requestClose();
+
+    /**
+     * @brief Check if the RenderWindow wants to terminate.
+     * @return True if either `requestClose()` was called or user clicked the close button manually,
+     *         false otherwise.
+     */
+    [[nodiscard]] bool shouldClose();
+
     [[nodiscard]] static std::span<const GLFWvidmode> queryVideoModes();
     [[nodiscard]] static std::vector<glm::ivec2> queryMonitorResolutions();
     [[nodiscard]] static std::int32_t getRefreshRate();
@@ -64,7 +114,13 @@ class RenderWindow final : public RenderTarget
     void initGl() const;
     void initImGui() const;
     void initFlags();
-    void initEventCallbacks();
+    void initEventCallbacks() const;
+    void prerender() const;
+
+    // hide some methods from the base class
+    using RenderTarget::create;
+    using RenderTarget::activate;
+    using RenderTarget::deactivate;
 
     private:
     enum WindowFlag

@@ -44,7 +44,6 @@ class App final
     std::shared_ptr<Timer> m_timer;
     InputManager& m_input;
     SectionManager& m_sectionManager;
-    bool m_shouldClose = false;
 };
 
 void App::update(UpdateableTrait auto&&... updateables) noexcept
@@ -52,26 +51,16 @@ void App::update(UpdateableTrait auto&&... updateables) noexcept
     if(m_sectionManager.size() == 0)
     {
         spdlog::debug("SectionManager asks to close the window");
-        m_shouldClose = true;
+        m_window->requestClose();
     }
-    if(glfwWindowShouldClose(m_window->getNativeWindow()))
+    if(m_window->shouldClose())
     {
-        spdlog::debug("GLFW asks to close the window");
-        m_shouldClose = true;
+        spdlog::debug("Window should close, clearing SectionManager, returning...");
         m_sectionManager.clear();
-    }
-
-    if(m_shouldClose)
-    {
-        spdlog::debug("App Update: close flag set to true, returning...");
         return;
     }
 
-    // spdlog::trace("Polling GLFW events");
     glfwPollEvents();
-
-    // spdlog::trace("Handling inputs");
-
     auto& input = InputManager::get();
     if(input.isPressedOnce(GLFW_KEY_F11))
     {
@@ -94,11 +83,10 @@ void App::update(UpdateableTrait auto&&... updateables) noexcept
     {
         if(input.isPressedOnce(GLFW_KEY_ESCAPE))
         {
-            m_shouldClose = true;
+            m_window->requestClose();
         }
     }
 
-    // spdlog::trace("Updating updateables passed to Window::update()");
     if constexpr(sizeof...(updateables) > 0)
     {
         (updateables.update(), ...);
@@ -107,25 +95,14 @@ void App::update(UpdateableTrait auto&&... updateables) noexcept
 
 void App::render(RenderableTrait auto&&... renderables) noexcept
 {
-    if(m_shouldClose)
-    {
-        return;
-    }
-    if(m_window->isMinimized())
+    if(m_window->isMinimized() or m_window->shouldClose())
     {
         return;
     }
 
-    // Start the Dear ImGui frame
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
-
-    // Set window as the current rendering target
-    m_window->activate();
+    m_window->prepareRender();
 
     // Render
-    /// Render my own stuff
     if constexpr(sizeof...(renderables) > 0)
     {
         (renderables.render(), ...);
@@ -173,23 +150,5 @@ void App::render(RenderableTrait auto&&... renderables) noexcept
         }
     }
 
-    /// Render ImGui (UI) on top
-    ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-    const auto& io = ImGui::GetIO();
-    if(io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-    {
-        GLFWwindow* backup_current_context = glfwGetCurrentContext();
-        ImGui::UpdatePlatformWindows();
-        ImGui::RenderPlatformWindowsDefault();
-        glfwMakeContextCurrent(backup_current_context);
-    }
-
-    m_window->deactivate();
-    // glViewport(0, 0, m_width, m_height);  // set the main viewport to window size
-
-    mono::gl::ShaderManager::get().useShader("render_target");
     m_window->render();
-
-    glfwSwapBuffers(m_window->getNativeWindow());
 }

@@ -7,6 +7,7 @@
 
 #include "config/StaticConfiguration.hpp"
 #include "log/Logging.hpp"
+#include "opengl/shader/ShaderManager.hpp"
 #include "resource/ResourceManager.hpp"
 
 namespace mono::gl
@@ -232,6 +233,63 @@ glm::vec2 RenderWindow::getMousePosition() const
     return mouse_pos;
 }
 
+void RenderWindow::prepareRender()
+{
+    // Start the Dear ImGui frame
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    // Set this RenderWindow as the current rendering target
+    this->activate();
+}
+
+void RenderWindow::render() const
+{
+    if(m_shouldClose)
+    {
+        return;
+    }
+
+    this->prerender();
+
+    // This is the trivial shader that renders the framebuffer without any special effects
+    ShaderManager::get().useShader("render_target");
+
+    this->RenderTarget::render();
+    glfwSwapBuffers(m_windowHandle.get());
+}
+
+void RenderWindow::renderCustom() const
+{
+    if(m_shouldClose)
+    {
+        return;
+    }
+
+    this->prerender();
+
+    // Note: no usage of shader here, the user has to take care of it themselves
+
+    this->RenderTarget::render();
+    glfwSwapBuffers(m_windowHandle.get());
+}
+
+void RenderWindow::requestClose()
+{
+    m_shouldClose = true;
+}
+
+bool RenderWindow::shouldClose()
+{
+    if(not m_shouldClose)
+    {
+        // if not set already, check if the glfw event requested to close
+        m_shouldClose = glfwWindowShouldClose(m_windowHandle.get());
+    }
+    return m_shouldClose;
+}
+
 std::span<const GLFWvidmode> RenderWindow::queryVideoModes()
 {
     auto *monitor = glfwGetPrimaryMonitor();
@@ -351,7 +409,7 @@ void RenderWindow::initFlags()
     m_flags[0] = false;
 }
 
-void RenderWindow::initEventCallbacks()
+void RenderWindow::initEventCallbacks() const
 {
     // update internal size tracking for UI and framebuffer size when user resizes the window
     glfwSetWindowSizeCallback(
@@ -391,6 +449,24 @@ void RenderWindow::initEventCallbacks()
                 spdlog::debug("Window has been restored");
             }
         });
+}
+
+void RenderWindow::prerender() const
+{
+    // Render ImGui at the end of the current frame
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    const auto &io = ImGui::GetIO();
+    if(io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        GLFWwindow *backup_current_context = glfwGetCurrentContext();
+        ImGui::UpdatePlatformWindows();
+        ImGui::RenderPlatformWindowsDefault();
+        glfwMakeContextCurrent(backup_current_context);
+    }
+
+    // Deactive this RenderTarget so that it won't render content to itself
+    this->deactivate();
 }
 
 }  // namespace mono::gl

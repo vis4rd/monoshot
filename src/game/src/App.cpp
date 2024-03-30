@@ -110,6 +110,7 @@ void App::initLogger() noexcept
 
 void App::initTextures() noexcept
 {
+    spdlog::info("Loading textures");
     using res = ResourceManager;
     res::largeTreeTexture =
         Resource::create<mono::Texture>("../res/textures/large_tree.png", 128, 128);
@@ -146,6 +147,7 @@ void App::initTextures() noexcept
 
 void App::initFonts() noexcept
 {
+    spdlog::info("Loading fonts");
     using res = ResourceManager;
 
     const auto& window_width = res::window->getSize().x;
@@ -174,7 +176,7 @@ void App::run() noexcept
     while(true)
     {
         this->update(m_sectionManager);
-        if(m_shouldClose)
+        if(m_window->shouldClose())
         {
             break;
         }
