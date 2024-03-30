@@ -27,7 +27,7 @@ class RenderTarget
 
     void create(GLsizei width, GLsizei height);
 
-    void setSize(GLsizei width, GLsizei height);
+    virtual void setSize(GLsizei width, GLsizei height);
     glm::ivec2 getSize() const;
 
     /**
@@ -41,19 +41,6 @@ class RenderTarget
     void deactivate() const;
 
     /**
-     * Render the contents of this RenderTarget to the other target using the specified shader.
-     *
-     * @param shader_name The name of the shader to use for rendering.
-     *
-     * The target which this RenderTarget will be rendered to has to be specified before calling
-     * this function.
-     *
-     * @important Fragment shader in the specified shader program must declare `sampler2D` uniform
-     *            variable at location `0` to be bound at unit `0`.
-     */
-    void render(std::string_view shader_name) const;
-
-    /**
      * Render the contents of this RenderTarget to the other target with shader activated
      * externally.
      *
@@ -64,7 +51,7 @@ class RenderTarget
      * @important Fragment shader in the specified shader program must declare `sampler2D` uniform
      *            variable at location `0` to be bound at unit `0`.
      */
-    void render() const;
+    virtual void render() const;
 
     protected:
     std::unique_ptr<FrameBuffer> m_framebuffer{nullptr};

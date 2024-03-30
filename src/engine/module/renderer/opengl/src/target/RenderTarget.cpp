@@ -62,12 +62,6 @@ void RenderTarget::deactivate() const
     m_framebuffer->unbind();
 }
 
-void RenderTarget::render(std::string_view shader_name) const
-{
-    ShaderManager::get().useShader(shader_name.data());
-    this->render();
-}
-
 void RenderTarget::render() const
 {
     ShaderProgram::uploadUniform(0, 0);
