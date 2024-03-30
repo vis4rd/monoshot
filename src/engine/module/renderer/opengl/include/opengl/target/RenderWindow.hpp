@@ -10,11 +10,6 @@
 namespace mono::gl
 {
 
-// TODO(vis4rd): Create small wrapper for GLFWwindow, remove this unique_ptr usage
-using window_handle_t = std::unique_ptr<GLFWwindow, decltype([](GLFWwindow* window) {
-                                            glfwDestroyWindow(window);
-                                        })>;
-
 class RenderWindow final : public RenderTarget
 {
     public:
@@ -130,6 +125,13 @@ class RenderWindow final : public RenderTarget
         MAXIMIZED = 2,
         FULLSCREEN = 3,
     };
+
+    struct GlfwWindowDestructor
+    {
+        void operator()(GLFWwindow* ptr) { glfwDestroyWindow(ptr); }
+    };
+
+    using window_handle_t = std::unique_ptr<GLFWwindow, GlfwWindowDestructor>;
 
     private:
     window_handle_t m_windowHandle = nullptr;
