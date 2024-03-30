@@ -58,7 +58,7 @@
             "detail": "Copy git hooks to .git/hooks/ directory.",
             "type": "shell",
             "linux": {
-                "command": "cp -r .githooks/* .git/hooks/ --exclude='.*'",
+                "command": "cp -r .githooks/* .git/hooks/",
             },
             "windows": {
                 "command": "Copy-Item -Path '.githooks/*' -Destination '.git/hooks/' -Exclude '.*'",
