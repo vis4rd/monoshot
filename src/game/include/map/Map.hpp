@@ -4,7 +4,6 @@
 #include <shader/ShaderManager.hpp>
 #include <texture/Texture.hpp>
 
-#include "../utility/Collisions.hpp"
 #include "MapTheme.hpp"
 #include "object/MapObject.hpp"
 
@@ -54,20 +53,15 @@ class Map final
     void setTheme(const MapTheme& new_theme);
     const MapTheme& getCurrentTheme() const;
 
-    void setEndArea(const glm::vec2& pos, const glm::vec2& size);
-    bool isInEndArea(const glm::vec2& pos, const glm::vec2& size) const;
-
     void update() noexcept;
     void render(
         const glm::mat4& projection,
         const glm::mat4& view,
         bool area = false,
-        bool show_solid = false,
-        bool show_end_area = false) noexcept;  // one pass draw
+        bool show_solid = false) noexcept;  // one pass draw
 
     void drawTiles(bool area = false, bool show_solid = false);
     void drawObjects(const glm::vec2& hero_pos, bool show_solid = false);
-    void drawEndArea();
 
     protected:
     void calculateNewSize(const float& tile_x, const float& tile_y);
@@ -79,7 +73,6 @@ class Map final
     std::int64_t m_centerY = 0;
     std::vector<Tile> m_tiles{};
     std::vector<MapObject> m_objects{};
-    std::unique_ptr<OBB::Polygon> m_endArea{};
     const MapTheme* m_theme = &MapThemes::forestTheme;
     Renderer& m_renderer;
 };

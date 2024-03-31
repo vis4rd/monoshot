@@ -94,7 +94,19 @@ void CreatorSection::update() noexcept
         m_map.removeObject(m_mouseWorldPos);
         for(auto&& [enemy, pos] : m_entities.view<const ecs::component::Position>().each())
         {
-            const bool col = AABB::isColliding(m_mouseWorldPos, {0.01f, 0.01f}, pos, {1.f, 1.f});
+            const glm::vec2 size2 = {1.f, 1.f};
+
+            const auto left2 = pos.x - (size2.x / 2.f);
+            const auto right2 = pos.x + (size2.x / 2.f);
+            const auto horizontal_collision =
+                (m_mouseWorldPos.x < right2) && (m_mouseWorldPos.x > left2);
+
+            const auto bottom2 = pos.y - (size2.y / 2.f);
+            const auto top2 = pos.y + (size2.y / 2.f);
+            const auto vertical_collision =
+                (m_mouseWorldPos.y < top2) && (m_mouseWorldPos.y > bottom2);
+
+            const bool col = horizontal_collision && vertical_collision;
             if(col)
             {
                 m_entities.destroy(enemy);
@@ -127,13 +139,6 @@ void CreatorSection::update() noexcept
                     0.f,
                     static_cast<BlockID>(m_selectedMapItem),
                     m_selectedSolid);
-            }
-        }
-        else if(m_selectedMapItem == 9999)
-        {
-            if(input.isPressedOnce(GLFW_MOUSE_BUTTON_LEFT))
-            {
-                m_map.setEndArea(m_mouseWorldPos, m_endAreaSize);
             }
         }
         else if(m_selectedMapItem == 10000)
@@ -178,15 +183,9 @@ void CreatorSection::render() noexcept
 {
     static bool draw_area = true;
     static bool draw_bbs = false;
-    static bool draw_end_area = true;
 
     // map rendering
-    m_map.render(
-        m_camera.getProjectionMatrix(),
-        m_camera.getViewMatrix(),
-        draw_area,
-        draw_bbs,
-        draw_end_area);
+    m_map.render(m_camera.getProjectionMatrix(), m_camera.getViewMatrix(), draw_area, draw_bbs);
 
     m_renderer.beginBatch();
     if(m_selectedMapItem > ObjectID::FIRST_OBJECT && m_selectedMapItem < ObjectID::LAST_OBJECT)
@@ -355,7 +354,6 @@ void CreatorSection::render() noexcept
         }
 
         ImGui::Checkbox("Solid tile", &m_selectedSolid);
-        ImGui::Checkbox("Draw map area", &draw_area);
         ImGui::Checkbox("Draw bounding boxes", &draw_bbs);
         if(ImGui::Button("Save to file"))
         {

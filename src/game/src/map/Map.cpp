@@ -14,7 +14,6 @@ Map::Map(Renderer& renderer, const std::size_t& width, const std::size_t& height
     , m_height(height)
     , m_tiles()
     , m_objects()
-    , m_endArea(nullptr)
     , m_renderer(renderer)
 {
     m_tiles.reserve(width * height);
@@ -58,11 +57,19 @@ void Map::removeObject(const glm::vec2& position)
     std::size_t dynamic_size = m_objects.size();
     for(std::int64_t i = 0; i < dynamic_size; i++)
     {
-        const bool col = AABB::isColliding(
-            position,
-            {0.01f, 0.01f},
-            m_objects[i].getPosition(),
-            m_objects[i].getSize());
+        const auto& pos2 = m_objects[i].getPosition();
+        const auto& size2 = m_objects[i].getSize();
+
+        const auto left2 = pos2.x - (size2.x / 2.f);
+        const auto right2 = pos2.x + (size2.x / 2.f);
+        const auto horizontal_collision = (position.x < right2) && (position.x > left2);
+
+        const auto bottom2 = pos2.y - (size2.y / 2.f);
+        const auto top2 = pos2.y + (size2.y / 2.f);
+        const auto vertical_collision = (position.y < top2) && (position.y > bottom2);
+
+        const bool col = horizontal_collision && vertical_collision;
+
         if(col)
         {
             m_objects.erase(m_objects.begin() + i);
@@ -225,10 +232,6 @@ void Map::loadFromFile(const std::string& filename, entt::registry& enemy_regist
             >> object_rotation >> object_solid >> object_id;
         if(object_id == 9999)
         {
-            m_endArea = std::make_unique<OBB::Polygon>(
-                glm::vec2(object_pos_x, object_pos_y),
-                glm::vec2(object_size_x, object_size_y),
-                object_rotation);
             continue;
         }
         this->addObject(
@@ -312,19 +315,6 @@ void Map::saveToFile(const std::string& filename, const entt::registry& enemy_re
             objectIdToString(object.id));
     }
 
-    if(m_endArea)
-    {
-        file_buffer << m_endArea->position.x << ' ' << m_endArea->position.y << ' '
-                    << m_endArea->size.x << ' ' << m_endArea->size.y << ' ' << 0.f << ' ' << 0
-                    << ' ' << 9999 << '\n';
-        spdlog::debug(
-            "Saving EndArea: pos = ({}, {}), size = ({}, {})",
-            m_endArea->position.x,
-            m_endArea->position.y,
-            m_endArea->size.x,
-            m_endArea->size.y);
-    }
-
     file_buffer << "\n";  // create an empty line between objects and enemies in a file
 
     auto view =
@@ -361,29 +351,13 @@ const MapTheme& Map::getCurrentTheme() const
     return *m_theme;
 }
 
-void Map::setEndArea(const glm::vec2& pos, const glm::vec2& size)
-{
-    m_endArea = std::make_unique<OBB::Polygon>(pos, size, 0.f);
-}
-
-bool Map::isInEndArea(const glm::vec2& pos, const glm::vec2& size) const
-{
-    if(m_endArea == nullptr)
-    {
-        return false;
-    }
-
-    return OBB::findCollision(m_endArea->position, m_endArea->size, 0.f, pos, size, 0.f);
-}
-
 void Map::update() noexcept { }
 
 void Map::render(
     const glm::mat4& projection,
     const glm::mat4& view,
     bool area,
-    bool show_solid,
-    bool show_end_area) noexcept
+    bool show_solid) noexcept
 {
     if(show_solid)
     {
@@ -392,10 +366,6 @@ void Map::render(
     m_renderer.beginBatch();
     this->drawTiles(area, show_solid);
     this->drawObjects({}, show_solid);
-    if(show_end_area)
-    {
-        this->drawEndArea();
-    }
     m_renderer.endBatch(projection, view);
     if(show_solid)
     {
@@ -405,15 +375,6 @@ void Map::render(
 
 void Map::drawTiles(bool area, bool show_solid)
 {
-    spdlog::trace("Drawing Map tiles...");
-    if(area)
-    {
-        m_renderer.drawQuad(
-            {m_centerX, m_centerY},
-            {m_width, m_height},
-            0.f,
-            {0.3f, 0.3f, 0.3f, 1.f});  // background area
-    }
     const auto& [wall_block, wall_color, wall_texture] = m_theme->wallBlock;
     for(const auto& tile : m_tiles)
     {
@@ -438,32 +399,15 @@ void Map::drawTiles(bool area, bool show_solid)
 
 void Map::drawObjects(const glm::vec2& hero_pos, bool show_solid)
 {
-    spdlog::trace("Drawing Map objects...");
     const auto& [wall_block, wall_color, wall_texture] = m_theme->wallBlock;
     for(const auto& object : m_objects)
     {
-        const bool col =
-            AABB::isColliding(hero_pos, {0.6f, 0.6f}, object.getPosition(), object.getSize());
-        glm::vec4 collision_color = {1.f, 1.f, 1.f, col ? object.opacityOnCollision : 1.f};
-        // spdlog::trace("OID = {}, collision_color = ({}, {}, {}, {})",
-        // objectIdToString(object.id), collision_color.x, collision_color.y, collision_color.z,
-        // collision_color.w);
         m_renderer.drawQuad(
             object.getPosition(),
             object.getSize(),
             object.getRotation(),
             object.getTexture(),
-            wall_color * collision_color);
-    }
-}
-
-void Map::drawEndArea()
-{
-    if(m_endArea)
-    {
-        spdlog::trace("Drawing Map end area...");
-        const auto& [wall_block, wall_color, wall_texture] = m_theme->wallBlock;
-        m_renderer.drawRect(m_endArea->position, m_endArea->size, 0.f, wall_color);
+            wall_color);
     }
 }
 
