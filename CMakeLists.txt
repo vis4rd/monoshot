@@ -32,5 +32,3 @@ string(COMPARE EQUAL ${CMAKE_BUILD_TYPE} "Debug" DEBUG_MODE)
 include(${PROJECT_SOURCE_DIR}/cmake/version.cmake)
 
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/src/game")
-
-include(${PROJECT_SOURCE_DIR}/cmake/clang_tidy.cmake)

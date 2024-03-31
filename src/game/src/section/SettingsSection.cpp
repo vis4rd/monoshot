@@ -140,19 +140,6 @@ void SettingsSection::render() noexcept
             }
             ImGui::EndCombo();
         }
-
-        // Max FPS Limit
-        next_y = ImGui::GetCursorScreenPos().y;
-        ImGui::SetCursorScreenPos({m_layout.menuX + m_layout.buttonWS, next_y});
-        ImGui::SetNextItemWidth(m_layout.buttonW);
-        auto& limiter = res::framerateLimiter;
-        static std::int32_t local_limit = limiter->getLimit();
-        ImGui::BeginDisabled(window->isVerticalSyncEnabled());
-        if(ImGui::SliderInt("Max FPS Limit", &local_limit, 60, 1000, "%d FPS"))
-        {
-            limiter->setLimit(local_limit);
-        }
-        ImGui::EndDisabled();
     }
     ImGui::End();
     ImGui::PopStyleVar();

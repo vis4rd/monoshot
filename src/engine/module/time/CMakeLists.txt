@@ -14,8 +14,7 @@ target_compile_features(mono_module_time
 )
 
 target_sources(mono_module_time
-    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/FramerateLimiter.cpp"
-            "${CMAKE_CURRENT_SOURCE_DIR}/src/Timer.cpp"
+    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/Timer.cpp"
 )
 
 target_include_directories(mono_module_time
