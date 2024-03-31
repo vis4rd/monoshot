@@ -74,7 +74,11 @@ void RenderTarget::render() const
     //? if something breaks, this might be the possible cause (replace above call with below)
     // glBindTexture(GL_TEXTURE_2D, m_framebuffer.getColorID());
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
-    glBindTextureUnit(unit, 0);
+
+    // glBindTextureUnit(unit, 0);
+    //* Future me: something did break, the above line called activate on unbound texture, the below
+    //* texture only unbinds it
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 }  // namespace mono::gl
