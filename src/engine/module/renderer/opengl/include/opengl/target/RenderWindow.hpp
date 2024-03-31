@@ -5,6 +5,7 @@
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
 
+#include "../glfw/RenderWindowUserStorage.hpp"
 #include "RenderTarget.hpp"
 
 namespace mono::gl
@@ -23,7 +24,7 @@ class RenderWindow final : public RenderTarget
     RenderWindow(GLsizei width, GLsizei height, std::string_view title);
     RenderWindow(const RenderWindow& copy) = delete;
     RenderWindow(RenderWindow&& move) = default;
-    ~RenderWindow() = default;
+    ~RenderWindow();
 
     RenderWindow& operator=(const RenderWindow& copy) = delete;
     RenderWindow& operator=(RenderWindow&& move) = default;
@@ -48,6 +49,7 @@ class RenderWindow final : public RenderTarget
     [[nodiscard]] std::string_view getTitle() const;
     [[nodiscard]] GLFWwindow* getNativeWindow() const;
     [[nodiscard]] glm::vec2 getMousePosition() const;
+    [[nodiscard]] RenderWindowUserStorage& getUserStorage();
 
     /**
      * @brief Prepare next frame for rendering.
@@ -109,7 +111,10 @@ class RenderWindow final : public RenderTarget
     void initGl() const;
     void initImGui() const;
     void initFlags();
+    void initUserStorage();
     void initEventCallbacks() const;
+    void destroyUserStorage();
+    void destroyEventCallbacks() const;
     void prerender() const;
 
     // hide some methods from the base class
@@ -144,6 +149,7 @@ class RenderWindow final : public RenderTarget
      */
     std::bitset<4> m_flags{};
     bool m_shouldClose = false;
+    RenderWindowUserStorage m_userStorage{.window = *this};
 };
 
 }  // namespace mono::gl

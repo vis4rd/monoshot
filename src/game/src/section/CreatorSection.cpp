@@ -20,30 +20,32 @@ CreatorSection::CreatorSection()
     m_name = "CreatorSection";
 
     // zooming of the view on mouse scroll
-    auto window = ResourceManager::window->getNativeWindow();
-    glfwSetWindowUserPointer(window, static_cast<void*>(&m_camera));
-    glfwSetScrollCallback(window, [](GLFWwindow* window, double xoffset, double yoffset) {
-        auto camera = static_cast<PerspectiveCamera*>(glfwGetWindowUserPointer(window));
-        const auto& pos = camera->getPosition();
+    ResourceManager::window->getUserStorage().camera = &m_camera;
 
-        auto new_pos_z = pos.z - yoffset;
-        if(new_pos_z < 0.1f)
-        {
-            new_pos_z = 0.1f;
-        }
-        else if(new_pos_z > 1000.f)
-        {
-            new_pos_z = 1000.f;
-        }
-        camera->setPosition({pos.x, pos.y, new_pos_z});
-    });
+    glfwSetScrollCallback(
+        ResourceManager::window->getNativeWindow(),
+        [](GLFWwindow* window, double xoffset, double yoffset) {
+            auto& storage = mono::glfwGetWindowUserPointer(window);
+            auto* camera = storage.camera;
+            const auto& pos = camera->getPosition();
+
+            auto new_pos_z = pos.z - yoffset;
+            if(new_pos_z < 0.1f)
+            {
+                new_pos_z = 0.1f;
+            }
+            else if(new_pos_z > 1000.f)
+            {
+                new_pos_z = 1000.f;
+            }
+            camera->setPosition({pos.x, pos.y, new_pos_z});
+        });
 }
 
 CreatorSection::~CreatorSection()
 {
     auto window = ResourceManager::window->getNativeWindow();
     glfwSetScrollCallback(window, nullptr);
-    glfwSetWindowUserPointer(window, nullptr);
 }
 
 void CreatorSection::update() noexcept
