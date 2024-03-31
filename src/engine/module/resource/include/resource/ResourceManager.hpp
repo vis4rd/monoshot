@@ -5,7 +5,6 @@
 #include <glm/glm.hpp>
 
 #include "texture/Texture.hpp"
-#include "time/FramerateLimiter.hpp"
 #include "time/Timer.hpp"
 #include "ui/Font.hpp"
 #include "window/Window.hpp"
@@ -41,7 +40,5 @@ struct ResourceManager
     static std::shared_ptr<float> uiButtonFontSize;
     static std::shared_ptr<Font> uiAmmoFont;
     static std::shared_ptr<float> uiAmmoFontSize;
-
-    static std::shared_ptr<FramerateLimiter> framerateLimiter;
     // NOLINTEND(readability-identifier-naming,cppcoreguidelines-avoid-non-const-global-variables)
 };
