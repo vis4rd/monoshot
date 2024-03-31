@@ -6,7 +6,6 @@
 
 #include "../../include/ecs/actions.hpp"
 #include "../../include/ui/GameplayOverlay.hpp"
-#include "../../include/utility/Collisions.hpp"
 
 DebugSection::DebugSection()
     : Section()
@@ -208,19 +207,11 @@ void DebugSection::update() noexcept
 
     // ecs::system::remove_dead_entities(m_registry);
     ecs::system::updateAis(m_enemyRegistry, m_hero.position, m_bulletRegistry);
-    ecs::system::moveHeroWithCollisions(m_mapElementsRegistry, m_hero, move_direction);
+    ecs::system::moveHero(m_mapElementsRegistry, m_hero, move_direction);
     ecs::system::moveBullets(m_bulletRegistry);
-    ecs::system::collideBullets(m_bulletRegistry, m_mapElementsRegistry, m_enemyRegistry);
     ecs::system::checkAliveBullets(m_bulletRegistry);
     ecs::system::destroyEntities(m_bulletRegistry);
     ecs::system::destroyEntities(m_enemyRegistry);
-
-    // finish the level if hero gets to the end area
-    if(m_map.isInEndArea(pos, m_hero.m_size) && (not m_onLeaveStarted))
-    {
-        m_leaveStartTimestamp = Timer::getTotalTime();
-        m_onLeaveStarted = true;
-    }
     // clang-format on
 }
 
