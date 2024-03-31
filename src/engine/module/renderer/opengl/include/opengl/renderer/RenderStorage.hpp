@@ -7,7 +7,6 @@
 #include "LinePrimitive.hpp"
 #include "QuadPrimitive.hpp"
 
-// TODO(vis4rd): add namespace >:(
 namespace mono::gl
 {
 

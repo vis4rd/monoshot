@@ -51,7 +51,7 @@ class RenderTarget
      * @important Fragment shader in the specified shader program must declare `sampler2D` uniform
      *            variable at location `0` to be bound at unit `0`.
      */
-    virtual void render() const;
+    virtual void render() const = 0;
 
     protected:
     std::unique_ptr<FrameBuffer> m_framebuffer{nullptr};
