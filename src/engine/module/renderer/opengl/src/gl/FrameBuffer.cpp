@@ -98,7 +98,7 @@ GLuint FrameBuffer::getID() const
     return m_id;
 }
 
-GLenum FrameBuffer::getColorID() const
+GLuint FrameBuffer::getColorID() const
 {
     return m_colorAttachment;
 }
