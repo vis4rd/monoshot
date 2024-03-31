@@ -8,7 +8,6 @@
 #include "config/StaticConfiguration.hpp"
 #include "log/Logging.hpp"
 #include "opengl/shader/ShaderManager.hpp"
-#include "resource/ResourceManager.hpp"
 
 namespace mono::gl
 {
@@ -21,6 +20,12 @@ RenderWindow::RenderWindow(GLsizei width, GLsizei height, std::string_view title
     : RenderTarget()
 {
     this->create(width, height, title);
+}
+
+RenderWindow::~RenderWindow()
+{
+    this->destroyEventCallbacks();
+    this->destroyUserStorage();
 }
 
 void RenderWindow::create(GLsizei width, GLsizei height, std::string_view title)
@@ -55,6 +60,7 @@ void RenderWindow::create(GLsizei width, GLsizei height, std::string_view title)
     this->initGl();
     this->initImGui();
     this->initFlags();
+    this->initUserStorage();
     this->initEventCallbacks();
 }
 
@@ -233,6 +239,11 @@ glm::vec2 RenderWindow::getMousePosition() const
     return mouse_pos;
 }
 
+RenderWindowUserStorage &RenderWindow::getUserStorage()
+{
+    return m_userStorage;
+}
+
 void RenderWindow::prepareRender()
 {
     // Start the Dear ImGui frame
@@ -409,23 +420,33 @@ void RenderWindow::initFlags()
     m_flags[0] = false;
 }
 
+void RenderWindow::initUserStorage()
+{
+    m_userStorage.camera = nullptr;
+
+    mono::glfwSetWindowUserPointer(m_windowHandle.get(), m_userStorage);
+}
+
 void RenderWindow::initEventCallbacks() const
 {
-    // update internal size tracking for UI and framebuffer size when user resizes the window
+    // update framebuffer size when user resizes the window
     glfwSetWindowSizeCallback(
         m_windowHandle.get(),
         [](GLFWwindow *window, int new_width, int new_height) -> void {
+            auto &storage = mono::glfwGetWindowUserPointer(window);
+
             spdlog::debug("New window size = {}x{} in screen coordinates", new_width, new_height);
-            auto &self = ResourceManager::window;
-            self->setSize(new_width, new_height);
+            storage.window.setSize(new_width, new_height);
         });
 
     glfwSetWindowMaximizeCallback(
         m_windowHandle.get(),
         [](GLFWwindow *window, int maximized) -> void {
-            auto &self = ResourceManager::window;
-            self->setMaximized(static_cast<bool>(maximized));
-            if(self->isMaximized())
+            auto &storage = mono::glfwGetWindowUserPointer(window);
+            auto &self = storage.window;
+
+            self.setMaximized(static_cast<bool>(maximized));
+            if(self.isMaximized())
             {
                 spdlog::debug("Window has been maximized");
             }
@@ -438,9 +459,11 @@ void RenderWindow::initEventCallbacks() const
     glfwSetWindowIconifyCallback(
         m_windowHandle.get(),
         [](GLFWwindow *window, int minimized) -> void {
-            auto &self = ResourceManager::window;
-            self->setMinimized(static_cast<bool>(minimized));
-            if(self->isMinimized())
+            auto &storage = mono::glfwGetWindowUserPointer(window);
+            auto &self = storage.window;
+
+            self.setMinimized(static_cast<bool>(minimized));
+            if(self.isMinimized())
             {
                 spdlog::debug("Window has been minimized");
             }
@@ -449,6 +472,19 @@ void RenderWindow::initEventCallbacks() const
                 spdlog::debug("Window has been restored");
             }
         });
+}
+
+void RenderWindow::destroyUserStorage()
+{
+    m_userStorage.camera = nullptr;
+    glfwSetWindowUserPointer(m_windowHandle.get(), nullptr);
+}
+
+void RenderWindow::destroyEventCallbacks() const
+{
+    glfwSetWindowSizeCallback(m_windowHandle.get(), nullptr);
+    glfwSetWindowMaximizeCallback(m_windowHandle.get(), nullptr);
+    glfwSetWindowIconifyCallback(m_windowHandle.get(), nullptr);
 }
 
 void RenderWindow::prerender() const
