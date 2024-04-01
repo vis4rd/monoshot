@@ -25,7 +25,6 @@ RenderWindow::RenderWindow(GLsizei width, GLsizei height, std::string_view title
 RenderWindow::~RenderWindow()
 {
     this->destroyEventCallbacks();
-    this->destroyUserStorage();
 }
 
 void RenderWindow::create(GLsizei width, GLsizei height, std::string_view title)
@@ -49,6 +48,8 @@ void RenderWindow::create(GLsizei width, GLsizei height, std::string_view title)
         throw std::runtime_error("Failed to initialize RenderWindow native handle");
     }
 
+    m_userStorage = std::make_unique<RenderWindowUserStorage>(*this);
+
     glfwMakeContextCurrent(m_windowHandle.get());
     const auto valid_resolutions = RenderWindow::queryMonitorResolutions();
     const auto sr = valid_resolutions.front();  // smallest_resolution
@@ -60,7 +61,6 @@ void RenderWindow::create(GLsizei width, GLsizei height, std::string_view title)
     this->initGl();
     this->initImGui();
     this->initFlags();
-    this->initUserStorage();
     this->initEventCallbacks();
 }
 
@@ -241,7 +241,7 @@ glm::vec2 RenderWindow::getMousePosition() const
 
 RenderWindowUserStorage &RenderWindow::getUserStorage()
 {
-    return m_userStorage;
+    return *m_userStorage;
 }
 
 void RenderWindow::prepareRender()
@@ -364,6 +364,8 @@ void RenderWindow::initGlad() const
 
 void RenderWindow::initGl() const
 {
+    spdlog::debug("Initializing GL");
+
     // logging
     if constexpr(mono::config::constant::debugMode)
     {
@@ -420,15 +422,10 @@ void RenderWindow::initFlags()
     m_flags[0] = false;
 }
 
-void RenderWindow::initUserStorage()
-{
-    m_userStorage.camera = nullptr;
-
-    mono::glfwSetWindowUserPointer(m_windowHandle.get(), m_userStorage);
-}
-
 void RenderWindow::initEventCallbacks() const
 {
+    spdlog::debug("Initializing RenderWindow event callbacks");
+
     // update framebuffer size when user resizes the window
     glfwSetWindowSizeCallback(
         m_windowHandle.get(),
@@ -472,12 +469,6 @@ void RenderWindow::initEventCallbacks() const
                 spdlog::debug("Window has been restored");
             }
         });
-}
-
-void RenderWindow::destroyUserStorage()
-{
-    m_userStorage.camera = nullptr;
-    glfwSetWindowUserPointer(m_windowHandle.get(), nullptr);
 }
 
 void RenderWindow::destroyEventCallbacks() const
