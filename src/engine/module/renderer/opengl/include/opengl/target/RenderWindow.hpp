@@ -32,14 +32,17 @@ class RenderWindow final : public RenderTarget
     void create(GLsizei width, GLsizei height, std::string_view title);
 
     [[nodiscard]] bool isFullscreen() const;
+    [[nodiscard]] bool isBorderlessFullscreen() const;
     [[nodiscard]] bool isMaximized() const;
     [[nodiscard]] bool isMinimized() const;
     [[nodiscard]] bool isVerticalSyncEnabled() const;
 
     void toggleFullscreen();
+    void toggleBorderlessFullscreen();
 
     void setSize(GLsizei width, GLsizei height) override;
     void setFullscreen(bool fullscreen = true);
+    void setBorderlessFullscreen(bool borderless = true);
     void setMaximized(bool maximized = true);
     void setMinimized(bool minimized = true);
     void setVerticalSync(bool vsync = true);
@@ -127,6 +130,7 @@ class RenderWindow final : public RenderTarget
         MINIMIZED = 1,
         MAXIMIZED = 2,
         FULLSCREEN = 3,
+        BORDERLESS_FULLSCREEN = 4,
     };
 
     struct GlfwWindowDestructor
@@ -142,10 +146,10 @@ class RenderWindow final : public RenderTarget
      * @brief Flags used to monitor window's state.
      *
      * Current flags are:
-     * 3          | 2         | 1         | 0
-     * fullscreen | maximized | minimized | vsync
+     * 4                     | 3          | 2         | 1         | 0
+     * borderless fullscreen | fullscreen | maximized | minimized | vsync
      */
-    std::bitset<4> m_flags{};
+    std::bitset<5> m_flags{};
     bool m_shouldClose = false;
     std::unique_ptr<RenderWindowUserStorage> m_userStorage{nullptr};
 };

@@ -69,6 +69,11 @@ bool RenderWindow::isFullscreen() const
     return m_flags[WindowFlag::FULLSCREEN];
 }
 
+bool RenderWindow::isBorderlessFullscreen() const
+{
+    return m_flags[WindowFlag::BORDERLESS_FULLSCREEN];
+}
+
 bool RenderWindow::isMaximized() const
 {
     return m_flags[WindowFlag::MAXIMIZED];
@@ -89,6 +94,11 @@ void RenderWindow::toggleFullscreen()
     this->setFullscreen(not m_flags[WindowFlag::FULLSCREEN]);
 }
 
+void RenderWindow::toggleBorderlessFullscreen()
+{
+    this->setBorderlessFullscreen(not m_flags[WindowFlag::BORDERLESS_FULLSCREEN]);
+}
+
 void RenderWindow::setSize(GLsizei width, GLsizei height)
 {
     spdlog::debug("New window size = {}x{} in pixels", width, height);
@@ -104,32 +114,41 @@ void RenderWindow::setFullscreen(bool fullscreen)
         return;
     }
 
-    const auto valid_resolutions = RenderWindow::queryMonitorResolutions();
-    const auto sr = valid_resolutions.front();  // smallest_resolution
-    const auto lr = valid_resolutions.back();  // largest_resolution
-    m_flags[WindowFlag::FULLSCREEN] = fullscreen;
+    if(m_flags[WindowFlag::MAXIMIZED])
+    {
+        this->setMaximized(false);
+    }
 
-    // auto *current_monitor = glfwGetPrimaryMonitor();
+    m_flags[WindowFlag::FULLSCREEN] = fullscreen;
+    m_flags[WindowFlag::BORDERLESS_FULLSCREEN] = false;
+
     GLFWmonitor *current_monitor = nullptr;
-    std::int32_t new_x = sr.x;
-    std::int32_t new_y = sr.y;
-    std::int32_t new_pos_x = (lr.x - sr.x) / 2;
-    std::int32_t new_pos_y = (lr.y - sr.y) / 2;
+    std::int32_t new_width = 1280;  // TODO(vis4rd): Replace with pre-fullscreen value
+    std::int32_t new_height = 720;  // Replace with pre-fullscreen value
+    std::int32_t new_pos_x = 100;
+    std::int32_t new_pos_y = 100;
     std::int32_t new_refresh_rate = GLFW_DONT_CARE;
 
     if(fullscreen)
     {
         current_monitor = glfwGetPrimaryMonitor();
-        new_x = lr.x;
-        new_y = lr.y;
+        const GLFWvidmode *mode = glfwGetVideoMode(current_monitor);
+        new_width = mode->width;
+        new_height = mode->height;
         new_pos_x = GLFW_DONT_CARE;
         new_pos_y = GLFW_DONT_CARE;
-        new_refresh_rate = RenderWindow::getRefreshRate();
+        new_refresh_rate = mode->refreshRate;
 
         // Update window size to match the new resolution in fullscreen, so that the switch is
-        // much faster. This should be set by glfwSetWindowMonitor, but for some reason it chooses
-        // the smallest video mode.
-        glfwSetWindowSize(m_windowHandle.get(), new_x, new_y);
+        // much faster. This should be set by glfwSetWindowMonitor, but for some reason it breaks on
+        // multiple switching back and forth.
+        glfwSetWindowSize(m_windowHandle.get(), new_width, new_height);
+    }
+    else
+    {
+        // Restore decorations in case user performed:
+        // borderless fullscreen -> fullscreen -> windowed
+        glfwSetWindowAttrib(m_windowHandle.get(), GLFW_DECORATED, true);
     }
 
     glfwSetWindowMonitor(
@@ -137,14 +156,60 @@ void RenderWindow::setFullscreen(bool fullscreen)
         current_monitor,
         new_pos_x,
         new_pos_y,
-        new_x,
-        new_y,
+        new_width,
+        new_height,
         new_refresh_rate);
-    this->RenderTarget::setSize(new_x, new_y);
+    this->RenderTarget::setSize(new_width, new_height);
 
 
     m_flags[0].flip();  // override the guard of setVerticalSync() method
     this->setVerticalSync(not m_flags[0]);
+}
+
+void RenderWindow::setBorderlessFullscreen(bool borderless)
+{
+    if(m_flags[WindowFlag::BORDERLESS_FULLSCREEN] == borderless)
+    {
+        // if there's no need to change anything, leave
+        return;
+    }
+    if(m_flags[WindowFlag::MAXIMIZED])
+    {
+        this->setMaximized(false);
+    }
+    m_flags[WindowFlag::BORDERLESS_FULLSCREEN] = borderless;
+    m_flags[WindowFlag::FULLSCREEN] = false;
+
+    std::int32_t new_width = 1280;  // TODO(vis4rd): Replace with pre-fullscreen value
+    std::int32_t new_height = 720;  // Replace with pre-fullscreen value
+    std::int32_t new_pos_x = 100;
+    std::int32_t new_pos_y = 100;
+    std::int32_t new_refresh_rate = GLFW_DONT_CARE;
+    std::int32_t new_decorated_state = GLFW_TRUE;
+
+    if(borderless)
+    {
+        const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+        new_width = mode->width;
+        new_height = mode->height;
+        new_pos_x = 0;
+        new_pos_y = 0;
+        new_refresh_rate = mode->refreshRate;
+        new_decorated_state = GLFW_FALSE;
+
+        glfwSetWindowSize(m_windowHandle.get(), new_width, new_height);
+    }
+
+    glfwSetWindowAttrib(m_windowHandle.get(), GLFW_DECORATED, new_decorated_state);
+    glfwSetWindowMonitor(
+        m_windowHandle.get(),
+        nullptr,
+        new_pos_x,
+        new_pos_y,
+        new_width,
+        new_height,
+        new_refresh_rate);
+    this->RenderTarget::setSize(new_width, new_height);
 }
 
 void RenderWindow::setMaximized(bool maximized)
@@ -408,18 +473,22 @@ void RenderWindow::initFlags()
 {
     spdlog::debug("Initializing RenderWindow flags");
 
+    // borderless fullscreen
+    m_flags[WindowFlag::BORDERLESS_FULLSCREEN] =
+        not glfwGetWindowAttrib(m_windowHandle.get(), GLFW_DECORATED);
+
     // fullscreen
-    m_flags[3] = (glfwGetWindowMonitor(m_windowHandle.get()) != nullptr);
+    m_flags[WindowFlag::FULLSCREEN] = (glfwGetWindowMonitor(m_windowHandle.get()) != nullptr);
 
     // maximized
-    m_flags[2] = glfwGetWindowAttrib(m_windowHandle.get(), GLFW_MAXIMIZED);
+    m_flags[WindowFlag::MAXIMIZED] = glfwGetWindowAttrib(m_windowHandle.get(), GLFW_MAXIMIZED);
 
     // minimized (iconified)
-    m_flags[1] = glfwGetWindowAttrib(m_windowHandle.get(), GLFW_ICONIFIED);
+    m_flags[WindowFlag::MINIMIZED] = glfwGetWindowAttrib(m_windowHandle.get(), GLFW_ICONIFIED);
 
     // vsync
     glfwSwapInterval(0);  // by default, vsync is disabled
-    m_flags[0] = false;
+    m_flags[WindowFlag::VSYNC] = false;
 }
 
 void RenderWindow::initEventCallbacks() const
