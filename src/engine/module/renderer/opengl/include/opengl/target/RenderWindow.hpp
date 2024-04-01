@@ -111,9 +111,7 @@ class RenderWindow final : public RenderTarget
     void initGl() const;
     void initImGui() const;
     void initFlags();
-    void initUserStorage();
     void initEventCallbacks() const;
-    void destroyUserStorage();
     void destroyEventCallbacks() const;
     void prerender() const;
 
@@ -149,7 +147,7 @@ class RenderWindow final : public RenderTarget
      */
     std::bitset<4> m_flags{};
     bool m_shouldClose = false;
-    RenderWindowUserStorage m_userStorage{.window = *this};
+    std::unique_ptr<RenderWindowUserStorage> m_userStorage{nullptr};
 };
 
 }  // namespace mono::gl

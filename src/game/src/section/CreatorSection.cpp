@@ -20,13 +20,12 @@ CreatorSection::CreatorSection()
     m_name = "CreatorSection";
 
     // zooming of the view on mouse scroll
-    ResourceManager::window->getUserStorage().camera = &m_camera;
-
+    ResourceManager::window->getUserStorage()["camera"] = &m_camera;
     glfwSetScrollCallback(
         ResourceManager::window->getNativeWindow(),
         [](GLFWwindow* window, double xoffset, double yoffset) {
             auto& storage = mono::glfwGetWindowUserPointer(window);
-            auto* camera = storage.camera;
+            auto* camera = std::any_cast<PerspectiveCamera*>(storage["camera"]);
             const auto& pos = camera->getPosition();
 
             auto new_pos_z = pos.z - yoffset;
