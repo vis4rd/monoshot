@@ -362,11 +362,8 @@ void Map::render(
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     }
-    // m_renderer.beginBatch();
     this->drawTiles(area, show_solid);
     this->drawObjects({}, show_solid);
-
-    mono::renderer::render(projection, view);
     if(show_solid)
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
