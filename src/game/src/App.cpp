@@ -38,11 +38,6 @@ App::App(const std::string& window_title, uint32_t width, uint32_t height)
         m_window->setVerticalSync(false);
     }
 
-    mono::gl::RenderPipeline default_pipeline{90};
-    mono::gl::RenderPass default_pass{"quad"};
-    default_pipeline.addRenderPass(std::move(default_pass));
-    mono::renderer::createPipeline(std::move(default_pipeline));
-
     m_timer = std::make_shared<Timer>();
     ResourceManager::timer = m_timer;
 

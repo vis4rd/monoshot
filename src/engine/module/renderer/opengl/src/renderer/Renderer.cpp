@@ -23,6 +23,12 @@ Renderer::Renderer()
     auto& shader_manager = ShaderManager::get();
     shader_manager.addShaderProgram("quad", "../res/shaders/quad.vert", "../res/shaders/quad.frag");
     shader_manager.addShaderProgram("line", "../res/shaders/line.vert", "../res/shaders/line.frag");
+
+    // Create default pipeline in case user doesn't want to set up any
+    RenderPipeline default_pipeline{999999};
+    RenderPass default_pass{"quad"};
+    default_pipeline.addRenderPass(std::move(default_pass));
+    this->addRenderPipeline(std::move(default_pipeline));
 }
 
 void Renderer::submitDraws(const glm::mat4& projection, const glm::mat4& view)
