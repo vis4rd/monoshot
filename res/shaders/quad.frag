@@ -19,16 +19,15 @@ out vec4 FragColor;
 
 void main()
 {
-    const uint frame_count = uFrameCount[int(inTexIndex)];
-    const uint frame_row_length = uFrameRowLength[int(inTexIndex)];
+    const int tex_index = int(inTexIndex);
+    const uint frame_count = uFrameCount[tex_index];
+    const uint frame_row_length = uFrameRowLength[tex_index];
     const uint frame_row_count = uint(frame_count / frame_row_length);
-    const uint frame_index = uFrameCurrentIndex[int(inTexIndex)];
+    const uint frame_index = uFrameCurrentIndex[tex_index];
     const vec2 frame_coords = vec2(frame_index % frame_row_length, frame_index / frame_row_length);
 
-    // TODO: change this math to vector operations: (inVertex.Uv + frame_coords) / vec2(frame_row_length, frame_row_count)
-    vec4 texColor = inVertex.Color * texture(uTextures[int(inTexIndex)],
-        vec2((inVertex.Uv.x + frame_coords.x ) / frame_row_length,
-             (inVertex.Uv.y + frame_coords.y) / frame_row_count));
+    vec4 texColor = inVertex.Color * texture(uTextures[tex_index],
+        (inVertex.Uv + frame_coords) / vec2(frame_row_length, frame_row_count));
 
     if(texColor.a == 0.0) { discard; }
 
