@@ -10,8 +10,8 @@ namespace mono::gl
 struct QuadInstanceData
 {
     glm::vec4 color;
-    float texIndex;
     glm::mat4 model;
+    float texIndex;
 };
 
 static constexpr std::array<glm::vec2, 8> quadConstantVertexData = {

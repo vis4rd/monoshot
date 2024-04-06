@@ -91,7 +91,7 @@ void RenderPipeline::prepareEbo()
 
     // NOTE: There is an idea to use one EBO for all render passes, if something breaks, it might be
     //       because of this.
-    m_elementBuffer = mono::gl::ElementBuffer(quad_elements);
+    m_elementBuffer = ElementBuffer(quad_elements);
 }
 
 }  // namespace mono::gl
