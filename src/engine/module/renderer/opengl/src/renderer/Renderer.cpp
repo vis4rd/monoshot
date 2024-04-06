@@ -44,7 +44,8 @@ void Renderer::submitDraws(const glm::mat4& projection, const glm::mat4& view)
             auto quad_vao = pass.getQuadVao();
 
             // below line may be can be delegated to RenderPass
-            quad_vao->getVertexBuffers().at(1).setData(storage.quads);
+            auto quad_ssbo = pass.getQuadSsbo();
+            quad_ssbo->setData(storage.quads);
             m_stats.geometryUpdateSize += (storage.quads.size() * sizeof(QuadInstanceData));
 
             // prepare uniform data
@@ -71,6 +72,8 @@ void Renderer::submitDraws(const glm::mat4& projection, const glm::mat4& view)
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+            quad_ssbo->bind(0);
+
             // TODO(vis4rd): is this correct though?? (one shader name per pass even though it has
             //               multiple primitives?) maybe shader name should be stored in render
             //               storage per-primitive. For now: use shader name for quads, hardcoded
@@ -93,6 +96,7 @@ void Renderer::submitDraws(const glm::mat4& projection, const glm::mat4& view)
                 nullptr,
                 static_cast<GLsizei>(storage.quads.size()));
             quad_vao->unbind();
+            quad_ssbo->unbind();
             m_stats.drawCalls++;
 
             glDisable(GL_BLEND);
@@ -175,7 +179,7 @@ void Renderer::drawQuad(
         return slot;
     }();
 
-    storage.quads.emplace_back(color, static_cast<float>(texture_slot), model_matrix);
+    storage.quads.emplace_back(color, model_matrix, static_cast<float>(texture_slot));
 }
 
 void Renderer::drawLine(const glm::vec2& pos1, const glm::vec2& pos2, const glm::vec4& color)

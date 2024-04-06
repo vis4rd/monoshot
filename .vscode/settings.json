@@ -1,8 +1,11 @@
 {
     "C_Cpp.autoAddFileAssociations": false,
+    "C_Cpp.codeAnalysis.clangTidy.enabled": true,
+    "C_Cpp.codeAnalysis.clangTidy.useBuildPath": true,
     "C_Cpp.debugShortcut": false,
     "C_Cpp.intelliSenseEngine": "default",
     "C_Cpp.refactoring.includeHeader": "never",
+    "C_Cpp.markdownInComments": "enabled",
     //
     "cmake.buildBeforeRun": false,
     "cmake.configureOnEdit": false,
@@ -29,6 +32,9 @@
     "files.eol": "\n",
     "files.insertFinalNewline": false,
     "files.trimFinalNewlines": true,
+    "files.associations": {
+        "*.inl": "cpp",
+    },
     //
     "git.detectSubmodules": false,
     "git.ignoreSubmodules": true,

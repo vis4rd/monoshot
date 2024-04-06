@@ -21,10 +21,10 @@ class RenderStorage
     }
 
     public:
-    std::vector<mono::gl::QuadInstanceData> quads{};
+    std::vector<QuadInstanceData> quads{};
     std::vector<std::shared_ptr<mono::Texture>> textureSlots{};
 
-    std::vector<mono::gl::LineVertex> lines{};
+    std::vector<LineVertex> lines{};
 };
 
 }  // namespace mono::gl
