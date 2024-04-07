@@ -150,11 +150,11 @@ void Renderer::drawQuad(
     std::shared_ptr<Texture> texture,
     const glm::vec4& color)
 {
-    const auto identity = glm::identity<glm::mat4>();
-    glm::mat4 model_matrix = glm::translate(identity, glm::vec3(position, 0.f))
-                             * glm::rotate(identity, glm::radians(rotation), {0.f, 0.f, 1.f})
-                             * glm::scale(identity, glm::vec3(size, 1.f));
-
+    std::uint32_t color_uint = 0u;
+    color_uint |= static_cast<std::uint32_t>(color.r * 255) << 24;
+    color_uint |= static_cast<std::uint32_t>(color.g * 255) << 16;
+    color_uint |= static_cast<std::uint32_t>(color.b * 255) << 8;
+    color_uint |= static_cast<std::uint32_t>(color.a * 255);
 
     auto& storage = m_pipelines.at(m_currentPipelineId).currentRenderPass()->getRenderStorage();
     const std::size_t texture_slot = [&storage, &texture]() {
@@ -179,7 +179,11 @@ void Renderer::drawQuad(
         return slot;
     }();
 
-    storage.quads.emplace_back(color, model_matrix, static_cast<float>(texture_slot));
+    glm::uint32 rotation_tex_index = 0.f;
+    rotation_tex_index |= static_cast<glm::uint32>(rotation) & 0x1FF;
+    rotation_tex_index |= (static_cast<glm::uint32>(texture_slot) & 0x1F) << 9;
+
+    storage.quads.emplace_back(color_uint, position, size, rotation_tex_index);
 }
 
 void Renderer::drawLine(const glm::vec2& pos1, const glm::vec2& pos2, const glm::vec4& color)

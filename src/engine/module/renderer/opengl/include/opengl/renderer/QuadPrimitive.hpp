@@ -2,16 +2,23 @@
 
 #include <array>
 
-#include <glm/glm.hpp>
+#include <glm/fwd.hpp>
 
 namespace mono::gl
 {
 
 struct QuadInstanceData
 {
-    glm::vec4 color;
-    glm::mat4 model;
-    float texIndex;
+    glm::uint32 color;
+    glm::vec2 position;
+    glm::vec2 scale;
+    glm::uint32 rotation_texIndex;
+    // rotation_texIndex memory layout (left to right):
+    // unused:          = 18 bits
+    // texIndex: 0-31   = 5 bits
+    // rotation: 0-359  = 9 bits
+    // 000000000000000000tttttrrrrrrrrr
+    // TODO(vis4rd): create a class to handle these bit shifting shenanigans
 };
 
 static constexpr std::array<glm::vec2, 8> quadConstantVertexData = {
