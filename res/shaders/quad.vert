@@ -3,9 +3,10 @@
 
 struct QuadInstanceData
 {
-    float color[4];
-    float model[16];
-    float texIndex;
+    uint color;
+    float position[2];
+    float scale[2];
+    uint rotation_texIndex;
 };
 
 layout (location = 0) in vec2 acPos;
@@ -27,18 +28,53 @@ struct VertexOutput
 layout (location = 0) out VertexOutput outVertex;
 layout (location = 2) out flat float outTexIndex;
 
+vec4 createColor(uint color)
+{
+    const float red = float((color >> 24) & 0xFF) / 255.0;
+    const float green = float((color >> 16) & 0xFF) / 255.0;
+    const float blue = float((color >> 8) & 0xFF) / 255.0;
+    const float alpha = float((color >> 0) & 0xFF) / 255.0;
+
+    return vec4(red, green, blue, alpha);
+}
+
+mat4 createModelMatrix(vec2 position, vec2 scale, float rotation)
+{
+    mat4 translation_matrix = mat4(1.0);
+    translation_matrix[3][0] = position.x;
+    translation_matrix[3][1] = position.y;
+
+    const float cos_theta = cos(rotation);
+    const float sin_theta = sin(rotation);
+    const mat4 rotationMatrix = mat4(
+        cos_theta, -sin_theta, 0.0, 0.0,
+        sin_theta, cos_theta, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        0.0, 0.0, 0.0, 1.0
+    );
+
+    mat4 scaleMatrix = mat4(1.0);
+    scaleMatrix[0][0] = scale.x;
+    scaleMatrix[1][1] = scale.y;
+
+    return translation_matrix * rotationMatrix * scaleMatrix;
+}
+
 void main()
 {
     QuadInstanceData instance = quads[gl_InstanceID];
-    vec4 instance_color = vec4(instance.color[0], instance.color[1], instance.color[2], instance.color[3]);
-    mat4 instance_model = mat4(instance.model[0], instance.model[1], instance.model[2], instance.model[3],
-                      instance.model[4], instance.model[5], instance.model[6], instance.model[7],
-                      instance.model[8], instance.model[9], instance.model[10], instance.model[11],
-                      instance.model[12], instance.model[13], instance.model[14], instance.model[15]);
+
+    const vec2 position = vec2(instance.position[0], instance.position[1]);
+    const vec2 scale = vec2(instance.scale[0], instance.scale[1]);
+    const float rotation = radians(instance.rotation_texIndex & 0x1FF);
+    const float tex_index = (instance.rotation_texIndex >> 9) & 0x1F;
+
+    const vec4 instance_color = createColor(instance.color);
+    const mat4 instance_model = createModelMatrix(position, scale, rotation);
 
     outVertex.Color = instance_color;
     outVertex.Uv = acUv;
-    outTexIndex = instance.texIndex;
+    outTexIndex = tex_index;
 
     gl_Position = uProjection * uView * instance_model * vec4(acPos, 0.0, 1.0);
 }
