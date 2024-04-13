@@ -33,7 +33,7 @@ class VertexBuffer
     const GLuint& getID() const;
     ShaderAttributeLayout& getLayout();
 
-    [[deprecated]] void setData(const void* data, const GLsizeiptr& size);
+    [[deprecated]] void setData(const void* data, GLsizeiptr size);
     constexpr void setData(
         const std::ranges::contiguous_range auto& data,
         GLintptr buffer_offset = 0);
@@ -41,6 +41,9 @@ class VertexBuffer
 
     // NOLINTNEXTLINE(google-explicit-constructor)
     operator GLuint() const;
+
+    private:
+    void resize(GLsizeiptr new_byte_size);
 
     private:
     GLuint m_id{};
@@ -76,11 +79,9 @@ constexpr void VertexBuffer::setData(
             size,
             buffer_offset,
             m_maxBufferBytesize);
-        m_maxBufferBytesize = size + buffer_offset;
-        glNamedBufferData(m_id, m_maxBufferBytesize, nullptr, GL_DYNAMIC_DRAW);
+        this->resize(size + buffer_offset);
     }
 
-    spdlog::trace("Setting drawing data to VertexBuffer with ID = {}", m_id);
     glNamedBufferSubData(m_id, buffer_offset, size, data.data());
 }
 

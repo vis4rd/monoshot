@@ -76,7 +76,7 @@ ShaderAttributeLayout& VertexBuffer::getLayout()
     return m_layout;
 }
 
-void VertexBuffer::setData(const void* data, const GLsizeiptr& size)
+void VertexBuffer::setData(const void* data, GLsizeiptr size)
 {
     if(size > m_maxBufferBytesize)
     {
@@ -84,10 +84,9 @@ void VertexBuffer::setData(const void* data, const GLsizeiptr& size)
             "Data size ({} bytes) is bigger than buffer size ({} bytes). Resizing buffer...",
             size,
             m_maxBufferBytesize);
-        glNamedBufferData(m_id, size, nullptr, GL_DYNAMIC_DRAW);
-        m_maxBufferBytesize = size;
+        this->resize(size);
     }
-    spdlog::trace("Setting drawing data to VertexBuffer with ID = {}", m_id);
+
     glNamedBufferSubData(m_id, 0, size, data);
 }
 
@@ -99,6 +98,22 @@ void VertexBuffer::setLayout(const ShaderAttributeLayout& layout)
 VertexBuffer::operator GLuint() const
 {
     return m_id;
+}
+
+void VertexBuffer::resize(GLsizeiptr new_byte_size)
+{
+    // create a new vbo with the new size
+    GLuint new_id{};
+    glCreateBuffers(1, &new_id);
+    glNamedBufferData(m_id, new_byte_size, nullptr, GL_DYNAMIC_DRAW);
+
+    // unbind and delete the old vbo
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glDeleteBuffers(1, &m_id);
+
+    // track the new vbo
+    m_id = new_id;
+    m_maxBufferBytesize = new_byte_size;
 }
 
 }  // namespace mono::gl
