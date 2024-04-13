@@ -6,7 +6,7 @@ constexpr ShaderStorageBuffer<T>::ShaderStorageBuffer(GLsizeiptr size)
     : m_maxBufferBytesize(size)
 {
     glCreateBuffers(1, &m_id);
-    glNamedBufferData(m_id, m_maxBufferBytesize, nullptr, GL_DYNAMIC_DRAW);
+    glNamedBufferStorage(m_id, m_maxBufferBytesize, nullptr, GL_DYNAMIC_STORAGE_BIT);
     spdlog::debug(
         "Created ShaderStorageBuffer instance with ID = {} and size = {}",
         m_id,
@@ -65,7 +65,7 @@ void ShaderStorageBuffer<T>::resize(GLsizei new_byte_size)
     // create a new ssbo with the new size
     GLuint new_id{};
     glCreateBuffers(1, &new_id);
-    glNamedBufferData(new_id, new_byte_size, nullptr, GL_DYNAMIC_DRAW);
+    glNamedBufferStorage(new_id, new_byte_size, nullptr, GL_DYNAMIC_STORAGE_BIT);
 
     // unbind and delete the old ssbo
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
