@@ -55,6 +55,7 @@ target_link_libraries(mono_module_renderer_opengl_backend
            mono::log
            mono::input
            mono::cstring
+           mono::util::pv
 )
 
 # if(CMAKE_HOST_WIN32)
