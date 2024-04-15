@@ -4,21 +4,32 @@
 
 #include <glm/fwd.hpp>
 
+#include "mono/util/PackedVariable.hpp"
+
 namespace mono::gl
 {
+
+namespace detail
+{
+
+constexpr int tex_index = 5;
+constexpr int rotation = 9;
+constexpr int unused = (sizeof(glm::uint32) * 8) - rotation - tex_index;
+using RtiPacked = mono::util::PackedVariable<glm::uint32, unused, tex_index, rotation>;
+// RtiPacked memory layout (left to right):
+// unused:          = 18 bits
+// texIndex: 0-31   = 5 bits
+// rotation: 0-359  = 9 bits
+// 000000000000000000tttttrrrrrrrrr
+
+}  // namespace detail
 
 struct QuadInstanceData
 {
     glm::uint32 color;
     glm::vec2 position;
     glm::vec2 scale;
-    glm::uint32 rotation_texIndex;
-    // rotation_texIndex memory layout (left to right):
-    // unused:          = 18 bits
-    // texIndex: 0-31   = 5 bits
-    // rotation: 0-359  = 9 bits
-    // 000000000000000000tttttrrrrrrrrr
-    // TODO(vis4rd): create a class to handle these bit shifting shenanigans
+    detail::RtiPacked rotation_texIndex;
 };
 
 static constexpr std::array<glm::vec2, 8> quadConstantVertexData = {

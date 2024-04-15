@@ -179,11 +179,14 @@ void Renderer::drawQuad(
         return slot;
     }();
 
-    glm::uint32 rotation_tex_index = 0.f;
-    rotation_tex_index |= static_cast<glm::uint32>(rotation) & 0x1FF;
-    rotation_tex_index |= (static_cast<glm::uint32>(texture_slot) & 0x1F) << 9;
+    const QuadInstanceData quad_instance_data{
+        color_uint,
+        position,
+        size,
+        detail::RtiPacked{0, texture_slot, static_cast<glm::uint32>(rotation)}
+    };
 
-    storage.quads.emplace_back(color_uint, position, size, rotation_tex_index);
+    storage.quads.push_back(std::move(quad_instance_data));
 }
 
 void Renderer::drawLine(const glm::vec2& pos1, const glm::vec2& pos2, const glm::vec4& color)
