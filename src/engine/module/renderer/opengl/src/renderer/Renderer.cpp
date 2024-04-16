@@ -183,7 +183,7 @@ void Renderer::drawQuad(
         color_uint,
         position,
         size,
-        detail::RtiPacked{0, texture_slot, static_cast<glm::uint32>(rotation)}
+        detail::RtiPacked{static_cast<glm::uint32>(rotation), texture_slot}
     };
 
     storage.quads.push_back(std::move(quad_instance_data));

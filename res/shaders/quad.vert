@@ -66,8 +66,8 @@ void main()
 
     const vec2 position = vec2(instance.position[0], instance.position[1]);
     const vec2 scale = vec2(instance.scale[0], instance.scale[1]);
-    const float rotation = radians(instance.rotation_texIndex & 0x1FF);
-    const float tex_index = (instance.rotation_texIndex >> 9) & 0x1F;
+    const float rotation = radians(instance.rotation_texIndex >> 23);
+    const float tex_index = ((instance.rotation_texIndex << 9) >> 27);
 
     const vec4 instance_color = createColor(instance.color);
     const mat4 instance_model = createModelMatrix(position, scale, rotation);

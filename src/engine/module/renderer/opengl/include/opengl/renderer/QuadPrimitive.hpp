@@ -12,15 +12,14 @@ namespace mono::gl
 namespace detail
 {
 
-constexpr int tex_index = 5;
 constexpr int rotation = 9;
-constexpr int unused = (sizeof(glm::uint32) * 8) - rotation - tex_index;
-using RtiPacked = mono::util::PackedVariable<glm::uint32, unused, tex_index, rotation>;
+constexpr int tex_index = 5;
+using RtiPacked = mono::util::PackedVariable<glm::uint32, rotation, tex_index>;
 // RtiPacked memory layout (left to right):
-// unused:          = 18 bits
-// texIndex: 0-31   = 5 bits
 // rotation: 0-359  = 9 bits
-// 000000000000000000tttttrrrrrrrrr
+// texIndex: 0-31   = 5 bits
+// unused:          = 18 bits
+// rrrrrrrrrttttt000000000000000000
 
 }  // namespace detail
 
