@@ -2,11 +2,15 @@
 #include <glm/ext/matrix_transform.hpp>
 #include <imgui/imgui.h>
 #include <input/InputManager.hpp>
+#include <log/Logging.hpp>
 #include <opengl/target/RenderWindow.hpp>
 #include <renderer/Renderer.hpp>
 
 int main()
 {
+    util::enableOpenGlLogging();
+    spdlog::default_logger()->set_level(spdlog::level::debug);
+
     mono::gl::RenderWindow window(1280, 720, "PLAYGROUND");
     window.setBorderlessFullscreen();
     auto& input_manager = InputManager::get();
@@ -29,7 +33,6 @@ int main()
         {
             window.toggleBorderlessFullscreen();
         }
-
         if(input_manager.isPressedOnce(GLFW_KEY_F10))
         {
             window.toggleFullscreen();
@@ -38,12 +41,16 @@ int main()
         {
             window.requestClose();
         }
+        if(input_manager.isPressedOnce(GLFW_KEY_V))
+        {
+            window.setVerticalSync(not window.isVerticalSyncEnabled());
+        }
 
         window.prepareRender();
 
         for(const auto& point : points)
         {
-            mono::renderer::drawQuad(point, {10, 10}, 0, {1.f, 1.f, 1.f, 1.f});
+            mono::renderer::drawQuad(point, {10, 10}, 0, {1.f, 0.f, 0.f, 1.f});
         }
 
         if(ImGui::Begin("Playground"))

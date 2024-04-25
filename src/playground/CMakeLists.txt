@@ -38,6 +38,7 @@ target_link_libraries(playground
            mono::time
            mono::config
            mono::cstring
+           mono::log
            glm::glm
            tinyfd::tinyfd
            spdlog::spdlog
