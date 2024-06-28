@@ -74,32 +74,41 @@ void render(const glm::mat4& projection, const glm::mat4& view);
 // DRAWING FUNCTIONS
 
 void drawQuad(
+    const std::string& render_pass_name,
     const glm::vec2& position,
     const glm::vec2& size,
     const float& rotation,
     const glm::vec4& color);
 
 void drawQuad(
+    const std::string& render_pass_name,
     const glm::vec2& position,
     const glm::vec2& size,
     const float& rotation,
     const std::shared_ptr<mono::Texture>& texture,
     const glm::vec4& color = {1.f, 1.f, 1.f, 1.f});
 
-void drawLine(const glm::vec2& pos1, const glm::vec2& pos2, const glm::vec4& color);
+void drawLine(
+    const std::string& render_pass_name,
+    const glm::vec2& pos1,
+    const glm::vec2& pos2,
+    const glm::vec4& color);
 
 void drawLine(
+    const std::string& render_pass_name,
     const glm::vec2& pos1,
     const glm::vec2& pos2,
     const glm::vec4& color1,
     const glm::vec4& color2);
 
 void drawRect(
+    const std::string& render_pass_name,
     const glm::vec2& ul,
     const glm::vec2& br,
     const glm::vec4& color);  // upper-left + bottom-right corners
 
 void drawRect(
+    const std::string& render_pass_name,
     const glm::vec2& ul,
     const glm::vec2& ur,
     const glm::vec2& br,
@@ -107,6 +116,7 @@ void drawRect(
     const glm::vec4& color);  // 4 corners
 
 void drawRect(
+    const std::string& render_pass_name,
     const glm::vec2& center,
     const glm::vec2& size,
     const float& rotation,

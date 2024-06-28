@@ -27,7 +27,7 @@ Renderer::Renderer()
     // Create default pipeline in case user doesn't want to set up any
     RenderPipeline default_pipeline{999999};
     RenderPass default_pass{"quad"};
-    default_pipeline.addRenderPass(std::move(default_pass));
+    default_pipeline.addRenderPass("default", std::move(default_pass));
     this->addRenderPipeline(std::move(default_pipeline));
 }
 
@@ -36,8 +36,9 @@ void Renderer::submitDraws(const glm::mat4& projection, const glm::mat4& view)
     m_stats.clear();
 
     auto& pipeline = m_pipelines.at(m_currentPipelineId);
-    for(auto& pass : pipeline.getRenderPasses())
+    for(const auto& pass_name : pipeline.getRenderOrder())
     {
+        auto& pass = pipeline.getRenderPass(pass_name);
         auto& storage = pass.getRenderStorage();
 
         {  // QUADS
@@ -130,6 +131,7 @@ void Renderer::submitDraws(const glm::mat4& projection, const glm::mat4& view)
 }
 
 void Renderer::drawQuad(
+    const std::string& render_pass_name,
     const glm::vec2& position,
     const glm::vec2& size,
     float rotation,
@@ -140,10 +142,11 @@ void Renderer::drawQuad(
             .data(),
         1,
         1);
-    drawQuad(position, size, rotation, white_texture, color);
+    drawQuad(render_pass_name, position, size, rotation, white_texture, color);
 }
 
 void Renderer::drawQuad(
+    const std::string& render_pass_name,
     const glm::vec2& position,
     const glm::vec2& size,
     float rotation,
@@ -156,7 +159,8 @@ void Renderer::drawQuad(
     color_uint |= static_cast<std::uint32_t>(color.b * 255) << 8;
     color_uint |= static_cast<std::uint32_t>(color.a * 255);
 
-    auto& storage = m_pipelines.at(m_currentPipelineId).currentRenderPass()->getRenderStorage();
+    auto& storage =
+        m_pipelines.at(m_currentPipelineId).getRenderPass(render_pass_name).getRenderStorage();
     const std::size_t texture_slot = [&storage, &texture]() {
         // TODO(visard): change this lambda to STL algorithm
         constexpr auto find_slot = [](const std::vector<std::shared_ptr<Texture>>& slots,
@@ -189,12 +193,17 @@ void Renderer::drawQuad(
     storage.quads.push_back(std::move(quad_instance_data));
 }
 
-void Renderer::drawLine(const glm::vec2& pos1, const glm::vec2& pos2, const glm::vec4& color)
+void Renderer::drawLine(
+    const std::string& render_pass_name,
+    const glm::vec2& pos1,
+    const glm::vec2& pos2,
+    const glm::vec4& color)
 {
-    Renderer::drawLine(pos1, pos2, color, color);
+    Renderer::drawLine(render_pass_name, pos1, pos2, color, color);
 }
 
 void Renderer::drawLine(
+    const std::string& render_pass_name,
     const glm::vec2& pos1,
     const glm::vec2& pos2,
     const glm::vec4& color1,
@@ -203,35 +212,39 @@ void Renderer::drawLine(
     auto vrtx1 = gl::LineVertex{glm::vec3(pos1, 0.f), color1};
     auto vrtx2 = gl::LineVertex{glm::vec3(pos2, 0.f), color2};
 
-    auto& storage = m_pipelines.at(m_currentPipelineId).currentRenderPass()->getRenderStorage();
+    auto& storage =
+        m_pipelines.at(m_currentPipelineId).getRenderPass(render_pass_name).getRenderStorage();
     storage.lines.push_back(vrtx1);
     storage.lines.push_back(vrtx2);
 }
 
 void Renderer::drawRect(
+    const std::string& render_pass_name,
     const glm::vec2& ul,
     const glm::vec2& br,
     const glm::vec4& color)  // upper-left + bottom-right
 {
     const auto ur = glm::vec2(br.x, ul.y);
     const auto bl = glm::vec2(ul.x, br.y);
-    Renderer::drawRect(ul, ur, br, bl, color);
+    Renderer::drawRect(render_pass_name, ul, ur, br, bl, color);
 }
 
 void Renderer::drawRect(
+    const std::string& render_pass_name,
     const glm::vec2& ul,
     const glm::vec2& ur,
     const glm::vec2& br,
     const glm::vec2& bl,
     const glm::vec4& color)  // 4 corners
 {
-    Renderer::drawLine(bl, br, color);
-    Renderer::drawLine(br, ur, color);
-    Renderer::drawLine(ur, ul, color);
-    Renderer::drawLine(ul, bl, color);
+    Renderer::drawLine(render_pass_name, bl, br, color);
+    Renderer::drawLine(render_pass_name, br, ur, color);
+    Renderer::drawLine(render_pass_name, ur, ul, color);
+    Renderer::drawLine(render_pass_name, ul, bl, color);
 }
 
 void Renderer::drawRect(
+    const std::string& render_pass_name,
     const glm::vec2& center,
     const glm::vec2& size,
     float rotation,
@@ -245,7 +258,7 @@ void Renderer::drawRect(
     const auto br = glm::vec2(model_matrix * glm::vec4(quadConstantVertexData[2], 0.0, 1.0));
     const auto ur = glm::vec2(model_matrix * glm::vec4(quadConstantVertexData[4], 0.0, 1.0));
     const auto ul = glm::vec2(model_matrix * glm::vec4(quadConstantVertexData[6], 0.0, 1.0));
-    Renderer::drawRect(ul, ur, br, bl, color);
+    Renderer::drawRect(render_pass_name, ul, ur, br, bl, color);
 }
 
 const RendererStats& Renderer::getStats() const
@@ -276,6 +289,7 @@ void Renderer::setRenderPipeline(std::int32_t pipeline_id)
         spdlog::error("Renderer: pipeline with id {} does not exist", pipeline_id);
         return;
     }
+    spdlog::debug("Renderer: setting active pipeline with id {}", pipeline_id);
     m_currentPipelineId = pipeline_id;
 }
 

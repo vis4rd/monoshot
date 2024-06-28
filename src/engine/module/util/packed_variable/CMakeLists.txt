@@ -5,7 +5,7 @@ add_library(mono::util::pv ALIAS mono_util_pv)
 
 if(DEBUG_MODE)
     target_compile_definitions(mono_util_pv
-        PRIVATE "DEBUG_MODE"
+        INTERFACE "DEBUG_MODE"
     )
 endif()
 

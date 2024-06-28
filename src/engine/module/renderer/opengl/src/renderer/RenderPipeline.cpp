@@ -1,5 +1,7 @@
 #include "../../include/opengl/renderer/RenderPipeline.hpp"
 
+#include <algorithm>
+
 namespace mono::gl
 {
 
@@ -12,63 +14,70 @@ RenderPipeline::RenderPipeline(std::int32_t id)
 RenderPipeline::RenderPipeline(RenderPipeline&& move) noexcept
     : m_id(move.m_id)
     , m_renderPasses(std::move(move.m_renderPasses))
-    , m_currentRenderPass(move.m_currentRenderPass)
+    , m_renderOrder(std::move(move.m_renderOrder))
     , m_elementBuffer(std::move(move.m_elementBuffer))
 { }
 
 RenderPipeline& RenderPipeline::operator=(RenderPipeline&& move) noexcept
 {
     m_renderPasses = std::move(move.m_renderPasses);
-    m_currentRenderPass = move.m_currentRenderPass;
+    m_renderOrder = std::move(move.m_renderOrder);
     m_elementBuffer = std::move(move.m_elementBuffer);
     m_id = move.m_id;
     return *this;
 }
 
-void RenderPipeline::addRenderPass(RenderPass&& render_pass)
+void RenderPipeline::addRenderPass(
+    const std::string& name,
+    RenderPass&& render_pass,
+    const std::string& after_pass)
 {
-    render_pass.getQuadVao()->bindElementBuffer(m_elementBuffer);
-    m_renderPasses.push_back(std::move(render_pass));
-    if(m_renderPasses.size() == 1)
+    if(m_renderPasses.contains(name))
     {
-        this->resetCurrentRenderPass();
-    }
-}
-
-std::vector<RenderPass>& RenderPipeline::getRenderPasses()
-{
-    return m_renderPasses;
-}
-
-std::vector<RenderPass>::const_iterator RenderPipeline::currentRenderPass() const
-{
-    return m_currentRenderPass;
-}
-
-std::vector<RenderPass>::iterator RenderPipeline::currentRenderPass()
-{
-    return m_currentRenderPass;
-}
-
-void RenderPipeline::resetCurrentRenderPass()
-{
-    m_currentRenderPass = m_renderPasses.begin();
-}
-
-void RenderPipeline::setNextRenderPass()
-{
-    if((m_currentRenderPass == m_renderPasses.cend())
-       or (m_currentRenderPass + 1) == m_renderPasses.cend())
-    {
-        spdlog::error(
-            "RenderPipeline with ID = {} has {} RenderPasses, but requested to switch to pass with index {} which is out of range. Ignoring...",
-            m_id,
-            m_renderPasses.size(),
-            m_currentRenderPass - m_renderPasses.cbegin() + 1);
+        spdlog::warn("Render pass with name '{}' already exists in pipeline", name);
         return;
     }
-    // m_currentRenderPass->clearRenderStorage(); //? storage should be cleared on draw call submit
-    ++m_currentRenderPass;
+    if(after_pass.empty())
+    {
+        render_pass.getQuadVao()->bindElementBuffer(m_elementBuffer);
+        m_renderPasses.insert({name, std::move(render_pass)});
+        m_renderOrder.push_back(name);
+        spdlog::debug("Successfully added render pass with name '{}'", name);
+    }
+    else if(auto iter = m_renderPasses.find(after_pass); iter != m_renderPasses.end())
+    {
+        const auto order_iter = std::find(m_renderOrder.begin(), m_renderOrder.end(), after_pass);
+        if(order_iter == m_renderOrder.end())
+        {
+            spdlog::warn(
+                "Render pass with name '{}' does not exist in pipeline render order",
+                after_pass);
+            return;
+        }
+        render_pass.getQuadVao()->bindElementBuffer(m_elementBuffer);
+        m_renderPasses.insert({name, std::move(render_pass)});
+        m_renderOrder.insert(order_iter, name);
+        spdlog::debug("Successfully added render pass with name '{}'", name);
+    }
+    else
+    {
+        spdlog::warn("Render pass with name '{}' does not exist in pipeline", after_pass);
+    }
+}
+
+RenderPass& RenderPipeline::getRenderPass(const std::string& pass_name)
+{
+    return m_renderPasses.at(pass_name);
+}
+
+const RenderPass& RenderPipeline::getRenderPass(const std::string& pass_name) const
+{
+    return m_renderPasses.at(pass_name);
+}
+
+const std::vector<std::string>& RenderPipeline::getRenderOrder() const
+{
+    return m_renderOrder;
 }
 
 void RenderPipeline::prepareEbo()
