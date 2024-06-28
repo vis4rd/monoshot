@@ -37,16 +37,18 @@ void render(const glm::mat4& projection, const glm::mat4& view)
 // DRAWING FUNCTIONS
 
 void drawQuad(
+    const std::string& render_pass_name,
     const glm::vec2& position,
     const glm::vec2& size,
     const float& rotation,
     const glm::vec4& color)
 {
     auto& renderer = mono::gl::Renderer::get();
-    renderer.drawQuad(position, size, rotation, color);
+    renderer.drawQuad(render_pass_name, position, size, rotation, color);
 }
 
 void drawQuad(
+    const std::string& render_pass_name,
     const glm::vec2& position,
     const glm::vec2& size,
     const float& rotation,
@@ -54,32 +56,42 @@ void drawQuad(
     const glm::vec4& color)
 {
     auto& renderer = mono::gl::Renderer::get();
-    renderer.drawQuad(position, size, rotation, texture, color);
-}
-
-void drawLine(const glm::vec2& pos1, const glm::vec2& pos2, const glm::vec4& color)
-{
-    auto& renderer = mono::gl::Renderer::get();
-    renderer.drawLine(pos1, pos2, color);
+    renderer.drawQuad(render_pass_name, position, size, rotation, texture, color);
 }
 
 void drawLine(
+    const std::string& render_pass_name,
+    const glm::vec2& pos1,
+    const glm::vec2& pos2,
+    const glm::vec4& color)
+{
+    auto& renderer = mono::gl::Renderer::get();
+    renderer.drawLine(render_pass_name, pos1, pos2, color);
+}
+
+void drawLine(
+    const std::string& render_pass_name,
     const glm::vec2& pos1,
     const glm::vec2& pos2,
     const glm::vec4& color1,
     const glm::vec4& color2)
 {
     auto& renderer = mono::gl::Renderer::get();
-    renderer.drawLine(pos1, pos2, color1, color2);
-}
-
-void drawRect(const glm::vec2& ul, const glm::vec2& br, const glm::vec4& color)
-{
-    auto& renderer = mono::gl::Renderer::get();
-    renderer.drawRect(ul, br, color);
+    renderer.drawLine(render_pass_name, pos1, pos2, color1, color2);
 }
 
 void drawRect(
+    const std::string& render_pass_name,
+    const glm::vec2& ul,
+    const glm::vec2& br,
+    const glm::vec4& color)
+{
+    auto& renderer = mono::gl::Renderer::get();
+    renderer.drawRect(render_pass_name, ul, br, color);
+}
+
+void drawRect(
+    const std::string& render_pass_name,
     const glm::vec2& ul,
     const glm::vec2& ur,
     const glm::vec2& br,
@@ -87,17 +99,18 @@ void drawRect(
     const glm::vec4& color)
 {
     auto& renderer = mono::gl::Renderer::get();
-    renderer.drawRect(ul, ur, br, bl, color);
+    renderer.drawRect(render_pass_name, ul, ur, br, bl, color);
 }
 
 void drawRect(
+    const std::string& render_pass_name,
     const glm::vec2& center,
     const glm::vec2& size,
     const float& rotation,
     const glm::vec4& color)
 {
     auto& renderer = mono::gl::Renderer::get();
-    renderer.drawRect(center, size, rotation, color);
+    renderer.drawRect(render_pass_name, center, size, rotation, color);
 }
 
 }  // namespace mono::renderer
