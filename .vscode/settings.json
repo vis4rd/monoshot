@@ -4,6 +4,7 @@
     "C_Cpp.codeAnalysis.clangTidy.useBuildPath": true,
     "C_Cpp.debugShortcut": false,
     "C_Cpp.intelliSenseEngine": "default",
+    "C_Cpp.markdownInComments": "enabled",
     "C_Cpp.refactoring.includeHeader": "never",
     "C_Cpp.markdownInComments": "enabled",
     //
@@ -39,6 +40,9 @@
     "git.detectSubmodules": false,
     "git.ignoreSubmodules": true,
     "git.suggestSmartCommit": false,
+    //
+    "gitmoji.outputType": "code",
+    "gitmoji.showEmojiCode": true,
     //
     "[cpp]": {
         "editor.defaultFormatter": "ms-vscode.cpptools",
