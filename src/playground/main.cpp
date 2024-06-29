@@ -13,8 +13,12 @@ int main()
 
     mono::gl::RenderWindow window(1280, 720, "PLAYGROUND");
     window.setBorderlessFullscreen();
-    auto& input_manager = InputManager::get();
+    mono::gl::RenderPipeline main_pipeline{0};
+    mono::gl::RenderPass main_pass{"quad"};
+    main_pipeline.addRenderPass("default", std::move(main_pass));
+    mono::renderer::setPipeline(main_pipeline);
 
+    auto& input_manager = InputManager::get();
     std::vector<glm::vec2> points;
 
     while(true)
@@ -45,12 +49,25 @@ int main()
         {
             window.setVerticalSync(not window.isVerticalSyncEnabled());
         }
+        if(input_manager.isPressedOnce(GLFW_MOUSE_BUTTON_RIGHT))
+        {
+            static bool toggle = false;
+            toggle = not toggle;
+            if(toggle)
+            {
+                mono::renderer::setPipeline(main_pipeline.id);
+            }
+            else
+            {
+                mono::renderer::setPipeline(999999);
+            }
+        }
 
         window.prepareRender();
 
         for(const auto& point : points)
         {
-            mono::renderer::drawQuad(point, {10, 10}, 0, {1.f, 0.f, 0.f, 1.f});
+            mono::renderer::drawQuad("default", point, {10, 10}, 0, {1.f, 0.f, 0.f, 1.f});
         }
 
         if(ImGui::Begin("Playground"))

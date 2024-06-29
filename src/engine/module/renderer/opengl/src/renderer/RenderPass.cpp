@@ -14,6 +14,7 @@ RenderPass::RenderPass(const std::string& shader_name)
     this->prepareQuadVao();
     this->prepareQuadSsbo();
     this->prepareLineVao();
+    this->prepareRenderStorage();
 }
 
 std::string_view RenderPass::getShaderName() const
@@ -62,13 +63,14 @@ void RenderPass::prepareQuadVao()
 
 void RenderPass::prepareQuadSsbo()
 {
-    m_quadSsbo = std::make_shared<ShaderStorageBuffer<QuadInstanceData>>(10000);
+    m_quadSsbo = std::make_shared<ShaderStorageBuffer<QuadInstanceData>>(
+        m_startingMaxQuadCount * sizeof(QuadInstanceData));
 }
 
 void RenderPass::prepareLineVao()
 {
-    constexpr std::size_t max_quad_count = 10000;
-    auto line_vbo = VertexBuffer(static_cast<GLsizeiptr>(max_quad_count * 4 * sizeof(LineVertex)));
+    constexpr std::size_t max_line_count = 10000;
+    auto line_vbo = VertexBuffer(static_cast<GLsizeiptr>(max_line_count * 4 * sizeof(LineVertex)));
 
     namespace dtype = ShaderAttributeType;
     ShaderAttributeLayout line_layout = {
@@ -78,6 +80,12 @@ void RenderPass::prepareLineVao()
     line_vbo.setLayout(line_layout);
 
     m_lineVao->bindVertexBuffer(std::move(line_vbo));
+}
+
+void RenderPass::prepareRenderStorage()
+{
+    m_renderStorage.quadStateBufferSolver.setTotalMemoryBlockSize(m_startingMaxQuadCount);
+    m_renderStorage.quadStateBufferSolver.setMaxMemoryLimit(m_totalMaxQuadCount);
 }
 
 }  // namespace mono::gl

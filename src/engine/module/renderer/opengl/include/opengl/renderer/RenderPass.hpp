@@ -33,6 +33,7 @@ class RenderPass
     void prepareQuadVao();
     void prepareQuadSsbo();
     void prepareLineVao();
+    void prepareRenderStorage();
 
     private:
     std::string m_shaderName;
@@ -40,6 +41,9 @@ class RenderPass
     std::shared_ptr<ShaderStorageBuffer<QuadInstanceData>> m_quadSsbo;
     std::shared_ptr<VertexArray> m_lineVao;
     RenderStorage m_renderStorage;
+
+    static constexpr std::size_t m_startingMaxQuadCount{1000};
+    static constexpr std::size_t m_totalMaxQuadCount{10000000};
 };
 
 }  // namespace mono::gl
