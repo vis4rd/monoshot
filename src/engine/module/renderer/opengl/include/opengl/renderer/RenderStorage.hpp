@@ -1,6 +1,8 @@
 #pragma once
 
+#include <list>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "../memory_packing_solver/MemoryPackingSolver.hpp"
@@ -38,10 +40,8 @@ class RenderStorage
 
     std::vector<LineVertex> lines{};
 
-    // TODO: state buffer can just be a std::list of element IDs, where index in the list is the
-    //       same as index of the quad in ssbo. std::list is better because the stuff is moved
-    //       around very often.
-    std::vector<detail::StateBufferElement> quadStateBuffer{};
+    // TODO: switch back to vector because empty elements are kept too
+    std::list<std::optional<detail::StateBufferElementId>> quadStateBuffer{};
     detail::StateBufferElementId highestTakenQuadId{};
     std::vector<detail::StateBufferElementId> quadAdditionStageBuffer{};
     std::vector<detail::StateBufferElementId> quadRemovalStageBuffer{};

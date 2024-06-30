@@ -46,87 +46,137 @@ void Renderer::submitDraws(const glm::mat4& projection, const glm::mat4& view)
 
             auto quad_ssbo = pass.getQuadSsbo();
 
-            // register removal of quads in solver
-            for(const auto quad_id : storage.quadRemovalStageBuffer)
+            if(not storage.quadRemovalStageBuffer.empty())
             {
-                auto to_be_remove_quad_buffer_element = std::find_if(
+                spdlog::debug("Renderer: removal stage buffer is not empty");
+                // register removal of quads in solver
+                for(const auto quad_id : storage.quadRemovalStageBuffer)
+                {
+                    auto to_be_remove_quad_buffer_element = std::find_if(
+                        storage.quadStateBuffer.begin(),
+                        storage.quadStateBuffer.end(),
+                        [quad_id](const auto& buffer_element) {
+                            return quad_id == buffer_element.value_or(9999999999999);
+                            // surely there won't be any element with such a high id, right?
+                        });
+                    if(to_be_remove_quad_buffer_element != storage.quadStateBuffer.end())
+                    {
+                        storage.quadStateBufferSolver.unsetElement(std::distance(
+                            storage.quadStateBuffer.begin(),
+                            to_be_remove_quad_buffer_element));
+                    }
+                }
+
+                // compute memory operations using solver
+                auto memory_operations = storage.quadStateBufferSolver.computePackingOperations();
+
+                // apply memory operations to ssbo
+                // TODO: launch compute shader to do this
+
+                // apply memory operations to state buffer
+                for(const auto& op : memory_operations)
+                {
+                    std::visit(
+                        [this, &storage](const auto& operation) {
+                            using OP = std::decay_t<decltype(operation)>;
+                            if constexpr(std::is_same_v<OP, CopyRangeOperation>)
+                            {
+                                auto start_iter = std::next(
+                                    storage.quadStateBuffer.begin(),
+                                    operation.startIndex);
+                                auto end_iter =
+                                    std::next(storage.quadStateBuffer.begin(), operation.endIndex);
+                                auto destination_iter = std::next(
+                                    storage.quadStateBuffer.begin(),
+                                    operation.destinationIndex);
+
+                                for(auto iter = start_iter; iter != end_iter; iter++)
+                                {
+                                    *destination_iter = *iter;
+                                    destination_iter++;
+                                }
+
+                                // this->setRange(
+                                //     operation.destinationIndex,
+                                //     operation.destinationIndex + operation.endIndex -
+                                //     operation.startIndex);
+                            }
+                            if constexpr(std::is_same_v<OP, InvalidateRangeOperation>)
+                            {
+                                auto start_iter = std::next(
+                                    storage.quadStateBuffer.begin(),
+                                    operation.startIndex);
+                                auto end_iter =
+                                    std::next(storage.quadStateBuffer.begin(), operation.endIndex);
+
+                                for(auto iter = start_iter; iter != end_iter; iter++)
+                                {
+                                    *iter = std::nullopt;
+                                }
+
+                                // this->unsetRange(operation.startIndex, operation.endIndex);
+                            }
+                        },
+                        op);
+                }
+
+                // apply memory operations to solver
+                storage.quadStateBufferSolver.applyPackingOperations(memory_operations);
+
+                // clean up stage buffers
+                storage.quadRemovalStageBuffer.clear();
+            }
+
+            if(not storage.quadAdditionStageBuffer.empty())
+            {
+                spdlog::debug(
+                    "Renderer: addition stage buffer is not empty: {} elements",
+                    storage.quadAdditionStageBuffer.size());
+
+                // register addition of quads in solver
+                storage.quadStateBufferSolver.appendManyElements(
+                    storage.quadAdditionStageBuffer.size());
+                // TODO(vis4rd): check for out of memory or resize operations and update solver and
+                //               state buffer
+
+                // submit new quads to ssbo
+                const auto offset = static_cast<GLintptr>(
+                    (storage.quadStateBufferSolver.getLastSetIndex() + 1)
+                    * sizeof(QuadInstanceData));
+                spdlog::debug(
+                    "Renderer: Submitting {} quads to ssbo with offset {}",
+                    storage.quads.size(),
+                    offset);
+                quad_ssbo->setData(storage.quads, offset);
+
+                // register addition of quads in state buffer
+                //? should the highest ssbo_index be stored separately? (can be solved by std::list)
+                auto first_nullopt = std::find_if(
                     storage.quadStateBuffer.begin(),
                     storage.quadStateBuffer.end(),
-                    [quad_id](const auto& buffer_element) {
-                        return quad_id == buffer_element.id;
+                    [](const auto& buffer_element) {
+                        return buffer_element == std::nullopt;
                     });
-                if(to_be_remove_quad_buffer_element != storage.quadStateBuffer.end())
+
+                for(const auto quad_id : storage.quadAdditionStageBuffer)
                 {
-                    storage.quadStateBufferSolver.unsetElement(
-                        to_be_remove_quad_buffer_element->ssbo_index);
+                    if(first_nullopt == storage.quadStateBuffer.end())
+                    {
+                        spdlog::error(
+                            "Renderer: state buffer is full, can't add more quads. This should not happen, something is very wrong.");
+                        break;
+                    }
+                    *first_nullopt = quad_id;
+                    first_nullopt++;
                 }
+
+                // update statistics
+                m_stats.geometryUpdateSize += (storage.quads.size() * sizeof(QuadInstanceData));
+
+                // clean up stage buffers
+                storage.quadAdditionStageBuffer.clear();
+                storage.quads.clear();
             }
-
-            // compute memory operations using solver
-            auto memory_operations = storage.quadStateBufferSolver.computePackingOperations();
-
-            // apply memory operations to ssbo
-            // TODO: launch compute shader to do this
-
-            // apply memory operations to state buffer
-            for(const auto& op : memory_operations)
-            {
-                std::visit(
-                    [this, &storage](const auto& operation) {
-                        using OP = std::decay_t<decltype(operation)>;
-                        if constexpr(std::is_same_v<OP, CopyRangeOperation>)
-                        {
-                            // TODO: 1. find element with ssbo_index and push_back a new one with
-                            // TODO:    ssbo_index shifted by the copy operation and the same id
-                            // (can be solved by std::list)
-
-                            // this->setRange(
-                            //     operation.destinationIndex,
-                            //     operation.destinationIndex + operation.endIndex -
-                            //     operation.startIndex);
-                        }
-                        if constexpr(std::is_same_v<OP, InvalidateRangeOperation>)
-                        {
-                            // TODO: find first element with ssbo_index and remove it
-                            // (can be solved by std::list)
-
-                            // this->unsetRange(operation.startIndex, operation.endIndex);
-                        }
-                    },
-                    op);
-                // TODO: ensure that the state buffer has unique ssbo_indices
-            }
-
-            // apply memory operations to solver
-            storage.quadStateBufferSolver.applyPackingOperations(memory_operations);
-
-            // register addition of quads in solver
-            storage.quadStateBufferSolver.appendManyElements(
-                storage.quadAdditionStageBuffer.size());
-            // TODO(vis4rd): check for out of memory or resize operations and update solver
-
-            // submit new quads to ssbo
-            quad_ssbo->setData(
-                storage.quads,
-                static_cast<GLintptr>(
-                    (storage.quadStateBufferSolver.getLastSetIndex() + 1)
-                    * sizeof(QuadInstanceData)));
-
-            // register addition of quads in state buffer
-            //? should the highest ssbo_index be stored separately? (can be solved by std::list)
-            for(const auto quad_id : storage.quadAdditionStageBuffer)
-            {
-                const auto new_ssbo_index = storage.quadStateBuffer.size();
-                storage.quadStateBuffer.emplace_back(quad_id, new_ssbo_index);
-            }
-
-            // clean up stage buffers (can be moved to clear() method)
-            storage.quadAdditionStageBuffer.clear();
-            storage.quadRemovalStageBuffer.clear();
-            storage.quads.clear();
-
-            // update statistics
-            m_stats.geometryUpdateSize += (storage.quads.size() * sizeof(QuadInstanceData));
 
             // prepare uniform data
             constexpr std::array<std::int32_t, 32> samplers{
@@ -169,12 +219,17 @@ void Renderer::submitDraws(const glm::mat4& projection, const glm::mat4& view)
             quad_shader.uploadUniform("uFrameCurrentIndex", frame_current_indices, 98);
 
             quad_vao->bind();
+            // spdlog::debug(
+            //     "Renderer: drawing {} quads",
+            //     storage.quadStateBufferSolver.getLastSetIndex() + 1);
             glDrawElementsInstanced(
                 GL_TRIANGLES,
-                static_cast<GLsizei>(quad_vao->getElementBuffer().getElementCount()),
+                // BUG: omg I guess only 6 elements are needed here for a quad?
+                // static_cast<GLsizei>(quad_vao->getElementBuffer().getElementCount()),
+                6,
                 GL_UNSIGNED_INT,
                 nullptr,
-                static_cast<GLsizei>(storage.quads.size()));
+                static_cast<GLsizei>(storage.quadStateBufferSolver.getLastSetIndex() + 1));
             quad_vao->unbind();
             quad_ssbo->unbind();
             m_stats.drawCalls++;
