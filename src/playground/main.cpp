@@ -32,6 +32,8 @@ int main()
         {
             const auto pos = window.getMousePosition();
             points.push_back(pos);
+            mono::renderer::drawQuad("default", pos, {10, 10}, 0, {1.f, 0.f, 0.f, 1.f});
+            spdlog::debug("Clicking LMB");
         }
         if(input_manager.isPressedOnce(GLFW_KEY_F11))
         {
@@ -65,10 +67,10 @@ int main()
 
         window.prepareRender();
 
-        for(const auto& point : points)
-        {
-            mono::renderer::drawQuad("default", point, {10, 10}, 0, {1.f, 0.f, 0.f, 1.f});
-        }
+        // for(const auto& point : points)
+        // {
+        //     mono::renderer::drawQuad("default", point, {10, 10}, 0, {1.f, 0.f, 0.f, 1.f});
+        // }
 
         if(ImGui::Begin("Playground"))
         {
