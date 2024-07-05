@@ -43,12 +43,11 @@ void Renderer::submitDraws(const glm::mat4& projection, const glm::mat4& view)
 
         {  // QUADS
             auto quad_vao = pass.getQuadVao();
-
             auto quad_ssbo = pass.getQuadSsbo();
 
             if(not storage.quadRemovalStageBuffer.empty())
             {
-                spdlog::debug("Renderer: removal stage buffer is not empty");
+                // spdlog::trace("Renderer: removal stage buffer is not empty");
                 // register removal of quads in solver
                 for(const auto quad_id : storage.quadRemovalStageBuffer)
                 {
@@ -129,24 +128,47 @@ void Renderer::submitDraws(const glm::mat4& projection, const glm::mat4& view)
 
             if(not storage.quadAdditionStageBuffer.empty())
             {
-                spdlog::debug(
-                    "Renderer: addition stage buffer is not empty: {} elements",
-                    storage.quadAdditionStageBuffer.size());
+                // spdlog::trace(
+                //     "Renderer: addition stage buffer is not empty: {} elements",
+                //     storage.quadAdditionStageBuffer.size());
 
                 // register addition of quads in solver
-                storage.quadStateBufferSolver.appendManyElements(
+                auto memory_operations = storage.quadStateBufferSolver.appendManyElements(
                     storage.quadAdditionStageBuffer.size());
-                // TODO(vis4rd): check for out of memory or resize operations and update solver and
-                //               state buffer
+
+                // apply memory operations to ssbo if any
+                for(const auto& op : memory_operations)
+                {
+                    std::visit(
+                        [this, &pass, &storage](const auto& operation) {
+                            using OP = std::decay_t<decltype(operation)>;
+                            if constexpr(std::is_same_v<OP, ResizeOperation>)
+                            {
+                                // resize ssbo
+                                pass.getQuadSsbo()->resize(
+                                    operation.newSize * sizeof(QuadInstanceData));
+
+                                // resize state buffer
+                                storage.quadStateBuffer.resize(operation.newSize, std::nullopt);
+
+                                // resize solver
+                                storage.quadStateBufferSolver.setMemorySize(operation.newSize);
+                            }
+                            if constexpr(std::is_same_v<OP, MakeAvailableMemoryOperation>)
+                            {
+                                // TODO: figure out what to do when max memory has been reached
+                            }
+                        },
+                        op);
+                }
 
                 // submit new quads to ssbo
                 const auto offset = static_cast<GLintptr>(
-                    (storage.quadStateBufferSolver.getLastSetIndex() + 1)
-                    * sizeof(QuadInstanceData));
-                spdlog::debug(
-                    "Renderer: Submitting {} quads to ssbo with offset {}",
-                    storage.quads.size(),
-                    offset);
+                    (storage.quadStateBufferSolver.getLastSetIndex()) * sizeof(QuadInstanceData));
+                // spdlog::trace(
+                //     "Renderer: Submitting {} quads to ssbo with offset {}",
+                //     storage.quads.size(),
+                //     offset);
                 quad_ssbo->setData(storage.quads, offset);
 
                 // register addition of quads in state buffer
@@ -219,7 +241,7 @@ void Renderer::submitDraws(const glm::mat4& projection, const glm::mat4& view)
             quad_shader.uploadUniform("uFrameCurrentIndex", frame_current_indices, 98);
 
             quad_vao->bind();
-            // spdlog::debug(
+            // spdlog::trace(
             //     "Renderer: drawing {} quads",
             //     storage.quadStateBufferSolver.getLastSetIndex() + 1);
             glDrawElementsInstanced(
