@@ -23,6 +23,7 @@ void ShaderStorageBuffer<T>::bind(GLuint binding) const
 template<typename T>
 void ShaderStorageBuffer<T>::unbind() const
 {
+    spdlog::trace("Unbinding ShaderStorageBuffer with ID = {}", m_id);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
@@ -43,7 +44,7 @@ constexpr void ShaderStorageBuffer<T>::setData(
     if((size + buffer_offset) > m_maxBufferBytesize)
     {
         spdlog::warn(
-            "Data size ({} bytes) with offset ({} bytes) reaches outside of buffer size ({} bytes). Resizing buffer...",
+            "Data size ({} bytes) with offset ({} bytes) reaches outside of buffer size ({} bytes)",
             size,
             buffer_offset,
             m_maxBufferBytesize);
@@ -54,18 +55,16 @@ constexpr void ShaderStorageBuffer<T>::setData(
 }
 
 template<typename T>
-ShaderStorageBuffer<T>::operator GLuint() const
+void ShaderStorageBuffer<T>::resize(GLsizeiptr new_byte_size)
 {
-    return m_id;
-}
-
-template<typename T>
-void ShaderStorageBuffer<T>::resize(GLsizei new_byte_size)
-{
+    spdlog::debug("Resizing ShaderStorageBuffer with ID = {} to {} bytes", m_id, new_byte_size);
     // create a new ssbo with the new size
     GLuint new_id{};
     glCreateBuffers(1, &new_id);
     glNamedBufferStorage(new_id, new_byte_size, nullptr, GL_DYNAMIC_STORAGE_BIT);
+
+    // copy data from old ssbo to the new one
+    glCopyNamedBufferSubData(m_id, new_id, 0, 0, std::min(m_maxBufferBytesize, new_byte_size));
 
     // unbind and delete the old ssbo
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
@@ -74,6 +73,12 @@ void ShaderStorageBuffer<T>::resize(GLsizei new_byte_size)
     // track the new ssbo
     m_id = new_id;
     m_maxBufferBytesize = new_byte_size;
+}
+
+template<typename T>
+ShaderStorageBuffer<T>::operator GLuint() const
+{
+    return m_id;
 }
 
 }  // namespace mono::gl
