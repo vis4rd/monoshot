@@ -84,8 +84,8 @@ void RenderPass::prepareLineVao()
 
 void RenderPass::prepareRenderStorage()
 {
-    m_renderStorage.quadStateBufferSolver.setTotalMemoryBlockSize(m_startingMaxQuadCount);
-    m_renderStorage.quadStateBufferSolver.setMaxMemoryLimit(m_totalMaxQuadCount);
+    m_renderStorage.quadStateBufferSolver.setMemorySize(m_startingMaxQuadCount);
+    m_renderStorage.quadStateBufferSolver.setMaxMemorySize(m_totalMaxQuadCount);
     m_renderStorage.quadStateBuffer.resize(m_startingMaxQuadCount, std::nullopt);
 }
 

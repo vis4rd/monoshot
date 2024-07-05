@@ -2,26 +2,42 @@ namespace mono::gl
 {
 
 constexpr MemoryPackingSolver::MemoryPackingSolver(
-    std::size_t total_memory_block_size_elements,
-    std::size_t max_memory_limit_elements)
-    : m_totalMemoryBlockSize{total_memory_block_size_elements}
-    , m_memoryBlock(total_memory_block_size_elements, 0u)
-    , m_maxMemoryLimit{max_memory_limit_elements}
-    , m_firstSetIndex{total_memory_block_size_elements}
+    std::int64_t init_memory_size,
+    std::int64_t max_memory_size,
+    std::int64_t resize_addition_multiplier_percent)
+    : m_memoryBlock(std::max(init_memory_size, std::int64_t{1}), 0u)
+    , m_currentMemorySize{init_memory_size}
+    , m_maxMemorySize{max_memory_size}
+    , m_resizeMultiplier{resize_addition_multiplier_percent}
+    , m_initMemorySize{init_memory_size}
+    , m_firstSetIndex{init_memory_size + 1}  // +1 just to be sure
 {
-    m_setRanges.emplace_back(0u, total_memory_block_size_elements - 1);
+    if(init_memory_size < 1)
+    {
+        m_currentMemorySize = 1;
+        m_initMemorySize = 1;
+        m_firstSetIndex = 2;
+    }
+    if(max_memory_size < init_memory_size)
+    {
+        m_maxMemorySize = init_memory_size;
+    }
+    if(resize_addition_multiplier_percent < 0)
+    {
+        m_resizeMultiplier = 100;
+    }
 }
 
 constexpr std::vector<MemoryOperation> MemoryPackingSolver::appendElement()
 {
-    if(m_lastSetIndex < (m_totalMemoryBlockSize - 1u))
+    if(m_lastSetIndex < (m_currentMemorySize - 1))
     {
         // memory block has empty space at the end
         this->setElement(m_lastSetIndex + 1u);
         return {};
     }
 
-    if(m_totalMemoryBlockSize == m_maxMemoryLimit)
+    if(m_currentMemorySize == m_maxMemorySize)
     {
         // memory block is full and cannot be resized due to max memory limit reached
         return {MakeAvailableMemoryOperation{.size = 1u}};
@@ -30,24 +46,32 @@ constexpr std::vector<MemoryOperation> MemoryPackingSolver::appendElement()
     // memory block is full and can be resized
     m_memoryBlock.push_back(1u);
     m_lastSetIndex++;
-    m_totalMemoryBlockSize++;
+    m_currentMemorySize++;
     m_setRanges.back().end++;
-    return {ResizeOperation{.newSize = m_totalMemoryBlockSize + 1u}};
+    // TODO(vis4rd): calculate ResizeOperation according to resize multiplier
+    return {ResizeOperation{.newSize = static_cast<std::size_t>(m_currentMemorySize)}};
 }
 
 constexpr std::vector<MemoryOperation> MemoryPackingSolver::appendManyElements(std::size_t count)
 {
-    if((m_lastSetIndex + count) < m_totalMemoryBlockSize)
+    if((m_lastSetIndex + count) < m_currentMemorySize)
     {
         // memory block has enough empty space at the end
-        this->setRange(m_lastSetIndex, m_lastSetIndex + count);
+        this->setRange(std::max(m_lastSetIndex, std::int64_t{0}), m_lastSetIndex + count);
         return {};
     }
 
-    const std::size_t empty_left_count = m_totalMemoryBlockSize - m_lastSetIndex - 1u;
-    const std::int64_t required_new_count = count - empty_left_count;
+    // here m_lastSetIndex >= 0
+    const std::size_t empty_left_count = m_currentMemorySize - m_lastSetIndex - 1;
+    const std::size_t required_new_count = std::max(
+        static_cast<std::int64_t>(count) - static_cast<std::int64_t>(empty_left_count),
+        std::int64_t{0});
     const std::int64_t over_limit_count =
-        m_totalMemoryBlockSize + required_new_count - m_maxMemoryLimit;
+        m_currentMemorySize + static_cast<std::int64_t>(required_new_count) - m_maxMemorySize;
+    // spdlog::trace(
+    //     "m_currentMemorySize = {}, empty_left_count = {}, required_new_count = {},
+    //     over_limit_count = {}", m_currentMemorySize, empty_left_count, required_new_count,
+    //     over_limit_count);
     if(over_limit_count > 0)
     {
         // memory block is full and cannot be resized due to max memory limit reached
@@ -56,12 +80,21 @@ constexpr std::vector<MemoryOperation> MemoryPackingSolver::appendManyElements(s
             MakeAvailableMemoryOperation{.size = static_cast<std::size_t>(over_limit_count)}};
     }
 
-    // memory block can be resized, because it fits withing the max memory limit
-    const std::size_t new_size = m_totalMemoryBlockSize + required_new_count;
-    m_memoryBlock.resize(new_size, 1u);
-    m_totalMemoryBlockSize = new_size;
-    m_lastSetIndex = m_totalMemoryBlockSize - 1u;
-    m_setRanges.back().end = m_lastSetIndex;
+    // memory block can be resized, because it fits within the max memory limit
+    const std::size_t new_size = [&]() -> std::size_t {
+        const std::size_t addition_amount_step =
+            (static_cast<double>(m_initMemorySize) * static_cast<double>(m_resizeMultiplier)
+             / 100.0);
+        auto final_addition_size = addition_amount_step;
+        while(final_addition_size < required_new_count)
+        {
+            final_addition_size += addition_amount_step;
+        }
+        return m_currentMemorySize + final_addition_size;
+    }();
+    m_memoryBlock.resize(new_size, 0u);
+    m_currentMemorySize = new_size;
+    this->setRange(m_lastSetIndex + 1, m_lastSetIndex + count);  // last change here
     return {ResizeOperation{.newSize = new_size}};
 }
 
@@ -110,7 +143,9 @@ constexpr void MemoryPackingSolver::setRange(
         return;
     }
 
-    for(std::size_t i = start_index; i <= end_index; ++i)
+    for(std::int64_t i = static_cast<std::int64_t>(start_index);
+        i <= static_cast<std::int64_t>(end_index);
+        ++i)
     {
         m_memoryBlock.at(i) = value;
         if(i > m_lastSetIndex)
@@ -161,18 +196,23 @@ constexpr std::size_t MemoryPackingSolver::getFirstSetIndex() const
     return m_firstSetIndex;
 }
 
-constexpr void MemoryPackingSolver::setTotalMemoryBlockSize(std::size_t elements)
+constexpr void MemoryPackingSolver::setMemorySize(std::size_t count)
 {
-    m_totalMemoryBlockSize = elements;
-    m_memoryBlock.resize(m_totalMemoryBlockSize);
+    if(m_currentMemorySize == 0)
+    {
+        m_initMemorySize = count;
+        m_firstSetIndex = count + 1;
+    }
+    m_currentMemorySize = count;
+    m_memoryBlock.resize(m_currentMemorySize);
 }
 
-constexpr void MemoryPackingSolver::setMaxMemoryLimit(std::size_t elements)
+constexpr void MemoryPackingSolver::setMaxMemorySize(std::size_t count)
 {
-    m_maxMemoryLimit = elements;
-    if(m_totalMemoryBlockSize > m_maxMemoryLimit)
+    m_maxMemorySize = count;
+    if(m_currentMemorySize > m_maxMemorySize)
     {
-        this->setTotalMemoryBlockSize(m_maxMemoryLimit);
+        this->setMemorySize(m_maxMemorySize);
     }
 }
 
@@ -197,17 +237,21 @@ constexpr std::vector<MemoryOperation> MemoryPackingSolver::computePackingOperat
     if(m_setRanges.size() == 1)
     {
         // only one range in the middle of the memory block - move it to the beggining
-        auto moved_size = range_size(m_setRanges.back());
-        if(range_size(m_setRanges.back()) >= m_setRanges.back().start)
+        const auto last_range = m_setRanges.back();
+        auto moved_size = range_size(last_range);
+        if(moved_size >= last_range.start)
         {
             // there is overlap between source and destination
-            moved_size = m_setRanges.back().start;
+            moved_size = last_range.start;
         }
         return {
-            CopyRangeOperation{m_setRanges.back().end - moved_size + 1, m_setRanges.back().end, 0u},
+            CopyRangeOperation{
+                               last_range.end - moved_size + 1,
+                               static_cast<std::size_t>(last_range.end),
+                               0u},
             InvalidateRangeOperation{
-                               m_setRanges.back().end - moved_size + 1,
-                               m_setRanges.back().end},
+                               last_range.end - moved_size + 1,
+                               static_cast<std::size_t>(last_range.end)},
         };
     }
 
@@ -238,10 +282,13 @@ constexpr std::vector<MemoryOperation> MemoryPackingSolver::computePackingOperat
         if(unset_range_size > last_set_range_size)
         {
             // move the last set range to the unset range
-            operations.push_back(
-                CopyRangeOperation{last_set_range.start, last_set_range.end, unset_range.start});
-            operations.push_back(
-                InvalidateRangeOperation{last_set_range.start, last_set_range.end});
+            operations.push_back(CopyRangeOperation{
+                static_cast<std::size_t>(last_set_range.start),
+                static_cast<std::size_t>(last_set_range.end),
+                static_cast<std::size_t>(unset_range.start)});
+            operations.push_back(InvalidateRangeOperation{
+                static_cast<std::size_t>(last_set_range.start),
+                static_cast<std::size_t>(last_set_range.end)});
             set_ranges_copy.pop_back();
 
             if(set_ranges_copy.front().start > 0u)
@@ -260,11 +307,11 @@ constexpr std::vector<MemoryOperation> MemoryPackingSolver::computePackingOperat
             // move only a part of the last set range to the unset range
             operations.push_back(CopyRangeOperation{
                 last_set_range.end - unset_range_size + 1,
-                last_set_range.end,
-                unset_range.start});
+                static_cast<std::size_t>(last_set_range.end),
+                static_cast<std::size_t>(unset_range.start)});
             operations.push_back(InvalidateRangeOperation{
                 last_set_range.end - unset_range_size + 1,
-                last_set_range.end});
+                static_cast<std::size_t>(last_set_range.end)});
             last_set_range.end -= unset_range_size;
 
             if(set_ranges_copy.front().start > 0u)
@@ -319,7 +366,7 @@ constexpr void MemoryPackingSolver::calculateFirstSetIndex(std::size_t search_st
         std::find(m_memoryBlock.begin() + search_start_index, m_memoryBlock.end(), 1u);
     if(first_set_iter == m_memoryBlock.end())
     {
-        m_firstSetIndex = m_totalMemoryBlockSize;
+        m_firstSetIndex = m_currentMemorySize;
     }
     else
     {
