@@ -34,12 +34,11 @@ class ShaderStorageBuffer final
     constexpr void setData(
         const ContiguousContainerTrait<T> auto& data,
         GLintptr buffer_offset = 0);
+    void resize(GLsizeiptr new_byte_size);
 
     // NOLINTNEXTLINE(google-explicit-constructor)
     operator GLuint() const;
 
-    private:
-    void resize(GLsizei new_byte_size);
 
     private:
     GLuint m_id{};
