@@ -20,14 +20,22 @@ class MemoryPackingSolver
     constexpr MemoryPackingSolver() = default;
 
     /// @brief Constructor taking total memory block size and max memory limit.
-    /// @param total_memory_block_size_elements Current total memory block size in number of
-    ///                                         elements. Note that this value takes unassigned
-    ///                                         elements into account.
-    /// @param max_memory_limit_elements Maximum memory limit in number of elements. This value
-    ///                                  cannot be exceeded.
+    /// @param init_memory_size Initial size of memory block in number of elements. Note that this
+    ///                         value takes unused memory into account. Cannot be less than 1.
+    /// @param max_memory_size Maximum memory limit in number of elements. This value will not be
+    ///                        exceeded by resize operations. Cannot be less than
+    ///                        @p init_memory_size.
+    /// @param resize_addition_multiplier_percent Decides by how much memory size will increase when
+    ///                                           resizing. Default is 100% (in regards to
+    ///                                           init_memory_size). Smaller values will result in
+    ///                                           more frequent resizing, but might take less
+    ///                                           memory. Greater values mean infrequent resizing,
+    ///                                           but more greedy memory usage. Cannot be smaller
+    ///                                           than 0.
     constexpr explicit MemoryPackingSolver(
-        std::size_t total_memory_block_size_elements,
-        std::size_t max_memory_limit_elements = 0u);
+        std::int64_t init_memory_size,
+        std::int64_t max_memory_size = 0u,
+        std::int64_t resize_addition_multiplier_percent = 100u);
 
     /// @brief Add element at the end of the set part of the memory block.
     /// @return Operations defining whether memory block has to be resized or the added element
@@ -86,17 +94,21 @@ class MemoryPackingSolver
     ///         applyPackingOperations.
     constexpr std::size_t getFirstSetIndex() const;
 
-    /// @brief Set the total memory block size.
+    /// @brief Set the current memory block size.
     /// @param elements Number of elements in the memory block.
     ///
-    /// Total memory block size indicates the total number of elements in the memory block,
-    /// including elements invalid (unset/set to 0).
-    constexpr void setTotalMemoryBlockSize(std::size_t elements);
+    /// Current memory block size indicates the capacity in number of elements that can fit in
+    /// the memory block. Size of each element does not matter, as only element count is tracked.
+    /// Note that there can be less elements than the memory block can store.
+    ///
+    /// @note This function does not allocate memory (apart from what is needed to control the
+    ///       memory), but only lets the solver know how many elements can be stored.
+    constexpr void setMemorySize(std::size_t count);
 
     /// @brief Set the maximum memory limit. This value cannot be exceeded by resize memory
     ///        operations.
     /// @param elements Number of elements in the memory block.
-    constexpr void setMaxMemoryLimit(std::size_t elements);
+    constexpr void setMaxMemorySize(std::size_t count);
 
     /// @brief Calculate operations which are required to be performed in order to pack elements in
     ///        a single, continuous memory block.
@@ -112,17 +124,16 @@ class MemoryPackingSolver
     constexpr void applyPackingOperations(const std::vector<MemoryOperation>& operations);
 
     // debug
-    friend std::ostream& operator<<(std::ostream& os, const MemoryPackingSolver& watcher)
+    friend std::ostream& operator<<(std::ostream& os, const MemoryPackingSolver& solver)
     {
-        os << "watcher[" << watcher.m_totalMemoryBlockSize << "/" << watcher.m_maxMemoryLimit
-           << "] = { ";
-        for(const auto& element : watcher.m_memoryBlock)
+        os << "solver[" << solver.m_currentMemorySize << "/" << solver.m_maxMemorySize << "] = { ";
+        for(const auto& element : solver.m_memoryBlock)
         {
             os << static_cast<std::uint32_t>(element);
         }
-        os << " }{F: " << watcher.m_firstSetIndex << ", L: " << watcher.m_lastSetIndex << "}";
+        os << " }{F: " << solver.m_firstSetIndex << ", L: " << solver.m_lastSetIndex << "}";
         os << "{ ";
-        for(const auto& range : watcher.m_setRanges)
+        for(const auto& range : solver.m_setRanges)
         {
             os << range.start << "-" << range.end << " ";
         }
@@ -136,17 +147,19 @@ class MemoryPackingSolver
     constexpr void calculateSetRanges();
 
     private:
-    std::size_t m_totalMemoryBlockSize{};
     std::vector<std::uint8_t> m_memoryBlock{};
-    std::size_t m_maxMemoryLimit{};
+    std::int64_t m_currentMemorySize{};
+    std::int64_t m_maxMemorySize{};
+    std::int64_t m_initMemorySize{};
+    std::int64_t m_resizeMultiplier{100u};
 
-    std::size_t m_firstSetIndex{};
-    std::size_t m_lastSetIndex{};
+    std::int64_t m_firstSetIndex{-1};
+    std::int64_t m_lastSetIndex{-1};
 
     struct IndexRange
     {
-        std::size_t start{};
-        std::size_t end{};
+        std::int64_t start{};
+        std::int64_t end{};
     };
 
     std::vector<IndexRange> m_setRanges{};
