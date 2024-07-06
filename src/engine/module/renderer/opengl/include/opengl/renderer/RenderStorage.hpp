@@ -1,8 +1,10 @@
 #pragma once
 
 #include <list>
+#include <map>
 #include <memory>
 #include <optional>
+#include <set>
 #include <vector>
 
 #include "../memory_packing_solver/MemoryPackingSolver.hpp"
@@ -16,6 +18,7 @@ namespace mono::gl
 namespace detail
 {
 using StateBufferElementId = std::size_t;
+using TextureId = std::uint32_t;
 
 struct StateBufferElement
 {
@@ -30,13 +33,14 @@ class RenderStorage
     void clear()
     {
         quads.clear();
-        textureSlots.clear();
         lines.clear();
     }
 
     public:
     std::vector<QuadInstanceData> quads{};
-    std::vector<std::shared_ptr<mono::Texture>> textureSlots{};
+    // TODO(vis4rd): Remember to remove textures when no quads use them
+    std::map<detail::TextureId, std::set<detail::StateBufferElementId>> textureIdsInStateBuffer{};
+    std::vector<std::shared_ptr<mono::Texture>> textures{};  // indices are slots
 
     std::vector<LineVertex> lines{};
 
