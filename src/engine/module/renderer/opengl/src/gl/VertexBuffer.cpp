@@ -57,7 +57,7 @@ VertexBuffer& VertexBuffer::operator=(VertexBuffer&& move) noexcept
 
 void VertexBuffer::bind() const
 {
-    spdlog::trace("Binding VertexBuffer with ID = {}", m_id);
+    // spdlog::trace("Binding VertexBuffer with ID = {}", m_id);
     glBindBuffer(GL_ARRAY_BUFFER, m_id);
 }
 
