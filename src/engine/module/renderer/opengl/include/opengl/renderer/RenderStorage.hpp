@@ -30,11 +30,9 @@ struct StateBufferElement
 class RenderStorage
 {
     public:
-    void clear()
-    {
-        quads.clear();
-        lines.clear();
-    }
+    void clear();
+    void registerQuadsRemovalInSolver();
+    void applyMemoryOperationsToStateBuffer(const std::vector<MemoryOperation>& operations);
 
     public:
     std::vector<QuadInstanceData> quads{};

@@ -48,23 +48,7 @@ void Renderer::submitDraws(const glm::mat4& projection, const glm::mat4& view)
             if(not storage.quadRemovalStageBuffer.empty())
             {
                 // spdlog::trace("Renderer: removal stage buffer is not empty");
-                // register removal of quads in solver
-                for(const auto quad_id : storage.quadRemovalStageBuffer)
-                {
-                    auto to_be_remove_quad_buffer_element = std::find_if(
-                        storage.quadStateBuffer.begin(),
-                        storage.quadStateBuffer.end(),
-                        [quad_id](const auto& buffer_element) {
-                            return quad_id == buffer_element.value_or(9999999999999);
-                            // surely there won't be any element with such a high id, right?
-                        });
-                    if(to_be_remove_quad_buffer_element != storage.quadStateBuffer.end())
-                    {
-                        storage.quadStateBufferSolver.unsetElement(std::distance(
-                            storage.quadStateBuffer.begin(),
-                            to_be_remove_quad_buffer_element));
-                    }
-                }
+                storage.registerQuadsRemovalInSolver();
 
                 // compute memory operations using solver
                 auto memory_operations = storage.quadStateBufferSolver.computePackingOperations();
@@ -72,57 +56,12 @@ void Renderer::submitDraws(const glm::mat4& projection, const glm::mat4& view)
                 // apply memory operations to ssbo
                 // TODO: launch compute shader to do this
 
-                // apply memory operations to state buffer
-                for(const auto& op : memory_operations)
-                {
-                    std::visit(
-                        [this, &storage](const auto& operation) {
-                            using OP = std::decay_t<decltype(operation)>;
-                            if constexpr(std::is_same_v<OP, CopyRangeOperation>)
-                            {
-                                auto start_iter = std::next(
-                                    storage.quadStateBuffer.begin(),
-                                    operation.startIndex);
-                                auto end_iter =
-                                    std::next(storage.quadStateBuffer.begin(), operation.endIndex);
-                                auto destination_iter = std::next(
-                                    storage.quadStateBuffer.begin(),
-                                    operation.destinationIndex);
-
-                                for(auto iter = start_iter; iter != end_iter; iter++)
-                                {
-                                    *destination_iter = *iter;
-                                    destination_iter++;
-                                }
-
-                                // this->setRange(
-                                //     operation.destinationIndex,
-                                //     operation.destinationIndex + operation.endIndex -
-                                //     operation.startIndex);
-                            }
-                            if constexpr(std::is_same_v<OP, InvalidateRangeOperation>)
-                            {
-                                auto start_iter = std::next(
-                                    storage.quadStateBuffer.begin(),
-                                    operation.startIndex);
-                                auto end_iter =
-                                    std::next(storage.quadStateBuffer.begin(), operation.endIndex);
-
-                                for(auto iter = start_iter; iter != end_iter; iter++)
-                                {
-                                    *iter = std::nullopt;
-                                }
-
-                                // this->unsetRange(operation.startIndex, operation.endIndex);
-                            }
-                        },
-                        op);
-                }
+                storage.applyMemoryOperationsToStateBuffer(memory_operations);
 
                 // apply memory operations to solver
                 storage.quadStateBufferSolver.applyPackingOperations(memory_operations);
 
-                // clean up stage buffers
+                // clean up stage buffer
                 storage.quadRemovalStageBuffer.clear();
             }
 
@@ -136,7 +75,7 @@ void Renderer::submitDraws(const glm::mat4& projection, const glm::mat4& view)
                 auto memory_operations = storage.quadStateBufferSolver.appendManyElements(
                     storage.quadAdditionStageBuffer.size());
 
-                // apply memory operations to ssbo if any
+                // apply memory operations
                 for(const auto& op : memory_operations)
                 {
                     std::visit(
@@ -246,8 +185,6 @@ void Renderer::submitDraws(const glm::mat4& projection, const glm::mat4& view)
             //     storage.quadStateBufferSolver.getLastSetIndex() + 1);
             glDrawElementsInstanced(
                 GL_TRIANGLES,
-                // BUG: omg I guess only 6 elements are needed here for a quad?
-                // static_cast<GLsizei>(quad_vao->getElementBuffer().getElementCount()),
                 6,
                 GL_UNSIGNED_INT,
                 nullptr,
