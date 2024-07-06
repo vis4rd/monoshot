@@ -145,6 +145,7 @@ class MemoryPackingSolver
     constexpr void calculateFirstSetIndex(std::size_t search_start_index = 0u);
     constexpr void calculateLastSetIndex();
     constexpr void calculateSetRanges();
+    constexpr std::size_t calculateNewSizeForResize(std::size_t required_new_count);
 
     private:
     std::vector<std::uint8_t> m_memoryBlock{};

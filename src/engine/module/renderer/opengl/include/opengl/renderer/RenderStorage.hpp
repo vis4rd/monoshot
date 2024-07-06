@@ -44,8 +44,7 @@ class RenderStorage
 
     std::vector<LineVertex> lines{};
 
-    // TODO: switch back to vector because empty elements are kept too
-    std::list<std::optional<detail::StateBufferElementId>> quadStateBuffer{};
+    std::vector<std::optional<detail::StateBufferElementId>> quadStateBuffer{};
     detail::StateBufferElementId highestTakenQuadId{};
     std::vector<detail::StateBufferElementId> quadAdditionStageBuffer{};
     std::vector<detail::StateBufferElementId> quadRemovalStageBuffer{};
