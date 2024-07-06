@@ -25,6 +25,7 @@ target_sources(mono_module_renderer_opengl_backend
             "${CMAKE_CURRENT_SOURCE_DIR}/src/glfw/RenderWindowUserStorage.cpp"
             "${CMAKE_CURRENT_SOURCE_DIR}/src/renderer/RenderPass.cpp"
             "${CMAKE_CURRENT_SOURCE_DIR}/src/renderer/RenderPipeline.cpp"
+            "${CMAKE_CURRENT_SOURCE_DIR}/src/renderer/RenderStorage.cpp"
             "${CMAKE_CURRENT_SOURCE_DIR}/src/renderer/Renderer.cpp"
             "${CMAKE_CURRENT_SOURCE_DIR}/src/shader/Shader.cpp"
             "${CMAKE_CURRENT_SOURCE_DIR}/src/shader/ShaderManager.cpp"
