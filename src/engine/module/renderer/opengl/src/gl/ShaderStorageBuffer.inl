@@ -16,14 +16,14 @@ constexpr ShaderStorageBuffer<T>::ShaderStorageBuffer(GLsizeiptr size)
 template<typename T>
 void ShaderStorageBuffer<T>::bind(GLuint binding) const
 {
-    spdlog::trace("Binding ShaderStorageBuffer with ID = {}", m_id);
+    // spdlog::trace("Binding ShaderStorageBuffer with ID = {}", m_id);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, binding, m_id);
 }
 
 template<typename T>
 void ShaderStorageBuffer<T>::unbind() const
 {
-    spdlog::trace("Unbinding ShaderStorageBuffer with ID = {}", m_id);
+    // spdlog::trace("Unbinding ShaderStorageBuffer with ID = {}", m_id);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
@@ -39,7 +39,7 @@ constexpr void ShaderStorageBuffer<T>::setData(
     GLintptr buffer_offset)
 {
     auto size = static_cast<GLsizeiptr>(data.size() * sizeof(value_type));
-    spdlog::trace("Setting drawing data to ShaderStorageBuffer with ID = {}", m_id);
+    // spdlog::trace("Setting drawing data to ShaderStorageBuffer with ID = {}", m_id);
 
     if((size + buffer_offset) > m_maxBufferBytesize)
     {

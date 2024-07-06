@@ -49,7 +49,7 @@ VertexArray& VertexArray::operator=(VertexArray&& move) noexcept
 
 void VertexArray::bind() const
 {
-    spdlog::trace("Binding VertexArray with ID = {}", m_id);
+    // spdlog::trace("Binding VertexArray with ID = {}", m_id);
     glBindVertexArray(m_id);
 }
 

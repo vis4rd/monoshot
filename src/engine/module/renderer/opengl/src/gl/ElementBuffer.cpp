@@ -22,7 +22,7 @@ ElementBuffer::~ElementBuffer()
 
 void ElementBuffer::bind() const
 {
-    spdlog::trace("Binding ElementBuffer with ID = {}", m_id);
+    // spdlog::trace("Binding ElementBuffer with ID = {}", m_id);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
 }
 
