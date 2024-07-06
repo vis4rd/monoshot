@@ -5,6 +5,7 @@
 #include <imgui/imgui.h>
 #include <spdlog/spdlog.h>
 
+#include "cstring/cstring.hpp"
 #include "opengl/shader/ShaderManager.hpp"
 
 namespace mono::gl
@@ -95,7 +96,10 @@ void Renderer::submitDraws(const glm::mat4& projection, const glm::mat4& view)
                             }
                             if constexpr(std::is_same_v<OP, MakeAvailableMemoryOperation>)
                             {
-                                // TODO: figure out what to do when max memory has been reached
+                                constexpr mono::cstring msg =
+                                    "Renderer: max memory limit reached, consider assigning more memory to the SSBO.";
+                                spdlog::error(msg);
+                                throw std::runtime_error(msg.data().data());
                             }
                         },
                         op);
