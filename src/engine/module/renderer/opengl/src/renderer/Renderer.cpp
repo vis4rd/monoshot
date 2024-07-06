@@ -208,10 +208,10 @@ void Renderer::submitDraws(const glm::mat4& projection, const glm::mat4& view)
             std::array<std::uint32_t, 32> frame_row_lengths{};
             std::array<std::uint32_t, 32> frame_current_indices{};
 
-            for(std::size_t slot = 0; slot < storage.textureSlots.size(); slot++)
+            for(std::size_t slot = 0; slot < storage.textures.size(); slot++)
             {
-                //! TODO(vis4rd): CAN GO OUT OF BOUND IF MORE THAN 32 TEXTURES!
-                const auto& texture = storage.textureSlots[slot];
+                // BUG: CAN GO OUT OF BOUND IF MORE THAN 32 TEXTURES!
+                const auto& texture = storage.textures[slot];
                 const auto& id = texture->getID();
                 glBindTextureUnit(slot, id);  // slot = unit
 
@@ -258,7 +258,7 @@ void Renderer::submitDraws(const glm::mat4& projection, const glm::mat4& view)
 
             glDisable(GL_BLEND);
 
-            for(std::size_t slot = 0; slot < storage.textureSlots.size(); slot++)
+            for(std::size_t slot = 0; slot < storage.textures.size(); slot++)
             {
                 glBindTextureUnit(slot, 0);
             }
@@ -317,27 +317,33 @@ void Renderer::drawQuad(
 
     auto& storage =
         m_pipelines.at(m_currentPipelineId).getRenderPass(render_pass_name).getRenderStorage();
+    const auto texture_id = texture->getID();
     const std::size_t texture_slot = [&storage, &texture]() {
-        // TODO(visard): change this lambda to STL algorithm
-        constexpr auto find_slot = [](const std::vector<std::shared_ptr<Texture>>& slots,
-                                      const std::uint32_t& texture_id) -> std::size_t {
-            for(std::int64_t slot = 0; slot < slots.size(); slot++)
+        // TODO(visard): change this lambda to STL algorithm (indexOf)
+        constexpr auto find_slot = [](const std::vector<std::shared_ptr<mono::Texture>>& textures,
+                                      detail::TextureId texture_id) -> std::size_t {
+            for(std::int64_t slot = 0; slot < textures.size(); slot++)
             {
-                if(slots[slot]->getID() == texture_id)
+                if(textures[slot]->getID() == texture_id)
                 {
                     return slot;
                 }
             }
             return 9999999;
         };
-        std::size_t slot = find_slot(storage.textureSlots, texture->getID());
+        std::size_t slot = find_slot(storage.textures, texture->getID());
         if(slot > 9999998)
         {
-            storage.textureSlots.push_back(std::move(texture));
-            slot = storage.textureSlots.size() - 1;
+            storage.textures.push_back(std::move(texture));
+            slot = storage.textures.size() - 1;
         }
         return slot;
     }();
+
+    if(not storage.textureIdsInStateBuffer.contains(texture_id))
+    {
+        storage.textureIdsInStateBuffer[texture_id] = {};
+    }
 
     const QuadInstanceData quad_instance_data{
         color_uint,
@@ -349,6 +355,7 @@ void Renderer::drawQuad(
     storage.quads.push_back(std::move(quad_instance_data));
     storage.highestTakenQuadId++;
     storage.quadAdditionStageBuffer.push_back(storage.highestTakenQuadId);
+    storage.textureIdsInStateBuffer[texture_id].emplace(storage.highestTakenQuadId);
 }
 
 void Renderer::drawLine(
