@@ -6,6 +6,7 @@
 #include <spdlog/spdlog.h>
 
 #include "cstring/cstring.hpp"
+#include "mono/util/IndexOf.hpp"
 #include "opengl/shader/ShaderManager.hpp"
 
 namespace mono::gl
@@ -259,26 +260,16 @@ void Renderer::drawQuad(
     auto& storage =
         m_pipelines.at(m_currentPipelineId).getRenderPass(render_pass_name).getRenderStorage();
     const auto texture_id = texture->getID();
-    const std::size_t texture_slot = [&storage, &texture]() {
-        // TODO(visard): change this lambda to STL algorithm (indexOf)
-        constexpr auto find_slot = [](const std::vector<std::shared_ptr<mono::Texture>>& textures,
-                                      detail::TextureId texture_id) -> std::size_t {
-            for(std::int64_t slot = 0; slot < textures.size(); slot++)
-            {
-                if(textures[slot]->getID() == texture_id)
-                {
-                    return slot;
-                }
-            }
-            return 9999999;
-        };
-        std::size_t slot = find_slot(storage.textures, texture->getID());
-        if(slot > 9999998)
+    const std::size_t texture_slot = [&storage, &texture, texture_id]() -> std::size_t {
+        const auto slot = util::indexOf(storage.textures, [texture_id](const auto& texture) {
+            return texture->getID() == texture_id;
+        });
+        if(not slot)
         {
             storage.textures.push_back(std::move(texture));
-            slot = storage.textures.size() - 1;
+            return storage.textures.size() - 1;
         }
-        return slot;
+        return slot.value();
     }();
 
     if(not storage.textureIdsInStateBuffer.contains(texture_id))
