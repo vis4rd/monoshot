@@ -44,12 +44,12 @@ constexpr std::vector<MemoryOperation> MemoryPackingSolver::appendElement()
     }
 
     // memory block is full and can be resized
-    m_memoryBlock.push_back(1u);
+    const std::size_t new_size = this->calculateNewSizeForResize(1u);
+    m_memoryBlock.resize(new_size, 1u);
     m_lastSetIndex++;
-    m_currentMemorySize++;
+    m_currentMemorySize = new_size;
     m_setRanges.back().end++;
-    // TODO(vis4rd): calculate ResizeOperation according to resize multiplier
-    return {ResizeOperation{.newSize = static_cast<std::size_t>(m_currentMemorySize)}};
+    return {ResizeOperation{.newSize = new_size}};
 }
 
 constexpr std::vector<MemoryOperation> MemoryPackingSolver::appendManyElements(std::size_t count)
@@ -81,20 +81,10 @@ constexpr std::vector<MemoryOperation> MemoryPackingSolver::appendManyElements(s
     }
 
     // memory block can be resized, because it fits within the max memory limit
-    const std::size_t new_size = [&]() -> std::size_t {
-        const std::size_t addition_amount_step =
-            (static_cast<double>(m_initMemorySize) * static_cast<double>(m_resizeMultiplier)
-             / 100.0);
-        auto final_addition_size = addition_amount_step;
-        while(final_addition_size < required_new_count)
-        {
-            final_addition_size += addition_amount_step;
-        }
-        return m_currentMemorySize + final_addition_size;
-    }();
+    const std::size_t new_size = this->calculateNewSizeForResize(required_new_count);
     m_memoryBlock.resize(new_size, 0u);
     m_currentMemorySize = new_size;
-    this->setRange(m_lastSetIndex + 1, m_lastSetIndex + count);  // last change here
+    this->setRange(m_lastSetIndex + 1, m_lastSetIndex + count);
     return {ResizeOperation{.newSize = new_size}};
 }
 
@@ -426,6 +416,18 @@ constexpr void MemoryPackingSolver::calculateSetRanges()
         current_range.end = m_lastSetIndex;
         m_setRanges.push_back(std::exchange(current_range, {}));
     }
+}
+
+constexpr std::size_t MemoryPackingSolver::calculateNewSizeForResize(std::size_t required_new_count)
+{
+    const std::size_t addition_amount_step =
+        (static_cast<double>(m_initMemorySize) * static_cast<double>(m_resizeMultiplier) / 100.0);
+    auto final_addition_size = addition_amount_step;
+    while(final_addition_size < required_new_count)
+    {
+        final_addition_size += addition_amount_step;
+    }
+    return m_currentMemorySize + final_addition_size;
 }
 
 }  // namespace mono::gl

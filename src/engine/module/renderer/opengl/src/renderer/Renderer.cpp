@@ -172,7 +172,7 @@ void Renderer::submitDraws(const glm::mat4& projection, const glm::mat4& view)
                 quad_ssbo->setData(storage.quads, offset);
 
                 // register addition of quads in state buffer
-                //? should the highest ssbo_index be stored separately? (can be solved by std::list)
+                //? should the highest ssbo_index be stored separately?
                 auto first_nullopt = std::find_if(
                     storage.quadStateBuffer.begin(),
                     storage.quadStateBuffer.end(),
