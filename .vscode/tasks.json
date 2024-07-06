@@ -76,6 +76,48 @@
             "runOptions": {
                 "runOn": "folderOpen"
             }
+        },
+        {
+            "label": "Disable commit hooks",
+            "detail": "Rename all hook files in .git/hooks to disable them.",
+            "type": "shell",
+            "linux": {
+                "command": "for f in .git/hooks/*; do if [[ ! \"$f\" =~ \\.[^/]*$ ]]; then mv \"$f\" \"$f.disabled\"; fi; done"
+            },
+            "windows": {
+                "command": "Get-ChildItem -Path '.git/hooks/*' -Exclude *.sample, *.disabled | Where-Object { -Not $_.Extension } | Rename-Item -NewName { $_.Name + '.disabled' }"
+            },
+            "icon": {
+                "color": "terminal.ansiRed",
+                "id": "git-branch"
+            },
+            "presentation": {
+                "clear": true,
+                "panel": "dedicated",
+                "reveal": "silent",
+                "showReuseMessage": false,
+            }
+        },
+        {
+            "label": "Enable commit hooks",
+            "detail": "Rename all .disabled files in .git/hooks back to enable them.",
+            "type": "shell",
+            "linux": {
+                "command": "for f in .git/hooks/*.disabled; do mv \"$f\" \"${f%.disabled}\"; done"
+            },
+            "windows": {
+                "command": "Get-ChildItem -Path '.git/hooks/*.disabled' | Rename-Item -NewName { $_.Name -replace '.disabled$', '' }"
+            },
+            "icon": {
+                "color": "terminal.ansiGreen",
+                "id": "git-branch"
+            },
+            "presentation": {
+                "clear": true,
+                "panel": "dedicated",
+                "reveal": "silent",
+                "showReuseMessage": false,
+            }
         }
     ]
 }
