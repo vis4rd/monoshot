@@ -82,24 +82,13 @@ const std::vector<std::string>& RenderPipeline::getRenderOrder() const
 
 void RenderPipeline::prepareEbo()
 {
-    constexpr std::size_t max_quad_elements_count = 60000;
-    std::vector<std::uint32_t> quad_elements(max_quad_elements_count);
-    std::uint32_t offset = 0;
-    for(std::size_t i = 0; i < max_quad_elements_count; i += 6)
-    {
-        quad_elements[i + 0] = 0 + offset;
-        quad_elements[i + 1] = 1 + offset;
-        quad_elements[i + 2] = 2 + offset;
-
-        quad_elements[i + 3] = 2 + offset;
-        quad_elements[i + 4] = 3 + offset;
-        quad_elements[i + 5] = 0 + offset;
-
-        offset += 4;
-    }
+    constexpr std::size_t max_quad_elements_count = 6;
+    std::array<std::uint32_t, max_quad_elements_count> quad_elements = {0, 1, 2, 2, 3, 0};
 
     // NOTE: There is an idea to use one EBO for all render passes, if something breaks, it might be
     //       because of this.
+    // TODO(vis4rd): This behavior 100% will have to be changed, when different RenderPasses will be
+    //               introduced.
     m_elementBuffer = ElementBuffer(quad_elements);
 }
 
