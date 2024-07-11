@@ -148,7 +148,7 @@ void RenderWindow::setFullscreen(bool fullscreen)
     {
         // Restore decorations in case user performed:
         // borderless fullscreen -> fullscreen -> windowed
-        glfwSetWindowAttrib(m_windowHandle.get(), GLFW_DECORATED, true);
+        glfwSetWindowAttrib(m_windowHandle.get(), GLFW_DECORATED, GLFW_TRUE);
     }
 
     glfwSetWindowMonitor(
@@ -162,8 +162,8 @@ void RenderWindow::setFullscreen(bool fullscreen)
     this->RenderTarget::setSize(new_width, new_height);
 
 
-    m_flags[0].flip();  // override the guard of setVerticalSync() method
-    this->setVerticalSync(not m_flags[0]);
+    m_flags[WindowFlag::VSYNC].flip();  // override the guard of setVerticalSync() method
+    this->setVerticalSync(not m_flags[WindowFlag::VSYNC]);
 }
 
 void RenderWindow::setBorderlessFullscreen(bool borderless)

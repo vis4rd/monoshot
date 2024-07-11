@@ -8,41 +8,24 @@
 #include <glad/gl.h>
 #include <spdlog/spdlog.h>
 
+#include "ShaderStorageBufferAny.hpp"
 #include "traits/ContiguousContainer.hpp"
 
 namespace mono::gl
 {
 
 template<typename T>
-class ShaderStorageBuffer final
+class ShaderStorageBuffer final : public ShaderStorageBufferAny
 {
     public:
     using value_type = T;
+
+    public:
     explicit constexpr ShaderStorageBuffer(GLsizeiptr size);
-    ShaderStorageBuffer(const ShaderStorageBuffer<T>& copy) = default;
-    ShaderStorageBuffer(ShaderStorageBuffer<T>&& move) noexcept = default;
-    ~ShaderStorageBuffer() = default;
-
-    ShaderStorageBuffer<T>& operator=(const ShaderStorageBuffer<T>& copy) = default;
-    ShaderStorageBuffer<T>& operator=(ShaderStorageBuffer<T>&& move) noexcept = default;
-
-    void bind(GLuint binding) const;
-    void unbind() const;
-
-    const GLuint& getID() const;
 
     constexpr void setData(
         const ContiguousContainerTrait<T> auto& data,
         GLintptr buffer_offset = 0);
-    void resize(GLsizeiptr new_byte_size);
-
-    // NOLINTNEXTLINE(google-explicit-constructor)
-    operator GLuint() const;
-
-
-    private:
-    GLuint m_id{};
-    GLsizeiptr m_maxBufferBytesize{};
 };
 
 }  // namespace mono::gl

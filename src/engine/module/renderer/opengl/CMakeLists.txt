@@ -20,6 +20,7 @@ target_sources(mono_module_renderer_opengl_backend
             "${CMAKE_CURRENT_SOURCE_DIR}/src/gl/FrameBuffer.cpp"
             "${CMAKE_CURRENT_SOURCE_DIR}/src/gl/ShaderAttribute.cpp"
             "${CMAKE_CURRENT_SOURCE_DIR}/src/gl/ShaderAttributeLayout.cpp"
+            "${CMAKE_CURRENT_SOURCE_DIR}/src/gl/ShaderStorageBufferAny.cpp"
             "${CMAKE_CURRENT_SOURCE_DIR}/src/gl/VertexArray.cpp"
             "${CMAKE_CURRENT_SOURCE_DIR}/src/gl/VertexBuffer.cpp"
             "${CMAKE_CURRENT_SOURCE_DIR}/src/glfw/RenderWindowUserStorage.cpp"
