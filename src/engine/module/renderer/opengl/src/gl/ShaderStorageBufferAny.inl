@@ -6,7 +6,7 @@ requires(
     not std::ranges::range<decltype(data)> and not std::is_pointer_v<decltype(data)>
     and not std::is_array_v<decltype(data)>)
 {
-    using value_type = std::remove_cvref_t<decltype(data)>::value_type;
+    using value_type = std::remove_cvref_t<decltype(data)>;
 
     GLsizeiptr size = sizeof(value_type);
     // spdlog::trace("Setting drawing data to ShaderStorageBufferAny with ID = {}", m_id);
@@ -21,7 +21,7 @@ requires(
         this->resize(size + buffer_offset);
     }
 
-    glNamedBufferSubData(m_id, buffer_offset, size, data.data());
+    glNamedBufferSubData(m_id, buffer_offset, size, &data);
 }
 
 constexpr void ShaderStorageBufferAny::setData(

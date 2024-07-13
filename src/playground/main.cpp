@@ -20,6 +20,7 @@ int main()
 
     auto& input_manager = InputManager::get();
     std::vector<glm::vec2> points;
+    std::vector<std::size_t> quad_ids;
 
     while(true)
     {
@@ -28,49 +29,77 @@ int main()
         {
             break;
         }
-        if(input_manager.isHeld(GLFW_MOUSE_BUTTON_LEFT))
+        if(input_manager.isHeld(GLFW_MOUSE_BUTTON_LEFT)
+           or input_manager.isPressedOnce(GLFW_MOUSE_BUTTON_RIGHT))
         {
+            spdlog::debug("CLICKED LMB OR RMB");
             const auto pos = window.getMousePosition();
             points.push_back(pos);
-            mono::renderer::drawQuad("default", pos, {10, 10}, 0, {1.f, 0.f, 0.f, 1.f});
-            spdlog::debug("Clicking LMB");
+            auto id = mono::renderer::drawQuad("default", pos, {10, 10}, 0, {1.f, 0.f, 0.f, 1.f});
+            quad_ids.push_back(std::move(id));
         }
         if(input_manager.isPressedOnce(GLFW_KEY_F11))
         {
+            spdlog::debug("CLICKED F11");
             window.toggleBorderlessFullscreen();
         }
         if(input_manager.isPressedOnce(GLFW_KEY_F10))
         {
+            spdlog::debug("CLICKED F10");
             window.toggleFullscreen();
         }
         if(input_manager.isPressedOnce(GLFW_KEY_ESCAPE))
         {
+            spdlog::debug("CLICKED ESCAPE");
             window.requestClose();
         }
         if(input_manager.isPressedOnce(GLFW_KEY_V))
         {
+            spdlog::debug("CLICKED V");
             window.setVerticalSync(not window.isVerticalSyncEnabled());
         }
-        if(input_manager.isPressedOnce(GLFW_MOUSE_BUTTON_RIGHT))
+        if(input_manager.isPressedOnce(GLFW_KEY_1))
         {
-            static bool toggle = false;
-            toggle = not toggle;
-            if(toggle)
+            spdlog::debug("CLICKED 1");
+            if(not quad_ids.empty())
             {
-                mono::renderer::setPipeline(main_pipeline.id);
+                const auto id = quad_ids.front();
+                quad_ids.erase(quad_ids.begin());
+                points.erase(points.begin());
+
+                mono::renderer::removeQuad(id);
             }
-            else
+        }
+        if(input_manager.isPressedOnce(GLFW_KEY_2))
+        {
+            spdlog::debug("CLICKED 2");
+            if(quad_ids.size() >= 2)
             {
-                mono::renderer::setPipeline(999999);
+                for(int i = 0; i < 2; i++)
+                {
+                    const auto id = quad_ids.back();
+                    quad_ids.pop_back();
+                    points.pop_back();
+                    mono::renderer::removeQuad(id);
+                }
+            }
+        }
+        if(input_manager.isPressedOnce(GLFW_KEY_3))
+        {
+            spdlog::debug("CLICKED 3");
+            if(quad_ids.size() >= 50)
+            {
+                for(int i = 0; i < 50; i++)
+                {
+                    const auto id = quad_ids.back();
+                    quad_ids.pop_back();
+                    points.pop_back();
+                    mono::renderer::removeQuad(id);
+                }
             }
         }
 
         window.prepareRender();
-
-        // for(const auto& point : points)
-        // {
-        //     mono::renderer::drawQuad("default", point, {10, 10}, 0, {1.f, 0.f, 0.f, 1.f});
-        // }
 
         if(ImGui::Begin("Playground"))
         {

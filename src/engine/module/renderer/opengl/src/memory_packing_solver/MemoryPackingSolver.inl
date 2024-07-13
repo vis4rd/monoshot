@@ -44,10 +44,10 @@ constexpr std::vector<MemoryOperation> MemoryPackingSolver::appendElement()
     }
 
     // memory block is full and can be resized
-    const std::size_t new_size = this->calculateNewSizeForResize(1u);
+    const std::uint32_t new_size = this->calculateNewSizeForResize(1u);
     m_memoryBlock.resize(new_size, 1u);
     m_lastSetIndex++;
-    m_currentMemorySize = new_size;
+    m_currentMemorySize = static_cast<std::int64_t>(new_size);
     m_setRanges.back().end++;
     return {ResizeOperation{.newSize = new_size}};
 }
@@ -76,16 +76,16 @@ constexpr std::vector<MemoryOperation> MemoryPackingSolver::appendManyElements(s
     {
         // memory block is full and cannot be resized due to max memory limit reached
         return {
-            ResizeOperation{.newSize = empty_left_count},
-            MakeAvailableMemoryOperation{.size = static_cast<std::size_t>(over_limit_count)}};
+            ResizeOperation{.newSize = static_cast<std::uint32_t>(empty_left_count)},
+            MakeAvailableMemoryOperation{.size = static_cast<std::uint32_t>(over_limit_count)}};
     }
 
     // memory block can be resized, because it fits within the max memory limit
     const std::size_t new_size = this->calculateNewSizeForResize(required_new_count);
     m_memoryBlock.resize(new_size, 0u);
-    m_currentMemorySize = new_size;
+    m_currentMemorySize = static_cast<std::int64_t>(new_size);
     this->setRange(m_lastSetIndex + 1, m_lastSetIndex + count);
-    return {ResizeOperation{.newSize = new_size}};
+    return {ResizeOperation{.newSize = static_cast<std::uint32_t>(new_size)}};
 }
 
 constexpr void MemoryPackingSolver::setElement(std::size_t index, std::uint8_t value)
@@ -176,12 +176,12 @@ constexpr std::uint32_t MemoryPackingSolver::getElement(std::size_t index) const
     return m_memoryBlock.at(index);
 };
 
-constexpr std::size_t MemoryPackingSolver::getLastSetIndex() const
+constexpr std::int64_t MemoryPackingSolver::getLastSetIndex() const
 {
     return m_lastSetIndex;
 }
 
-constexpr std::size_t MemoryPackingSolver::getFirstSetIndex() const
+constexpr std::int64_t MemoryPackingSolver::getFirstSetIndex() const
 {
     return m_firstSetIndex;
 }
@@ -229,6 +229,7 @@ constexpr std::vector<MemoryOperation> MemoryPackingSolver::computePackingOperat
         // only one range in the middle of the memory block - move it to the beggining
         const auto last_range = m_setRanges.back();
         auto moved_size = range_size(last_range);
+        const auto invalidation_start = moved_size;
         if(moved_size >= last_range.start)
         {
             // there is overlap between source and destination
@@ -236,12 +237,12 @@ constexpr std::vector<MemoryOperation> MemoryPackingSolver::computePackingOperat
         }
         return {
             CopyRangeOperation{
-                               last_range.end - moved_size + 1,
-                               static_cast<std::size_t>(last_range.end),
+                               static_cast<std::uint32_t>(last_range.end - moved_size + 1),
+                               static_cast<std::uint32_t>(last_range.end),
                                0u},
             InvalidateRangeOperation{
-                               last_range.end - moved_size + 1,
-                               static_cast<std::size_t>(last_range.end)},
+                               static_cast<std::uint32_t>(invalidation_start),
+                               static_cast<std::uint32_t>(last_range.end)},
         };
     }
 
@@ -273,12 +274,12 @@ constexpr std::vector<MemoryOperation> MemoryPackingSolver::computePackingOperat
         {
             // move the last set range to the unset range
             operations.push_back(CopyRangeOperation{
-                static_cast<std::size_t>(last_set_range.start),
-                static_cast<std::size_t>(last_set_range.end),
-                static_cast<std::size_t>(unset_range.start)});
+                static_cast<std::uint32_t>(last_set_range.start),
+                static_cast<std::uint32_t>(last_set_range.end),
+                static_cast<std::uint32_t>(unset_range.start)});
             operations.push_back(InvalidateRangeOperation{
-                static_cast<std::size_t>(last_set_range.start),
-                static_cast<std::size_t>(last_set_range.end)});
+                static_cast<std::uint32_t>(last_set_range.start),
+                static_cast<std::uint32_t>(last_set_range.end)});
             set_ranges_copy.pop_back();
 
             if(set_ranges_copy.front().start > 0u)
@@ -296,12 +297,12 @@ constexpr std::vector<MemoryOperation> MemoryPackingSolver::computePackingOperat
         {
             // move only a part of the last set range to the unset range
             operations.push_back(CopyRangeOperation{
-                last_set_range.end - unset_range_size + 1,
-                static_cast<std::size_t>(last_set_range.end),
-                static_cast<std::size_t>(unset_range.start)});
+                static_cast<std::uint32_t>(last_set_range.end - unset_range_size + 1),
+                static_cast<std::uint32_t>(last_set_range.end),
+                static_cast<std::uint32_t>(unset_range.start)});
             operations.push_back(InvalidateRangeOperation{
-                last_set_range.end - unset_range_size + 1,
-                static_cast<std::size_t>(last_set_range.end)});
+                static_cast<std::uint32_t>(last_set_range.end - unset_range_size + 1),
+                static_cast<std::uint32_t>(last_set_range.end)});
             last_set_range.end -= unset_range_size;
 
             if(set_ranges_copy.front().start > 0u)
@@ -369,7 +370,7 @@ constexpr void MemoryPackingSolver::calculateLastSetIndex()
     const auto last_set_iter = std::find(m_memoryBlock.rbegin(), m_memoryBlock.rend(), 1u);
     if(last_set_iter == m_memoryBlock.rend())
     {
-        m_lastSetIndex = 0u;
+        m_lastSetIndex = -1;
     }
     else
     {
@@ -427,7 +428,7 @@ constexpr std::size_t MemoryPackingSolver::calculateNewSizeForResize(std::size_t
     {
         final_addition_size += addition_amount_step;
     }
-    return m_currentMemorySize + final_addition_size;
+    return static_cast<std::size_t>(m_currentMemorySize) + final_addition_size;
 }
 
 }  // namespace mono::gl

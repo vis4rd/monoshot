@@ -25,6 +25,7 @@ Renderer::Renderer()
     auto& shader_manager = ShaderManager::get();
     shader_manager.addShaderProgram("quad", "../res/shaders/quad.vert", "../res/shaders/quad.frag");
     shader_manager.addShaderProgram("line", "../res/shaders/line.vert", "../res/shaders/line.frag");
+    shader_manager.addShaderProgram("staging_operations", "../res/shaders/staging_operations.comp");
 
     // Create default pipeline in case user doesn't want to set up any
     RenderPipeline default_pipeline{999999};
@@ -49,6 +50,7 @@ void Renderer::submitDraws(const glm::mat4& projection, const glm::mat4& view)
 
             if(not storage.quadRemovalStageBuffer.empty())
             {
+                // TODO(vis4rd): Remove textures when quads using them are removed
                 // spdlog::trace("Renderer: removal stage buffer is not empty");
                 storage.registerQuadsRemovalInSolver();
 
@@ -56,15 +58,92 @@ void Renderer::submitDraws(const glm::mat4& projection, const glm::mat4& view)
                 auto memory_operations = storage.quadStateBufferSolver.computePackingOperations();
 
                 // apply memory operations to ssbo
-                // TODO: launch compute shader to do this
 
-                storage.applyMemoryOperationsToStateBuffer(memory_operations);
+                // Staging SSBO is used to transfer memory operations to compute shader.
+                // Staging SSBO has the following format:
+                // 1. std::uint32_t operation_count
+                // 2. array<std::uint32_t> operations
+                //    a) copy-range operations have id 1
+                //    b) invalidate-range operations have id 2
+                //    This format leaves room for more operations in the future.
+                // 3. structs of operations in order defined in array from step 2
+                // When exact order is known, the compute shader can correctly deserialize whole
+                // staging SSBO.
+                std::uint32_t memory_cursor = 0;
+                std::vector<std::uint32_t> operation_data{};
+                storage.quadStagingSsbo.setData(
+                    static_cast<std::uint32_t>(memory_operations.size()),
+                    0);
+                memory_cursor += sizeof(std::uint32_t);
+                for(const auto& operation : memory_operations)
+                {
+                    std::uint32_t operation_id = 0;
+                    std::visit(
+                        [&operation_id, &operation_data, &memory_cursor](const auto& op) {
+                            using OP = std::decay_t<decltype(op)>;
+                            if constexpr(std::is_same_v<OP, CopyRangeOperation>)
+                            {
+                                operation_id = 1;
+                                operation_data.push_back(op.startIndex);
+                                operation_data.push_back(op.endIndex);
+                                operation_data.push_back(op.destinationIndex);
+                            }
+                            if constexpr(std::is_same_v<OP, InvalidateRangeOperation>)
+                            {
+                                operation_id = 2;
+                                operation_data.push_back(op.startIndex);
+                                operation_data.push_back(op.endIndex);
+                            }
+                        },
+                        operation);
+
+                    storage.quadStagingSsbo.setData(operation_id, memory_cursor);
+                    memory_cursor += sizeof(std::uint32_t);
+                }
+
+                if(not memory_operations.empty())
+                {
+                    storage.quadStagingSsbo.setData(
+                        operation_data,
+                        memory_cursor);  // can't set memory_operations directly, because it is not
+                                         // tightly packed
+                    memory_cursor += operation_data.size() * sizeof(std::uint32_t);
+
+                    // launch compute shader to apply memory operations to ssbo
+                    pass.getQuadSsbo()->bind(0);
+                    storage.quadStagingSsbo.bind(1);
+
+                    auto compute_shader = ShaderManager::get().useShader("staging_operations");
+                    glDispatchCompute(1, 1, 1);
+                }
 
                 // apply memory operations to solver
                 storage.quadStateBufferSolver.applyPackingOperations(memory_operations);
 
+                // apply memory operations to state buffer
+                storage.applyMemoryOperationsToStateBuffer(memory_operations);
+                if(storage.quadStateBufferSolver.getLastSetIndex() < 0)
+                {
+                    storage.highestTakenQuadId = 0;
+                }
+                std::fill(
+                    storage.quadStateBuffer.begin()
+                        + (storage.quadStateBufferSolver.getLastSetIndex() + 1),
+                    storage.quadStateBuffer.begin()
+                        + (storage.quadStateBufferSolver.getLastSetIndex()
+                           + storage.quadRemovalStageBuffer.size() + 1),
+                    std::nullopt);
+
                 // clean up stage buffer
                 storage.quadRemovalStageBuffer.clear();
+
+                // wait for compute shader to finish applying memory operations
+                if(not memory_operations.empty())
+                {
+                    glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+                    pass.getQuadSsbo()->unbind();
+                    storage.quadStagingSsbo.unbind();
+                }
             }
 
             if(not storage.quadAdditionStageBuffer.empty())
@@ -228,7 +307,13 @@ void Renderer::submitDraws(const glm::mat4& projection, const glm::mat4& view)
     this->displayStats();
 }
 
-void Renderer::drawQuad(
+void Renderer::removeQuad(std::size_t id)
+{
+    auto& storage = m_pipelines.at(m_currentPipelineId).getRenderPass("default").getRenderStorage();
+    storage.quadRemovalStageBuffer.push_back(id);
+}
+
+std::size_t Renderer::drawQuad(
     const std::string& render_pass_name,
     const glm::vec2& position,
     const glm::vec2& size,
@@ -240,10 +325,10 @@ void Renderer::drawQuad(
             .data(),
         1,
         1);
-    drawQuad(render_pass_name, position, size, rotation, white_texture, color);
+    return drawQuad(render_pass_name, position, size, rotation, white_texture, color);
 }
 
-void Renderer::drawQuad(
+std::size_t Renderer::drawQuad(
     const std::string& render_pass_name,
     const glm::vec2& position,
     const glm::vec2& size,
@@ -288,6 +373,7 @@ void Renderer::drawQuad(
     storage.highestTakenQuadId++;
     storage.quadAdditionStageBuffer.push_back(storage.highestTakenQuadId);
     storage.textureIdsInStateBuffer[texture_id].emplace(storage.highestTakenQuadId);
+    return storage.highestTakenQuadId;
 }
 
 void Renderer::drawLine(

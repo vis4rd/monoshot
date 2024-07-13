@@ -86,13 +86,16 @@ class MemoryPackingSolver
 
     /// @brief Get the last set index in the memory block. Use after @ref applyPackingOperations
     ///        to get the number of set elements in the memory.
+    ///
+    /// If -1 is returned, it means that there are no set elements in the memory block.
+    ///
     /// @return The last set element in the memory block.
-    constexpr std::size_t getLastSetIndex() const;
+    constexpr std::int64_t getLastSetIndex() const;
 
     /// @brief Get the first set index in the memory block.
-    /// @return The first set element in the memory block. Should be equal to 0 after calling  @ref
+    /// @return The first set element in the memory block. Should be equal to 0 after calling @ref
     ///         applyPackingOperations.
-    constexpr std::size_t getFirstSetIndex() const;
+    constexpr std::int64_t getFirstSetIndex() const;
 
     /// @brief Set the current memory block size.
     /// @param elements Number of elements in the memory block.

@@ -7,6 +7,7 @@
 #include <set>
 #include <vector>
 
+#include "../gl/ShaderStorageBufferAny.hpp"
 #include "../memory_packing_solver/MemoryPackingSolver.hpp"
 #include "../texture/Texture.hpp"
 #include "LinePrimitive.hpp"
@@ -47,6 +48,7 @@ class RenderStorage
     std::vector<detail::StateBufferElementId> quadAdditionStageBuffer{};
     std::vector<detail::StateBufferElementId> quadRemovalStageBuffer{};
     MemoryPackingSolver quadStateBufferSolver{};
+    ShaderStorageBufferAny quadStagingSsbo{5000};
 };
 
 }  // namespace mono::gl

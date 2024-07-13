@@ -25,13 +25,14 @@ class Renderer final
 
     void submitDraws(const glm::mat4& projection, const glm::mat4& view);
 
-    void drawQuad(
+    void removeQuad(std::size_t id);
+    std::size_t drawQuad(
         const std::string& render_pass_name,
         const glm::vec2& position,
         const glm::vec2& size,
         float rotation,
         const glm::vec4& color);
-    void drawQuad(
+    std::size_t drawQuad(
         const std::string& render_pass_name,
         const glm::vec2& position,
         const glm::vec2& size,
