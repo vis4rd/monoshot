@@ -36,7 +36,13 @@ void render(const glm::mat4& projection, const glm::mat4& view)
 
 // DRAWING FUNCTIONS
 
-void drawQuad(
+void removeQuad(std::size_t id)
+{
+    auto& renderer = mono::gl::Renderer::get();
+    renderer.removeQuad(id);
+}
+
+std::size_t drawQuad(
     const std::string& render_pass_name,
     const glm::vec2& position,
     const glm::vec2& size,
@@ -44,10 +50,10 @@ void drawQuad(
     const glm::vec4& color)
 {
     auto& renderer = mono::gl::Renderer::get();
-    renderer.drawQuad(render_pass_name, position, size, rotation, color);
+    return renderer.drawQuad(render_pass_name, position, size, rotation, color);
 }
 
-void drawQuad(
+std::size_t drawQuad(
     const std::string& render_pass_name,
     const glm::vec2& position,
     const glm::vec2& size,
@@ -56,7 +62,7 @@ void drawQuad(
     const glm::vec4& color)
 {
     auto& renderer = mono::gl::Renderer::get();
-    renderer.drawQuad(render_pass_name, position, size, rotation, texture, color);
+    return renderer.drawQuad(render_pass_name, position, size, rotation, texture, color);
 }
 
 void drawLine(

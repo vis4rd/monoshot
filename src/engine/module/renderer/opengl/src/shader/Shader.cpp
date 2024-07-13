@@ -35,6 +35,11 @@ Shader::Shader(const std::filesystem::path& location, const std::string& name, S
             m_id = glCreateShader(GL_VERTEX_SHADER);
             break;
         }
+        case ShaderType::COMPUTE:
+        {
+            m_id = glCreateShader(GL_COMPUTE_SHADER);
+            break;
+        }
         default:
         {
             throw std::runtime_error("Unknown shader type.");
@@ -99,7 +104,7 @@ void Shader::compile(const std::string& source) const
         std::array<GLchar, maxLogSize> log{};
         glGetShaderInfoLog(m_id, maxLogSize, nullptr, log.data());
         throw std::runtime_error(
-            "Shader compilation failure: " + std::string(log.data(), maxLogSize));
+            "Shader compilation failure:\n" + std::string(log.data(), maxLogSize));
     }
 }
 

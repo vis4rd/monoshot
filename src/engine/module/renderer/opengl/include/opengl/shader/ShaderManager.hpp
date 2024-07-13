@@ -17,6 +17,9 @@ class ShaderManager
         const std::string& name,
         const std::filesystem::path& vertex_location,
         const std::filesystem::path& fragment_location);
+    ShaderProgram& addShaderProgram(
+        const std::string& name,
+        const std::filesystem::path& compute_location);
     ShaderProgram& useShader(const std::string& name);
     ShaderProgram& getShader(const std::string& name);
 

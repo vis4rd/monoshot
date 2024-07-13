@@ -46,7 +46,7 @@ void RenderStorage::applyMemoryOperationsToStateBuffer(
                     auto destination_iter =
                         std::next(this->quadStateBuffer.begin(), operation.destinationIndex);
 
-                    for(auto iter = start_iter; iter != end_iter; iter++)
+                    for(auto iter = start_iter; iter <= end_iter; iter++)
                     {
                         *destination_iter = *iter;
                         destination_iter++;
@@ -58,7 +58,7 @@ void RenderStorage::applyMemoryOperationsToStateBuffer(
                         std::next(this->quadStateBuffer.begin(), operation.startIndex);
                     auto end_iter = std::next(this->quadStateBuffer.begin(), operation.endIndex);
 
-                    for(auto iter = start_iter; iter != end_iter; iter++)
+                    for(auto iter = start_iter; iter <= end_iter; iter++)
                     {
                         *iter = std::nullopt;
                     }

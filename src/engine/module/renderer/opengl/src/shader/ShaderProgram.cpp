@@ -32,6 +32,28 @@ ShaderProgram::ShaderProgram(const Shader& frag, const Shader& vert)
     }
 }
 
+ShaderProgram::ShaderProgram(const Shader& compute)
+    : m_id{glCreateProgram()}
+    , m_varLocations{}
+{
+    spdlog::debug(
+        "Creating shader program with ID = {}, from shader '{}'",
+        m_id,
+        compute.getName());
+    glAttachShader(m_id, compute.getID());
+
+    glLinkProgram(m_id);
+    GLint success{};
+    glGetProgramiv(m_id, GL_LINK_STATUS, &success);
+    if(!success)
+    {
+        constexpr std::size_t maxLogSize = 512;
+        std::array<GLchar, maxLogSize> log{};
+        glGetProgramInfoLog(m_id, maxLogSize, nullptr, log.data());
+        throw std::runtime_error("Shader linking failure: " + std::string(log.data(), maxLogSize));
+    }
+}
+
 ShaderProgram::ShaderProgram(ShaderProgram&& move) noexcept
     : m_id(move.m_id)
     // copying instead of moving to prevent segfault by std::unordered_map bug

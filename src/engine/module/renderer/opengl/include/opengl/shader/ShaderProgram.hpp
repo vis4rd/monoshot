@@ -19,6 +19,7 @@ class ShaderProgram
     public:
     ShaderProgram() = default;
     ShaderProgram(const Shader& frag, const Shader& vert);
+    explicit ShaderProgram(const Shader& compute);
     ShaderProgram(const ShaderProgram& copy) = default;
     ShaderProgram(ShaderProgram&& move) noexcept;
     ~ShaderProgram() = default;

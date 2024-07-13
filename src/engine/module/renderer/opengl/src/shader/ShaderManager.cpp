@@ -52,6 +52,33 @@ ShaderProgram& ShaderManager::addShaderProgram(
     }
 }
 
+ShaderProgram& ShaderManager::addShaderProgram(
+    const std::string& name,
+    const std::filesystem::path& compute_location)
+{
+    spdlog::debug("Adding shader program '{}' from file '{}'", name, compute_location.string());
+
+    if(m_shaderMap.contains(name))
+    {
+        spdlog::info("ShaderProgram '{}' already exists, ignoring...", name);
+        return m_shaderMap.at(name);
+    }
+
+    auto comp_sh = Shader(compute_location, name, ShaderType::COMPUTE);
+    auto program = ShaderProgram(comp_sh);
+
+    try
+    {
+        m_shaderMap[name] = std::move(program);
+        return m_shaderMap.at(name);
+    }
+    catch(const std::exception& e)
+    {
+        spdlog::error("ShaderProgram could not be emplaced");
+        throw std::runtime_error("ShaderProgram could not be emplaced");
+    }
+}
+
 ShaderProgram& ShaderManager::useShader(const std::string& name)
 {
     auto& result = m_shaderMap[name];

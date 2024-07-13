@@ -73,14 +73,16 @@ void render(const glm::mat4& projection, const glm::mat4& view);
 
 // DRAWING FUNCTIONS
 
-void drawQuad(
+void removeQuad(std::size_t id);
+
+std::size_t drawQuad(
     const std::string& render_pass_name,
     const glm::vec2& position,
     const glm::vec2& size,
     const float& rotation,
     const glm::vec4& color);
 
-void drawQuad(
+std::size_t drawQuad(
     const std::string& render_pass_name,
     const glm::vec2& position,
     const glm::vec2& size,

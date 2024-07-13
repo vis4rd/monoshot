@@ -8,25 +8,25 @@ struct NoneOperation
 
 struct ResizeOperation
 {
-    std::size_t newSize{};
+    std::uint32_t newSize{};
 };
 
 struct CopyRangeOperation
 {
-    std::size_t startIndex{};
-    std::size_t endIndex{};
-    std::size_t destinationIndex{};
+    std::uint32_t startIndex{};
+    std::uint32_t endIndex{};
+    std::uint32_t destinationIndex{};
 };
 
 struct InvalidateRangeOperation
 {
-    std::size_t startIndex{};
-    std::size_t endIndex{};
+    std::uint32_t startIndex{};
+    std::uint32_t endIndex{};
 };
 
 struct MakeAvailableMemoryOperation
 {
-    std::size_t size{};
+    std::uint32_t size{};
 };
 
 using MemoryOperation = std::variant<
