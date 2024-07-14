@@ -34,6 +34,9 @@ class RenderStorage
     void clear();
     void registerQuadsRemovalInSolver();
     void applyMemoryOperationsToStateBuffer(const std::vector<MemoryOperation>& operations);
+    void applyMemoryOperationsToSsbo(
+        const std::vector<MemoryOperation>& operations,
+        std::shared_ptr<ShaderStorageBufferAny> ssbo);
 
     public:
     std::vector<QuadInstanceData> quads{};
