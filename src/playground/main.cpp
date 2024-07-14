@@ -35,7 +35,7 @@ int main()
             spdlog::debug("CLICKED LMB OR RMB");
             const auto pos = window.getMousePosition();
             points.push_back(pos);
-            auto id = mono::renderer::drawQuad("default", pos, {10, 10}, 0, {1.f, 0.f, 0.f, 1.f});
+            auto id = mono::renderer::addQuad("default", pos, {10, 10}, 0, {1.f, 0.f, 0.f, 1.f});
             quad_ids.push_back(std::move(id));
         }
         if(input_manager.isPressedOnce(GLFW_KEY_F11))

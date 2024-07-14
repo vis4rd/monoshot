@@ -42,7 +42,7 @@ void removeQuad(std::size_t id)
     renderer.removeQuad(id);
 }
 
-std::size_t drawQuad(
+std::size_t addQuad(
     const std::string& render_pass_name,
     const glm::vec2& position,
     const glm::vec2& size,
@@ -50,10 +50,10 @@ std::size_t drawQuad(
     const glm::vec4& color)
 {
     auto& renderer = mono::gl::Renderer::get();
-    return renderer.drawQuad(render_pass_name, position, size, rotation, color);
+    return renderer.addQuad(render_pass_name, position, size, rotation, color);
 }
 
-std::size_t drawQuad(
+std::size_t addQuad(
     const std::string& render_pass_name,
     const glm::vec2& position,
     const glm::vec2& size,
@@ -62,7 +62,7 @@ std::size_t drawQuad(
     const glm::vec4& color)
 {
     auto& renderer = mono::gl::Renderer::get();
-    return renderer.drawQuad(render_pass_name, position, size, rotation, texture, color);
+    return renderer.addQuad(render_pass_name, position, size, rotation, texture, color);
 }
 
 void drawLine(
