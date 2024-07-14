@@ -32,8 +32,8 @@
 //   - implement arbitrary RenderTargets at the end, for now render everything to default target
 //
 // Call stack for adding draw data:
-// 1. User calls i.e. drawQuad()
-// 2. drawQuad() calls drawQuad() from Renderer
+// 1. User calls i.e. addQuad()
+// 2. addQuad() calls addQuad() from Renderer
 // 3. Renderer checks current pipeline
 // 4. RenderPipeline gives Renderer current RenderPass
 // 5. Renderer adds draw data to RenderPass
@@ -75,14 +75,14 @@ void render(const glm::mat4& projection, const glm::mat4& view);
 
 void removeQuad(std::size_t id);
 
-std::size_t drawQuad(
+std::size_t addQuad(
     const std::string& render_pass_name,
     const glm::vec2& position,
     const glm::vec2& size,
     const float& rotation,
     const glm::vec4& color);
 
-std::size_t drawQuad(
+std::size_t addQuad(
     const std::string& render_pass_name,
     const glm::vec2& position,
     const glm::vec2& size,

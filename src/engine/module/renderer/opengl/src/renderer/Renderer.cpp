@@ -233,7 +233,7 @@ void Renderer::removeQuad(std::size_t id)
     storage.quadRemovalStageBuffer.push_back(id);
 }
 
-std::size_t Renderer::drawQuad(
+std::size_t Renderer::addQuad(
     const std::string& render_pass_name,
     const glm::vec2& position,
     const glm::vec2& size,
@@ -245,10 +245,10 @@ std::size_t Renderer::drawQuad(
             .data(),
         1,
         1);
-    return drawQuad(render_pass_name, position, size, rotation, white_texture, color);
+    return addQuad(render_pass_name, position, size, rotation, white_texture, color);
 }
 
-std::size_t Renderer::drawQuad(
+std::size_t Renderer::addQuad(
     const std::string& render_pass_name,
     const glm::vec2& position,
     const glm::vec2& size,
