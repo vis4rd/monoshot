@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.19 FATAL_ERROR)
 project(MONOENGINE LANGUAGES CXX C)
 
 if(CMAKE_BUILD_TYPE EQUAL "")
-    set(CMAKE_BUILD_TYPE "Release")
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)
 endif()
 string(COMPARE EQUAL ${CMAKE_BUILD_TYPE} "Debug" DEBUG_MODE)
 

@@ -1,6 +1,5 @@
 ---
 WarningsAsErrors: true
-AnalyzeTemporaryDtors: true
 UseColor: true
 HeaderFilterRegex: '^src/\(engine/module/|game/include/\)'
 # HeaderFileExtensions: ['hpp'] # clang-tidy > 18
