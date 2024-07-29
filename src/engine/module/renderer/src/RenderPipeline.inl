@@ -1,17 +1,17 @@
 namespace mono::renderer
 {
 
-RenderPipeline::RenderPipeline(std::int32_t id)
+inline RenderPipeline::RenderPipeline(std::int32_t id)
     : m_id(id)
 { }
 
-RenderPipeline::RenderPipeline(RenderPipeline&& move) noexcept
+inline RenderPipeline::RenderPipeline(RenderPipeline&& move) noexcept
     : m_id(move.m_id)
     , m_renderPasses(std::move(move.m_renderPasses))
     , m_renderOrder(std::move(move.m_renderOrder))
 { }
 
-RenderPipeline& RenderPipeline::operator=(RenderPipeline&& move) noexcept
+inline RenderPipeline& RenderPipeline::operator=(RenderPipeline&& move) noexcept
 {
     m_renderPasses = std::move(move.m_renderPasses);
     m_renderOrder = std::move(move.m_renderOrder);
@@ -19,13 +19,13 @@ RenderPipeline& RenderPipeline::operator=(RenderPipeline&& move) noexcept
     return *this;
 }
 
-std::int32_t RenderPipeline::getId() const
+inline std::int32_t RenderPipeline::getId() const
 {
     return m_id;
 }
 
 template<RenderPassTrait ActualType>
-void RenderPipeline::addRenderPass(const std::string& name, auto&&... args)
+inline void RenderPipeline::addRenderPass(const std::string& name, auto&&... args)
 requires std::constructible_from<ActualType, decltype(args)...>
 {
     if(m_renderPasses.contains(name))
@@ -38,7 +38,8 @@ requires std::constructible_from<ActualType, decltype(args)...>
         throw std::runtime_error(msg);
     }
 
-    std::shared_ptr<RenderPassInterface> render_pass_ptr = std::make_shared<ActualType>(args...);
+    std::shared_ptr<RenderPassInterface> render_pass_ptr =
+        std::make_shared<ActualType>(std::forward<decltype(args)>(args)...);
 
     m_renderPasses.emplace(name, std::move(render_pass_ptr));
     m_renderOrder.push_back(name);
@@ -46,7 +47,7 @@ requires std::constructible_from<ActualType, decltype(args)...>
 }
 
 template<RenderPassTrait ActualType>
-ActualType& RenderPipeline::getRenderPass(const std::string& pass_name)
+inline ActualType& RenderPipeline::getRenderPass(const std::string& pass_name)
 {
     // This cast should be safe, because RenderPassTrait concept ensures that ActualType is derived
     // from RenderPassInterface. In any case, if at some point there is a crash or undefined
@@ -54,7 +55,13 @@ ActualType& RenderPipeline::getRenderPass(const std::string& pass_name)
     return *std::static_pointer_cast<ActualType>(m_renderPasses.at(pass_name));
 }
 
-const std::vector<std::string>& RenderPipeline::getRenderOrder() const
+inline std::shared_ptr<RenderPassInterface>& RenderPipeline::getRenderPassAsAny(
+    const std::string& pass_name)
+{
+    return m_renderPasses.at(pass_name);
+}
+
+inline const std::vector<std::string>& RenderPipeline::getRenderOrder() const
 {
     return m_renderOrder;
 }
