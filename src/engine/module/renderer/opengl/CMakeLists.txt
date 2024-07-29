@@ -24,10 +24,6 @@ target_sources(mono_module_renderer_opengl_backend
             "${CMAKE_CURRENT_SOURCE_DIR}/src/gl/VertexArray.cpp"
             "${CMAKE_CURRENT_SOURCE_DIR}/src/gl/VertexBuffer.cpp"
             "${CMAKE_CURRENT_SOURCE_DIR}/src/glfw/RenderWindowUserStorage.cpp"
-            "${CMAKE_CURRENT_SOURCE_DIR}/src/renderer/RenderPass.cpp"
-            "${CMAKE_CURRENT_SOURCE_DIR}/src/renderer/RenderPipeline.cpp"
-            "${CMAKE_CURRENT_SOURCE_DIR}/src/renderer/RenderStorage.cpp"
-            "${CMAKE_CURRENT_SOURCE_DIR}/src/renderer/Renderer.cpp"
             "${CMAKE_CURRENT_SOURCE_DIR}/src/shader/Shader.cpp"
             "${CMAKE_CURRENT_SOURCE_DIR}/src/shader/ShaderManager.cpp"
             "${CMAKE_CURRENT_SOURCE_DIR}/src/shader/ShaderProgram.cpp"
@@ -60,22 +56,3 @@ target_link_libraries(mono_module_renderer_opengl_backend
            mono::util::pv
            mono::util::index_of
 )
-
-# if(CMAKE_HOST_WIN32)
-#     target_link_libraries(mono_module_renderer_opengl_backend
-#         PUBLIC opengl32
-#                comdlg32
-#                ole32
-#     )
-#     message(STATUS "WIN32 system detected.")
-# elseif(CMAKE_HOST_UNIX)
-#     target_link_libraries(mono_module_renderer_opengl_backend
-#         PUBLIC GL
-#                X11
-#                pthread
-#                Xrandr
-#                Xi
-#                dl
-#     )
-#     message(STATUS "UNIX system detected.")
-# endif()

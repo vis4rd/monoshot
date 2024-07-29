@@ -19,15 +19,17 @@ namespace mono::renderer
  */
 
 class RenderPassInterface
-{ };
+{
+    public:
+    virtual void submitDraws(const glm::mat4& projection, const glm::mat4& view) = 0;
+};
 
 template<typename T>
-concept RenderPassTrait = requires(T t, glm::mat4 projection, glm::mat4 view) {
+concept RenderPassTrait = requires(T t) {
     { t.clear() };
     { t.getVao() } -> std::same_as<std::shared_ptr<mono::gl::VertexArray>>;
     { t.getShader() } -> std::same_as<std::shared_ptr<mono::gl::ShaderProgram>>;
     { t.getRenderTarget() } -> std::same_as<std::shared_ptr<mono::gl::RenderTarget>>;
-    { t.submitDraws(projection, view) };
 } and std::derived_from<T, RenderPassInterface>;
 
 }  // namespace mono::renderer

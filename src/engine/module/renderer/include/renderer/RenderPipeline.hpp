@@ -55,6 +55,9 @@ class RenderPipeline
     template<RenderPassTrait ActualType>
     [[nodiscard]] ActualType& getRenderPass(const std::string& pass_name);
 
+    [[nodiscard]] std::shared_ptr<RenderPassInterface>& getRenderPassAsAny(
+        const std::string& pass_name);
+
     /**
      * @brief Get the order in which RenderPasses are rendered.
      * @return Vector of RenderPass names in the order they are rendered.
