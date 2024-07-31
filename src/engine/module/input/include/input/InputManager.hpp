@@ -3,7 +3,7 @@
 #include <GLFW/glfw3.h>
 #include <spdlog/spdlog.h>
 
-#include "KeyGroup.hpp"
+#include "KeyState.hpp"
 
 class InputManager
 {
