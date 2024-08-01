@@ -1,6 +1,6 @@
 #include "../../include/opengl/gl/FrameBuffer.hpp"
 
-#include <spdlog/spdlog.h>
+#include "log/Logging.hpp"
 
 namespace mono::gl
 {
@@ -12,6 +12,8 @@ FrameBuffer::FrameBuffer(GLsizei width, GLsizei height)
     spdlog::debug("Creating a framebuffer");
     glCreateFramebuffers(1, &m_id);
     glBindFramebuffer(GL_FRAMEBUFFER, m_id);
+
+    log::setGlObjectLabel(GL_FRAMEBUFFER, m_id, "FrameBuffer#{}", m_id);
 
     // steps to ensure that the framebuffer is complete
     // 1) attach at least one buffer (color, depth or stencil)
@@ -130,6 +132,8 @@ void FrameBuffer::initStencil()
     glBindRenderbuffer(
         GL_RENDERBUFFER,
         m_stencilAttachment);  // TODO(vis4rd): try not to call this when everything works
+    log::setGlObjectLabel(GL_RENDERBUFFER, m_id, "FrameBuffer::Renderbuffer#{}", m_id);
+
     glNamedRenderbufferStorage(m_stencilAttachment, GL_STENCIL_INDEX, m_width, m_height);
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }

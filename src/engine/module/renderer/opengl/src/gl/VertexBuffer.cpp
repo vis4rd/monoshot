@@ -8,6 +8,7 @@ VertexBuffer::VertexBuffer(GLsizeiptr size)
 {
     glCreateBuffers(1, &m_id);
     glNamedBufferData(m_id, m_maxBufferBytesize, nullptr, GL_DYNAMIC_DRAW);
+    log::setGlObjectLabel(GL_BUFFER, m_id, "VertexBuffer#{}", m_id);
     spdlog::debug(
         "Created VertexBuffer instance with ID = {} and size = {}",
         m_id,

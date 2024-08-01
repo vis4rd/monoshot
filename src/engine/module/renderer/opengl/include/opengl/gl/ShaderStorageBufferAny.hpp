@@ -8,8 +8,8 @@
 #include <vector>
 
 #include <glad/gl.h>
-#include <spdlog/spdlog.h>
 
+#include "log/Logging.hpp"
 #include "traits/ContiguousContainer.hpp"
 
 namespace mono::gl

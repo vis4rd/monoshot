@@ -3,8 +3,8 @@
 #include <cstdint>
 
 #include <glad/gl.h>
-#include <spdlog/spdlog.h>
 
+#include "log/Logging.hpp"
 #include "traits/ContiguousContainer.hpp"
 
 namespace mono::gl
@@ -82,6 +82,7 @@ constexpr ElementBuffer::ElementBuffer(const ContiguousContainerTrait<std::uint3
         static_cast<GLsizeiptr>(m_count * sizeof(value_type)),
         elements.data(),
         GL_STATIC_DRAW);
+    log::setGlObjectLabel(GL_BUFFER, m_id, "ElementBuffer#{}", m_id);
     spdlog::debug("Created ElementBuffer instance with ID = {} and count = {}", m_id, m_count);
 }
 

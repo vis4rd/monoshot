@@ -1,22 +1,41 @@
 #pragma once
 
 #include <cstdint>
+#include <format>
 
+#include <glad/gl.h>
 #include <spdlog/spdlog.h>
 
-namespace util
+namespace mono::log
 {
 
-constexpr const char *logSourceStr(std::uint32_t source);
-constexpr const char *logTypeStr(std::uint32_t type);
-void openGLDebugMessageCallback(
-    std::uint32_t source,
-    std::uint32_t type,
-    std::uint32_t id,
-    std::uint32_t severity,
-    std::int32_t length,
-    const char *message,
-    const void *user_param);
+namespace priv
+{
+
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
+inline spdlog::source_loc location = spdlog::source_loc::current();
+
+}  // namespace priv
+
+template<typename... ARGS>
+void setGlObjectLabel(
+    GLenum identifier,
+    GLuint object,
+    const std::format_string<ARGS...>& label,
+    ARGS&&... args);
+void setGlLogLocation(const std::source_location& location = std::source_location::current());
 void enableOpenGlLogging();
 
-}  // namespace util
+template<typename... ARGS>
+void setGlObjectLabel(
+    GLenum identifier,
+    GLuint object,
+    const std::format_string<ARGS...>& label,
+    ARGS&&... args)
+{
+    const std::string label_str = std::format(label, std::forward<ARGS>(args)...);
+    setGlLogLocation();
+    glObjectLabel(identifier, object, static_cast<GLsizei>(label_str.size()), label_str.data());
+}
+
+}  // namespace mono::log

@@ -434,7 +434,7 @@ void RenderWindow::initGl() const
     // logging
     if constexpr(mono::config::constant::debugMode)
     {
-        util::enableOpenGlLogging();
+        log::enableOpenGlLogging();
     }
 
     // viewport

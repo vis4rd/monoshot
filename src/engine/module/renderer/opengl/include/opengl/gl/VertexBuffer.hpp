@@ -6,9 +6,9 @@
 #include <vector>
 
 #include <glad/gl.h>
-#include <spdlog/spdlog.h>
 
 #include "ShaderAttributeLayout.hpp"
+#include "log/Logging.hpp"
 #include "traits/ContiguousContainer.hpp"
 
 namespace mono::gl
@@ -59,6 +59,7 @@ constexpr VertexBuffer::VertexBuffer(const std::ranges::contiguous_range auto& d
     spdlog::debug("Creating VertexBuffer...");
     glCreateBuffers(1, &m_id);
     glNamedBufferData(m_id, size, data.data(), GL_STATIC_DRAW);
+    log::setGlObjectLabel(GL_BUFFER, m_id, "VertexBuffer#{}", m_id);
     spdlog::debug(
         "Created VertexBuffer instance with ID = {}, size = {} and pre-computed vertices",
         m_id,

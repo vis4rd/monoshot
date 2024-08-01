@@ -11,6 +11,8 @@ namespace mono::gl
 VertexArray::VertexArray()
 {
     glCreateVertexArrays(1, &m_id);
+    log::setGlObjectLabel(GL_VERTEX_ARRAY, m_id, "VertexArray#{}", m_id);
+
     spdlog::debug("Created VertexArray instance with ID = {}", m_id);
 }
 

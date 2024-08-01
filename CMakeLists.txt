@@ -27,7 +27,7 @@ endif()
 if(CMAKE_BUILD_TYPE EQUAL "")
     set(CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)
 endif()
-string(COMPARE EQUAL ${CMAKE_BUILD_TYPE} "Debug" DEBUG_MODE)
+string(COMPARE EQUAL "${CMAKE_BUILD_TYPE}" "Debug" DEBUG_MODE)
 
 include(${PROJECT_SOURCE_DIR}/cmake/version.cmake)
 

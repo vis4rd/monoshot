@@ -12,6 +12,7 @@ ElementBuffer::ElementBuffer(const std::uint32_t* indices, std::uint32_t count)
         static_cast<GLsizeiptr>(m_count * sizeof(std::uint32_t)),
         indices,
         GL_STATIC_DRAW);
+    log::setGlObjectLabel(GL_BUFFER, m_id, "ElementBuffer#{}", m_id);
     spdlog::debug("Created ElementBuffer instance with ID = {} and count = {}", m_id, m_count);
 }
 
