@@ -98,5 +98,7 @@ int main()
         window->render();
     }
 
+    mono::renderer::terminate();
+
     return 0;
 }

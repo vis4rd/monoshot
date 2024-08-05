@@ -69,6 +69,12 @@ void setPipeline(std::int32_t pipeline_id)
     data::currentPipelineId = pipeline_id;
 }
 
+void terminate()
+{
+    data::pipelines.clear();
+    data::currentPipelineId = -1;
+}
+
 RenderPipeline& getDefaultPipeline()
 {
     return data::pipelines.at(999999);
