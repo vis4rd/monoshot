@@ -18,7 +18,7 @@ int main()
     auto window = std::make_shared<mono::gl::RenderWindow>(1280, 720, "RENDER_INTERFACE_TEST");
     window->setBorderlessFullscreen();
 
-    mono::renderer::initialize(*window);
+    mono::renderer::initialize(window);
 
     auto& input_manager = InputManager::get();
     auto& pipeline = mono::renderer::getDefaultPipeline();

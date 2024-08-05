@@ -18,7 +18,7 @@ std::int32_t currentPipelineId{-1};
 
 }  // namespace data
 
-void initialize(gl::RenderTarget& default_target)
+void initialize(std::shared_ptr<gl::RenderTarget> default_target)
 {
     // TODO(vis4rd): differentiate automatic setup from advanced customized one
     spdlog::debug("Renderer: creating OpenGL backend");
@@ -35,7 +35,7 @@ void initialize(gl::RenderTarget& default_target)
     RenderPipeline default_pipeline{999999};
     default_pipeline.addRenderPass<InstancedQuadRenderPass>(
         "quad",
-        std::shared_ptr<gl::RenderTarget>(&default_target),
+        std::move(default_target),
         quad);
 
     mono::renderer::addPipeline(std::move(default_pipeline));

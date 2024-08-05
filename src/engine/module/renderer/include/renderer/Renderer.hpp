@@ -17,7 +17,7 @@ extern std::int32_t currentPipelineId;
 
 }  // namespace data
 
-void initialize(gl::RenderTarget& default_target);
+void initialize(std::shared_ptr<gl::RenderTarget> default_target);
 void addPipeline(RenderPipeline&& pipeline);
 void setPipeline(std::int32_t pipeline_id);
 
