@@ -20,6 +20,7 @@ extern std::int32_t currentPipelineId;
 void initialize(std::shared_ptr<gl::RenderTarget> default_target);
 void addPipeline(RenderPipeline&& pipeline);
 void setPipeline(std::int32_t pipeline_id);
+void terminate();
 
 RenderPipeline& getDefaultPipeline();
 
