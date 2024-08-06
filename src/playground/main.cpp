@@ -5,18 +5,21 @@
 #include <log/Logging.hpp>
 #include <opengl/target/RenderWindow.hpp>
 #include <renderer/Renderer.hpp>
+#include <renderer/pass/InstancedQuadRenderPass.hpp>
 
 int main()
 {
     util::enableOpenGlLogging();
     spdlog::default_logger()->set_level(spdlog::level::debug);
 
-    mono::gl::RenderWindow window(1280, 720, "PLAYGROUND");
-    window.setBorderlessFullscreen();
-    mono::gl::RenderPipeline main_pipeline{0};
-    mono::gl::RenderPass main_pass{"quad"};
-    main_pipeline.addRenderPass("default", std::move(main_pass));
-    mono::renderer::setPipeline(main_pipeline);
+    auto window = std::make_shared<mono::gl::RenderWindow>(1280, 720, "PLAYGROUND");
+    window->setBorderlessFullscreen();
+
+    mono::renderer::initialize(window);
+
+    auto& quad_pass =
+        mono::renderer::getDefaultPipeline().getRenderPass<mono::renderer::InstancedQuadRenderPass>(
+            "quad");
 
     auto& input_manager = InputManager::get();
     std::vector<glm::vec2> points;
@@ -25,7 +28,7 @@ int main()
     while(true)
     {
         glfwPollEvents();
-        if(window.shouldClose())
+        if(window->shouldClose())
         {
             break;
         }
@@ -33,30 +36,30 @@ int main()
            or input_manager.isPressedOnce(GLFW_MOUSE_BUTTON_RIGHT))
         {
             spdlog::debug("CLICKED LMB OR RMB");
-            const auto pos = window.getMousePosition();
+            const auto pos = window->getMousePosition();
             points.push_back(pos);
-            auto id = mono::renderer::addQuad("default", pos, {10, 10}, 0, {1.f, 0.f, 0.f, 1.f});
-            quad_ids.push_back(std::move(id));
+            auto id = quad_pass.addQuad(pos, {10, 10}, 0, {1.f, 0.f, 0.f, 1.f});
+            quad_ids.push_back(id);
         }
         if(input_manager.isPressedOnce(GLFW_KEY_F11))
         {
             spdlog::debug("CLICKED F11");
-            window.toggleBorderlessFullscreen();
+            window->toggleBorderlessFullscreen();
         }
         if(input_manager.isPressedOnce(GLFW_KEY_F10))
         {
             spdlog::debug("CLICKED F10");
-            window.toggleFullscreen();
+            window->toggleFullscreen();
         }
         if(input_manager.isPressedOnce(GLFW_KEY_ESCAPE))
         {
             spdlog::debug("CLICKED ESCAPE");
-            window.requestClose();
+            window->requestClose();
         }
         if(input_manager.isPressedOnce(GLFW_KEY_V))
         {
             spdlog::debug("CLICKED V");
-            window.setVerticalSync(not window.isVerticalSyncEnabled());
+            window->setVerticalSync(not window->isVerticalSyncEnabled());
         }
         if(input_manager.isPressedOnce(GLFW_KEY_1))
         {
@@ -67,7 +70,7 @@ int main()
                 quad_ids.erase(quad_ids.begin());
                 points.erase(points.begin());
 
-                mono::renderer::removeQuad(id);
+                quad_pass.removeQuad(id);
             }
         }
         if(input_manager.isPressedOnce(GLFW_KEY_2))
@@ -80,7 +83,7 @@ int main()
                     const auto id = quad_ids.back();
                     quad_ids.pop_back();
                     points.pop_back();
-                    mono::renderer::removeQuad(id);
+                    quad_pass.removeQuad(id);
                 }
             }
         }
@@ -94,23 +97,29 @@ int main()
                     const auto id = quad_ids.back();
                     quad_ids.pop_back();
                     points.pop_back();
-                    mono::renderer::removeQuad(id);
+                    quad_pass.removeQuad(id);
                 }
             }
         }
 
-        window.prepareRender();
+        window->prepareRender();
 
         if(ImGui::Begin("Playground"))
         {
-            ImGui::Text("fullscreen: %s", window.isFullscreen() ? "true" : "false");
-            ImGui::Text("borderless: %s", window.isBorderlessFullscreen() ? "true" : "false");
-            ImGui::Text("v-sync: %s", window.isVerticalSyncEnabled() ? "true" : "false");
+            ImGui::Text("fullscreen: %s", window->isFullscreen() ? "true" : "false");
+            ImGui::Text("borderless: %s", window->isBorderlessFullscreen() ? "true" : "false");
+            ImGui::Text("v-sync: %s", window->isVerticalSyncEnabled() ? "true" : "false");
             ImGui::End();
         }
 
         mono::renderer::render(
-            glm::ortho(0.f, window.getSize().x + 0.f, window.getSize().y + 0.f, 0.f, 0.1f, 1000.f),
+            glm::ortho(
+                0.f,
+                window->getSize().x + 0.f,
+                window->getSize().y + 0.f,
+                0.f,
+                0.1f,
+                1000.f),
             glm::lookAt(
                 glm::vec3{0.f, 0.f, 100.f},
                 glm::vec3{0.f, 0.f, 0.f},
@@ -125,8 +134,10 @@ int main()
             ImGui::End();
         }
 
-        window.render();
+        window->render();
     }
+
+    mono::renderer::terminate();
 
     return 0;
 }
