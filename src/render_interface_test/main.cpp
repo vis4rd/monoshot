@@ -8,6 +8,7 @@
 #include <renderer/RenderPipeline.hpp>
 #include <renderer/Renderer.hpp>
 #include <renderer/pass/ImmediateLineRenderPass.hpp>
+#include <renderer/pass/ImmediateQuadRenderPass.hpp>
 #include <renderer/pass/InstancedQuadRenderPass.hpp>
 
 int main()
@@ -22,11 +23,16 @@ int main()
 
     auto& input_manager = InputManager::get();
     auto& pipeline = mono::renderer::getDefaultPipeline();
-    auto& quad_pass = pipeline.getRenderPass<mono::renderer::InstancedQuadRenderPass>("quad");
-    (void)quad_pass.addQuad({1000, 400}, {100, 100}, 0, {1.f, 0.f, 0.f, 1.f});
+    //
+    // auto& quad_pass = pipeline.getRenderPass<mono::renderer::InstancedQuadRenderPass>("quad");
+    // (void)quad_pass.addQuad({1000, 400}, {100, 100}, 0, {1.f, 0.f, 0.f, 1.f});
+    //
+    auto& quad_shader = mono::gl::ShaderManager::get().getShader("quad");
+    pipeline.addRenderPass<mono::renderer::ImmediateQuadRenderPass>("quad2", window, quad_shader);
+    auto& quad_pass = pipeline.getRenderPass<mono::renderer::ImmediateQuadRenderPass>("quad2");
+    //
 
     auto& line_shader = mono::gl::ShaderManager::get().getShader("line");
-
     pipeline.addRenderPass<mono::renderer::ImmediateLineRenderPass>("line", window, line_shader);
     auto& line_pass = pipeline.getRenderPass<mono::renderer::ImmediateLineRenderPass>("line");
 
@@ -58,6 +64,9 @@ int main()
             window->setVerticalSync(not window->isVerticalSyncEnabled());
         }
 
+        //
+        quad_pass.drawQuad({1000, 400}, {100, 100}, 0, {1.f, 0.f, 0.f, 1.f});
+        //
         line_pass.drawLine({0, 0}, window->getSize(), {1.f, 0.f, 0.f, 1.f}, {0.f, 1.f, 0.f, 1.f});
 
         window->prepareRender();

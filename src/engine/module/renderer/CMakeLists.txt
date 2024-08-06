@@ -10,6 +10,7 @@ target_sources(mono_module_renderer
     "${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/pass/InstancedQuadRenderPass.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/pass/ImmediateLineRenderPass.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/pass/ImmediateQuadRenderPass.cpp"
 )
 
 target_include_directories(mono_module_renderer
