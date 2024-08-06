@@ -12,8 +12,8 @@ namespace mono::renderer
 namespace data
 {
 
-extern std::unordered_map<std::int32_t, RenderPipeline> pipelines;
-extern std::int32_t currentPipelineId;
+inline std::unordered_map<std::int32_t, RenderPipeline> pipelines{};
+inline std::int32_t currentPipelineId{-1};
 
 }  // namespace data
 

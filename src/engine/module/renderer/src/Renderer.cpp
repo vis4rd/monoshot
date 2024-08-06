@@ -10,14 +10,6 @@
 namespace mono::renderer
 {
 
-namespace data
-{
-
-std::unordered_map<std::int32_t, RenderPipeline> pipelines{};
-std::int32_t currentPipelineId{-1};
-
-}  // namespace data
-
 void initialize(std::shared_ptr<gl::RenderTarget> default_target)
 {
     // TODO(vis4rd): differentiate automatic setup from advanced customized one
