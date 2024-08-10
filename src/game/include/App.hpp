@@ -8,6 +8,7 @@
 #include <input/InputManager.hpp>
 #include <opengl/shader/ShaderManager.hpp>
 #include <opengl/target/RenderWindow.hpp>
+#include <renderer/Renderer.hpp>
 #include <section/SectionManager.hpp>
 #include <time/Timer.hpp>
 #include <traits/Renderable.hpp>
@@ -149,6 +150,19 @@ void App::render(RenderableTrait auto&&... renderables) noexcept
             ImGui::End();
         }
     }
+
+    // mono::renderer::render(
+    //     glm::ortho(
+    //         0.f,
+    //         static_cast<float>(m_window->getSize().x),
+    //         static_cast<float>(m_window->getSize().y),
+    //         0.f,
+    //         0.1f,
+    //         1000.f),
+    //     glm::lookAt(
+    //         glm::vec3{0.f, 0.f, 100.f},
+    //         glm::vec3{0.f, 0.f, 0.f},
+    //         glm::vec3{0.f, 1.f, 0.f}));
 
     m_window->render();
 }

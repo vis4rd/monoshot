@@ -173,7 +173,7 @@ void DebugSection::render() noexcept
     float& vel = m_hero.velocity;
     const float& acc = m_hero.m_acceleration;
     const auto& theme_color = std::get<1>(m_map.getCurrentTheme().wallBlock);
-    mono::renderer::drawQuad({pos.x, pos.y}, m_hero.m_size, rot, m_hero.getTexture(), theme_color);
+    m_quadPass.drawQuad({pos.x, pos.y}, m_hero.m_size, rot, m_hero.getTexture(), theme_color);
 
     m_map.drawObjects({pos.x, pos.y}, draw_bounding_boxes);
 
@@ -181,23 +181,25 @@ void DebugSection::render() noexcept
         const ecs::component::Position,
         const ecs::component::Size,
         const ecs::component::Rotation>(entt::exclude<ecs::component::Destroyed>);
-    bullet_view.each([&theme_color](const auto& b_pos, const auto& b_size, const auto& b_rot) {
-        mono::renderer::drawQuad({b_pos.x, b_pos.y}, b_size, b_rot, theme_color);
-    });
+    bullet_view.each(
+        [&theme_color, this](const auto& b_pos, const auto& b_size, const auto& b_rot) {
+            m_quadPass.drawQuad({b_pos.x, b_pos.y}, b_size, b_rot.data, theme_color);
+        });
 
     const auto& enemy_texture = ResourceManager::enemyTexture;
     const auto enemy_view = m_enemyRegistry.view<
         const ecs::component::Position,
         const ecs::component::Size,
         const ecs::component::Rotation>();
-    enemy_view.each([&enemy_texture](const auto& e_pos, const auto& e_size, const auto& e_rot) {
-        mono::renderer::drawQuad(
-            {e_pos.x, e_pos.y},
-            e_size,
-            e_rot,
-            enemy_texture,
-            {1.f, 0.4f, 0.4f, 1.f});
-    });
+    enemy_view.each(
+        [&enemy_texture, this](const auto& e_pos, const auto& e_size, const auto& e_rot) {
+            m_quadPass.drawQuad(
+                {e_pos.x, e_pos.y},
+                e_size,
+                e_rot.data,
+                enemy_texture,
+                {1.f, 0.4f, 0.4f, 1.f});
+        });
 
     mono::renderer::render(m_camera.getProjectionMatrix(), m_camera.getViewMatrix());
 

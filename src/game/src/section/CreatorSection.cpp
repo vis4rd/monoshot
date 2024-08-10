@@ -199,7 +199,7 @@ void CreatorSection::render() noexcept
         if(map_object.getTexture())  // TODO(vis4rd): remove this branch when all textures are
                                      // initialized
         {
-            mono::renderer::drawQuad(
+            m_quadPass.drawQuad(
                 map_object.getPosition(),
                 map_object.getSize(),
                 map_object.getRotation(),
@@ -210,7 +210,7 @@ void CreatorSection::render() noexcept
     else if(m_selectedMapItem > BlockID::FIRST_BLOCK && m_selectedMapItem < BlockID::LAST_BLOCK)
     {
         // hovered tile highlight
-        mono::renderer::drawQuad(
+        m_quadPass.drawQuad(
             {std::round(m_mouseWorldPos.x), std::round(m_mouseWorldPos.y)},
             {1.f, 1.f},
             0.f,
@@ -218,15 +218,15 @@ void CreatorSection::render() noexcept
     }
     else if(m_selectedMapItem == 9999)
     {
-        mono::renderer::drawRect(
-            {m_mouseWorldPos.x, m_mouseWorldPos.y},
-            m_endAreaSize,
-            0.f,
-            {1.f, 1.f, 1.f, 1.f});
+        // m_quadPass.drawRect(
+        //     {m_mouseWorldPos.x, m_mouseWorldPos.y},
+        //     m_endAreaSize,
+        //     0.f,
+        //     {1.f, 1.f, 1.f, 1.f});
     }
     else if(m_selectedMapItem == 10000)
     {
-        mono::renderer::drawQuad(
+        m_quadPass.drawQuad(
             {m_mouseWorldPos.x, m_mouseWorldPos.y},
             {1.f, 1.f},
             m_randomizedRotation,
@@ -237,7 +237,7 @@ void CreatorSection::render() noexcept
     auto view = m_entities.view<const ecs::component::Position, const ecs::component::Rotation>();
     for(auto&& [enemy, pos, rot] : view.each())
     {
-        mono::renderer::drawQuad(
+        m_quadPass.drawQuad(
             pos,
             {1.f, 1.f},
             rot.data,

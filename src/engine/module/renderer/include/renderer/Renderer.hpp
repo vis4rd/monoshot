@@ -22,6 +22,7 @@ void addPipeline(RenderPipeline&& pipeline);
 void setPipeline(std::int32_t pipeline_id);
 void terminate();
 
+RenderPipeline& getPipeline(std::int32_t pipeline_id);
 RenderPipeline& getDefaultPipeline();
 
 // renders the current frame with set pipeline

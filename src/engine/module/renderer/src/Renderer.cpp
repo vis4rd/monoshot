@@ -67,6 +67,11 @@ void terminate()
     data::currentPipelineId = -1;
 }
 
+RenderPipeline& getPipeline(std::int32_t pipeline_id)
+{
+    return data::pipelines.at(pipeline_id);
+}
+
 RenderPipeline& getDefaultPipeline()
 {
     return data::pipelines.at(999999);
