@@ -120,11 +120,15 @@ void ImmediateQuadRenderPass::drawQuad(
         return slot.value();
     }();
 
+    constexpr auto modulo = [](float value, float mod) -> float {
+        return std::fmod(std::fmod(value, mod) + mod, mod);
+    };
+
     const gl::QuadInstanceData quad_instance_data{
         color_uint,
         position,
         size,
-        gl::detail::RtiPacked{static_cast<glm::uint32>(rotation), texture_slot}
+        gl::detail::RtiPacked{static_cast<glm::uint32>(modulo(rotation, 360.f)), texture_slot}
     };
 
     m_quads.push_back(quad_instance_data);

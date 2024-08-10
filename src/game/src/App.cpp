@@ -3,10 +3,9 @@
 #include <filesystem>
 
 #include <cstring/cstring.hpp>
-#include <opengl/renderer/RenderPass.hpp>
-#include <opengl/renderer/RenderPipeline.hpp>
 #include <opengl/texture/Texture.hpp>
-#include <renderer/Renderer.hpp>
+#include <renderer/pass/ImmediateLineRenderPass.hpp>
+#include <renderer/pass/ImmediateQuadRenderPass.hpp>
 #include <resource/Resource.hpp>
 #include <resource/ResourceManager.hpp>
 #include <spdlog/sinks/basic_file_sink.h>
@@ -24,6 +23,30 @@ App::App(const std::string& window_title, uint32_t width, uint32_t height)
 
     m_window = std::make_shared<mono::gl::RenderWindow>(width, height, window_title);
     ResourceManager::window = m_window;
+
+    {
+        // custom pipeline
+        auto& shader_manager = mono::gl::ShaderManager::get();
+        auto& quad_shader = shader_manager.addShaderProgram(
+            "quad",
+            "../res/shaders/quad.vert",
+            "../res/shaders/quad.frag");
+        auto& line_shader = shader_manager.addShaderProgram(
+            "line",
+            "../res/shaders/line.vert",
+            "../res/shaders/line.frag");
+
+        auto pipeline = mono::renderer::RenderPipeline(0);
+        pipeline.addRenderPass<mono::renderer::ImmediateQuadRenderPass>(
+            "quad",
+            m_window,
+            quad_shader);
+        pipeline.addRenderPass<mono::renderer::ImmediateLineRenderPass>(
+            "line",
+            m_window,
+            line_shader);
+        mono::renderer::addPipeline(std::move(pipeline));
+    }
 
     if constexpr(mono::config::constant::debugMode)  // Debug Build
     {
@@ -51,6 +74,7 @@ App::App(const std::string& window_title, uint32_t width, uint32_t height)
 
 App::~App() noexcept
 {
+    mono::renderer::terminate();
     this->destroyFonts();
     this->destroyTextures();
     ResourceManager::window.reset();

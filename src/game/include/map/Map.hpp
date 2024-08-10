@@ -3,14 +3,11 @@
 #include <entt/entity/registry.hpp>
 #include <opengl/shader/ShaderManager.hpp>
 #include <opengl/texture/Texture.hpp>
+#include <renderer/Renderer.hpp>
+#include <renderer/pass/ImmediateQuadRenderPass.hpp>
 
 #include "MapTheme.hpp"
 #include "object/MapObject.hpp"
-
-namespace mono
-{
-class Renderer;
-}
 
 struct Tile
 {
@@ -77,4 +74,7 @@ class Map final
     std::vector<Tile> m_tiles{};
     std::vector<MapObject> m_objects{};
     const MapTheme* m_theme = &MapThemes::forestTheme;
+    mono::renderer::RenderPipeline& m_renderPipeline = mono::renderer::getPipeline(0);
+    mono::renderer::ImmediateQuadRenderPass& m_quadPass =
+        m_renderPipeline.getRenderPass<mono::renderer::ImmediateQuadRenderPass>("quad");
 };

@@ -37,4 +37,7 @@ class CreatorSection final : public Section
     glm::vec2 m_mouseWorldPos{0.f, 0.f};
     float m_randomizedRotation{};
     glm::vec2 m_endAreaSize{10.f, 10.f};
+    mono::renderer::ImmediateQuadRenderPass& m_quadPass =
+        mono::renderer::getPipeline(0).getRenderPass<mono::renderer::ImmediateQuadRenderPass>(
+            "quad");
 };

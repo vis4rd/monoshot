@@ -379,7 +379,7 @@ void Map::drawTiles(bool area, bool show_solid)
         {
             if(wall_texture != nullptr)
             {
-                mono::renderer::drawQuad(
+                m_quadPass.drawQuad(
                     {tile.x, tile.y},
                     {1.f, 1.f},
                     tile.rotation,
@@ -388,7 +388,7 @@ void Map::drawTiles(bool area, bool show_solid)
             }
             else
             {
-                mono::renderer::drawQuad({tile.x, tile.y}, {1.f, 1.f}, tile.rotation, wall_color);
+                m_quadPass.drawQuad({tile.x, tile.y}, {1.f, 1.f}, tile.rotation, wall_color);
             }
         }
     }
@@ -399,7 +399,7 @@ void Map::drawObjects(const glm::vec2& hero_pos, bool show_solid)
     const auto& [wall_block, wall_color, wall_texture] = m_theme->wallBlock;
     for(const auto& object : m_objects)
     {
-        mono::renderer::drawQuad(
+        m_quadPass.drawQuad(
             object.getPosition(),
             object.getSize(),
             object.getRotation(),

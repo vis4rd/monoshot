@@ -2,6 +2,8 @@
 
 #include <camera/PerspectiveCamera.hpp>
 #include <entt/entity/registry.hpp>
+#include <renderer/Renderer.hpp>
+#include <renderer/pass/ImmediateQuadRenderPass.hpp>
 #include <section/Section.hpp>
 #include <time/Timer.hpp>
 
@@ -41,6 +43,9 @@ class GameplaySection : public Section
     Map m_map;
     Hero m_hero;
     UI::GameplayLayout m_layout;
+    mono::renderer::ImmediateQuadRenderPass& m_quadPass =
+        mono::renderer::getPipeline(0).getRenderPass<mono::renderer::ImmediateQuadRenderPass>(
+            "quad");
 
     bool m_onEnterFinished = false;
     bool m_onLeaveStarted = false;
