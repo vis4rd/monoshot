@@ -5,9 +5,9 @@
 #include <glad/gl.h>
 
 
-static constexpr const std::array<char *, 7> sources =
+static constexpr const std::array<const char *, 7> sources =
     {"API", "Window System", "Shader Compiler", "Third Party", "Application", "Other", "Unknown"};
-static constexpr const std::array<char *, 7> types = {
+static constexpr const std::array<const char *, 7> types = {
     "Error",
     "Deprecated Behavior",
     "Undefined Behavior",

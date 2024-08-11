@@ -3,6 +3,7 @@
 #include <array>
 #include <concepts>
 #include <stdexcept>
+#include <string>
 #include <string_view>
 
 namespace mono

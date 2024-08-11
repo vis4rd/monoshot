@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 #include "Consumable.hpp"
 
 class Food : public Consumable
