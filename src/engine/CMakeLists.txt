@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.19 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.25 FATAL_ERROR)
 
 project(MONOENGINE LANGUAGES CXX C)
 
@@ -23,17 +23,17 @@ target_compile_definitions(glfw  # prevent GLFW from including gl headers
 find_package(OpenGL 4.5 REQUIRED)
 
 # GLAD
-add_subdirectory("${PROJECT_SOURCE_DIR}/lib/glad/cmake")
+add_subdirectory("${PROJECT_SOURCE_DIR}/lib/glad/cmake" SYSTEM)
 glad_add_library(glad STATIC REPRODUCIBLE
     LANGUAGE C
     API gl:core=4.5
 )
 
 # GLM
-add_subdirectory("${PROJECT_SOURCE_DIR}/lib/glm")
+add_subdirectory("${PROJECT_SOURCE_DIR}/lib/glm" SYSTEM)
 
 # ImGUI
-add_subdirectory("${PROJECT_SOURCE_DIR}/lib/imgui")
+add_subdirectory("${PROJECT_SOURCE_DIR}/lib/imgui" SYSTEM)
 
 # spdlog
 set(SPDLOG_BUILD_SHARED OFF CACHE BOOL "" FORCE)
@@ -41,20 +41,20 @@ set(SPDLOG_ENABLE_PCH ON CACHE BOOL "" FORCE)
 set(SPDLOG_SYSTEM_INCLUDES ON CACHE BOOL "" FORCE)
 set(SPDLOG_USE_STD_FORMAT ON CACHE BOOL "" FORCE)
 set(CMAKE_CXX_STANDARD 20)
-add_subdirectory("${PROJECT_SOURCE_DIR}/lib/spdlog")
+add_subdirectory("${PROJECT_SOURCE_DIR}/lib/spdlog" SYSTEM)
 target_compile_definitions(spdlog PUBLIC SPDLOG_SOURCE_LOCATION)
 
 # stb_image
-add_subdirectory("${PROJECT_SOURCE_DIR}/lib/stb_image")
+add_subdirectory("${PROJECT_SOURCE_DIR}/lib/stb_image" SYSTEM)
 
 # EnTT
-add_subdirectory("${PROJECT_SOURCE_DIR}/lib/entt")
+add_subdirectory("${PROJECT_SOURCE_DIR}/lib/entt" SYSTEM)
 
 # tinyfiledialogs
-add_subdirectory("${PROJECT_SOURCE_DIR}/lib/tinyfiledialogs")
+add_subdirectory("${PROJECT_SOURCE_DIR}/lib/tinyfiledialogs" SYSTEM)
 
 # inifile-cpp
-add_subdirectory("${PROJECT_SOURCE_DIR}/lib/inifile-cpp")
+add_subdirectory("${PROJECT_SOURCE_DIR}/lib/inifile-cpp" SYSTEM)
 
 # Modules
 add_subdirectory("${PROJECT_SOURCE_DIR}/module/input")

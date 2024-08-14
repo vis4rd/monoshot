@@ -2,6 +2,10 @@
     "C_Cpp.autoAddFileAssociations": false,
     "C_Cpp.codeAnalysis.clangTidy.enabled": true,
     "C_Cpp.codeAnalysis.clangTidy.useBuildPath": true,
+    "C_Cpp.codeAnalysis.exclude": {
+        "**/engine/lib/**": true,
+        "**/build/**": true,
+    },
     "C_Cpp.debugShortcut": false,
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
     "C_Cpp.default.cppStandard": "c++20",
@@ -23,7 +27,6 @@
     ],
     "C_Cpp.intelliSenseCachePath": "${workspaceFolder}/.cache/vscode-cpptools",
     "C_Cpp.intelliSenseEngine": "default",
-    "C_Cpp.intelliSenseEngineFallback": "enabled",
     "C_Cpp.loggingLevel": "Information",
     "C_Cpp.markdownInComments": "enabled",
     "C_Cpp.preferredPathSeparator": "Forward Slash",
@@ -64,6 +67,10 @@
     //
     "gitmoji.outputType": "code",
     "gitmoji.showEmojiCode": true,
+    //
+    "search.exclude": {
+        "**/engine/lib/**": true,
+    },
     //
     "[cpp]": {
         "editor.defaultFormatter": "ms-vscode.cpptools",

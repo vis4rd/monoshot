@@ -1,7 +1,7 @@
 ---
 WarningsAsErrors: true
 UseColor: true
-HeaderFilterRegex: '^src/\(engine/module/|game/include/\)'
+HeaderFilterRegex: '.*\/?src\/(engine\/module\/|game\/include\/).*'
 # HeaderFileExtensions: ['hpp'] # clang-tidy > 18
 # ImplementationFileExtensions: ['cpp'] # clang-tidy > 18
 
