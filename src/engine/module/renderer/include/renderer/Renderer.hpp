@@ -26,5 +26,5 @@ RenderPipeline& getPipeline(std::int32_t pipeline_id);
 RenderPipeline& getDefaultPipeline();
 
 // renders the current frame with set pipeline
-void render(const glm::mat4& projection, const glm::mat4& view);
+void render();
 }  // namespace mono::renderer

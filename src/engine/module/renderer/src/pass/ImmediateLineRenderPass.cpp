@@ -33,7 +33,7 @@ std::shared_ptr<mono::gl::RenderTarget> ImmediateLineRenderPass::getRenderTarget
     return m_renderTarget;
 }
 
-void ImmediateLineRenderPass::submitDraws(const glm::mat4& projection, const glm::mat4& view)
+void ImmediateLineRenderPass::submitDraws()
 {
     if(not m_lines.empty())
     {
@@ -41,8 +41,8 @@ void ImmediateLineRenderPass::submitDraws(const glm::mat4& projection, const glm
 
         m_shader.use();
 
-        m_shader.uploadUniform("uProjection", projection, 0);
-        m_shader.uploadUniform("uView", view, 1);
+        m_shader.uploadUniform("uProjection", m_projection, 0);
+        m_shader.uploadUniform("uView", m_view, 1);
 
         m_lineVao->bind();
         glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(m_lines.size()));

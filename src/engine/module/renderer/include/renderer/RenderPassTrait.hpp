@@ -21,7 +21,16 @@ namespace mono::renderer
 class RenderPassInterface
 {
     public:
-    virtual void submitDraws(const glm::mat4& projection, const glm::mat4& view) = 0;
+    virtual void submitDraws() = 0;
+    virtual ~RenderPassInterface() noexcept = default;
+
+    void setProjection(const glm::mat4& projection) { m_projection = projection; }
+
+    void setView(const glm::mat4& view) { m_view = view; }
+
+    protected:
+    glm::mat4 m_projection{};
+    glm::mat4 m_view{};
 };
 
 template<typename T>

@@ -77,13 +77,13 @@ RenderPipeline& getDefaultPipeline()
     return data::pipelines.at(999999);
 }
 
-void render(const glm::mat4& projection, const glm::mat4& view)
+void render()
 {
     auto& pipeline = data::pipelines.at(data::currentPipelineId);
     for(const auto& pass_name : pipeline.getRenderOrder())
     {
         auto& pass = pipeline.getRenderPassAsAny(pass_name);
-        pass->submitDraws(projection, view);
+        pass->submitDraws();
     }
 }
 

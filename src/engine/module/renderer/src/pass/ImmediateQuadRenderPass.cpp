@@ -36,7 +36,7 @@ std::shared_ptr<mono::gl::RenderTarget> ImmediateQuadRenderPass::getRenderTarget
     return m_renderTarget;
 }
 
-void ImmediateQuadRenderPass::submitDraws(const glm::mat4& projection, const glm::mat4& view)
+void ImmediateQuadRenderPass::submitDraws()
 {
     if(not m_quads.empty())
     {
@@ -70,8 +70,8 @@ void ImmediateQuadRenderPass::submitDraws(const glm::mat4& projection, const glm
 
         m_shader.use();
 
-        m_shader.uploadUniform("uProjection", projection, 0);
-        m_shader.uploadUniform("uView", view, 1);
+        m_shader.uploadUniform("uProjection", m_projection, 0);
+        m_shader.uploadUniform("uView", m_view, 1);
 
         m_shader.uploadUniform("uTextures", samplers, 2);
         m_shader.uploadUniform("uFrameCount", frame_counts, 34);

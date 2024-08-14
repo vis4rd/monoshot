@@ -6,7 +6,7 @@
 namespace mono::renderer
 {
 
-class ImmediateLineRenderPass : public mono::renderer::RenderPassInterface
+class ImmediateLineRenderPass final : public mono::renderer::RenderPassInterface
 {
     public:
     ImmediateLineRenderPass(
@@ -18,7 +18,7 @@ class ImmediateLineRenderPass : public mono::renderer::RenderPassInterface
     std::shared_ptr<mono::gl::VertexArray> getVao();
     std::shared_ptr<mono::gl::ShaderProgram> getShader();
     std::shared_ptr<mono::gl::RenderTarget> getRenderTarget();
-    void submitDraws(const glm::mat4& projection, const glm::mat4& view) override;
+    void submitDraws() override;
     //
 
     void drawLine(

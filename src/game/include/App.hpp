@@ -151,18 +151,7 @@ void App::render(RenderableTrait auto&&... renderables) noexcept
         }
     }
 
-    // mono::renderer::render(
-    //     glm::ortho(
-    //         0.f,
-    //         static_cast<float>(m_window->getSize().x),
-    //         static_cast<float>(m_window->getSize().y),
-    //         0.f,
-    //         0.1f,
-    //         1000.f),
-    //     glm::lookAt(
-    //         glm::vec3{0.f, 0.f, 100.f},
-    //         glm::vec3{0.f, 0.f, 0.f},
-    //         glm::vec3{0.f, 1.f, 0.f}));
+    mono::renderer::render();
 
     m_window->render();
 }

@@ -44,7 +44,7 @@ std::shared_ptr<gl::RenderTarget> InstancedQuadRenderPass::getRenderTarget()
     return m_renderTarget;
 }
 
-void InstancedQuadRenderPass::submitDraws(const glm::mat4& projection, const glm::mat4& view)
+void InstancedQuadRenderPass::submitDraws()
 {
     if(not m_quadRemovalStageBuffer.empty())
     {
@@ -158,8 +158,8 @@ void InstancedQuadRenderPass::submitDraws(const glm::mat4& projection, const glm
 
     m_shader.use();
 
-    m_shader.uploadUniform("uProjection", projection, 0);
-    m_shader.uploadUniform("uView", view, 1);
+    m_shader.uploadUniform("uProjection", m_projection, 0);
+    m_shader.uploadUniform("uView", m_view, 1);
 
     m_shader.uploadUniform("uTextures", samplers, 2);
     m_shader.uploadUniform("uFrameCount", frame_counts, 34);

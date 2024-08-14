@@ -34,7 +34,7 @@ class InstancedQuadRenderPass : public RenderPassInterface
     std::shared_ptr<gl::VertexArray> getVao();
     std::shared_ptr<gl::ShaderProgram> getShader();
     std::shared_ptr<gl::RenderTarget> getRenderTarget();
-    void submitDraws(const glm::mat4& projection, const glm::mat4& view) override;
+    void submitDraws() override;
     //
 
     [[nodiscard("Save the returned ID if you want to remove this instance later!")]]

@@ -201,7 +201,8 @@ void DebugSection::render() noexcept
                 {1.f, 0.4f, 0.4f, 1.f});
         });
 
-    mono::renderer::render(m_camera.getProjectionMatrix(), m_camera.getViewMatrix());
+    m_quadPass.setProjection(m_camera.getProjectionMatrix());
+    m_quadPass.setView(m_camera.getViewMatrix());
 
     if(m_onEnterFinished && (not m_onLeaveStarted))
     {

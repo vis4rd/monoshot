@@ -254,7 +254,9 @@ void CreatorSection::render() noexcept
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     }
-    mono::renderer::render(m_camera.getProjectionMatrix(), m_camera.getViewMatrix());
+    m_quadPass.setProjection(m_camera.getProjectionMatrix());
+    m_quadPass.setView(m_camera.getViewMatrix());
+
     if(draw_bbs)
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
