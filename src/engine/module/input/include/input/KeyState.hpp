@@ -1,6 +1,8 @@
 #pragma once
 
-enum KeyState
+#include <cstdint>
+
+enum class KeyState : std::uint8_t
 {
     IDLE = 0,
     PRESS_ONCE,

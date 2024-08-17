@@ -89,5 +89,5 @@ void InputManager::updateKeyState(std::int32_t glfw_key)
 bool InputManager::isKeyInState(std::int32_t key, KeyState state)
 {
     this->updateKeyState(key);
-    return (state == m_currentKeystates.at(static_cast<std::size_t>(key)));
+    return state == m_currentKeystates.at(key);
 }
