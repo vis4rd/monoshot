@@ -76,14 +76,9 @@ void InputManager::updateKeyState(std::int32_t glfw_key)
             // if idle: idle
             break;
         }
-        case GLFW_REPEAT:  // currently unused
-        {
-            spdlog::warn("Using GLFW_REPEAT in InputManager, which is currently unsupported");
-            break;
-        }
         default:
         {
-            spdlog::warn("Using unknown key action");
+            spdlog::warn("Using unsupported key action");
             break;
         }
     }
