@@ -6,74 +6,32 @@ InputManager& InputManager::get()
     return instance;
 }
 
-std::size_t InputManager::addGroup(const std::string& name)
-{
-    auto iter = this->findGroup(name);
-    if(iter != m_keybinds.end())
-    {
-        spdlog::warn("Given group '{}' already exists, ignoring...", name);
-        return std::distance(m_keybinds.begin(), iter);
-    }
-    auto valid_name(name);
-    if(valid_name.empty())
-    {
-        valid_name = "Keybind Group No. " + std::to_string(m_keybinds.size());
-    }
-    m_keybinds.emplace_back(valid_name);
-    spdlog::info(
-        "Creating a new keybind group called '{}'",
-        m_keybinds[m_keybinds.size() - 1].name);
-    return m_keybinds.size() - 1;
-}
-
-void InputManager::processGroup(GLFWwindow* window, const std::string& group)
-{
-    spdlog::trace("Processing keybind group '{}'", group);
-    auto iter = this->findGroup(group);
-    if(iter != m_keybinds.end())
-    {
-        spdlog::trace("Keybind states:");
-        for(auto& [glfw_key, keybind] : iter->keybinds)
-        {
-            this->updateKeyState(glfw_key);
-            if(this->isKeyInState(glfw_key, keybind.state))
-            {
-                keybind.callback();
-            }
-        }
-    }
-    else
-    {
-        throw std::runtime_error("Given keybind group does not exist.");
-    }
-}
-
-bool InputManager::isPressedOnce(const std::int32_t& key)
+bool InputManager::isPressedOnce(std::int32_t key)
 {
     return this->isKeyInState(key, KeyState::PRESS_ONCE);
 }
 
-bool InputManager::isHeld(const std::int32_t& key)
+bool InputManager::isHeld(std::int32_t key)
 {
     return this->isKeyInState(key, KeyState::HOLD);
 }
 
-bool InputManager::isReleased(const std::int32_t& key)
+bool InputManager::isReleased(std::int32_t key)
 {
     return this->isKeyInState(key, KeyState::RELEASE);
 }
 
-bool InputManager::isRepeated(const std::int32_t& key)
+bool InputManager::isRepeated(std::int32_t key)
 {
     return this->isKeyInState(key, KeyState::REPEAT);
 }
 
-bool InputManager::isIdle(const std::int32_t& key)
+bool InputManager::isIdle(std::int32_t key)
 {
     return this->isKeyInState(key, KeyState::IDLE);
 }
 
-void InputManager::updateKeyState(const std::int32_t& glfw_key)
+void InputManager::updateKeyState(std::int32_t glfw_key)
 {
     auto* window = glfwGetCurrentContext();
     const auto index = static_cast<std::size_t>(glfw_key);
@@ -133,7 +91,7 @@ void InputManager::updateKeyState(const std::int32_t& glfw_key)
     ps = cs;
 }
 
-bool InputManager::isKeyInState(const std::int32_t& key, KeyState state)
+bool InputManager::isKeyInState(std::int32_t key, KeyState state)
 {
     this->updateKeyState(key);
     return (state == m_currentKeystates.at(static_cast<std::size_t>(key)));
