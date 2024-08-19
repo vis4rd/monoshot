@@ -24,6 +24,7 @@ namespace priv
 bool isMouseKey(std::int32_t key);
 void updateKeyState(std::int32_t key);
 bool isKeyInState(std::int32_t key, KeyState state);
+void ensureGlfwIsInitialized();
 
 }  // namespace priv
 

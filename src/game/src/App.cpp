@@ -81,6 +81,7 @@ App::~App() noexcept
 
 void App::initLogger() noexcept
 {
+    // TODO(vis4rd): move logging initialization to engine
     namespace fs = std::filesystem;
     fs::create_directory("../logs");
 

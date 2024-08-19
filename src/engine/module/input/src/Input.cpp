@@ -1,40 +1,66 @@
 #include "../include/input/Input.hpp"
 
+#include "config/StaticConfiguration.hpp"
+
 namespace mono::input
 {
 
 bool isPressed(std::int32_t key)
 {
+    if constexpr(config::constant::debugMode)
+    {
+        priv::ensureGlfwIsInitialized();
+    }
     priv::updateKeyState(key);
     return priv::isKeyInState(key, KeyState::HOLD) or priv::isKeyInState(key, KeyState::PRESS_ONCE);
 }
 
 bool isPressedOnce(std::int32_t key)
 {
+    if constexpr(config::constant::debugMode)
+    {
+        priv::ensureGlfwIsInitialized();
+    }
     priv::updateKeyState(key);
     return priv::isKeyInState(key, KeyState::PRESS_ONCE);
 }
 
 bool isHeld(std::int32_t key)
 {
+    if constexpr(config::constant::debugMode)
+    {
+        priv::ensureGlfwIsInitialized();
+    }
     priv::updateKeyState(key);
     return priv::isKeyInState(key, KeyState::HOLD);
 }
 
 bool isReleased(std::int32_t key)
 {
+    if constexpr(config::constant::debugMode)
+    {
+        priv::ensureGlfwIsInitialized();
+    }
     priv::updateKeyState(key);
     return priv::isKeyInState(key, KeyState::RELEASE);
 }
 
 bool isIdle(std::int32_t key)
 {
+    if constexpr(config::constant::debugMode)
+    {
+        priv::ensureGlfwIsInitialized();
+    }
     priv::updateKeyState(key);
     return priv::isKeyInState(key, KeyState::IDLE);
 }
 
 void pollEvents()
 {
+    if constexpr(config::constant::debugMode)
+    {
+        priv::ensureGlfwIsInitialized();
+    }
     data::fakePressedEvents.fill(false);
     glfwPollEvents();
 }
@@ -110,6 +136,17 @@ void updateKeyState(std::int32_t key)
 bool isKeyInState(std::int32_t key, KeyState state)
 {
     return state == data::currentKeyStates.at(key);
+}
+
+void ensureGlfwIsInitialized()
+{
+    const auto glfw_ok = (glfwInit() == GLFW_TRUE);
+
+    if(not glfw_ok)
+    {
+        spdlog::critical("Input module used before GLFW initialization");
+        throw std::runtime_error("Input module used before GLFW initialization");
+    }
 }
 
 }  // namespace priv
