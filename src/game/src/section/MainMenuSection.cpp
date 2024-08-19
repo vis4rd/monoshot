@@ -1,6 +1,6 @@
 #include "../../include/section/MainMenuSection.hpp"
 
-#include <input/InputManager.hpp>
+#include <input/Input.hpp>
 #include <resource/ResourceManager.hpp>
 #include <section/SectionManager.hpp>
 
@@ -17,8 +17,7 @@ MainMenuSection::MainMenuSection()
 
 void MainMenuSection::update() noexcept
 {
-    auto& input = InputManager::get();
-    if(input.isPressedOnce(GLFW_KEY_ESCAPE))
+    if(mono::input::isPressedOnce(GLFW_KEY_ESCAPE))
     {
         SectionManager::get().popSection();
     }

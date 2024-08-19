@@ -1,0 +1,111 @@
+#include "../include/input/Input.hpp"
+
+namespace mono::input
+{
+
+bool isPressed(std::int32_t key)
+{
+    priv::updateKeyState(key);
+    return priv::isKeyInState(key, KeyState::HOLD) or priv::isKeyInState(key, KeyState::PRESS_ONCE);
+}
+
+bool isPressedOnce(std::int32_t key)
+{
+    priv::updateKeyState(key);
+    return priv::isKeyInState(key, KeyState::PRESS_ONCE);
+}
+
+bool isHeld(std::int32_t key)
+{
+    priv::updateKeyState(key);
+    return priv::isKeyInState(key, KeyState::HOLD);
+}
+
+bool isReleased(std::int32_t key)
+{
+    priv::updateKeyState(key);
+    return priv::isKeyInState(key, KeyState::RELEASE);
+}
+
+bool isIdle(std::int32_t key)
+{
+    priv::updateKeyState(key);
+    return priv::isKeyInState(key, KeyState::IDLE);
+}
+
+void pollEvents()
+{
+    glfwPollEvents();
+}
+
+namespace priv
+{
+
+bool isMouseKey(std::int32_t key)
+{
+    return key >= GLFW_MOUSE_BUTTON_1 and key <= GLFW_MOUSE_BUTTON_LAST;
+}
+
+void updateKeyState(std::int32_t key)
+{
+    auto* window = glfwGetCurrentContext();
+    const auto index = static_cast<std::size_t>(key);
+    auto& ps = data::previousKeyStates.at(index);
+    auto& cs = data::currentKeyStates.at(index);
+    std::int32_t glfw_state = 0;
+    if(priv::isMouseKey(key))
+    {
+        glfw_state = glfwGetMouseButton(window, key);
+    }
+    else
+    {
+        glfw_state = glfwGetKey(window, key);
+    }
+
+    switch(glfw_state)
+    {
+        case GLFW_PRESS:
+        {
+            if(ps == KeyState::IDLE || ps == KeyState::RELEASE)
+            {
+                cs = KeyState::PRESS_ONCE;
+            }
+            else if(ps == KeyState::PRESS_ONCE)
+            {
+                cs = KeyState::HOLD;
+            }
+            // if hold: hold
+            // if repeat: repeat
+            break;
+        }
+        case GLFW_RELEASE:
+        {
+            if(ps == KeyState::HOLD || ps == KeyState::PRESS_ONCE)
+            {
+                cs = KeyState::RELEASE;
+            }
+            else if(ps == KeyState::RELEASE)
+            {
+                cs = KeyState::IDLE;
+            }
+            // if idle: idle
+            break;
+        }
+        default:
+        {
+            spdlog::warn("Using unsupported key action");
+            break;
+        }
+    }
+
+    ps = cs;
+}
+
+bool isKeyInState(std::int32_t key, KeyState state)
+{
+    return state == data::currentKeyStates.at(key);
+}
+
+}  // namespace priv
+
+}  // namespace mono::input

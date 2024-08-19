@@ -1,6 +1,6 @@
 #include "../../include/section/SettingsSection.hpp"
 
-#include <input/InputManager.hpp>
+#include <input/Input.hpp>
 #include <resource/ResourceManager.hpp>
 #include <section/SectionManager.hpp>
 #include <ui/external/BeginCombo.hpp>
@@ -21,8 +21,7 @@ void SettingsSection::update() noexcept
     m_layout.update(main_viewport.WorkPos, main_viewport.WorkSize);
     m_navLayout.update(main_viewport.WorkPos, main_viewport.WorkSize);
 
-    auto& input = InputManager::get();
-    if(input.isPressedOnce(GLFW_KEY_ESCAPE))
+    if(mono::input::isPressedOnce(GLFW_KEY_ESCAPE))
     {
         SectionManager::get().popSection();
     }

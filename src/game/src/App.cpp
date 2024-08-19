@@ -16,7 +16,6 @@
 
 App::App(const std::string& window_title, uint32_t width, uint32_t height)
     : m_configLoader(mono::ConfigLoader::get())
-    , m_input(InputManager::get())
     , m_sectionManager(SectionManager::get())
 {
     spdlog::info("App version: {}", MONOSHOT_VERSION);

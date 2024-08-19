@@ -5,7 +5,7 @@
 #include <config/StaticConfiguration.hpp>
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
-#include <input/InputManager.hpp>
+#include <input/Input.hpp>
 #include <opengl/shader/ShaderManager.hpp>
 #include <opengl/target/RenderWindow.hpp>
 #include <renderer/Renderer.hpp>
@@ -43,7 +43,6 @@ class App final
     mono::ConfigLoader& m_configLoader;
     std::shared_ptr<mono::gl::RenderWindow> m_window;
     std::shared_ptr<Timer> m_timer;
-    InputManager& m_input;
     SectionManager& m_sectionManager;
 };
 
@@ -61,9 +60,8 @@ void App::update(UpdateableTrait auto&&... updateables) noexcept
         return;
     }
 
-    glfwPollEvents();
-    auto& input = InputManager::get();
-    if(input.isPressedOnce(GLFW_KEY_F11))
+    mono::input::pollEvents();
+    if(mono::input::isPressedOnce(GLFW_KEY_F11))
     {
         auto size = m_window->getSize();
         spdlog::debug("on F11: window size = {}x{}", size.x, size.y);
@@ -74,7 +72,7 @@ void App::update(UpdateableTrait auto&&... updateables) noexcept
     }
     if constexpr(mono::config::constant::debugMode)
     {
-        if(input.isPressedOnce(GLFW_KEY_APOSTROPHE))  // debugging purposes
+        if(mono::input::isPressedOnce(GLFW_KEY_APOSTROPHE))  // debugging purposes
         {
             static int break_count;
             spdlog::debug("======================= {} =========================", break_count++);
@@ -82,7 +80,7 @@ void App::update(UpdateableTrait auto&&... updateables) noexcept
     }
     if(m_sectionManager.size() == 1)
     {
-        if(input.isPressedOnce(GLFW_KEY_ESCAPE))
+        if(mono::input::isPressedOnce(GLFW_KEY_ESCAPE))
         {
             m_window->requestClose();
         }

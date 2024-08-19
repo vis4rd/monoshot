@@ -1,6 +1,6 @@
 #include "../../include/section/GameplaySection.hpp"
 
-#include <input/InputManager.hpp>
+#include <input/Input.hpp>
 #include <renderer/Renderer.hpp>
 #include <resource/ResourceManager.hpp>
 #include <section/SectionManager.hpp>
@@ -47,13 +47,12 @@ void GameplaySection::update() noexcept
     }
 
     // press escape to leave
-    auto& input = InputManager::get();
-    if(input.isPressedOnce(GLFW_KEY_ESCAPE))
+    if(mono::input::isPressedOnce(GLFW_KEY_ESCAPE))
     {
         SectionManager::get().popSection();
         return;
     }
-    if(input.isPressedOnce(GLFW_KEY_F10))
+    if(mono::input::isPressedOnce(GLFW_KEY_F10))
     {
         m_showDebugInfo = !m_showDebugInfo;
     }
@@ -64,10 +63,10 @@ void GameplaySection::update() noexcept
 
     // poll next move events
     glm::vec2 move_direction = {0.f, 0.f};
-    move_direction.x -= static_cast<float>(input.isHeld(GLFW_KEY_A) + input.isPressedOnce(GLFW_KEY_LEFT));
-    move_direction.x += static_cast<float>(input.isHeld(GLFW_KEY_D) + input.isPressedOnce(GLFW_KEY_RIGHT));
-    move_direction.y -= static_cast<float>(input.isHeld(GLFW_KEY_S) + input.isPressedOnce(GLFW_KEY_DOWN));
-    move_direction.y += static_cast<float>(input.isHeld(GLFW_KEY_W) + input.isPressedOnce(GLFW_KEY_UP));
+    move_direction.x -= static_cast<float>(mono::input::isHeld(GLFW_KEY_A) + mono::input::isPressedOnce(GLFW_KEY_LEFT));
+    move_direction.x += static_cast<float>(mono::input::isHeld(GLFW_KEY_D) + mono::input::isPressedOnce(GLFW_KEY_RIGHT));
+    move_direction.y -= static_cast<float>(mono::input::isHeld(GLFW_KEY_S) + mono::input::isPressedOnce(GLFW_KEY_DOWN));
+    move_direction.y += static_cast<float>(mono::input::isHeld(GLFW_KEY_W) + mono::input::isPressedOnce(GLFW_KEY_UP));
     {
         const bool does_move = static_cast<bool>((move_direction.x != 0.f) + (move_direction.y != 0.f));
         if(does_move)
@@ -83,7 +82,7 @@ void GameplaySection::update() noexcept
     // update inventory logic
     if(!m_hero.isInventoryEmpty())
     {
-        if(!ImGui::GetIO().WantCaptureMouse && input.isHeld(GLFW_MOUSE_BUTTON_LEFT))
+        if(!ImGui::GetIO().WantCaptureMouse && mono::input::isHeld(GLFW_MOUSE_BUTTON_LEFT))
         {
             auto& item = m_hero.getCurrentItem<Consumable>();
             if(const bool is_used = item.useDelayed(); m_hero.holdsWeapon() && is_used)
@@ -95,24 +94,24 @@ void GameplaySection::update() noexcept
                 }
             }
         }
-        if(m_hero.holdsWeapon() && input.isHeld(GLFW_KEY_R))
+        if(m_hero.holdsWeapon() && mono::input::isHeld(GLFW_KEY_R))
         {
             auto& weapon = m_hero.getCurrentItem<Weapon>();
             weapon.reload();
         }
-        if(input.isPressedOnce(GLFW_KEY_G))
+        if(mono::input::isPressedOnce(GLFW_KEY_G))
         {
             m_hero.dropCurrentItem();
         }
-        if(input.isPressedOnce(GLFW_KEY_1))
+        if(mono::input::isPressedOnce(GLFW_KEY_1))
         {
             m_hero.setCurrentItem(0);
         }
-        if(input.isPressedOnce(GLFW_KEY_2))
+        if(mono::input::isPressedOnce(GLFW_KEY_2))
         {
             m_hero.setCurrentItem(1);
         }
-        if(input.isPressedOnce(GLFW_KEY_3))
+        if(mono::input::isPressedOnce(GLFW_KEY_3))
         {
             m_hero.setCurrentItem(2);
         }

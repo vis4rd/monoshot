@@ -1,7 +1,7 @@
 #include "../../include/section/CreatorSection.hpp"
 
 #include <imgui/imgui.h>
-#include <input/InputManager.hpp>
+#include <input/Input.hpp>
 #include <renderer/Renderer.hpp>
 #include <resource/ResourceManager.hpp>
 #include <section/SectionManager.hpp>
@@ -49,47 +49,46 @@ CreatorSection::~CreatorSection()
 
 void CreatorSection::update() noexcept
 {
-    auto& input = InputManager::get();
     auto& pos = m_camera.getPosition();
     auto& delta_time = ResourceManager::timer->deltaTime();
     const double base_velocity = 1.f;
     const double velocity = base_velocity * delta_time * pos.z;
-    if(input.isPressedOnce(GLFW_KEY_ESCAPE))
+    if(mono::input::isPressedOnce(GLFW_KEY_ESCAPE))
     {
         spdlog::debug("Lets pop some sections");
         SectionManager::get().popSection();
     }
-    if(input.isHeld(GLFW_KEY_A))
+    if(mono::input::isHeld(GLFW_KEY_A))
     {
         m_camera.setPosition({pos.x - velocity, pos.y, pos.z});
         m_camera.setTarget({pos.x, pos.y, 0.f});
     }
-    if(input.isHeld(GLFW_KEY_D))
+    if(mono::input::isHeld(GLFW_KEY_D))
     {
         m_camera.setPosition({pos.x + velocity, pos.y, pos.z});
         m_camera.setTarget({pos.x, pos.y, 0.f});
     }
-    if(input.isHeld(GLFW_KEY_W))
+    if(mono::input::isHeld(GLFW_KEY_W))
     {
         m_camera.setPosition({pos.x, pos.y + velocity, pos.z});
         m_camera.setTarget({pos.x, pos.y, 0.f});
     }
-    if(input.isHeld(GLFW_KEY_S))
+    if(mono::input::isHeld(GLFW_KEY_S))
     {
         m_camera.setPosition({pos.x, pos.y - velocity, pos.z});
         m_camera.setTarget({pos.x, pos.y, 0.f});
     }
-    if(input.isPressedOnce(GLFW_KEY_B))
+    if(mono::input::isPressedOnce(GLFW_KEY_B))
     {
         m_selectedSolid = !m_selectedSolid;
     }
-    if(input.isPressedOnce(GLFW_KEY_R))
+    if(mono::input::isPressedOnce(GLFW_KEY_R))
     {
         m_randomizedRotation = std::fmod(
             (std::floor(m_randomizedRotation / 45.f) + 1.f) * 45.f,
             360.f);  // nudge rotation values to every 45 degrees
     }
-    if(input.isHeld(GLFW_KEY_DELETE))
+    if(mono::input::isHeld(GLFW_KEY_DELETE))
     {
         m_map.removeTile(m_mouseWorldPos.x, m_mouseWorldPos.y);
         m_map.removeObject(m_mouseWorldPos);
@@ -114,12 +113,13 @@ void CreatorSection::update() noexcept
             }
         }
     }
-    if(!ImGui::GetIO().WantCaptureMouse)
+    // TODO(vis4rd): Hide below condition in mono::input function, i.e. isMouseOverDebugUI()
+    if(not ImGui::GetIO().WantCaptureMouse)
     {
         if(m_selectedMapItem > ObjectID::FIRST_OBJECT
            && m_selectedMapItem < ObjectID::LAST_OBJECT)  // if the chosen object is a MapObject
         {
-            if(input.isPressedOnce(GLFW_MOUSE_BUTTON_LEFT))
+            if(mono::input::isPressedOnce(GLFW_MOUSE_BUTTON_LEFT))
             {
                 m_map.addObject(
                     m_mouseWorldPos,
@@ -132,7 +132,7 @@ void CreatorSection::update() noexcept
             m_selectedMapItem > BlockID::FIRST_BLOCK
             && m_selectedMapItem < BlockID::LAST_BLOCK)  // if its a Block
         {
-            if(input.isHeld(GLFW_MOUSE_BUTTON_LEFT))
+            if(mono::input::isHeld(GLFW_MOUSE_BUTTON_LEFT))
             {
                 m_map.setTile(
                     m_mouseWorldPos.x,
@@ -144,7 +144,7 @@ void CreatorSection::update() noexcept
         }
         else if(m_selectedMapItem == 10000)
         {
-            if(input.isPressedOnce(GLFW_MOUSE_BUTTON_LEFT))
+            if(mono::input::isPressedOnce(GLFW_MOUSE_BUTTON_LEFT))
             {
                 ecs::action::spawnEnemy(
                     m_entities,
@@ -160,19 +160,19 @@ void CreatorSection::update() noexcept
     }
     if(constexpr float sizeVel = 5.f; m_selectedMapItem == 9999)
     {
-        if(input.isHeld(GLFW_KEY_UP))
+        if(mono::input::isHeld(GLFW_KEY_UP))
         {
             m_endAreaSize.y += (static_cast<float>(delta_time) * sizeVel);
         }
-        if(input.isHeld(GLFW_KEY_DOWN))
+        if(mono::input::isHeld(GLFW_KEY_DOWN))
         {
             m_endAreaSize.y -= (static_cast<float>(delta_time) * sizeVel);
         }
-        if(input.isHeld(GLFW_KEY_RIGHT))
+        if(mono::input::isHeld(GLFW_KEY_RIGHT))
         {
             m_endAreaSize.x += (static_cast<float>(delta_time) * sizeVel);
         }
-        if(input.isHeld(GLFW_KEY_LEFT))
+        if(mono::input::isHeld(GLFW_KEY_LEFT))
         {
             m_endAreaSize.x -= (static_cast<float>(delta_time) * sizeVel);
         }
