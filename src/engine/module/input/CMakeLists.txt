@@ -14,7 +14,8 @@ target_compile_features(mono_module_input
 )
 
 target_sources(mono_module_input
-    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/Input.cpp"
+    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/FakeInput.cpp"
+            "${CMAKE_CURRENT_SOURCE_DIR}/src/Input.cpp"
 )
 
 target_include_directories(mono_module_input

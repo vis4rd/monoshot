@@ -35,6 +35,7 @@ bool isIdle(std::int32_t key)
 
 void pollEvents()
 {
+    data::fakePressedEvents.fill(false);
     glfwPollEvents();
 }
 
@@ -60,6 +61,11 @@ void updateKeyState(std::int32_t key)
     else
     {
         glfw_state = glfwGetKey(window, key);
+    }
+
+    if(data::fakePressedEvents.at(index))
+    {
+        glfw_state = GLFW_PRESS;
     }
 
     switch(glfw_state)
