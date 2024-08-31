@@ -3,12 +3,6 @@ include_guard()
 add_library(mono_module_time)
 add_library(mono::time ALIAS mono_module_time)
 
-if(DEBUG_MODE)
-    target_compile_definitions(mono_module_time
-        PRIVATE "DEBUG_MODE"
-    )
-endif()
-
 target_compile_features(mono_module_time
     PRIVATE "cxx_std_20"
 )

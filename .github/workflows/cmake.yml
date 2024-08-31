@@ -40,8 +40,14 @@ jobs:
       id: restore-cache
       with:
         path: ${{ steps.env.outputs.build-output-dir }}
-        key: ${{ runner.os }}-build-${{ matrix.c_compiler }}-${{ matrix.cpp_compiler }}-${{ matrix.build_type }}-${{ hashFiles('src/**/*.cpp', 'src/**/*.hpp') }}
+        key: ${{ runner.os }}-build-${{ matrix.c_compiler }}-${{ matrix.cpp_compiler }}-${{ matrix.build_type }}-${{ hashFiles('src/engine/module/**/*', 'src/game/**/*') }}
         restore-keys: ${{ runner.os }}-build-${{ matrix.c_compiler }}-${{ matrix.cpp_compiler }}-${{ matrix.build_type }}-
+
+    - name: Configure ccache
+      run: |
+        export CCACHE_DIR=${{ steps.env.outputs.ccache-output-dir }}
+        echo "CCACHE_DIR=$CCACHE_DIR" >> $GITHUB_ENV
+        ccache --max-size=10M --zero-stats
 
     - name: Configure CMake
       working-directory: ${{ steps.env.outputs.build-output-dir }}
@@ -50,13 +56,21 @@ jobs:
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+        -DCMAKE_C_COMPILER_LAUNCHER=ccache
         ..
 
     - name: Build
       # Build your program with the given configuration. Note that --config is needed because the
       # default Windows generator is a multi-config generator (Visual Studio generator).
       working-directory: ${{ steps.env.outputs.build-output-dir }}
-      run: cmake --build . --config ${{ matrix.build_type }}
+      run: cmake --build . --config ${{ matrix.build_type }} --parallel
+
+    - name: Show ccache statistics
+      run: |
+        ccache --show-stats --verbose
+        du -sh $CCACHE_DIR
+        ccache --zero-stats  # Statistics are not necessary in cache artifact
 
     - name: Cache build directory
       uses: actions/cache/save@v3
