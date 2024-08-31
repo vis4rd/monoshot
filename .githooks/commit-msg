@@ -18,19 +18,27 @@ function get_repo_root_path() {
 function check_gitmoji() {
     local commit_msg=$1
     local repository_root_path=$(get_repo_root_path)
-    local gitmoji_list_file="$repository_root_path/.githooks/.gitmoji_list.txt"
 
-    mapfile -t gitmoji_list < "$gitmoji_list_file"
+    # Create temporary files to store the Gitmoji list
+    local gitmoji_spec=$(mktemp)
+    trap 'rm -f "$gitmoji_spec"' EXIT
+    local gitmoji_list_file=$(mktemp)
+    trap 'rm -f "$gitmoji_list_file"' EXIT
 
-    for emoji in "${gitmoji_list[@]}"; do
-        emoji=${emoji//:/}
-        if [[ "$commit_msg" == *"$emoji"* ]]; then
-            exit 0
-        fi
-    done
 
-    print_error "Commit message must start with a gitmoji followed by whitespace."
-    exit 1
+    # Download the Gitmoji list into the temporary file
+    curl -s https://gitmoji.dev/api/gitmojis > "$gitmoji_spec"
+    cat "$gitmoji_spec" \
+    | sed -E 's/,/,\n/g' \
+    | grep -E '"emoji":|"code":' \
+    | sed -E 's/.*:\"(.+)\",$/\1/' > "$gitmoji_list_file"
+
+    $repository_root_path/.scripts/ensure_commit_starts_with_gitmoji.sh "$commit_msg" "$gitmoji_list_file"
+
+    if [[ $? -ne 0 ]]; then
+        print_error "Commit message must start with a gitmoji followed by whitespace: '$commit_msg'"
+        exit 1
+    fi
 }
 
 # CHECK EXECUTION
