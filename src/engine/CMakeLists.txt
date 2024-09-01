@@ -5,7 +5,7 @@ project(MONOENGINE LANGUAGES CXX C)
 if(CMAKE_BUILD_TYPE EQUAL "")
     set(CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)
 endif()
-string(COMPARE EQUAL ${CMAKE_BUILD_TYPE} "Debug" DEBUG_MODE)
+string(COMPARE EQUAL "${CMAKE_BUILD_TYPE}" "Debug" DEBUG_MODE)
 
 option(MOLD_LINKER_PATH "Path to the mold linker executable (Unix only)" "")
 
