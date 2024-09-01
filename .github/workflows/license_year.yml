@@ -1,0 +1,40 @@
+name: Update License Year
+
+on:
+  schedule:
+    - cron: '20 0 1 1 *' # Runs at 01-01-20xx 00:20:00 UTC
+  workflow_dispatch: # Allows manual triggering of the workflow
+
+jobs:
+  update-license-year:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Git
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+    - name: Update license year
+      id: update-license-year
+      run: |
+        license_script="${{ github.workspace }}/scripts/update_license_year.sh"
+        chmod +x $license_script
+        $license_script
+        echo "year=$(date +'%Y')" >> $GITHUB_OUTPUT
+      continue-on-error: true
+
+    - name: Create Pull Request
+      if: ${{ steps.update-license-year.outcome == 'success' }}
+      uses: peter-evans/create-pull-request@v5
+      with:
+        commit-message: "Update license year to ${{ steps.update-license-year.outputs.year }}"
+        branch: update-license-year-${{ steps.update-license-year.outputs.year }}
+        title: "Update license year to ${{ steps.update-license-year.outputs.year }}"
+        labels: automated
+        assignees: vis4rd
+        add-paths: ${{ github.workspace }}/LICENSE.md
+        base: dev
