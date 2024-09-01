@@ -2,21 +2,19 @@
 
 #include <filesystem>
 
+#include <config/Config.hpp>
 #include <cstring/cstring.hpp>
 #include <opengl/texture/Texture.hpp>
 #include <renderer/pass/ImmediateLineRenderPass.hpp>
 #include <renderer/pass/ImmediateQuadRenderPass.hpp>
 #include <resource/Resource.hpp>
 #include <resource/ResourceManager.hpp>
-#include <spdlog/sinks/basic_file_sink.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
 #include <ui/Font.hpp>
 
 #include "../include/section/MainMenuSection.hpp"
 
 App::App(const std::string& window_title, uint32_t width, uint32_t height)
-    : m_configLoader(mono::ConfigLoader::get())
-    , m_sectionManager(SectionManager::get())
+    : m_sectionManager(SectionManager::get())
 {
     spdlog::info("App version: {}", MONOSHOT_VERSION);
 
@@ -77,54 +75,6 @@ App::~App() noexcept
     this->destroyFonts();
     this->destroyTextures();
     ResourceManager::window.reset();
-}
-
-void App::initLogger() noexcept
-{
-    // TODO(vis4rd): move logging initialization to engine
-    namespace fs = std::filesystem;
-    fs::create_directory("../logs");
-
-    constexpr mono::cstring info_pattern{"[%Y-%m-%d %T.%e][%^%l%$] %v"};
-    constexpr mono::cstring debug_pattern{"[%Y-%m-%d %T.%e][%^%l%$][thread %t][%s:%#] %v"};
-    spdlog::level log_level{spdlog::level::info};
-    std::string log_pattern{info_pattern};
-
-    if constexpr(mono::config::constant::debugMode)
-    {
-        log_level = spdlog::level::debug;
-        log_pattern = debug_pattern;
-    }
-
-    auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-    console_sink->set_pattern(log_pattern);
-    console_sink->set_level(log_level);
-
-    std::string file_name = std::format("../logs/{}", std::chrono::system_clock::now());
-    file_name.replace(file_name.find(' '), 1, "_");
-    file_name.replace(file_name.find(':'), 1, "-");
-    file_name.replace(file_name.find(':'), 1, "-");
-    file_name = file_name.substr(0, file_name.rfind('.'));
-    if constexpr(mono::config::constant::debugMode)
-    {
-        file_name += "_debug";
-    }
-    file_name += ".log";
-
-    {
-        // create a file
-        std::fstream file{file_name};
-    }
-
-    auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(file_name, true);
-    file_sink->set_pattern(log_pattern);
-    file_sink->set_level(log_level);
-
-    spdlog::logger multisink_logger("logger", {console_sink, file_sink});
-    multisink_logger.set_level(log_level);
-
-    spdlog::set_default_logger(std::make_shared<spdlog::logger>(multisink_logger));
-    spdlog::debug("Logging initialized");
 }
 
 void App::initTextures() noexcept

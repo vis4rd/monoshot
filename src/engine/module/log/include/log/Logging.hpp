@@ -39,4 +39,6 @@ void setGlObjectLabel(
     glObjectLabel(identifier, object, static_cast<GLsizei>(label_str.size()), label_str.data());
 }
 
+void initialize();
+
 }  // namespace mono::log

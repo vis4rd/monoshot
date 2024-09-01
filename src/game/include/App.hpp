@@ -1,8 +1,7 @@
 #pragma once
 
 #include <GLFW/glfw3.h>
-#include <config/ConfigLoader.hpp>
-#include <config/StaticConfiguration.hpp>
+#include <config/Config.hpp>
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
 #include <input/Input.hpp>
@@ -26,7 +25,6 @@ class App final
     App& operator=(const App&) = delete;
     App& operator=(App&&) = delete;
 
-    static void initLogger() noexcept;
     void initTextures() noexcept;
     void initFonts() noexcept;
 
@@ -40,7 +38,6 @@ class App final
     void destroyFonts() noexcept;
 
     private:
-    mono::ConfigLoader& m_configLoader;
     std::shared_ptr<mono::gl::RenderWindow> m_window;
     std::shared_ptr<Timer> m_timer;
     SectionManager& m_sectionManager;
