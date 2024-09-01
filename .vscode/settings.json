@@ -65,7 +65,6 @@
     "git.ignoreSubmodules": true,
     "git.suggestSmartCommit": false,
     //
-    "gitmoji.outputType": "code",
     "gitmoji.showEmojiCode": true,
     //
     "search.exclude": {
