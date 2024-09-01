@@ -4,6 +4,7 @@ on:
   pull_request:
     branches: [ "dev" ]
     paths: [ "src/**" ]
+    types: [ opened, synchronize, reopened, ready_for_review ]
 
 jobs:
   build:
@@ -34,6 +35,14 @@ jobs:
       id: env
       uses: ./.github/actions/prepare_env
 
+    - name: Load cache build directory
+      uses: actions/cache/restore@v3
+      id: restore-cache
+      with:
+        path: ${{ steps.env.outputs.build-output-dir }}
+        key: ${{ runner.os }}-build-${{ matrix.c_compiler }}-${{ matrix.cpp_compiler }}-${{ matrix.build_type }}-${{ hashFiles('src/**/*.cpp', 'src/**/*.hpp') }}
+        restore-keys: ${{ runner.os }}-build-${{ matrix.c_compiler }}-${{ matrix.cpp_compiler }}-${{ matrix.build_type }}-
+
     - name: Configure CMake
       working-directory: ${{ steps.env.outputs.build-output-dir }}
       run: >
@@ -48,6 +57,12 @@ jobs:
       # default Windows generator is a multi-config generator (Visual Studio generator).
       working-directory: ${{ steps.env.outputs.build-output-dir }}
       run: cmake --build . --config ${{ matrix.build_type }}
+
+    - name: Cache build directory
+      uses: actions/cache/save@v3
+      with:
+        path: ${{ steps.env.outputs.build-output-dir }}
+        key: ${{ steps.restore-cache.outputs.cache-primary-key }}
 
     # - name: Test
     #   working-directory: ${{ steps.env.outputs.build-output-dir }}
