@@ -5,7 +5,7 @@
 #include <imgui/imgui.h>
 #include <spdlog/spdlog.h>
 
-#include "config/StaticConfiguration.hpp"
+#include "config/Config.hpp"
 #include "log/Logging.hpp"
 #include "opengl/shader/ShaderManager.hpp"
 

@@ -24,4 +24,6 @@ target_include_directories(mono_module_log
 target_link_libraries(mono_module_log
     PUBLIC spdlog::spdlog
            glad
+           mono::cstring
+           mono::config
 )

@@ -9,7 +9,7 @@ target_compile_features(mono_module_config
 
 target_sources(mono_module_config
     PRIVATE
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/ConfigLoader.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/Config.cpp"
 )
 
 target_include_directories(mono_module_config
