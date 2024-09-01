@@ -58,7 +58,6 @@ jobs:
           clang-format --version
 
       - name: Get files in pull request
-        id: get-files
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
@@ -68,7 +67,6 @@ jobs:
             | jq -r '.[] | select(.status != "removed") | .filename' > pr_files.txt
 
       - name: List files to format
-        id: file-search
         shell: bash
         run: |
           echo "All files changed in this pull request:"
@@ -86,3 +84,105 @@ jobs:
           if [ $? -eq 0 ]; then echo "Code formatting check passed."; exit 0;
           else echo "Code formatting check failed."; exit 1;
           fi
+
+  clang-tidy:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Load cache build directory
+        uses: actions/cache/restore@v4
+        id: restore-cache
+        with:
+          path: ${{ github.workspace }}/build
+          key: ubuntu-24.04-build-gcc-g++-Release-${{ hashFiles('src/engine/module/**/*', 'src/game/**/*') }}
+          restore-keys: ubuntu-24.04-build-gcc-g++-Release-
+
+      - name: Check if compile_commands.json file exists (after cache load)
+        id: check-compile-commands-after-cache
+        run: |
+          if [ -z "$(ls -A ${{ github.workspace }}/build/compile_commands.json 2> /dev/null)" ]; then
+            echo "compile_commands.json file does not exist."
+            exit 1
+          else
+            echo "compile_commands.json file exists!"
+            exit 0
+          fi
+        continue-on-error: true
+
+      - name: (Fallback) Prepare environment
+        if: ${{ steps.check-compile-commands-after-cache.outcome == 'failure' && github.event.pull_request.draft == false }}
+        uses: ./.github/actions/prepare_env
+        id: env
+
+      - name: (Fallback) Configure CMake project for clang-tidy
+        if: steps.env.conclusion != 'skipped'
+        shell: bash
+        working-directory: ${{ steps.env.outputs.build-output-dir }}
+        run: |
+          cmake \
+            -DCMAKE_CXX_COMPILER=g++ \
+            -DCMAKE_C_COMPILER=gcc \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+            ..
+
+          # Check if compile_commands.json was generated
+          ok=$([ -z "$(ls -A ${{ steps.env.outputs.build-output-dir }}/compile_commands.json 2> /dev/null)" ] && echo 1 || echo 0)
+          if [ $ok -eq 0 ]; then echo "compile_commands.json file has been generated.";
+          else echo "Could not generate compile_commands.json file.";
+          fi
+
+          exit $ok
+
+      - name: Check if compile_commands.json file exists (after CMake)
+        id: check-compile-commands
+        run: |
+          if [ -z "$(ls -A ${{ github.workspace }}/build/compile_commands.json 2> /dev/null)" ]; then
+            echo "compile_commands.json file does not exist. All subsequent steps will be skipped."
+            exit 1
+          else
+            echo "compile_commands.json file exists!"
+            exit 0
+          fi
+        continue-on-error: true
+
+      - name: Install clang-tidy
+        if: ${{ steps.check-compile-commands.outcome == 'success' }}
+        shell: bash
+        run: |
+          sudo apt update
+          sudo apt install -y clang-tidy
+          clang-tidy --version
+
+      - name: Get files in pull request
+        if: ${{ steps.check-compile-commands.outcome == 'success' }}
+        id: get-files
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" \
+            | jq -r '.[] | select(.status != "removed") | .filename' > pr_files.txt
+
+      - name: List files to check with clang-tidy
+        if: ${{ steps.check-compile-commands.outcome == 'success' }}
+        shell: bash
+        run: |
+          echo "All files changed in this pull request:"
+          cat pr_files.txt
+          grep -E '.*\.(hpp|cpp|inl|c|h)' pr_files.txt > files.txt
+
+          echo "Files selected for clang-tidy check:"
+          cat files.txt
+
+      - name: Run clang-tidy
+        if: ${{ steps.check-compile-commands.outcome == 'success' }}
+        shell: bash
+        run: |
+          cat files.txt | xargs clang-tidy --quiet --config-file=.clang-tidy --extra-arg=--std=c++20 -p=${{ github.workspace }}/build
