@@ -39,3 +39,50 @@ jobs:
 
         # Check each commit message
         $gitmoji_script commit_messages.txt gitmojis.txt
+
+
+  format:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Install clang-format
+        shell: bash
+        run: |
+          sudo apt update
+          sudo apt install -y clang-format
+          clang-format --version
+
+      - name: Get files in pull request
+        id: get-files
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" \
+            | jq -r '.[] | select(.status != "removed") | .filename' > pr_files.txt
+
+      - name: List files to format
+        id: file-search
+        shell: bash
+        run: |
+          echo "All files changed in this pull request:"
+          cat pr_files.txt
+          grep -E '.*\.(hpp|cpp|inl|c|h)' pr_files.txt > files.txt
+
+          echo "Files selected for formatting check:"
+          cat files.txt
+
+      - name: Check code formatting
+        shell: bash
+        run: |
+          cat files.txt | xargs clang-format --dry-run --Werror
+
+          if [ $? -eq 0 ]; then echo "Code formatting check passed."; exit 0;
+          else echo "Code formatting check failed."; exit 1;
+          fi
