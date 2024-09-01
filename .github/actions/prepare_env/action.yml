@@ -1,0 +1,37 @@
+name: Prepare environment
+description: Install build dependencies
+
+outputs:
+  build-output-dir:
+    description: The directory where the build output will be stored
+    value: ${{ steps.constant.outputs.build-output-dir }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout submodules
+      # Checkout has to be done manually because the `actions/checkout` action does not support
+      # submodules from outside GitHub, apparently.
+      shell: bash
+      run: |
+        git submodule init
+        git submodule update --recursive
+
+    - name: Set constant variables
+      # Set constant variables as step outputs. These step outputs can be used throughout the
+      # workflow file.
+      id: constant
+      shell: bash
+      run: |
+        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+
+    - name: Create build directory
+      shell: bash
+      run: |
+        mkdir ${{ steps.constant.outputs.build-output-dir }}
+
+    - name: Install build dependencies
+      shell: bash
+      run: |
+        sudo apt update
+        sudo apt install -y libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libgl-dev

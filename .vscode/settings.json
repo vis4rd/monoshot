@@ -72,6 +72,10 @@
         "**/engine/lib/**": true,
     },
     //
+    "yaml.schemas": {
+        "https://json.schemastore.org/github-action": ".github/actions/**/*.yml",
+    },
+    //
     "[cpp]": {
         "editor.defaultFormatter": "ms-vscode.cpptools",
         "editor.formatOnSave": true,
@@ -93,5 +97,11 @@
     "[yaml]": {
         "editor.formatOnSave": true,
         "files.insertFinalNewline": true,
-    }
+    },
+    "[github-actions-workflow]": {
+        "editor.defaultFormatter": "github.vscode-github-actions",
+        "editor.formatOnSave": true,
+        "editor.tabSize": 2,
+        "files.insertFinalNewline": true,
+    },
 }
