@@ -5,6 +5,7 @@
 
 #include <spdlog/spdlog.h>
 
+#include "config/StaticConfiguration.hpp"
 #include "priv/InputData.hpp"
 
 namespace mono::input
@@ -16,6 +17,7 @@ bool isHeld(std::int32_t key);
 bool isReleased(std::int32_t key);
 // bool isRepeated(std::int32_t key);
 bool isIdle(std::int32_t key);
+bool arePressed(std::same_as<std::int32_t> auto... keys);
 void pollEvents();
 
 namespace priv
@@ -29,3 +31,5 @@ void ensureGlfwIsInitialized();
 }  // namespace priv
 
 }  // namespace mono::input
+
+#include "../../src/Input.inl"

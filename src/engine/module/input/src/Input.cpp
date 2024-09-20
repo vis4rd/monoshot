@@ -1,7 +1,5 @@
 #include "../include/input/Input.hpp"
 
-#include "config/StaticConfiguration.hpp"
-
 namespace mono::input
 {
 
