@@ -113,8 +113,7 @@ void CreatorSection::update() noexcept
             }
         }
     }
-    // TODO(vis4rd): Hide below condition in mono::input function, i.e. isMouseOverDebugUI()
-    if(not ImGui::GetIO().WantCaptureMouse)
+    if(not mono::input::isMouseOverDebugUI())
     {
         if(m_selectedMapItem > ObjectID::FIRST_OBJECT
            && m_selectedMapItem < ObjectID::LAST_OBJECT)  // if the chosen object is a MapObject

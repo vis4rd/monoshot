@@ -19,6 +19,7 @@ bool isReleased(std::int32_t key);
 bool isIdle(std::int32_t key);
 bool arePressed(std::same_as<std::int32_t> auto... keys);
 void pollEvents();
+bool isMouseOverDebugUI();
 
 namespace priv
 {

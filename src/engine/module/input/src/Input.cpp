@@ -1,5 +1,7 @@
 #include "../include/input/Input.hpp"
 
+#include <imgui/imgui.h>
+
 namespace mono::input
 {
 
@@ -61,6 +63,11 @@ void pollEvents()
     }
     data::fakePressedEvents.fill(false);
     glfwPollEvents();
+}
+
+bool isMouseOverDebugUI()
+{
+    return ImGui::GetIO().WantCaptureMouse;
 }
 
 namespace priv

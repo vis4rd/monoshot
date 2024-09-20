@@ -82,7 +82,7 @@ void GameplaySection::update() noexcept
     // update inventory logic
     if(!m_hero.isInventoryEmpty())
     {
-        if(!ImGui::GetIO().WantCaptureMouse && mono::input::isHeld(GLFW_MOUSE_BUTTON_LEFT))
+        if(not mono::input::isMouseOverDebugUI() and mono::input::isHeld(GLFW_MOUSE_BUTTON_LEFT))
         {
             auto& item = m_hero.getCurrentItem<Consumable>();
             if(const bool is_used = item.useDelayed(); m_hero.holdsWeapon() && is_used)
