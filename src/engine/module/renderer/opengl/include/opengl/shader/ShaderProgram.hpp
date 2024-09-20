@@ -41,7 +41,6 @@ class ShaderProgram
 
     private:
     std::uint32_t m_id{};
-    std::unordered_map<std::string, int> m_varLocations{};
 };
 
 namespace helper
@@ -56,11 +55,7 @@ void ShaderProgram::uploadUniform(
 {
     if(location < 0)
     {
-        if(not m_varLocations.contains(var_name))
-        {
-            m_varLocations[var_name] = glGetUniformLocation(m_id, var_name.c_str());
-        }
-        location = m_varLocations[var_name];
+        location = glGetUniformLocation(m_id, var_name.c_str());
     }
 
     helper::uploadUniform(var, location);

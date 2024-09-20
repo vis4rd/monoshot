@@ -9,7 +9,6 @@ namespace mono::gl
 
 ShaderProgram::ShaderProgram(const Shader& frag, const Shader& vert)
     : m_id{glCreateProgram()}
-    , m_varLocations{}
 {
     log::setGlObjectLabel(GL_PROGRAM, m_id, "ShaderProgram::Frag+Vert#{}", m_id);
     spdlog::debug(
@@ -35,7 +34,6 @@ ShaderProgram::ShaderProgram(const Shader& frag, const Shader& vert)
 
 ShaderProgram::ShaderProgram(const Shader& compute)
     : m_id{glCreateProgram()}
-    , m_varLocations{}
 {
     log::setGlObjectLabel(GL_PROGRAM, m_id, "ShaderProgram::Comp#{}", m_id);
     spdlog::debug(
@@ -58,14 +56,11 @@ ShaderProgram::ShaderProgram(const Shader& compute)
 
 ShaderProgram::ShaderProgram(ShaderProgram&& move) noexcept
     : m_id(move.m_id)
-    // copying instead of moving to prevent segfault by std::unordered_map bug
-    , m_varLocations(move.m_varLocations)  // NOLINT(performance-move-constructor-init)
 { }
 
 ShaderProgram& ShaderProgram::operator=(ShaderProgram&& move) noexcept
 {
     m_id = move.m_id;
-    m_varLocations = move.m_varLocations;
     return *this;
 }
 
