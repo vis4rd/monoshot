@@ -9,7 +9,7 @@ gitmoji_list_file=$2
 # Check each commit message
 is_ok=true
 while IFS= read -r commit; do
-    .scripts/ensure_commit_starts_with_gitmoji.sh "$commit" "$gitmoji_list_file"
+    scripts/ensure_commit_starts_with_gitmoji.sh "$commit" "$gitmoji_list_file"
     if [[ $? -eq 1 ]]; then
         is_ok=false
         break

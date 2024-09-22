@@ -31,11 +31,11 @@ jobs:
     - name: Check if commit messages start with a gitmoji
       shell: bash
       run: |
-        gitmoji_script="${{ github.workspace }}/.github/scripts/ensure_all_commits_start_with_gitmoji.sh"
+        gitmoji_script="${{ github.workspace }}/scripts/ensure_all_commits_start_with_gitmoji.sh"
 
         # Set executable permissions on the scripts
         chmod +x $gitmoji_script
-        chmod +x ${{ github.workspace }}/.scripts/ensure_commit_starts_with_gitmoji.sh
+        chmod +x ${{ github.workspace }}/scripts/ensure_commit_starts_with_gitmoji.sh
 
         # Check each commit message
         $gitmoji_script commit_messages.txt gitmojis.txt
