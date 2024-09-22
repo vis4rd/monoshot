@@ -33,7 +33,7 @@ function check_gitmoji() {
     | grep -E '"emoji":|"code":' \
     | sed -E 's/.*:\"(.+)\",$/\1/' > "$gitmoji_list_file"
 
-    $repository_root_path/.scripts/ensure_commit_starts_with_gitmoji.sh "$commit_msg" "$gitmoji_list_file"
+    $repository_root_path/scripts/ensure_commit_starts_with_gitmoji.sh "$commit_msg" "$gitmoji_list_file"
 
     if [[ $? -ne 0 ]]; then
         print_error "Commit message must start with a gitmoji followed by whitespace: '$commit_msg'"
