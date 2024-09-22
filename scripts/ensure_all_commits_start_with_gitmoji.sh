@@ -9,6 +9,7 @@ gitmoji_list_file=$2
 # Check each commit message
 is_ok=true
 while IFS= read -r commit; do
+    echo "Checking commit message: '$commit'"
     scripts/ensure_commit_starts_with_gitmoji.sh "$commit" "$gitmoji_list_file"
     if [[ $? -eq 1 ]]; then
         is_ok=false
@@ -19,4 +20,7 @@ done < "$commit_messages_file"
 if [[ $is_ok == false ]]; then
     echo "Commit message does not start with a Gitmoji: '$commit'"
     exit 1
+else
+    echo "All commit messages start with a Gitmoji! :)"
+    exit 0
 fi
