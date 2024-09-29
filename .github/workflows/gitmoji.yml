@@ -1,0 +1,41 @@
+name: Gitmoji
+
+on:
+  pull_request:
+
+jobs:
+  gitmoji:
+    runs-on: ubuntu-24.04
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: false
+
+    - name: Get commits from pull request
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        curl -s -H "Authorization: token $GITHUB_TOKEN" \
+          "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/commits" \
+          | jq -r '.[].commit.message' > commit_messages.txt
+
+    - name: Get all gitmoji's
+      shell: bash
+      run: |
+        curl -s https://gitmoji.dev/api/gitmojis > gitmoji_spec.json
+        cat gitmoji_spec.json | jq '.gitmojis[] | .emoji, .code' > gitmojis.txt
+
+    - name: Check if commit messages start with a gitmoji
+      shell: bash
+      run: |
+        gitmoji_script="${{ github.workspace }}/scripts/ensure_all_commits_start_with_gitmoji.sh"
+
+        # Set executable permissions on the scripts
+        chmod +x $gitmoji_script
+        chmod +x ${{ github.workspace }}/scripts/ensure_commit_starts_with_gitmoji.sh
+
+        # Check each commit message
+        $gitmoji_script commit_messages.txt gitmojis.txt
