@@ -28,7 +28,7 @@ class ShaderManager
     ShaderManager() = default;
 
     private:
-    std::map<std::string, ShaderProgram> m_shaderMap;
+    std::map<std::string, ShaderProgram> m_shaderMap{};
 };
 
 }  // namespace mono::gl
