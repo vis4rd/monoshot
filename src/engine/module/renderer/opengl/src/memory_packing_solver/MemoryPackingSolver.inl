@@ -133,8 +133,7 @@ constexpr void MemoryPackingSolver::setRange(
         return;
     }
 
-    for(std::int64_t i = static_cast<std::int64_t>(start_index);
-        i <= static_cast<std::int64_t>(end_index);
+    for(auto i = static_cast<std::int64_t>(start_index); i <= static_cast<std::int64_t>(end_index);
         ++i)
     {
         m_memoryBlock.at(i) = value;
@@ -237,17 +236,17 @@ constexpr std::vector<MemoryOperation> MemoryPackingSolver::computePackingOperat
         }
         return {
             CopyRangeOperation{
-                               static_cast<std::uint32_t>(last_range.end - moved_size + 1),
-                               static_cast<std::uint32_t>(last_range.end),
-                               0u},
+                               .startIndex = static_cast<std::uint32_t>(last_range.end - moved_size + 1),
+                               .endIndex = static_cast<std::uint32_t>(last_range.end),
+                               .destinationIndex = 0u},
             InvalidateRangeOperation{
-                               static_cast<std::uint32_t>(invalidation_start),
-                               static_cast<std::uint32_t>(last_range.end)},
+                               .startIndex = static_cast<std::uint32_t>(invalidation_start),
+                               .endIndex = static_cast<std::uint32_t>(last_range.end)},
         };
     }
 
     // sort the vector of ranges
-    std::sort(m_setRanges.begin(), m_setRanges.end(), [](const auto& lhs, const auto& rhs) {
+    std::ranges::sort(m_setRanges, [](const auto& lhs, const auto& rhs) {
         return lhs.start < rhs.start;
     });
 
@@ -259,11 +258,13 @@ constexpr std::vector<MemoryOperation> MemoryPackingSolver::computePackingOperat
             // calculate what range has to be filled in
             if(set_ranges_copy.front().start > 0u)
             {
-                return {0u, set_ranges_copy.front().start - 1};
+                return {.start = 0u, .end = set_ranges_copy.front().start - 1};
             }
             else
             {
-                return {set_ranges_copy.front().end + 1, set_ranges_copy[1].start - 1};
+                return {
+                    .start = set_ranges_copy.front().end + 1,
+                    .end = set_ranges_copy[1].start - 1};
             }
         }();
 
@@ -273,13 +274,13 @@ constexpr std::vector<MemoryOperation> MemoryPackingSolver::computePackingOperat
         if(unset_range_size > last_set_range_size)
         {
             // move the last set range to the unset range
-            operations.push_back(CopyRangeOperation{
-                static_cast<std::uint32_t>(last_set_range.start),
-                static_cast<std::uint32_t>(last_set_range.end),
-                static_cast<std::uint32_t>(unset_range.start)});
-            operations.push_back(InvalidateRangeOperation{
-                static_cast<std::uint32_t>(last_set_range.start),
-                static_cast<std::uint32_t>(last_set_range.end)});
+            operations.emplace_back(CopyRangeOperation{
+                .startIndex = static_cast<std::uint32_t>(last_set_range.start),
+                .endIndex = static_cast<std::uint32_t>(last_set_range.end),
+                .destinationIndex = static_cast<std::uint32_t>(unset_range.start)});
+            operations.emplace_back(InvalidateRangeOperation{
+                .startIndex = static_cast<std::uint32_t>(last_set_range.start),
+                .endIndex = static_cast<std::uint32_t>(last_set_range.end)});
             set_ranges_copy.pop_back();
 
             if(set_ranges_copy.front().start > 0u)
@@ -296,13 +297,13 @@ constexpr std::vector<MemoryOperation> MemoryPackingSolver::computePackingOperat
         else
         {
             // move only a part of the last set range to the unset range
-            operations.push_back(CopyRangeOperation{
-                static_cast<std::uint32_t>(last_set_range.end - unset_range_size + 1),
-                static_cast<std::uint32_t>(last_set_range.end),
-                static_cast<std::uint32_t>(unset_range.start)});
-            operations.push_back(InvalidateRangeOperation{
-                static_cast<std::uint32_t>(last_set_range.end - unset_range_size + 1),
-                static_cast<std::uint32_t>(last_set_range.end)});
+            operations.emplace_back(CopyRangeOperation{
+                .startIndex = static_cast<std::uint32_t>(last_set_range.end - unset_range_size + 1),
+                .endIndex = static_cast<std::uint32_t>(last_set_range.end),
+                .destinationIndex = static_cast<std::uint32_t>(unset_range.start)});
+            operations.emplace_back(InvalidateRangeOperation{
+                .startIndex = static_cast<std::uint32_t>(last_set_range.end - unset_range_size + 1),
+                .endIndex = static_cast<std::uint32_t>(last_set_range.end)});
             last_set_range.end -= unset_range_size;
 
             if(set_ranges_copy.front().start > 0u)
@@ -367,7 +368,7 @@ constexpr void MemoryPackingSolver::calculateFirstSetIndex(std::size_t search_st
 
 constexpr void MemoryPackingSolver::calculateLastSetIndex()
 {
-    const auto last_set_iter = std::find(m_memoryBlock.rbegin(), m_memoryBlock.rend(), 1u);
+    const auto last_set_iter = std::ranges::find(std::ranges::reverse_view{m_memoryBlock}, 1u);
     if(last_set_iter == m_memoryBlock.rend())
     {
         m_lastSetIndex = -1;

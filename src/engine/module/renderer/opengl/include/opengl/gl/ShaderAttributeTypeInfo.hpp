@@ -9,11 +9,11 @@ namespace mono::gl
 
 struct ShaderAttributeTypeInfo
 {
-    std::size_t componentCount;
-    std::size_t glType;
-    GLint valuesPerVertex;
-    std::size_t bytesize;
-    std::size_t sizeofNativeType;
+    std::size_t componentCount{};
+    std::size_t glType{};
+    GLint valuesPerVertex{};
+    std::size_t bytesize{};
+    std::size_t sizeofNativeType{};
 };
 
 

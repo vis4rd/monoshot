@@ -29,7 +29,7 @@ class RenderWindow final : public RenderTarget
     RenderWindow(GLsizei width, GLsizei height, std::string_view title);
     RenderWindow(const RenderWindow& copy) = delete;
     RenderWindow(RenderWindow&& move) = default;
-    ~RenderWindow();
+    ~RenderWindow() override;
 
     RenderWindow& operator=(const RenderWindow& copy) = delete;
     RenderWindow& operator=(RenderWindow&& move) = default;
@@ -78,7 +78,7 @@ class RenderWindow final : public RenderTarget
      *
      * @attention This function should be called after `prepareRender()`.
      */
-    void render() const override final;
+    void render() const final;
 
     /**
      * @brief Render the geometry to the screen using user-defined custom shader.

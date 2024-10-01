@@ -1,9 +1,12 @@
 #pragma once
 
+#include <algorithm>  // used in .inl
 #include <cstddef>
 #include <cstdint>
 #include <iostream>
 #include <ostream>
+#include <ranges>  // used in .inl
+#include <utility>  // used in .inl
 #include <vector>
 
 #include "MemoryOperation.hpp"
