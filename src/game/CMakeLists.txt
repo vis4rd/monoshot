@@ -53,6 +53,7 @@ target_link_libraries(monoshot
            mono::time
            mono::config
            mono::cstring
+           mono::dev_ui
            EnTT::EnTT
            glm::glm
            tinyfd::tinyfd
