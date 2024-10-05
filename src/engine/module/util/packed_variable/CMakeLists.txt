@@ -3,9 +3,9 @@ include_guard()
 add_library(mono_util_pv INTERFACE)
 add_library(mono::util::pv ALIAS mono_util_pv)
 
-if(DEBUG_MODE)
+if(DEBUG_BUILD)
     target_compile_definitions(mono_util_pv
-        INTERFACE "DEBUG_MODE"
+        INTERFACE "DEBUG_BUILD"
     )
 endif()
 

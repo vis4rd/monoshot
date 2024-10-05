@@ -4,7 +4,7 @@ namespace mono::input
 
 bool arePressed(std::same_as<std::int32_t> auto... keys)
 {
-    if constexpr(config::constant::debugMode)
+    if constexpr(config::constant::debugBuild)
     {
         priv::ensureGlfwIsInitialized();
     }

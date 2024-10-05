@@ -129,7 +129,7 @@ void initialize()
     file_name.replace(file_name.find(':'), 1, "-");
     file_name.replace(file_name.find(':'), 1, "-");
     file_name = file_name.substr(0, file_name.rfind('.'));
-    if constexpr(mono::config::constant::debugMode)
+    if constexpr(mono::config::constant::debugBuild)
     {
         file_name += "_debug";
     }

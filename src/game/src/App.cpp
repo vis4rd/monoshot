@@ -45,18 +45,9 @@ App::App(const std::string& window_title, uint32_t width, uint32_t height)
         mono::renderer::addPipeline(std::move(pipeline));
     }
 
-    if constexpr(mono::config::constant::debugMode)  // Debug Build
-    {
-        // windowed, vsync
-        m_window->setFullscreen(false);
-        m_window->setVerticalSync(true);
-    }
-    else  // Release Build
-    {
-        // fullscreen, no-vsync
-        m_window->setFullscreen(true);
-        m_window->setVerticalSync(false);
-    }
+    // TODO(vis4rd): set window configuration from config.ini
+    m_window->setFullscreen(true);
+    m_window->setVerticalSync(false);
 
     m_timer = std::make_shared<Timer>();
     ResourceManager::timer = m_timer;
