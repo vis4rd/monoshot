@@ -1,7 +1,6 @@
 #pragma once
 
 #include <GLFW/glfw3.h>
-#include <config/Config.hpp>
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
 #include <input/Input.hpp>
@@ -17,7 +16,7 @@
 class App final
 {
     public:
-    App(const std::string& window_title, uint32_t width, uint32_t height);
+    App(const std::string& window_title);
     App(const App&) = delete;
     App(App&&) = delete;
     ~App() noexcept;

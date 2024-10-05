@@ -8,7 +8,7 @@ int main(int, char**)
     mono::config::initialize();
     mono::log::initialize();
 
-    App app("MONOSHOT", 1280, 720);
+    App app("MONOSHOT");
     app.run();
     app.terminate(EXIT_SUCCESS);
 

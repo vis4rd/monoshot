@@ -13,12 +13,15 @@
 
 #include "../include/section/MainMenuSection.hpp"
 
-App::App(const std::string& window_title, uint32_t width, uint32_t height)
+App::App(const std::string& window_title)
     : m_sectionManager(SectionManager::get())
 {
     spdlog::info("App version: {}", MONOSHOT_VERSION);
 
-    m_window = std::make_shared<mono::gl::RenderWindow>(width, height, window_title);
+    m_window = std::make_shared<mono::gl::RenderWindow>(
+        mono::config::runtime::resolution.width,
+        mono::config::runtime::resolution.height,
+        window_title);
     ResourceManager::window = m_window;
 
     {
@@ -45,9 +48,25 @@ App::App(const std::string& window_title, uint32_t width, uint32_t height)
         mono::renderer::addPipeline(std::move(pipeline));
     }
 
-    // TODO(vis4rd): set window configuration from config.ini
-    m_window->setFullscreen(true);
-    m_window->setVerticalSync(false);
+    switch(mono::config::runtime::windowMode)
+    {
+        case mono::config::type::WindowMode::FULLSCREEN:
+        {
+            m_window->setFullscreen();
+            break;
+        }
+        case mono::config::type::WindowMode::BORDERLESS:
+        {
+            m_window->setBorderlessFullscreen();
+            break;
+        }
+        case mono::config::type::WindowMode::WINDOWED:
+        {
+            m_window->setFullscreen(false);
+            break;
+        }
+    }
+    m_window->setVerticalSync(mono::config::runtime::useVSync);
 
     m_timer = std::make_shared<Timer>();
     ResourceManager::timer = m_timer;
