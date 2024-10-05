@@ -3,9 +3,9 @@ include_guard()
 add_library(mono_module_section)
 add_library(mono::section ALIAS mono_module_section)
 
-if(DEBUG_MODE)
+if(DEBUG_BUILD)
     target_compile_definitions(mono_module_section
-        PRIVATE "DEBUG_MODE"
+        PRIVATE "DEBUG_BUILD"
     )
 endif()
 

@@ -7,7 +7,7 @@ namespace mono::input
 
 bool isPressed(std::int32_t key)
 {
-    if constexpr(config::constant::debugMode)
+    if constexpr(config::constant::debugBuild)
     {
         priv::ensureGlfwIsInitialized();
     }
@@ -17,7 +17,7 @@ bool isPressed(std::int32_t key)
 
 bool isPressedOnce(std::int32_t key)
 {
-    if constexpr(config::constant::debugMode)
+    if constexpr(config::constant::debugBuild)
     {
         priv::ensureGlfwIsInitialized();
     }
@@ -27,7 +27,7 @@ bool isPressedOnce(std::int32_t key)
 
 bool isHeld(std::int32_t key)
 {
-    if constexpr(config::constant::debugMode)
+    if constexpr(config::constant::debugBuild)
     {
         priv::ensureGlfwIsInitialized();
     }
@@ -37,7 +37,7 @@ bool isHeld(std::int32_t key)
 
 bool isReleased(std::int32_t key)
 {
-    if constexpr(config::constant::debugMode)
+    if constexpr(config::constant::debugBuild)
     {
         priv::ensureGlfwIsInitialized();
     }
@@ -47,7 +47,7 @@ bool isReleased(std::int32_t key)
 
 bool isIdle(std::int32_t key)
 {
-    if constexpr(config::constant::debugMode)
+    if constexpr(config::constant::debugBuild)
     {
         priv::ensureGlfwIsInitialized();
     }
@@ -57,7 +57,7 @@ bool isIdle(std::int32_t key)
 
 void pollEvents()
 {
-    if constexpr(config::constant::debugMode)
+    if constexpr(config::constant::debugBuild)
     {
         priv::ensureGlfwIsInitialized();
     }

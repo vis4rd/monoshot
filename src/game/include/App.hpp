@@ -67,14 +67,6 @@ void App::update(UpdateableTrait auto&&... updateables) noexcept
         size = m_window->getSize();
         spdlog::debug("after F11: window size = {}x{}", size.x, size.y);
     }
-    if constexpr(mono::config::constant::debugMode)
-    {
-        if(mono::input::isPressedOnce(GLFW_KEY_APOSTROPHE))  // debugging purposes
-        {
-            static int break_count;
-            spdlog::debug("======================= {} =========================", break_count++);
-        }
-    }
     if(m_sectionManager.size() == 1)
     {
         if(mono::input::isPressedOnce(GLFW_KEY_ESCAPE))
@@ -102,48 +94,6 @@ void App::render(RenderableTrait auto&&... renderables) noexcept
     if constexpr(sizeof...(renderables) > 0)
     {
         (renderables.render(), ...);
-    }
-
-    // Debug panel
-    if constexpr(mono::config::constant::debugMode)
-    {
-        static bool show_debug_panel = true;
-        static bool enable_vsync = m_window->isVerticalSyncEnabled();
-        static bool enable_fullscreen = m_window->isFullscreen();
-        if(show_debug_panel)
-        {
-            static bool show_demo_window = false;
-            ImGui::Begin("Debug Panel");
-            {
-                ImGui::Checkbox("Demo Window", &show_demo_window);
-                if(show_demo_window)
-                {
-                    ImGui::ShowDemoWindow(&show_demo_window);
-                }
-
-                if(ImGui::Checkbox("Toggle VSYNC", &enable_vsync))
-                {
-                    m_window->setVerticalSync(enable_vsync);
-                }
-
-                if(ImGui::Checkbox("Toggle fullscreen", &enable_fullscreen))
-                {
-                    m_window->setFullscreen(enable_fullscreen);
-                }
-
-                const auto size = m_window->getSize();
-                ImGui::Text("Window size: (%d, %d)", size.x, size.y);
-                ImGui::Text(
-                    "Performance: [%.2fms] [%.0ffps]",
-                    1000.0f / ImGui::GetIO().Framerate,
-                    ImGui::GetIO().Framerate);
-                ImGui::Text(
-                    "Mouse Position: Screen[%.2fx, %.2fy]",
-                    ImGui::GetMousePos().x,
-                    ImGui::GetMousePos().y);
-            }
-            ImGui::End();
-        }
     }
 
     mono::renderer::render();

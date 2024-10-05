@@ -54,10 +54,11 @@ struct BaseLayout
     float buttonHS = m_baseHSpacing * m_scaleH;
 
 
-    ImGuiWindowFlags windowFlags =
-        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoMove
-        | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoNav
-        | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoDocking;
+    ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar
+                                   | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize
+                                   | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoNav
+                                   | ImGuiWindowFlags_NoBringToFrontOnFocus
+                                   | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoBackground;
 };
 
 BaseLayout::BaseLayout(const ImVec2& workpos, const ImVec2& worksize)
@@ -65,12 +66,7 @@ BaseLayout::BaseLayout(const ImVec2& workpos, const ImVec2& worksize)
     , viewportH(worksize.y)
     , viewportX(workpos.x)
     , viewportY(workpos.y)
-{
-    if constexpr(not mono::config::constant::debugMode)
-    {
-        windowFlags |= ImGuiWindowFlags_NoBackground;
-    }
-}
+{ }
 
 void BaseLayout::update(const ImVec2& workpos, const ImVec2& worksize)
 {

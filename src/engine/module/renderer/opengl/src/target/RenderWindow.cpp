@@ -432,7 +432,7 @@ void RenderWindow::initGl() const
     spdlog::debug("Initializing GL");
 
     // logging
-    if constexpr(mono::config::constant::debugMode)
+    if(mono::config::runtime::logLevel <= spdlog::level::debug)
     {
         log::enableOpenGlLogging();
     }
@@ -452,10 +452,6 @@ void RenderWindow::initImGui() const
     auto &io = ImGui::GetIO();
     (void)io;
 
-    if constexpr(mono::config::constant::debugMode)
-    {
-        io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-    }
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     io.Fonts->AddFontDefault();
 

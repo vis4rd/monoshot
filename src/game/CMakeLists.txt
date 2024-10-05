@@ -20,7 +20,7 @@ set_target_properties(monoshot PROPERTIES
 
 target_compile_definitions(monoshot
     PRIVATE
-        $<$<BOOL:${DEBUG_MODE}>:DEBUG_MODE>
+        $<$<BOOL:${DEBUG_BUILD}>:DEBUG_BUILD>
         $<IF:$<BOOL:${MONOSHOT_VERSION}>,
             MONOSHOT_VERSION="${MONOSHOT_VERSION}",
             MONOSHOT_VERSION="unknown"

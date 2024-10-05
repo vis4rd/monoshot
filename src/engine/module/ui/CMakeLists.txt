@@ -3,9 +3,9 @@ include_guard()
 add_library(mono_module_ui)
 add_library(mono::ui ALIAS mono_module_ui)
 
-if(DEBUG_MODE)
+if(DEBUG_BUILD)
     target_compile_definitions(mono_module_ui
-        PRIVATE "DEBUG_MODE"
+        PRIVATE "DEBUG_BUILD"
     )
 endif()
 

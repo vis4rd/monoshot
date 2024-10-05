@@ -1,12 +1,10 @@
 #pragma once
 
-#ifndef DEBUG_MODE
-    #define DEBUG_MODE 0
+#ifndef DEBUG_BUILD
+    #define DEBUG_BUILD 0
 #endif
 
 namespace mono::config::constant
 {
-
-constexpr bool debugMode = DEBUG_MODE;
-
+constexpr bool debugBuild = DEBUG_BUILD;
 }

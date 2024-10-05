@@ -3,9 +3,9 @@ include_guard()
 add_library(mono_module_audio)
 add_library(mono::audio ALIAS mono_module_audio)
 
-if(DEBUG_MODE)
+if(DEBUG_BUILD)
     target_compile_definitions(mono_module_audio
-        PRIVATE "DEBUG_MODE"
+        PRIVATE "DEBUG_BUILD"
     )
 endif()
 

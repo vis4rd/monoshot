@@ -216,30 +216,6 @@ void GameplaySection::render() noexcept
         ImGui::End();
         font_guard.popFont();
     }
-
-    if constexpr(not mono::config::constant::debugMode)
-    {
-        if(m_showDebugInfo)
-        {
-            ImGui::Begin("Release Mode Statistics");
-            {
-                ImGui::Text(
-                    "Performance: [%.2fms] [%.0ffps]",
-                    1000.0f / ImGui::GetIO().Framerate,
-                    ImGui::GetIO().Framerate);
-                ImGui::Text(
-                    "Mouse Position: Screen[%.2fx, %.2fy]",
-                    ImGui::GetMousePos().x,
-                    ImGui::GetMousePos().y);
-                // TODO(vis4rd): expose pipeline-level stats in renderer
-                // ImGui::Text("Quad count: %d", m_renderer.getStats().quadCount);
-                // ImGui::Text("Line count: %d", m_renderer.getStats().lineCount);
-                // ImGui::Text("Draw calls: %d", m_renderer.getStats().drawCount);
-                // ImGui::Text("Indices: %d", m_renderer.getStats().indexCount);
-            }
-            ImGui::End();
-        }
-    }
 }
 
 // returns world coordinates at 0 height
