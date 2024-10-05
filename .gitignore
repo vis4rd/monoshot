@@ -45,3 +45,6 @@ dev/
 # Logging
 logs/
 *.log
+
+# Configuration
+config/config.ini
