@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cstdint>
-
 #include <glad/gl.h>
 #include <glm/glm.hpp>
 

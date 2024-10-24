@@ -2,7 +2,6 @@
 
 #include <concepts>
 #include <cstdint>
-#include <iterator>
 
 #include <glm/ext/matrix_float3x3.hpp>
 #include <glm/ext/matrix_float4x4.hpp>
@@ -16,26 +15,18 @@ namespace mono::gl
 
 template<typename T, typename E>
 concept TwoElementVariableTrait = requires(T t) {
-    {
-        t.x
-    } -> std::same_as<E&>;
-    {
-        t.y
-    } -> std::same_as<E&>;
+    { t.x } -> std::same_as<E&>;
+    { t.y } -> std::same_as<E&>;
 };
 
 template<typename T, typename E>
 concept ThreeElementVariableTrait = TwoElementVariableTrait<T, E> and requires(T t) {
-    {
-        t.z
-    } -> std::same_as<E&>;
+    { t.z } -> std::same_as<E&>;
 };
 
 template<typename T, typename E>
 concept FourElementVariableTrait = ThreeElementVariableTrait<T, E> and requires(T t) {
-    {
-        t.w
-    } -> std::same_as<E&>;
+    { t.w } -> std::same_as<E&>;
 };
 
 template<typename T>

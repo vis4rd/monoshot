@@ -1,13 +1,16 @@
 #pragma once
 
+#include <cstdint>
 #include <string>
-#include <unordered_map>
+#include <string_view>
+#include <type_traits>
 
 #include <glad/gl.h>
 #include <glm/gtc/type_ptr.hpp>
+#include <spdlog/spdlog.h>
 
 #include "ShaderUniformTraits.hpp"
-#include "log/Logging.hpp"
+#include "traits/ContiguousContainer.hpp"
 
 namespace mono::gl
 {

@@ -1,7 +1,6 @@
 #pragma once
 
-#include <cstdint>
-#include <stdexcept>
+#include <cstddef>
 
 #include <glad/gl.h>
 

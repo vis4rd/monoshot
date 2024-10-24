@@ -24,9 +24,9 @@ inline std::int32_t RenderPipeline::getId() const
     return m_id;
 }
 
-template<RenderPassTrait ActualType>
+template<RenderPassTrait ACTUAL_TYPE>
 inline void RenderPipeline::addRenderPass(const std::string& name, auto&&... args)
-requires std::constructible_from<ActualType, decltype(args)...>
+requires std::constructible_from<ACTUAL_TYPE, decltype(args)...>
 {
     if(m_renderPasses.contains(name))
     {
@@ -39,20 +39,20 @@ requires std::constructible_from<ActualType, decltype(args)...>
     }
 
     std::shared_ptr<RenderPassInterface> render_pass_ptr =
-        std::make_shared<ActualType>(std::forward<decltype(args)>(args)...);
+        std::make_shared<ACTUAL_TYPE>(std::forward<decltype(args)>(args)...);
 
     m_renderPasses.emplace(name, std::move(render_pass_ptr));
     m_renderOrder.push_back(name);
     spdlog::debug("Successfully added render pass with name '{}'", name);
 }
 
-template<RenderPassTrait ActualType>
-inline ActualType& RenderPipeline::getRenderPass(const std::string& pass_name)
+template<RenderPassTrait ACTUAL_TYPE>
+inline ACTUAL_TYPE& RenderPipeline::getRenderPass(const std::string& pass_name)
 {
-    // This cast should be safe, because RenderPassTrait concept ensures that ActualType is derived
+    // This cast should be safe, because RenderPassTrait concept ensures that ACTUAL_TYPE is derived
     // from RenderPassInterface. In any case, if at some point there is a crash or undefined
     // behavior, it would be better to change this to std::dynamic_pointer_cast.
-    return *std::static_pointer_cast<ActualType>(m_renderPasses.at(pass_name));
+    return *std::static_pointer_cast<ACTUAL_TYPE>(m_renderPasses.at(pass_name));
 }
 
 inline std::shared_ptr<RenderPassInterface>& RenderPipeline::getRenderPassAsAny(

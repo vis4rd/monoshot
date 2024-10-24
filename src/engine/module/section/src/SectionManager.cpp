@@ -1,7 +1,5 @@
 #include "../include/section/SectionManager.hpp"
 
-#include "resource/ResourceManager.hpp"
-
 SectionManager& SectionManager::get()
 {
     static SectionManager instance;

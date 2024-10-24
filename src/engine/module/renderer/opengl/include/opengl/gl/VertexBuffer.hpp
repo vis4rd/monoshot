@@ -1,15 +1,13 @@
 #pragma once
 
-#include <cstdint>
 #include <ranges>
-#include <string>
-#include <vector>
+#include <type_traits>
 
 #include <glad/gl.h>
+#include <spdlog/spdlog.h>
 
 #include "ShaderAttributeLayout.hpp"
 #include "log/Logging.hpp"
-#include "traits/ContiguousContainer.hpp"
 
 namespace mono::gl
 {

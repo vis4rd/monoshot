@@ -1,12 +1,13 @@
 #pragma once
 
-#include <array>
+#include <concepts>
 #include <cstdint>
 
 #include <spdlog/spdlog.h>
 
 #include "config/StaticConfiguration.hpp"
 #include "priv/InputData.hpp"
+#include "priv/KeyState.hpp"
 
 namespace mono::input
 {

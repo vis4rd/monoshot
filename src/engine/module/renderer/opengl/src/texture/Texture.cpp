@@ -1,8 +1,5 @@
 #include "../../include/opengl/texture/Texture.hpp"
 
-#include <cstring>
-#include <format>
-
 #include <spdlog/fmt/bin_to_hex.h>
 #include <spdlog/spdlog.h>
 #include <stbi/stb_image.h>
@@ -12,10 +9,10 @@ namespace mono
 
 Texture::Texture(std::string_view file_path, std::int32_t width, std::int32_t height)
     : m_textureData{
-        .widthTotal = width,
-        .heightTotal = height,
-        .widthSub = width,
-        .heightSub = height}
+          .widthTotal = width,
+          .heightTotal = height,
+          .widthSub = width,
+          .heightSub = height}
 {
     spdlog::trace(
         "Creating Texture with width = {}, height = {}",
@@ -26,10 +23,10 @@ Texture::Texture(std::string_view file_path, std::int32_t width, std::int32_t he
 
 Texture::Texture(const std::byte* data, std::int32_t width, std::int32_t height)
     : m_textureData{
-        .widthTotal = width,
-        .heightTotal = height,
-        .widthSub = width,
-        .heightSub = height}
+          .widthTotal = width,
+          .heightTotal = height,
+          .widthSub = width,
+          .heightSub = height}
 {
     spdlog::trace(
         "Creating Texture with width = {}, height = {}",

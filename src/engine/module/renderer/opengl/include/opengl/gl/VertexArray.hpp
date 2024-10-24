@@ -1,6 +1,7 @@
 #pragma once
 
-#include <memory>
+#include <cstdint>
+#include <vector>
 
 #include "ElementBuffer.hpp"
 #include "ShaderAttributeUpdateFrequency.hpp"

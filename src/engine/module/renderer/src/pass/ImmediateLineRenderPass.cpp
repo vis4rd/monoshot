@@ -58,8 +58,8 @@ void ImmediateLineRenderPass::drawLine(
     const glm::vec4& color1,
     const glm::vec4& color2)
 {
-    auto vrtx1 = gl::LineVertex{glm::vec3(pos1, 0.f), color1};
-    auto vrtx2 = gl::LineVertex{glm::vec3(pos2, 0.f), color2};
+    auto vrtx1 = gl::LineVertex{.position = glm::vec3(pos1, 0.f), .color = color1};
+    auto vrtx2 = gl::LineVertex{.position = glm::vec3(pos2, 0.f), .color = color2};
 
     m_lines.push_back(vrtx1);
     m_lines.push_back(vrtx2);

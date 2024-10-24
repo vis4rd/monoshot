@@ -1,7 +1,8 @@
 #pragma once
 
-#include <cstdint>
 #include <format>
+#include <source_location>
+#include <string>
 
 #include <glad/gl.h>
 #include <spdlog/spdlog.h>

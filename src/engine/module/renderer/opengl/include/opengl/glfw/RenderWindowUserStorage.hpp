@@ -17,6 +17,14 @@ class RenderWindowUserStorage final
     explicit RenderWindowUserStorage(RenderWindow& window);
     ~RenderWindowUserStorage();
 
+    // Delete copy constructor and copy assignment operator
+    RenderWindowUserStorage(const RenderWindowUserStorage&) = delete;
+    RenderWindowUserStorage& operator=(const RenderWindowUserStorage&) = delete;
+
+    // Define move constructor and move assignment operator
+    RenderWindowUserStorage(RenderWindowUserStorage&&) noexcept = default;
+    RenderWindowUserStorage& operator=(RenderWindowUserStorage&&) noexcept = delete;
+
     std::any& operator[](const std::string& key) noexcept;
     std::any& at(const std::string& key);
     [[nodiscard]] bool contains(const std::string& key) const;

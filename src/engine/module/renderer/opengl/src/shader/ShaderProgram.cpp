@@ -2,6 +2,8 @@
 
 #include <array>
 
+#include <log/Logging.hpp>
+
 #include "opengl/shader/Shader.hpp"
 
 namespace mono::gl
@@ -25,10 +27,11 @@ ShaderProgram::ShaderProgram(const Shader& frag, const Shader& vert)
     glGetProgramiv(m_id, GL_LINK_STATUS, &success);
     if(!success)
     {
-        constexpr std::size_t maxLogSize = 512;
-        std::array<GLchar, maxLogSize> log{};
-        glGetProgramInfoLog(m_id, maxLogSize, nullptr, log.data());
-        throw std::runtime_error("Shader linking failure: " + std::string(log.data(), maxLogSize));
+        constexpr std::size_t max_log_size = 512;
+        std::array<GLchar, max_log_size> log{};
+        glGetProgramInfoLog(m_id, max_log_size, nullptr, log.data());
+        throw std::runtime_error(
+            "Shader linking failure: " + std::string(log.data(), max_log_size));
     }
 }
 
@@ -47,10 +50,11 @@ ShaderProgram::ShaderProgram(const Shader& compute)
     glGetProgramiv(m_id, GL_LINK_STATUS, &success);
     if(!success)
     {
-        constexpr std::size_t maxLogSize = 512;
-        std::array<GLchar, maxLogSize> log{};
-        glGetProgramInfoLog(m_id, maxLogSize, nullptr, log.data());
-        throw std::runtime_error("Shader linking failure: " + std::string(log.data(), maxLogSize));
+        constexpr std::size_t max_log_size = 512;
+        std::array<GLchar, max_log_size> log{};
+        glGetProgramInfoLog(m_id, max_log_size, nullptr, log.data());
+        throw std::runtime_error(
+            "Shader linking failure: " + std::string(log.data(), max_log_size));
     }
 }
 

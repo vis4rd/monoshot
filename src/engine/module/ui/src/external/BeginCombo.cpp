@@ -1,7 +1,5 @@
 #include "../../include/ui/external/BeginCombo.hpp"
 
-#include "spdlog/spdlog.h"
-
 namespace Custom
 {
 

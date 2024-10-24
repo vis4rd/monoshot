@@ -1,12 +1,6 @@
 #pragma once
 
-#include <cstdint>
-#include <cstring>
-#include <string>
-#include <vector>
-
 #include <glad/gl.h>
-#include <spdlog/spdlog.h>
 
 #include "ShaderStorageBufferAny.hpp"
 #include "traits/ContiguousContainer.hpp"

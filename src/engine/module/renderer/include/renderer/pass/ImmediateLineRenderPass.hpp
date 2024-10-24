@@ -1,7 +1,14 @@
 #pragma once
 
+#include <cstddef>
+#include <memory>
+#include <vector>
+
 #include "../RenderPassTrait.hpp"
+#include "opengl/gl/VertexArray.hpp"
 #include "opengl/renderer/LinePrimitive.hpp"
+#include "opengl/shader/ShaderProgram.hpp"
+#include "opengl/target/RenderTarget.hpp"
 
 namespace mono::renderer
 {

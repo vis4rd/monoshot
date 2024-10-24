@@ -1,8 +1,9 @@
 #pragma once
 
-#include <memory>
+#include <string_view>
 
 #include "Texture.hpp"
+#include "TextureData.hpp"
 
 namespace mono
 {

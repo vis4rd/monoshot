@@ -1,5 +1,7 @@
 #include "../../include/renderer/pass/InstancedQuadRenderPass.hpp"
 
+#include <algorithm>
+
 #include "cstring/cstring.hpp"
 #include "mono/util/IndexOf.hpp"
 #include "opengl/shader/ShaderManager.hpp"
@@ -10,16 +12,16 @@ namespace mono::renderer
 InstancedQuadRenderPass::InstancedQuadRenderPass(
     std::shared_ptr<gl::RenderTarget>&& render_target,
     gl::ShaderProgram& shader)
-    : m_shader(shader)
-    , m_renderTarget(std::move(render_target))
+    : m_renderTarget(std::move(render_target))
+    , m_shader(shader)
     , m_quadVao(std::make_shared<gl::VertexArray>())
 {
     this->prepareQuadVao();
     this->prepareQuadSsbo();
 
-    m_quadStateBufferSolver.setMemorySize(m_startingMaxQuadCount);
-    m_quadStateBufferSolver.setMaxMemorySize(m_totalMaxQuadCount);
-    m_quadStateBuffer.resize(m_startingMaxQuadCount, std::nullopt);
+    m_quadStateBufferSolver.setMemorySize(STARTING_MAX_QUAD_COUNT);
+    m_quadStateBufferSolver.setMaxMemorySize(TOTAL_MAX_QUAD_COUNT);
+    m_quadStateBuffer.resize(STARTING_MAX_QUAD_COUNT, std::nullopt);
 }
 
 void InstancedQuadRenderPass::clear()
@@ -110,10 +112,8 @@ void InstancedQuadRenderPass::submitDraws()
 
         // register addition of quads in state buffer
         //? should the highest ssbo_index be stored separately?
-        auto first_nullopt = std::find_if(
-            m_quadStateBuffer.begin(),
-            m_quadStateBuffer.end(),
-            [](const auto& buffer_element) {
+        auto first_nullopt =
+            std::ranges::find_if(m_quadStateBuffer, [](const auto& buffer_element) {
                 return buffer_element == std::nullopt;
             });
 
@@ -221,10 +221,11 @@ std::size_t InstancedQuadRenderPass::addQuad(
     }
 
     const gl::QuadInstanceData quad_instance_data{
-        color_uint,
-        position,
-        size,
-        gl::detail::RtiPacked{static_cast<glm::uint32>(rotation), texture_slot}
+        .color = color_uint,
+        .position = position,
+        .scale = size,
+        .rotation_texIndex =
+            gl::detail::RtiPacked{static_cast<glm::uint32>(rotation), texture_slot}
     };
 
     m_quads.push_back(quad_instance_data);
@@ -271,7 +272,7 @@ void InstancedQuadRenderPass::prepareQuadVao()
 void InstancedQuadRenderPass::prepareQuadSsbo()
 {
     m_quadSsbo = std::make_shared<gl::ShaderStorageBuffer<gl::QuadInstanceData>>(
-        m_startingMaxQuadCount * sizeof(gl::QuadInstanceData));
+        STARTING_MAX_QUAD_COUNT * sizeof(gl::QuadInstanceData));
 }
 
 void InstancedQuadRenderPass::registerQuadsRemovalInSolver()
@@ -388,7 +389,7 @@ void InstancedQuadRenderPass::applyMemoryOperationsToSsbo(
         ssbo->bind(0);
         m_quadStagingSsbo.bind(1);
 
-        auto compute_shader = gl::ShaderManager::get().useShader("staging_operations");
+        gl::ShaderManager::get().useShader("staging_operations");
         glDispatchCompute(1, 1, 1);
 
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);

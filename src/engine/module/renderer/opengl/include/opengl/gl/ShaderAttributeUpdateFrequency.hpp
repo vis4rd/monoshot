@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 namespace mono::gl
 {
 
@@ -7,7 +9,7 @@ namespace mono::gl
  * @brief Verbose representation of OpenGL divisor for shader attribute. Intended for use with
  *        VertexArray when passing VertexBuffer to it.
  */
-enum class ShaderAttributeUpdateFrequency
+enum class ShaderAttributeUpdateFrequency : std::uint8_t
 {
     EACH_VERTEX = 0,
     EACH_INSTANCE = 1,

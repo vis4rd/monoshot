@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include <glad/gl.h>
 
 #include "../gl/FrameBuffer.hpp"
