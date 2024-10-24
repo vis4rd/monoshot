@@ -1,36 +1,13 @@
 {
     "C_Cpp.autoAddFileAssociations": false,
-    "C_Cpp.codeAnalysis.clangTidy.enabled": true,
-    "C_Cpp.codeAnalysis.clangTidy.useBuildPath": true,
-    "C_Cpp.codeAnalysis.exclude": {
-        "**/engine/lib/**": true,
-        "**/build/**": true,
-    },
     "C_Cpp.debugShortcut": false,
-    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
-    "C_Cpp.default.cppStandard": "c++20",
-    "C_Cpp.doxygen.sectionTags": [
-        "attention",
-        "deprecated",
-        "exception",
-        "link",
-        "note",
-        "param",
-        "pre",
-        "ref",
-        "result",
-        "returns",
-        "retval",
-        "tparam",
-        "unlink",
-        "warning",
+    "C_Cpp.intelliSenseEngine": "disabled",
+    "C_Cpp.loggingLevel": "Debug",
+    //
+    "clangd.arguments": [
+        "-log=verbose",
+        "--clang-tidy",
     ],
-    "C_Cpp.intelliSenseCachePath": "${workspaceFolder}/.cache/vscode-cpptools",
-    "C_Cpp.intelliSenseEngine": "default",
-    "C_Cpp.loggingLevel": "Information",
-    "C_Cpp.markdownInComments": "enabled",
-    "C_Cpp.preferredPathSeparator": "Forward Slash",
-    "C_Cpp.refactoring.includeHeader": "never",
     //
     "cmake.buildBeforeRun": false,
     "cmake.configureOnEdit": false,
@@ -76,7 +53,7 @@
     },
     //
     "[cpp]": {
-        "editor.defaultFormatter": "ms-vscode.cpptools",
+        "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd",
         "editor.formatOnSave": true,
         "files.insertFinalNewline": true,
     },
