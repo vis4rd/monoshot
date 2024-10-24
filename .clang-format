@@ -14,7 +14,6 @@ MaxEmptyLinesToKeep: 2
 UseTab: Never
 Standard: c++20
 
-
 ########## Indent
 AccessModifierOffset: 0
 ConstructorInitializerIndentWidth: 4
@@ -32,7 +31,6 @@ IndentWrappedFunctionNames: true
 LambdaBodyIndentation: Signature
 NamespaceIndentation: None
 
-
 ########## Concept and requires
 BreakBeforeConceptDeclarations: Always
 
@@ -40,7 +38,6 @@ IndentRequires: false # clang-format 12-14
 IndentRequiresClause: false # clang-format 15
 RequiresClausePosition: OwnLine
 # RequiresExpressionIndentation: OuterScope # clang-format 16
-
 
 ########## Spaces
 SpaceAfterCStyleCast: false
@@ -58,16 +55,15 @@ SpaceBeforeSquareBrackets: false
 SpaceInEmptyBlock: true
 SpaceInEmptyParentheses: false
 SpacesBeforeTrailingComments: 2
-SpacesInAngles: false
+SpacesInAngles: Never
 SpacesInConditionalStatement: false
 SpacesInContainerLiterals: false
 SpacesInCStyleCastParentheses: false
 SpacesInLineCommentPrefix:
-  Minimum: '1'
-  Maximum: '1'
+  Minimum: 1
+  Maximum: 1
 SpacesInParentheses: false
 SpacesInSquareBrackets: false
-
 
 ########## Breaks
 BreakBeforeBraces: Custom
@@ -98,41 +94,38 @@ BreakInheritanceList: BeforeColon
 BreakStringLiterals: false
 AlwaysBreakAfterReturnType: None
 AlwaysBreakBeforeMultilineStrings: false
-AlwaysBreakTemplateDeclarations: 'Yes'
-
+AlwaysBreakTemplateDeclarations: "Yes"
 
 ########## Alignment
 AlignAfterOpenBracket: AlwaysBreak
 AlignArrayOfStructures: Left
-AlignConsecutiveMacros: true
-AlignConsecutiveAssignments: false
-AlignConsecutiveDeclarations: false
+AlignConsecutiveMacros: Consecutive
+AlignConsecutiveAssignments: None
+AlignConsecutiveDeclarations: None
 AlignEscapedNewlines: Left
-AlignOperands: true
+AlignOperands: Align
 AlignTrailingComments: false
 
 PointerAlignment: Left
 QualifierAlignment: Leave
 ReferenceAlignment: Left
 
-
 ########## Include sorting
 # IncludeBlocks: Regroup
 IncludeCategories:
   - Regex: '^"'
     Priority: 10
-  - Regex: '^<glad.*>$'
+  - Regex: "^<glad.*>$"
     Priority: 3
     SortPriority: 2
-  - Regex: '^<GLFW.*>$'
+  - Regex: "^<GLFW.*>$"
     Priority: 3
   - Regex: '^<.*\/*.*(\.hpp|\.h)>$'
     Priority: 3
-  - Regex: '^<'
+  - Regex: "^<"
     Priority: 1
 SortIncludes: CaseSensitive
 SortUsingDeclarations: false
-
 
 ########## Other
 AllowAllArgumentsOnNextLine: false
@@ -163,4 +156,3 @@ KeepEmptyLinesAtTheStartOfBlocks: false
 PackConstructorInitializers: Never
 ReflowComments: true
 SeparateDefinitionBlocks: Always
-...

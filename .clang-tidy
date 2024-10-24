@@ -1,5 +1,5 @@
 ---
-WarningsAsErrors: true
+WarningsAsErrors: "true"
 UseColor: true
 HeaderFilterRegex: '.*\/?src\/(engine\/module\/|game\/include\/).*'
 # HeaderFileExtensions: ['hpp'] # clang-tidy > 18
@@ -82,4 +82,3 @@ CheckOptions:
   readability-identifier-naming.ValueTemplateParameterCase: UPPER_CASE
   # readability-identifier-naming.VariableCase: lower_case
   readability-identifier-naming.VirtualMethodCase: camelBack
-...
