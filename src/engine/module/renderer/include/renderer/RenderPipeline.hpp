@@ -1,6 +1,9 @@
 #pragma once
 
+#include <concepts>
+#include <cstdint>
 #include <memory>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -34,26 +37,26 @@ class RenderPipeline
 
     /**
      * @brief Add RenderPass of the specified type to the RenderPipeline.
-     * @tparam ActualType Type of the RenderPass to be added.
+     * @tparam ACTUAL_TYPE Type of the RenderPass to be added.
      * @param name Unique name of the RenderPass.
      * @param args Optional arguments passed to RenderPass constructor.
      *
      * @note RenderPass instance is added to the end of the RenderPipeline, meaning it will be
      *       rendered last.
      */
-    template<RenderPassTrait ActualType>
+    template<RenderPassTrait ACTUAL_TYPE>
     void addRenderPass(const std::string& name, auto&&... args)
-    requires std::constructible_from<ActualType, decltype(args)...>;
+    requires std::constructible_from<ACTUAL_TYPE, decltype(args)...>;
 
     /**
      * @brief Get the RenderPass instance from pipeline's storage as the type specified by the
      *        caller.
-     * @tparam ActualType Type of the returned RenderPass instance.
+     * @tparam ACTUAL_TYPE Type of the returned RenderPass instance.
      * @param pass_name Name of the RenderPass to be retrieved.
-     * @return ActualType& Reference to the RenderPass instance.
+     * @return ACTUAL_TYPE& Reference to the RenderPass instance.
      */
-    template<RenderPassTrait ActualType>
-    [[nodiscard]] ActualType& getRenderPass(const std::string& pass_name);
+    template<RenderPassTrait ACTUAL_TYPE>
+    [[nodiscard]] ACTUAL_TYPE& getRenderPass(const std::string& pass_name);
 
     [[nodiscard]] std::shared_ptr<RenderPassInterface>& getRenderPassAsAny(
         const std::string& pass_name);

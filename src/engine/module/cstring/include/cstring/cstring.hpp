@@ -2,9 +2,11 @@
 
 #include <array>
 #include <concepts>
+#include <cstddef>
 #include <stdexcept>
 #include <string>
 #include <string_view>
+#include <utility>
 
 namespace mono
 {
@@ -49,8 +51,7 @@ class cstring final  // NOLINT(readability-identifier-naming)
 
     [[nodiscard]] constexpr std::size_t size() const { return m_data.size(); }
 
-    template<std::integral I>
-    [[nodiscard]] constexpr const_reference at(I&& n) const
+    [[nodiscard]] constexpr const_reference at(std::integral auto n) const
     {
         if((n < 0) or (n > N))
         {

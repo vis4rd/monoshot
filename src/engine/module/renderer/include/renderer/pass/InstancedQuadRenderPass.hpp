@@ -1,16 +1,22 @@
 #pragma once
 
+#include <cstddef>
+#include <cstdint>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
 #include "../RenderPassTrait.hpp"
-#include "opengl/gl/ElementBuffer.hpp"
 #include "opengl/gl/ShaderStorageBuffer.hpp"
 #include "opengl/gl/ShaderStorageBufferAny.hpp"
+#include "opengl/gl/VertexArray.hpp"
+#include "opengl/memory_packing_solver/MemoryOperation.hpp"
 #include "opengl/memory_packing_solver/MemoryPackingSolver.hpp"
 #include "opengl/renderer/QuadPrimitive.hpp"
+#include "opengl/shader/ShaderProgram.hpp"
+#include "opengl/target/RenderTarget.hpp"
 #include "opengl/texture/Texture.hpp"
 
 namespace mono::renderer
@@ -64,8 +70,8 @@ class InstancedQuadRenderPass : public RenderPassInterface
         const std::shared_ptr<gl::ShaderStorageBufferAny>& ssbo);
 
     private:
-    static constexpr std::size_t m_startingMaxQuadCount{1000};
-    static constexpr std::size_t m_totalMaxQuadCount{10000000};
+    static constexpr std::size_t STARTING_MAX_QUAD_COUNT{1000};
+    static constexpr std::size_t TOTAL_MAX_QUAD_COUNT{10000000};
 
     std::shared_ptr<gl::RenderTarget> m_renderTarget;
     gl::ShaderProgram& m_shader;
@@ -80,7 +86,7 @@ class InstancedQuadRenderPass : public RenderPassInterface
     std::vector<detail::StateBufferElementId> m_quadRemovalStageBuffer{};
     detail::StateBufferElementId m_highestTakenQuadId{};
     gl::MemoryPackingSolver m_quadStateBufferSolver{};
-    gl::ShaderStorageBufferAny m_quadStagingSsbo{5 * m_startingMaxQuadCount};
+    gl::ShaderStorageBufferAny m_quadStagingSsbo{5 * STARTING_MAX_QUAD_COUNT};
 };
 
 }  // namespace mono::renderer

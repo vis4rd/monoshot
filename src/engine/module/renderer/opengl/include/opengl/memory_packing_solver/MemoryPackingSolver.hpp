@@ -1,10 +1,9 @@
 #pragma once
 
-#include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <iostream>
 #include <ostream>
-#include <utility>
 #include <vector>
 
 #include "MemoryOperation.hpp"

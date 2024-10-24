@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstddef>
+
 #include "ShaderAttributeTypeInfo.hpp"
 
 namespace mono::gl
@@ -18,11 +20,11 @@ class ShaderAttributeTypeBuilder
     constexpr ShaderAttributeTypeInfo operator()(GLint values_per_vertex) const
     {
         return {
-            COMPONENT_COUNT,
-            OPENGL_TYPE,
-            values_per_vertex,
-            sizeof(NATIVE_TYPE) * values_per_vertex * COMPONENT_COUNT,
-            sizeof(NATIVE_TYPE)};
+            .componentCount = COMPONENT_COUNT,
+            .glType = OPENGL_TYPE,
+            .valuesPerVertex = values_per_vertex,
+            .bytesize = sizeof(NATIVE_TYPE) * values_per_vertex * COMPONENT_COUNT,
+            .sizeofNativeType = sizeof(NATIVE_TYPE)};
     }
 };
 

@@ -1,10 +1,13 @@
 #pragma once
 
+#include <cstdint>
 #include <memory>
+#include <unordered_map>
 
 #include <glm/glm.hpp>
 
 #include "RenderPipeline.hpp"
+#include "opengl/target/RenderTarget.hpp"
 
 namespace mono::renderer
 {
@@ -12,8 +15,10 @@ namespace mono::renderer
 namespace data
 {
 
+// NOLINTBEGIN(cppcoreguidelines-avoid-non-const-global-variables)
 inline std::unordered_map<std::int32_t, RenderPipeline> pipelines{};
 inline std::int32_t currentPipelineId{-1};
+// NOLINTEND(cppcoreguidelines-avoid-non-const-global-variables)
 
 }  // namespace data
 

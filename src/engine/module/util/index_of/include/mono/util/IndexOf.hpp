@@ -1,6 +1,8 @@
 #pragma once
 
 #include <algorithm>
+#include <concepts>
+#include <cstddef>
 #include <optional>
 #include <ranges>
 
@@ -11,7 +13,7 @@ namespace stdr = std::ranges;
 constexpr std::optional<std::size_t> indexOf(const stdr::range auto& container, const auto& value)
 requires std::equality_comparable_with<decltype(*container.begin()), decltype(value)>
 {
-    const auto iter = std::find(container.begin(), container.end(), value);
+    const auto iter = std::ranges::find(container, value);
     if(iter != container.end())
     {
         return std::distance(container.begin(), iter);
@@ -22,10 +24,7 @@ requires std::equality_comparable_with<decltype(*container.begin()), decltype(va
 constexpr std::optional<std::size_t> indexOf(const stdr::range auto& container, auto&& predicate)
 requires std::predicate<decltype(predicate), decltype(*container.begin())>
 {
-    const auto iter = std::find_if(
-        container.begin(),
-        container.end(),
-        std::forward<decltype(predicate)>(predicate));
+    const auto iter = std::ranges::find_if(container, std::forward<decltype(predicate)>(predicate));
     if(iter != container.end())
     {
         return std::distance(container.begin(), iter);

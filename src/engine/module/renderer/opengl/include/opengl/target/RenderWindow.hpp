@@ -1,6 +1,11 @@
 #pragma once
 
 #include <bitset>
+#include <cstdint>
+#include <memory>
+#include <span>
+#include <string_view>
+#include <vector>
 
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
@@ -124,7 +129,7 @@ class RenderWindow final : public RenderTarget
     using RenderTarget::deactivate;
 
     private:
-    enum WindowFlag
+    enum WindowFlag : std::uint8_t
     {
         VSYNC = 0,
         MINIMIZED = 1,

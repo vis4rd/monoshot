@@ -28,8 +28,8 @@ class Scalar
     // NOLINTNEXTLINE(google-explicit-constructor)
     operator T()        const { return data; }
 
-    constexpr Scalar& operator=(const Scalar& copy)     { this->data = copy.data; return *this; }
-    constexpr Scalar& operator=(Scalar&& move) noexcept { this->data = std::move(move.data); return *this; }
+    constexpr Scalar& operator=(const Scalar& copy)     = default;
+    constexpr Scalar& operator=(Scalar&& move) noexcept = default;
     constexpr Scalar& operator=(const T& val)           { this->data = std::move(val); return *this; }
     constexpr Scalar& operator=(T&& val)                { this->data = std::move(val); return *this; }
 

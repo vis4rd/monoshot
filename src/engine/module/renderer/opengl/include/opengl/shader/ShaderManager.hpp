@@ -2,6 +2,7 @@
 
 #include <filesystem>
 #include <map>
+#include <string>
 
 #include "ShaderProgram.hpp"
 

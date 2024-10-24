@@ -21,6 +21,13 @@ namespace mono::renderer
 class RenderPassInterface
 {
     public:
+    RenderPassInterface() = default;
+    RenderPassInterface(const RenderPassInterface&) = default;
+    RenderPassInterface(RenderPassInterface&&) noexcept = default;
+
+    RenderPassInterface& operator=(const RenderPassInterface&) = default;
+    RenderPassInterface& operator=(RenderPassInterface&&) noexcept = default;
+
     virtual void submitDraws() = 0;
     virtual ~RenderPassInterface() noexcept = default;
 

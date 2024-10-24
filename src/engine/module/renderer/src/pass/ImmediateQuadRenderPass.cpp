@@ -79,7 +79,12 @@ void ImmediateQuadRenderPass::submitDraws()
         m_shader.uploadUniform("uFrameCurrentIndex", frame_current_indices, 98);
 
         m_quadVao->bind();
-        glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr, m_quads.size());
+        glDrawElementsInstanced(
+            GL_TRIANGLES,
+            6,
+            GL_UNSIGNED_INT,
+            nullptr,
+            static_cast<GLsizei>(m_quads.size()));
         m_quadVao->unbind();
         m_quadSsbo->unbind();
 
@@ -125,10 +130,11 @@ void ImmediateQuadRenderPass::drawQuad(
     };
 
     const gl::QuadInstanceData quad_instance_data{
-        color_uint,
-        position,
-        size,
-        gl::detail::RtiPacked{static_cast<glm::uint32>(modulo(rotation, 360.f)), texture_slot}
+        .color = color_uint,
+        .position = position,
+        .scale = size,
+        .rotation_texIndex =
+            gl::detail::RtiPacked{static_cast<glm::uint32>(modulo(rotation, 360.f)), texture_slot}
     };
 
     m_quads.push_back(quad_instance_data);
