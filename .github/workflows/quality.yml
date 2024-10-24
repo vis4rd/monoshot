@@ -36,7 +36,7 @@ jobs:
         run: |
           echo "All files changed in this pull request:"
           cat pr_files.txt
-          grep -E '.*\.(hpp|cpp|inl|c|h)' pr_files.txt > files.txt || true
+          grep -E '.+\.(hpp|cpp|inl|c|h)$' pr_files.txt > files.txt || true
 
           echo "Files selected for formatting check:"
           cat files.txt
@@ -142,7 +142,7 @@ jobs:
         run: |
           echo "All files changed in this pull request:"
           cat pr_files.txt
-          grep -E '.*\.(hpp|cpp|inl|c|h)' pr_files.txt > files.txt
+          grep -E '.+\.(hpp|cpp|inl|c|h)$' pr_files.txt > files.txt
 
           echo "Files selected for clang-tidy check:"
           cat files.txt
