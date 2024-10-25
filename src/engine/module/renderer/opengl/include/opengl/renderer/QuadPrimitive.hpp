@@ -28,7 +28,7 @@ struct QuadInstanceData
     glm::uint32 color;
     glm::vec2 position;
     glm::vec2 scale;
-    detail::RtiPacked rotation_texIndex;
+    detail::RtiPacked rotation_texIndex;  // NOLINT(readability-identifier-naming)
 };
 
 static constexpr std::array<glm::vec2, 8> quadConstantVertexData = {

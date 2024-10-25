@@ -157,23 +157,23 @@ void CreatorSection::update() noexcept
             }
         }
     }
-    if(constexpr float sizeVel = 5.f; m_selectedMapItem == 9999)
+    if(constexpr float size_vel = 5.f; m_selectedMapItem == 9999)
     {
         if(mono::input::isHeld(GLFW_KEY_UP))
         {
-            m_endAreaSize.y += (static_cast<float>(delta_time) * sizeVel);
+            m_endAreaSize.y += (static_cast<float>(delta_time) * size_vel);
         }
         if(mono::input::isHeld(GLFW_KEY_DOWN))
         {
-            m_endAreaSize.y -= (static_cast<float>(delta_time) * sizeVel);
+            m_endAreaSize.y -= (static_cast<float>(delta_time) * size_vel);
         }
         if(mono::input::isHeld(GLFW_KEY_RIGHT))
         {
-            m_endAreaSize.x += (static_cast<float>(delta_time) * sizeVel);
+            m_endAreaSize.x += (static_cast<float>(delta_time) * size_vel);
         }
         if(mono::input::isHeld(GLFW_KEY_LEFT))
         {
-            m_endAreaSize.x -= (static_cast<float>(delta_time) * sizeVel);
+            m_endAreaSize.x -= (static_cast<float>(delta_time) * size_vel);
         }
     }
     m_endAreaSize = glm::max(m_endAreaSize, 1.f);
