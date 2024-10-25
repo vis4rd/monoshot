@@ -152,4 +152,4 @@ jobs:
         if: ${{ steps.check-compile-commands.outcome == 'success' }} && ${{ steps.list-files.outcome == 'success' }}
         shell: bash
         run: |
-          cat files.txt | xargs clang-tidy --quiet --config-file=.clang-tidy --extra-arg=--std=c++20 -p=${{ github.workspace }}/build
+          cat files.txt | xargs clang-tidy --quiet --config-file=.clang-tidy -p=${{ github.workspace }}/build
