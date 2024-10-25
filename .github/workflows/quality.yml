@@ -121,7 +121,8 @@ jobs:
         shell: bash
         run: |
           sudo apt update
-          sudo apt install -y clang-tidy
+          sudo apt install -y python3-pip
+          pip3 install clang-tidy
           clang-tidy --version
 
       - name: Get files in pull request
