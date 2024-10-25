@@ -4,16 +4,21 @@ if(NOT CLANG_TIDY_CMD)
     message(FATAL_ERROR "clang-tidy not found, aborting...")
 endif()
 
-file(GLOB_RECURSE CT_ENGINE_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/engine/module/*.[ch]pp")
-file(GLOB_RECURSE CT_GAME_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/game/*.[ch]pp")
+set(ENGINE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/engine/module")
+set(GAME_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/game")
+file(GLOB_RECURSE CT_ENGINE_SOURCES "${ENGINE_SOURCE_DIR}/*.inl" "${ENGINE_SOURCE_DIR}/*.[ch]pp")
+file(GLOB_RECURSE CT_GAME_SOURCES "${GAME_SOURCE_DIR}/*.inl" "${GAME_SOURCE_DIR}/*.[ch]pp")
 set(CT_SOURCES "${CT_ENGINE_SOURCES};${CT_GAME_SOURCES}")
+list(LENGTH CT_SOURCES CT_SOURCES_COUNT)
+message(STATUS "Found ${CT_SOURCES_COUNT} source files to check.")
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/utils/split_list.cmake")
 
 set(CT_PROCESS_NUM 16)
 split_list(CT_SOURCES ${CT_PROCESS_NUM} CT_SOURCES_CHUNKS)
+list(LENGTH CT_SOURCES_CHUNKS CT_PROCESS_NUM)
 
-set(CT_FULL_COMMAND ${CLANG_TIDY_CMD} --quiet --config-file=.clang-tidy --extra-arg=--std=c++20 -p=build/)
+set(CT_FULL_COMMAND ${CLANG_TIDY_CMD} --quiet --config-file=.clang-tidy -p=build/)
 
 message(STATUS "Launching ${CT_PROCESS_NUM} processes of clang-tidy.")
 execute_process(

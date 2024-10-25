@@ -1,9 +1,16 @@
+# RUN EXAMPLE:
+# find src/engine -type f | grep -vi lib/* | grep -E ".*\.(cpp|hpp|c|h|inl)$" | xargs clang-tidy --use-color --config-file=.clang-tidy -p build > dev/clang-tidy-output.txt
 ---
 WarningsAsErrors: "true"
 UseColor: true
 HeaderFilterRegex: '.*\/?src\/(engine\/module\/|game\/include\/).*'
-# HeaderFileExtensions: ['hpp'] # clang-tidy > 18
-# ImplementationFileExtensions: ['cpp'] # clang-tidy > 18
+HeaderFileExtensions: # clang-tidy > 18
+  - "hpp"
+  - "inl"
+ImplementationFileExtensions: # clang-tidy > 18
+  - "cpp"
+ExtraArgsBefore:
+  - --std=c++20
 
 # Do not use any whitespaces in comments
 Checks: |
