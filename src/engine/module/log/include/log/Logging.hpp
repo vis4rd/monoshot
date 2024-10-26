@@ -7,16 +7,10 @@
 #include <glad/gl.h>
 #include <spdlog/spdlog.h>
 
+#include "priv/LoggingData.hpp"
+
 namespace mono::log
 {
-
-namespace priv
-{
-
-// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
-inline spdlog::source_loc location = spdlog::source_loc::current();
-
-}  // namespace priv
 
 template<typename... ARGS>
 void setGlObjectLabel(

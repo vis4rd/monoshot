@@ -26,4 +26,5 @@ target_link_libraries(mono_module_log
            glad
            mono::cstring
            mono::config
+           mono::util::compiler
 )
