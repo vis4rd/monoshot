@@ -1,13 +1,15 @@
 #include "../include/log/Logging.hpp"
 
+#include <chrono>
 #include <filesystem>
 #include <fstream>
 
-#include <spdlog/sinks/basic_file_sink.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/async_logger.h>
+#include <spdlog/spdlog.h>
 
 #include "config/Config.hpp"
 #include "cstring/cstring.hpp"
+#include "mono/util/Compiler.hpp"
 
 namespace mono::log
 {
@@ -65,7 +67,7 @@ void openGlDebugMessageCallback(
     const void *user_param)
 {
     spdlog::log(
-        priv::location,
+        data::location,
         glSeverityToSpdlogLevel(severity),
         "\b[#{}][{}: {}] {}",
         id,
@@ -77,7 +79,7 @@ void openGlDebugMessageCallback(
 void setGlLogLocation(const std::source_location &location)
 {
     // line number + 1 because the caller is the one that is interesting
-    priv::location =
+    data::location =
         spdlog::source_loc{location.file_name(), location.line() + 1, location.function_name()};
 }
 
@@ -106,49 +108,105 @@ void enableOpenGlLogging()
     }
 }
 
+static std::chrono::system_clock::time_point getLocalTime()
+{
+    if constexpr(mono::util::isGnuCompiler())
+    {
+        const std::time_t now =
+            std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+        std::tm local_tm{};
+        ::localtime_s(&local_tm, &now);
+
+        return std::chrono::sys_days{
+                   std::chrono::year{local_tm.tm_year + 1900} / (local_tm.tm_mon + 1)
+                   / (local_tm.tm_mday)}
+               + std::chrono::hours{local_tm.tm_hour} + std::chrono::minutes{local_tm.tm_min}
+               + std::chrono::seconds{local_tm.tm_sec};
+    }
+    else
+    {
+        // For some reason, clang crashes when checking local timezone (?)
+        // so current UTC time is returned instead.
+        return std::chrono::system_clock::now();
+    }
+}
+
+static std::string buildEnginePattern()
+{
+    constexpr mono::cstring info_pattern{"[%Y-%m-%d %T.%e][%^%l%$][engine] %v"};
+    constexpr mono::cstring debug_pattern{"[%Y-%m-%d %T.%e][%^%l%$][engine][thread %t][%s:%#] %v"};
+
+    const bool is_debug = mono::config::runtime::logLevel == spdlog::level::debug;
+    return is_debug ? std::string{debug_pattern} : std::string{info_pattern};
+}
+
+static std::string buildAppPattern()
+{
+    constexpr mono::cstring info_pattern{"[%Y-%m-%d %T.%e][%^%l%$][app] %v"};
+    constexpr mono::cstring debug_pattern{"[%Y-%m-%d %T.%e][%^%l%$][app][thread %t][%s:%#] %v"};
+
+    const bool is_debug = mono::config::runtime::logLevel == spdlog::level::debug;
+    return is_debug ? std::string{debug_pattern} : std::string{info_pattern};
+}
+
+static std::vector<spdlog::sink_ptr> buildSinks(std::chrono::system_clock::time_point local_time)
+{
+    const auto formatted_time = std::format("{:%F_%H-%M-%S}", local_time).substr(0, 19);
+    const auto file_name_current = std::format("../logs/{}.log", formatted_time);
+    const std::string file_name_latest = "../logs/latest.log";
+
+    {
+        // create log files
+        std::fstream f1{file_name_current};
+        std::fstream f2{file_name_latest};
+    }
+
+    auto current_file_sink =
+        std::make_shared<spdlog::sinks::basic_file_sink_mt>(file_name_current, true);
+    auto latest_file_sink =
+        std::make_shared<spdlog::sinks::basic_file_sink_mt>(file_name_latest, true);
+    auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+    return {console_sink, current_file_sink, latest_file_sink};
+}
+
 void initialize()
 {
     namespace fs = std::filesystem;
     fs::create_directory("../logs");
 
-    constexpr mono::cstring info_pattern{"[%Y-%m-%d %T.%e][%^%l%$] %v"};
-    constexpr mono::cstring debug_pattern{"[%Y-%m-%d %T.%e][%^%l%$][thread %t][%s:%#] %v"};
-    std::string log_pattern{info_pattern};
+    const auto engine_pattern = buildEnginePattern();
+    const auto app_pattern = buildAppPattern();
 
-    if(mono::config::runtime::logLevel == spdlog::level::debug)
-    {
-        log_pattern = debug_pattern;
-    }
+    const auto local_time = getLocalTime();
+    const auto engine_sinks = buildSinks(local_time);
+    const auto app_sinks = buildSinks(local_time);
 
-    auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-    console_sink->set_pattern(log_pattern);
-    console_sink->set_level(mono::config::runtime::logLevel);
+    spdlog::init_thread_pool(8192, 1, []() {
+        spdlog::info("Starting logging thread");
+    });
+    data::app_logger = std::make_shared<spdlog::async_logger>(
+        "app",
+        app_sinks.begin(),
+        app_sinks.end(),
+        spdlog::thread_pool(),
+        spdlog::async_overflow_policy::overrun_oldest);
+    data::app_logger->set_level(mono::config::runtime::logLevel);
+    data::app_logger->set_pattern(app_pattern);
+    spdlog::register_logger(data::app_logger);
 
-    std::string file_name = std::format("../logs/{}", std::chrono::system_clock::now());
-    file_name.replace(file_name.find(' '), 1, "_");
-    file_name.replace(file_name.find(':'), 1, "-");
-    file_name.replace(file_name.find(':'), 1, "-");
-    file_name = file_name.substr(0, file_name.rfind('.'));
-    if constexpr(mono::config::constant::debugBuild)
-    {
-        file_name += "_debug";
-    }
-    file_name += ".log";
+    data::engine_logger = std::make_shared<spdlog::async_logger>(
+        "engine",
+        engine_sinks.begin(),
+        engine_sinks.end(),
+        spdlog::thread_pool(),
+        spdlog::async_overflow_policy::overrun_oldest);
+    data::engine_logger->set_level(mono::config::runtime::logLevel);
+    data::engine_logger->set_pattern(engine_pattern);
+    spdlog::register_logger(data::engine_logger);
 
-    {
-        // create a file
-        std::fstream file{file_name};
-    }
-
-    auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(file_name, true);
-    file_sink->set_pattern(log_pattern);
-    file_sink->set_level(mono::config::runtime::logLevel);
-
-    spdlog::logger multisink_logger("logger", {console_sink, file_sink});
-    multisink_logger.set_level(mono::config::runtime::logLevel);
-
-    spdlog::set_default_logger(std::make_shared<spdlog::logger>(std::move(multisink_logger)));
+    spdlog::set_default_logger(data::engine_logger);
     spdlog::debug("Logging initialized");
+    spdlog::info("Start timestamp: {:%F %T}", local_time);
 }
 
 }  // namespace mono::log
