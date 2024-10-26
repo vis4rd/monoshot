@@ -56,7 +56,7 @@ void MainMenuSection::render() noexcept
             {m_layout.menuX + m_layout.buttonWS, m_layout.menuY + m_layout.buttonHS});
         if(ImGui::Button("New game", {m_layout.buttonW, m_layout.buttonH}))
         {
-            spdlog::debug("Clicking 'New game'");
+            mono::log::debug("Clicking 'New game'");
             auto& sm = SectionManager::get();
             sm.emplaceSection<NewGameSection>();
         }
@@ -64,7 +64,7 @@ void MainMenuSection::render() noexcept
             {m_layout.menuX + m_layout.buttonWS, ImGui::GetCursorScreenPos().y});
         if(ImGui::Button("Map creator", {m_layout.buttonW, m_layout.buttonH}))
         {
-            spdlog::debug("Clicking 'Map creator'");
+            mono::log::debug("Clicking 'Map creator'");
             auto& sm = SectionManager::get();
             sm.emplaceSection<CreatorSection>();
         }
@@ -72,7 +72,7 @@ void MainMenuSection::render() noexcept
             {m_layout.menuX + m_layout.buttonWS, ImGui::GetCursorScreenPos().y});
         if(ImGui::Button("Settings", {m_layout.buttonW, m_layout.buttonH}))
         {
-            spdlog::debug("Clicking 'Settings'");
+            mono::log::debug("Clicking 'Settings'");
             auto& sm = SectionManager::get();
             sm.emplaceSection<SettingsSection>();
         }
@@ -80,7 +80,7 @@ void MainMenuSection::render() noexcept
             {m_layout.menuX + m_layout.buttonWS, ImGui::GetCursorScreenPos().y});
         if(ImGui::Button("Exit", {m_layout.buttonW, m_layout.buttonH}))
         {
-            spdlog::debug("Clicking 'Exit'");
+            mono::log::debug("Clicking 'Exit'");
             SectionManager::get().clear();
         }
     }

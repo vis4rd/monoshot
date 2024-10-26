@@ -66,7 +66,7 @@ void NewGameSection::render() noexcept
             {m_layout.menuX + m_layout.buttonWS, m_layout.menuY + m_layout.buttonHS});
         if(ImGui::Button("Tutorial", {m_layout.buttonW, m_layout.buttonH}))
         {
-            spdlog::debug("Clicking 'Tutorial'");
+            mono::log::debug("Clicking 'Tutorial'");
             auto& sm = SectionManager::get();
             sm.emplaceSection<TutorialMapSection>();
         }
@@ -75,7 +75,7 @@ void NewGameSection::render() noexcept
              m_layout.menuY + m_layout.buttonHS * 2 + m_layout.buttonH});
         if(ImGui::Button("Forest", {m_layout.buttonW, m_layout.buttonH}))
         {
-            spdlog::debug("Clicking 'Forest'");
+            mono::log::debug("Clicking 'Forest'");
             auto& sm = SectionManager::get();
             sm.emplaceSection<ForestMapSection>();
         }
@@ -84,7 +84,7 @@ void NewGameSection::render() noexcept
              m_layout.menuY + m_layout.buttonHS * 3 + m_layout.buttonH * 2});
         if(ImGui::Button("Winter", {m_layout.buttonW, m_layout.buttonH}))
         {
-            spdlog::debug("Clicking 'Winter'");
+            mono::log::debug("Clicking 'Winter'");
             auto& sm = SectionManager::get();
             sm.emplaceSection<WinterMapSection>();
         }
@@ -95,7 +95,7 @@ void NewGameSection::render() noexcept
                  m_layout.menuY + m_layout.buttonHS * 4 + m_layout.buttonH * 3});
             if(ImGui::Button("Debug Level", {m_layout.buttonW, m_layout.buttonH}))
             {
-                spdlog::debug("Clicking 'Debug Level'");
+                mono::log::debug("Clicking 'Debug Level'");
                 auto& sm = SectionManager::get();
                 sm.emplaceSection<DebugSection>();
             }

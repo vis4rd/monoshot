@@ -22,7 +22,7 @@ Map::Map(const std::size_t& width, const std::size_t& height)
 
 Map::~Map()
 {
-    spdlog::trace("Deleting Map instance");
+    mono::log::trace("Deleting Map instance");
 }
 
 std::size_t Map::getSize() const
@@ -42,7 +42,7 @@ const std::size_t& Map::getHeight() const
 
 void Map::addObject(const glm::vec2& position, const float& rotation, ObjectID object_id)
 {
-    spdlog::debug(
+    mono::log::debug(
         "Placed MapObject: OID = {}, pos = ({}, {}), rot = {}",
         objectIdToString(object_id),
         position.x,
@@ -80,7 +80,7 @@ void Map::removeObject(const glm::vec2& position)
 
 void Map::setTile(const Tile& tile)
 {
-    spdlog::debug(
+    mono::log::debug(
         "Map: Placing a tile with coords ({}, {}), rotation {}, block_id {}",
         tile.x,
         tile.y,
@@ -149,7 +149,7 @@ void Map::addTilesToRegistry(entt::registry& registry) const
         pos.y = tile.y;
         rot.data = tile.rotation;
         size = {1.f, 1.f};
-        spdlog::debug(
+        mono::log::debug(
             "Filling ECS registry with tile pos = ({}, {}), rot = {}",
             pos.x,
             pos.y,
@@ -169,18 +169,22 @@ void Map::addTilesToRegistry(entt::registry& registry) const
         pos = object.getPosition();
         rot = object.getRotation();
         size = object.getSize();
-        spdlog::debug("Filling ECS registry with tile pos = ({}, {}), rot = {}", pos.x, pos.y, rot);
+        mono::log::debug(
+            "Filling ECS registry with tile pos = ({}, {}), rot = {}",
+            pos.x,
+            pos.y,
+            rot);
     }
 }
 
 void Map::loadFromFile(const std::string& filename, entt::registry& enemy_registry)
 {
-    spdlog::debug("Loading map from file '{}'...", filename);
+    mono::log::debug("Loading map from file '{}'...", filename);
 
     std::ifstream file(filename);
     if(!file.is_open() || !file.good())
     {
-        spdlog::debug("Couldn't open file: {}", filename);
+        mono::log::debug("Couldn't open file: {}", filename);
         return;
     }
 
@@ -204,7 +208,7 @@ void Map::loadFromFile(const std::string& filename, entt::registry& enemy_regist
         std::stringstream line_buffer(line);
         line_buffer >> tile_x >> tile_y >> tile_rotation >> tile_block >> tile_solid;
         this->setTile(tile_x, tile_y, tile_rotation, static_cast<BlockID>(tile_block), tile_solid);
-        spdlog::debug(
+        mono::log::debug(
             "Loading Tile: pos = ({}, {}), rot = {}, solid = {}, ID = '{}'",
             tile_x,
             tile_y,
@@ -237,7 +241,7 @@ void Map::loadFromFile(const std::string& filename, entt::registry& enemy_regist
             {object_pos_x, object_pos_y},
             object_rotation,
             static_cast<ObjectID>(object_id));
-        spdlog::debug(
+        mono::log::debug(
             "Loading MapObject: pos = ({}, {}), size = ({}, {}), rot = {}, solid = {}, ID = '{}'",
             object_pos_x,
             object_pos_y,
@@ -260,15 +264,15 @@ void Map::loadFromFile(const std::string& filename, entt::registry& enemy_regist
             {enemy_pos_x, enemy_pos_y},
             {1.f, 1.f},
             enemy_rotation);
-        spdlog::debug("Loading Enemy: pos = ({}, {})", enemy_pos_x, enemy_pos_y);
+        mono::log::debug("Loading Enemy: pos = ({}, {})", enemy_pos_x, enemy_pos_y);
     }
 
-    spdlog::debug("Map loaded from file successfully");
+    mono::log::debug("Map loaded from file successfully");
 }
 
 void Map::saveToFile(const std::string& filename, const entt::registry& enemy_registry)
 {
-    spdlog::debug("Saving map to file '{}'...", filename);
+    mono::log::debug("Saving map to file '{}'...", filename);
 
     // clang-format off
     std::sort(m_tiles.begin(), m_tiles.end(), [](const Tile& tile1, const Tile& tile2)
@@ -284,7 +288,7 @@ void Map::saveToFile(const std::string& filename, const entt::registry& enemy_re
     {
         file_buffer << tile.x << ' ' << tile.y << ' ' << tile.rotation << ' ' << tile.blockId << ' '
                     << tile.solid << '\n';
-        spdlog::debug(
+        mono::log::debug(
             "Saving Tile: pos = ({}, {}), rot = {}, solid = {}, ID = '{}'",
             tile.x,
             tile.y,
@@ -303,7 +307,7 @@ void Map::saveToFile(const std::string& filename, const entt::registry& enemy_re
         file_buffer << pos.x << ' ' << pos.y << ' ' << size.x << ' ' << size.y << ' '
                     << object.getRotation() << ' ' << object.hasCollision << ' ' << object.id
                     << '\n';
-        spdlog::debug(
+        mono::log::debug(
             "Saving MapObject: pos = ({}, {}), size = ({}, {}), rot = {}, solid = {}, ID = '{}'",
             pos.x,
             pos.y,
@@ -321,20 +325,20 @@ void Map::saveToFile(const std::string& filename, const entt::registry& enemy_re
     for(auto&& [enemy, pos, rot] : view.each())
     {
         file_buffer << pos.x << ' ' << pos.y << ' ' << rot.data << '\n';
-        spdlog::debug("Saving Enemy: pos = ({}, {}), rot = {}", pos.x, pos.y, rot.data);
+        mono::log::debug("Saving Enemy: pos = ({}, {}), rot = {}", pos.x, pos.y, rot.data);
     }
 
     // dump buffer to the file
     std::ofstream file(filename);
     if(!file.is_open() || !file.good())
     {
-        spdlog::error("Could not open file '{}', can not save the map", filename);
+        mono::log::error("Could not open file '{}', can not save the map", filename);
         return;
     }
     file << file_buffer.rdbuf();
     file.close();
 
-    spdlog::debug("Map saved to file successfully");
+    mono::log::debug("Map saved to file successfully");
 }
 
 void Map::setTheme(const MapTheme& new_theme)
@@ -417,21 +421,21 @@ void Map::calculateNewSize(const float& tile_x, const float& tile_y)
     if(abs_tile_center_x > center_x)
     {
         m_width = abs_tile_center_x * 2 + 1;
-        spdlog::trace(
+        mono::log::trace(
             "Map: tile.x > center_x ({} > {}): new_width = {}",
             abs_tile_center_x,
             center_x,
             m_width);
-        spdlog::debug("Map: Tile is out of bounds, new map width = {}", m_width);
+        mono::log::debug("Map: Tile is out of bounds, new map width = {}", m_width);
     }
     if(abs_tile_center_y > center_y)
     {
         m_height = abs_tile_center_y * 2 + 1;
-        spdlog::trace(
+        mono::log::trace(
             "Map: tile.y > center_y (|{}| > {}): new_height = {}",
             abs_tile_center_y,
             center_y,
             m_height);
-        spdlog::debug("Map: Tile is out of bounds, new map height = {}", m_height);
+        mono::log::debug("Map: Tile is out of bounds, new map height = {}", m_height);
     }
 }

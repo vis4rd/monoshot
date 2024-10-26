@@ -1,6 +1,6 @@
 #pragma once
 
-#include <spdlog/spdlog.h>
+#include <log/Logging.hpp>
 
 #include "SettingsLayout.hpp"
 
@@ -19,9 +19,9 @@ LowerNavigationBoxLayout::LowerNavigationBoxLayout(const ImVec2& workpos, const 
     m_baseMenuW = 1840.f;
     this->update(workpos, worksize);
 
-    spdlog::debug("box size = ({}, {})", menuW, menuH);
-    spdlog::debug("box pos = ({}, {})", menuX, menuY);
-    spdlog::debug("button size = [{}({}, {}){}]", buttonWS, buttonW, buttonH, buttonHS);
+    mono::log::debug("box size = ({}, {})", menuW, menuH);
+    mono::log::debug("box pos = ({}, {})", menuX, menuY);
+    mono::log::debug("button size = [{}({}, {}){}]", buttonWS, buttonW, buttonH, buttonHS);
 }
 
 void LowerNavigationBoxLayout::update(const ImVec2& workpos, const ImVec2& worksize)

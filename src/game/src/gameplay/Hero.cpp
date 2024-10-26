@@ -1,7 +1,6 @@
 #include "../../include/gameplay/Hero.hpp"
 
 #include <resource/Resource.hpp>
-#include <spdlog/spdlog.h>
 
 Hero::Hero(
     const std::int32_t& health,

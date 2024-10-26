@@ -22,14 +22,14 @@ inline void LowerNavigationBox(const UI::BaseLayout& layout)
         ImGui::SetCursorScreenPos({layout.menuX + layout.buttonWS, layout.menuY + layout.buttonHS});
         if(ImGui::Button("Close", {layout.buttonW, layout.buttonH}))
         {
-            spdlog::debug("Clicking 'Close'");
+            mono::log::debug("Clicking 'Close'");
             auto& sm = SectionManager::get();
             sm.popSection();
         }
         // else if(ImGui::SameLine(); ImGui::Button("Other option", {layout.buttonW,
         // layout.buttonH}))
         // {
-        //     spdlog::debug("Clicking 'Other option'");
+        //     mono::log::debug("Clicking 'Other option'");
         // }
     }
     ImGui::End();

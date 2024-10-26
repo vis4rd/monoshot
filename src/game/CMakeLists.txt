@@ -57,5 +57,4 @@ target_link_libraries(monoshot
            EnTT::EnTT
            glm::glm
            tinyfd::tinyfd
-           spdlog::spdlog
 )
