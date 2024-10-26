@@ -55,7 +55,7 @@ void CreatorSection::update() noexcept
     const double velocity = base_velocity * delta_time * pos.z;
     if(mono::input::isPressedOnce(GLFW_KEY_ESCAPE))
     {
-        spdlog::debug("Lets pop some sections");
+        mono::log::debug("Lets pop some sections");
         SectionManager::get().popSection();
     }
     if(mono::input::isHeld(GLFW_KEY_A))
@@ -150,7 +150,7 @@ void CreatorSection::update() noexcept
                     m_mouseWorldPos,
                     {1.f, 1.f},
                     m_randomizedRotation);
-                spdlog::debug(
+                mono::log::debug(
                     "Map: Placing an enemy with coords ({}, {})",
                     m_mouseWorldPos.x,
                     m_mouseWorldPos.y);
@@ -318,7 +318,7 @@ void CreatorSection::render() noexcept
                        (blockToString(block_id) + std::string("##unique_id")).c_str(),
                        &(checks.at(block_id - BlockID::FIRST_BLOCK - 1))))
                 {
-                    spdlog::debug("Selected Block '{}'", blockToString(block_id));
+                    mono::log::debug("Selected Block '{}'", blockToString(block_id));
                     m_selectedMapItem = block_id;
                     preview = blockToString(block_id);
                 }
@@ -331,7 +331,7 @@ void CreatorSection::render() noexcept
                        (objectIdToString(object_id) + std::string("##unique_id")).c_str(),
                        &(checks.at(BlockID::BLOCK_COUNT + object_id - ObjectID::FIRST_OBJECT - 1))))
                 {
-                    spdlog::debug("Selected MapObject '{}'", objectIdToString(object_id));
+                    mono::log::debug("Selected MapObject '{}'", objectIdToString(object_id));
                     m_selectedMapItem = object_id;
                     preview = objectIdToString(object_id);
                 }
@@ -342,13 +342,13 @@ void CreatorSection::render() noexcept
                          [static_cast<std::size_t>(BlockID::BLOCK_COUNT)
                           + static_cast<std::size_t>(ObjectID::OBJECT_COUNT)])))
             {
-                spdlog::debug("Selected End Area");
+                mono::log::debug("Selected End Area");
                 m_selectedMapItem = 9999;
                 preview = "End Area";
             }
             if(ImGui::Selectable("Enemy##unique_id", &(checks.back())))
             {
-                spdlog::debug("Selected Enemy");
+                mono::log::debug("Selected Enemy");
                 m_selectedMapItem = 10000;
                 preview = "Enemy";
             }

@@ -22,7 +22,7 @@ GameplaySection::GameplaySection()
 
 GameplaySection::~GameplaySection()
 {
-    spdlog::trace("Destroying {}", m_name);
+    mono::log::trace("Destroying {}", m_name);
     m_mapElementsRegistry.clear();
 }
 
@@ -133,7 +133,7 @@ void GameplaySection::update() noexcept
 
 void GameplaySection::render() noexcept
 {
-    spdlog::trace("Rendering GameplaySection");
+    mono::log::trace("Rendering GameplaySection");
 
     // m_renderer.beginBatch();
     m_map.drawTiles();

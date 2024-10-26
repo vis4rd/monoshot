@@ -12,8 +12,11 @@ namespace mono::config
 
 namespace data
 {
+
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 inline ini::IniFile iniFile{};
-}
+
+}  // namespace data
 
 void initialize();
 

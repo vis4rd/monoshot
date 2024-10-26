@@ -54,7 +54,7 @@ DebugSection::DebugSection()
 
 DebugSection::~DebugSection()
 {
-    spdlog::trace("Destroying DebugSection");
+    mono::log::trace("Destroying DebugSection");
     m_mapElementsRegistry.clear();
 }
 
@@ -159,7 +159,7 @@ void DebugSection::update() noexcept
 
 void DebugSection::render() noexcept
 {
-    spdlog::trace("Rendering DebugSection");
+    mono::log::trace("Rendering DebugSection");
 
     // m_renderer.beginBatch();
 
@@ -402,19 +402,19 @@ void DebugSection::showDebugUI(bool& draw_area, bool& draw_bounding_boxes)
             if(ImGui::Selectable("Tutorial Theme##unique_id", &check))
             {
                 preview = "Tutorial Theme";
-                spdlog::debug("Switching MapTheme to '{}'", preview);
+                mono::log::debug("Switching MapTheme to '{}'", preview);
                 m_map.setTheme(MapThemes::tutorialTheme);
             }
             if(ImGui::Selectable("Forest Theme##unique_id", &check))
             {
                 preview = "Forest Theme";
-                spdlog::debug("Switching MapTheme to '{}'", preview);
+                mono::log::debug("Switching MapTheme to '{}'", preview);
                 m_map.setTheme(MapThemes::forestTheme);
             }
             if(ImGui::Selectable("Winter Theme##unique_id", &check))
             {
                 preview = "Winter Theme";
-                spdlog::debug("Switching MapTheme to '{}'", preview);
+                mono::log::debug("Switching MapTheme to '{}'", preview);
                 m_map.setTheme(MapThemes::winterTheme);
             }
             ImGui::EndCombo();

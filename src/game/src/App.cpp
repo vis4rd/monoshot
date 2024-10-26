@@ -4,6 +4,7 @@
 
 #include <config/Config.hpp>
 #include <cstring/cstring.hpp>
+#include <log/Logging.hpp>
 #include <opengl/texture/Texture.hpp>
 #include <renderer/pass/ImmediateLineRenderPass.hpp>
 #include <renderer/pass/ImmediateQuadRenderPass.hpp>
@@ -16,7 +17,7 @@
 App::App(const std::string& window_title)
     : m_sectionManager(SectionManager::get())
 {
-    spdlog::info("App version: {}", MONOSHOT_VERSION);
+    mono::log::info("App version: {}", MONOSHOT_VERSION);
 
     m_window = std::make_shared<mono::gl::RenderWindow>(
         mono::config::runtime::resolution.width,
@@ -89,7 +90,7 @@ App::~App() noexcept
 
 void App::initTextures() noexcept
 {
-    spdlog::info("Loading textures");
+    mono::log::info("Loading textures");
     using res = ResourceManager;
     res::largeTreeTexture =
         Resource::create<mono::Texture>("../res/textures/large_tree.png", 128, 128);
@@ -126,7 +127,7 @@ void App::initTextures() noexcept
 
 void App::initFonts() noexcept
 {
-    spdlog::info("Loading fonts");
+    mono::log::info("Loading fonts");
     using res = ResourceManager;
 
     const auto& window_width = res::window->getSize().x;
@@ -151,7 +152,7 @@ void App::initFonts() noexcept
 
 void App::run() noexcept
 {
-    spdlog::info("Starting main application loop");
+    mono::log::info("Starting main application loop");
     while(true)
     {
         this->update(m_sectionManager);
@@ -162,12 +163,12 @@ void App::run() noexcept
         m_timer->update();
         this->render(m_sectionManager);
     }
-    spdlog::info("Stopped main application loop");
+    mono::log::info("Stopped main application loop");
 }
 
 void App::terminate(int code) noexcept
 {
-    spdlog::info("Closing the application");
+    mono::log::info("Closing the application");
 }
 
 void App::destroyTextures() noexcept

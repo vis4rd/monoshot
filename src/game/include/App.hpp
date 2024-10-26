@@ -47,12 +47,12 @@ void App::update(UpdateableTrait auto&&... updateables) noexcept
 {
     if(m_sectionManager.size() == 0)
     {
-        spdlog::debug("SectionManager asks to close the window");
+        mono::log::debug("SectionManager asks to close the window");
         m_window->requestClose();
     }
     if(m_window->shouldClose())
     {
-        spdlog::debug("Window should close, clearing SectionManager, returning...");
+        mono::log::debug("Window should close, clearing SectionManager, returning...");
         m_sectionManager.clear();
         return;
     }
@@ -61,11 +61,11 @@ void App::update(UpdateableTrait auto&&... updateables) noexcept
     if(mono::input::isPressedOnce(GLFW_KEY_F11))
     {
         auto size = m_window->getSize();
-        spdlog::debug("on F11: window size = {}x{}", size.x, size.y);
+        mono::log::debug("on F11: window size = {}x{}", size.x, size.y);
 
         m_window->toggleFullscreen();
         size = m_window->getSize();
-        spdlog::debug("after F11: window size = {}x{}", size.x, size.y);
+        mono::log::debug("after F11: window size = {}x{}", size.x, size.y);
     }
     if(m_sectionManager.size() == 1)
     {

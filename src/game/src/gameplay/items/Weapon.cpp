@@ -2,8 +2,6 @@
 
 #include <algorithm>
 
-#include <spdlog/spdlog.h>
-
 Weapon::Weapon(
     const std::int32_t& damage,
     const std::uint32_t& magazine_capacity,
