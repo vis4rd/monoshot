@@ -1,4 +1,4 @@
-#include "../include/log/Logging.hpp"
+#include "log/Logging.hpp"
 
 #include <chrono>
 #include <filesystem>

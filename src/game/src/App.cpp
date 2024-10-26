@@ -4,7 +4,7 @@
 
 #include <config/Config.hpp>
 #include <cstring/cstring.hpp>
-#include <log/Logging.hpp>
+#include <mono/log/Logging.hpp>
 #include <opengl/texture/Texture.hpp>
 #include <renderer/pass/ImmediateLineRenderPass.hpp>
 #include <renderer/pass/ImmediateQuadRenderPass.hpp>

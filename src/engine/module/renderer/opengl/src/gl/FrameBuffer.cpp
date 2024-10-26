@@ -1,6 +1,6 @@
 #include "../../include/opengl/gl/FrameBuffer.hpp"
 
-#include "log/Logging.hpp"
+#include "mono/log/Logging.hpp"
 
 namespace mono::gl
 {
