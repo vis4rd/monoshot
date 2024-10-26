@@ -20,6 +20,7 @@ void setGlObjectLabel(
     ARGS&&... args);
 void setGlLogLocation(const std::source_location& location = std::source_location::current());
 void enableOpenGlLogging();
+void initialize();
 
 template<typename... ARGS>
 void setGlObjectLabel(
@@ -33,6 +34,34 @@ void setGlObjectLabel(
     glObjectLabel(identifier, object, static_cast<GLsizei>(label_str.size()), label_str.data());
 }
 
-void initialize();
+void critical(spdlog::loc_with_fmt fmt, auto&&... args)
+{
+    data::app_logger->critical(fmt, std::forward<decltype(args)>(args)...);
+}
+
+void error(spdlog::loc_with_fmt fmt, auto&&... args)
+{
+    data::app_logger->error(fmt, std::forward<decltype(args)>(args)...);
+}
+
+void warning(spdlog::loc_with_fmt fmt, auto&&... args)
+{
+    data::app_logger->warn(fmt, std::forward<decltype(args)>(args)...);
+}
+
+void info(spdlog::loc_with_fmt fmt, auto&&... args)
+{
+    data::app_logger->info(fmt, std::forward<decltype(args)>(args)...);
+}
+
+void debug(spdlog::loc_with_fmt fmt, auto&&... args)
+{
+    data::app_logger->debug(fmt, std::forward<decltype(args)>(args)...);
+}
+
+void trace(spdlog::loc_with_fmt fmt, auto&&... args)
+{
+    data::app_logger->trace(fmt, std::forward<decltype(args)>(args)...);
+}
 
 }  // namespace mono::log

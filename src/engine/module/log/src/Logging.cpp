@@ -8,7 +8,6 @@
 #include <spdlog/spdlog.h>
 
 #include "config/Config.hpp"
-#include "cstring/cstring.hpp"
 #include "mono/util/Compiler.hpp"
 
 namespace mono::log
@@ -131,22 +130,16 @@ static std::chrono::system_clock::time_point getLocalTime()
     }
 }
 
-static std::string buildEnginePattern()
+static std::string buildPattern()
 {
-    constexpr mono::cstring info_pattern{"[%Y-%m-%d %T.%e][%^%l%$][engine] %v"};
-    constexpr mono::cstring debug_pattern{"[%Y-%m-%d %T.%e][%^%l%$][engine][thread %t][%s:%#] %v"};
-
+    // formatting spec: https://github.com/gabime/spdlog/wiki/3.-Custom-formatting
     const bool is_debug = mono::config::runtime::logLevel == spdlog::level::debug;
-    return is_debug ? std::string{debug_pattern} : std::string{info_pattern};
-}
-
-static std::string buildAppPattern()
-{
-    constexpr mono::cstring info_pattern{"[%Y-%m-%d %T.%e][%^%l%$][app] %v"};
-    constexpr mono::cstring debug_pattern{"[%Y-%m-%d %T.%e][%^%l%$][app][thread %t][%s:%#] %v"};
-
-    const bool is_debug = mono::config::runtime::logLevel == spdlog::level::debug;
-    return is_debug ? std::string{debug_pattern} : std::string{info_pattern};
+    const std::string_view debug_thread_file = is_debug ? "[t:%=5!t][%s:%#]" : "";
+    const std::string_view debug_time_precision = is_debug ? "%f" : "%e";
+    return std::format(
+        "[%Y-%m-%d %T.{}][%^%=5!l%$][%=6n]{} %v",
+        debug_time_precision,
+        debug_thread_file);
 }
 
 static std::vector<spdlog::sink_ptr> buildSinks(std::chrono::system_clock::time_point local_time)
@@ -174,8 +167,8 @@ void initialize()
     namespace fs = std::filesystem;
     fs::create_directory("../logs");
 
-    const auto engine_pattern = buildEnginePattern();
-    const auto app_pattern = buildAppPattern();
+    const auto engine_pattern = buildPattern();
+    const auto app_pattern = buildPattern();
 
     const auto local_time = getLocalTime();
     const auto engine_sinks = buildSinks(local_time);
