@@ -5,7 +5,7 @@
 
 #include <glad/gl.h>
 
-#include "log/Logging.hpp"
+#include "mono/log/Logging.hpp"
 #include "traits/ContiguousContainer.hpp"
 
 namespace mono::gl

@@ -19,6 +19,7 @@ target_sources(mono_module_log
 
 target_include_directories(mono_module_log
     INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include"
+    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/mono"
 )
 
 target_link_libraries(mono_module_log

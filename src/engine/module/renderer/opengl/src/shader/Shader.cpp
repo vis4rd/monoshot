@@ -5,7 +5,7 @@
 
 #include <glad/gl.h>
 
-#include "log/Logging.hpp"
+#include "mono/log/Logging.hpp"
 #include "opengl/shader/ShaderType.hpp"
 
 namespace mono::gl

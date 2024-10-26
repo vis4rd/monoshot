@@ -7,7 +7,7 @@
 #include <spdlog/spdlog.h>
 
 #include "ShaderAttributeLayout.hpp"
-#include "log/Logging.hpp"
+#include "mono/log/Logging.hpp"
 
 namespace mono::gl
 {
