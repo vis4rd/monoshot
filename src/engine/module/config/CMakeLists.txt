@@ -13,6 +13,7 @@ target_sources(mono_module_config
 )
 
 target_include_directories(mono_module_config
+    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/mono"
     INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 

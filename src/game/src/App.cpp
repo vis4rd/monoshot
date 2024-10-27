@@ -2,8 +2,8 @@
 
 #include <filesystem>
 
-#include <config/Config.hpp>
 #include <cstring/cstring.hpp>
+#include <mono/config/Config.hpp>
 #include <mono/log/Logging.hpp>
 #include <opengl/texture/Texture.hpp>
 #include <renderer/pass/ImmediateLineRenderPass.hpp>

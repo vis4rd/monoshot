@@ -7,7 +7,7 @@
 #include <spdlog/async_logger.h>
 #include <spdlog/spdlog.h>
 
-#include "config/Config.hpp"
+#include "mono/config/Config.hpp"
 #include "mono/util/Compiler.hpp"
 
 namespace mono::log

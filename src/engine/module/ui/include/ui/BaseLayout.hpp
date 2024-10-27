@@ -2,7 +2,7 @@
 
 #include <imgui/imgui.h>
 
-#include "config/Config.hpp"
+#include "mono/config/Config.hpp"
 
 // NOLINTNEXTLINE(readability-identifier-naming)
 namespace UI
