@@ -2,7 +2,7 @@
 
 #include <imgui/imgui.h>
 
-#include "config/Config.hpp"
+#include "mono/config/Config.hpp"
 
 namespace mono::dev_ui
 {

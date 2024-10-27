@@ -1,4 +1,4 @@
-#include <config/Config.hpp>
+#include <mono/config/Config.hpp>
 #include <mono/log/Logging.hpp>
 
 #include "include/App.hpp"

@@ -5,7 +5,7 @@
 
 #include <spdlog/spdlog.h>
 
-#include "config/Config.hpp"
+#include "mono/config/Config.hpp"
 #include "priv/InputData.hpp"
 #include "priv/KeyState.hpp"
 

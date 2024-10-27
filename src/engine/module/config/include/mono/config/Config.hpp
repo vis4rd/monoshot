@@ -1,7 +1,5 @@
 #pragma once
 
-#include <filesystem>
-
 #include <inicpp.h>
 
 #include "priv/RuntimeConfiguration.hpp"

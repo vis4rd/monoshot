@@ -5,7 +5,7 @@
 #include <imgui/imgui.h>
 #include <spdlog/spdlog.h>
 
-#include "config/Config.hpp"
+#include "mono/config/Config.hpp"
 #include "mono/log/Logging.hpp"
 #include "opengl/shader/ShaderManager.hpp"
 
