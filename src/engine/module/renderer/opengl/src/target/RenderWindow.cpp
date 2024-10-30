@@ -432,7 +432,9 @@ void RenderWindow::initGl() const
     spdlog::debug("Initializing GL");
 
     // logging
-    if(mono::config::runtime::logLevel <= spdlog::level::debug)
+    if(mono::config::data::configStorage.get<spdlog::level>("engine", "LogLevel")
+           .value_or(spdlog::level::info)
+       <= spdlog::level::debug)
     {
         log::enableOpenGlLogging();
     }

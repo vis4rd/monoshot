@@ -1,6 +1,8 @@
 #include "dev_ui/DevUI.hpp"
 
 #include <imgui/imgui.h>
+#include <spdlog/common.h>
+#include <spdlog/spdlog.h>
 
 #include "mono/config/Config.hpp"
 
@@ -38,11 +40,6 @@ void render()
         const float right_window_edge = ImGui::GetIO().DisplaySize.x - 10.0f;
         const ImVec2 right_align_pivot = {1.0f, 0.0f};
 
-        const auto spdlog_level_to_sv = [](spdlog::level level) {
-            return spdlog::level_string_views[static_cast<std::underlying_type_t<spdlog::level>>(
-                level)];
-        };
-
         ImGui::SetNextWindowPos(
             ImVec2(right_window_edge, 10.0f),
             ImGuiCond_Always,
@@ -69,18 +66,28 @@ void render()
                 {
                     if(ImGui::BeginCombo(
                            "LogLevel",
-                           spdlog_level_to_sv(mono::config::runtime::logLevel).data()))
+                           mono::config::data::configStorage.get<std::string>("engine", "LogLevel")
+                               .value()
+                               .data()))
                     {
                         for(const auto& level : spdlog::level_string_views)
                         {
                             bool is_selected =
-                                (spdlog::level_from_str(std::string{level})
-                                 == mono::config::runtime::logLevel);
+                                (std::string{level}.compare(
+                                     mono::config::data::configStorage
+                                         .get<std::string>("engine", "LogLevel")
+                                         .value())
+                                 == 0);
                             if(ImGui::Selectable(level.data(), is_selected))
                             {
-                                mono::config::runtime::logLevel =
-                                    spdlog::level_from_str(std::string{level});
-                                spdlog::set_level(mono::config::runtime::logLevel);
+                                bool success = mono::config::data::configStorage.set(
+                                    "engine",
+                                    "LogLevel",
+                                    std::string{level});
+                                if(success)
+                                {
+                                    spdlog::set_level(spdlog::level_from_str(std::string{level}));
+                                }
                             }
                             if(is_selected)
                             {
@@ -96,28 +103,26 @@ void render()
                 ImGui::SeparatorText("Window");
                 {
                     {
-                        using ctWindowMode = mono::config::type::WindowMode;
-                        auto& cr_window_mode = mono::config::runtime::windowMode;
-                        const auto window_mode_to_string = [](ctWindowMode mode) -> const char* {
-                            switch(mode)
-                            {
-                                case ctWindowMode::WINDOWED: return "Windowed";
-                                case ctWindowMode::FULLSCREEN: return "Fullscreen";
-                                case ctWindowMode::BORDERLESS: return "Borderless";
-                            }
-                            return "Unknown";
-                        };
-                        if(ImGui::BeginCombo("Mode", window_mode_to_string(cr_window_mode)))
+                        const auto current_window_mode =
+                            mono::config::data::configStorage
+                                .get<std::string>("engine.window", "Mode")
+                                .value();
+                        if(ImGui::BeginCombo(
+                               "Mode",
+                               mono::config::data::configStorage
+                                   .get<std::string>("engine.window", "Mode")
+                                   .value()
+                                   .data()))
                         {
-                            for(const auto mode :
-                                {ctWindowMode::WINDOWED,
-                                 ctWindowMode::FULLSCREEN,
-                                 ctWindowMode::BORDERLESS})
+                            for(const auto mode : {"windowed", "borderless", "fullscreen"})
                             {
-                                const bool is_selected = (mode == cr_window_mode);
-                                if(ImGui::Selectable(window_mode_to_string(mode), is_selected))
+                                const bool is_selected = (current_window_mode.compare(mode) == 0);
+                                if(ImGui::Selectable(mode, is_selected))
                                 {
-                                    cr_window_mode = mode;
+                                    mono::config::data::configStorage.set(
+                                        "engine.window",
+                                        "Mode",
+                                        mode);
                                 }
                                 if(is_selected)
                                 {
@@ -128,7 +133,16 @@ void render()
                         }
                     }
                     {
-                        if(ImGui::Checkbox("UseVSync", &mono::config::runtime::useVSync)) { }
+                        auto current_vsync_state =
+                            mono::config::data::configStorage.get<bool>("engine.window", "UseVSync")
+                                .value();
+                        if(ImGui::Checkbox("UseVSync", &current_vsync_state))
+                        {
+                            mono::config::data::configStorage.set(
+                                "engine.window",
+                                "UseVSync",
+                                current_vsync_state);
+                        }
                     }
                 }
             }

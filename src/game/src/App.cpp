@@ -19,10 +19,11 @@ App::App(const std::string& window_title)
 {
     mono::log::info("App version: {}", MONOSHOT_VERSION);
 
-    m_window = std::make_shared<mono::gl::RenderWindow>(
-        mono::config::runtime::resolution.width,
-        mono::config::runtime::resolution.height,
-        window_title);
+    const auto resolution =
+        mono::config::data::configStorage.get<glm::ivec2>("engine.window", "Resolution")
+            .value_or(glm::ivec2{1920, 1080});
+
+    m_window = std::make_shared<mono::gl::RenderWindow>(resolution.x, resolution.y, window_title);
     ResourceManager::window = m_window;
 
     {
@@ -49,25 +50,25 @@ App::App(const std::string& window_title)
         mono::renderer::addPipeline(std::move(pipeline));
     }
 
-    switch(mono::config::runtime::windowMode)
+    const auto window_mode =
+        mono::config::data::configStorage.get<std::string>("engine.window", "Mode")
+            .value_or("borderless");
+
+    if(window_mode.compare("borderless") == 0)
     {
-        case mono::config::type::WindowMode::FULLSCREEN:
-        {
-            m_window->setFullscreen();
-            break;
-        }
-        case mono::config::type::WindowMode::BORDERLESS:
-        {
-            m_window->setBorderlessFullscreen();
-            break;
-        }
-        case mono::config::type::WindowMode::WINDOWED:
-        {
-            m_window->setFullscreen(false);
-            break;
-        }
+        m_window->setBorderlessFullscreen();
     }
-    m_window->setVerticalSync(mono::config::runtime::useVSync);
+    else if(window_mode.compare("fullscreen") == 0)
+    {
+        m_window->setFullscreen();
+    }
+    else
+    {
+        m_window->setFullscreen(false);
+    }
+
+    m_window->setVerticalSync(
+        mono::config::data::configStorage.get<bool>("engine.window", "UseVSync").value_or(true));
 
     m_timer = std::make_shared<Timer>();
     ResourceManager::timer = m_timer;

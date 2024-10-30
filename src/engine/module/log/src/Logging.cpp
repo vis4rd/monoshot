@@ -133,7 +133,9 @@ static std::chrono::system_clock::time_point getLocalTime()
 static std::string buildPattern()
 {
     // formatting spec: https://github.com/gabime/spdlog/wiki/3.-Custom-formatting
-    const bool is_debug = mono::config::runtime::logLevel == spdlog::level::debug;
+    const bool is_debug =
+        mono::config::data::configStorage.get<spdlog::level>("engine", "LogLevel").value()
+        == spdlog::level::debug;
     const std::string_view debug_thread_file = is_debug ? "[t:%=5!t][%s:%#]" : "";
     const std::string_view debug_time_precision = is_debug ? "%f" : "%e";
     return std::format(
@@ -183,7 +185,10 @@ void initialize()
         app_sinks.end(),
         spdlog::thread_pool(),
         spdlog::async_overflow_policy::overrun_oldest);
-    data::app_logger->set_level(mono::config::runtime::logLevel);
+    const auto log_level =
+        mono::config::data::configStorage.get<spdlog::level>("engine", "LogLevel")
+            .value_or(spdlog::level::info);
+    data::app_logger->set_level(log_level);
     data::app_logger->set_pattern(app_pattern);
     spdlog::register_logger(data::app_logger);
 
@@ -193,7 +198,7 @@ void initialize()
         engine_sinks.end(),
         spdlog::thread_pool(),
         spdlog::async_overflow_policy::overrun_oldest);
-    data::engine_logger->set_level(mono::config::runtime::logLevel);
+    data::engine_logger->set_level(log_level);
     data::engine_logger->set_pattern(engine_pattern);
     spdlog::register_logger(data::engine_logger);
 
