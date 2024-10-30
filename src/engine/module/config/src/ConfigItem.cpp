@@ -26,6 +26,17 @@ std::string_view ConfigItem::getKey() const
     return m_key;
 }
 
+bool ConfigItem::setValue(const std::string& value)
+{
+    if(not m_iniStorage.contains(m_section))
+    {
+        return false;
+    }
+
+    m_iniStorage.at(m_section).at(m_key) = value;
+    return true;
+}
+
 bool ConfigItem::isValid() const
 {
     return std::invoke(m_validator, this->getValue<std::string>().value_or(""), m_userData);
