@@ -8,13 +8,15 @@
 
 #include <inicpp.h>
 
+#include "priv/IniCompliantTrait.hpp"
+
 namespace mono::config
 {
 
 using ConfigItemUserData = std::optional<std::map<std::string, std::string>>;
 using ConfigItemValidatorFunc = std::function<bool(const std::string&, const ConfigItemUserData&)>;
 
-bool defaultValidatorFunc(const std::string& value, const ConfigItemUserData& user_data)
+inline bool defaultValidatorFunc(const std::string& value, const ConfigItemUserData& user_data)
 {
     return true;
 }
@@ -33,6 +35,8 @@ class ConfigItem final
     std::string_view getKey() const;
     template<typename NATIVE_TYPE>
     std::optional<NATIVE_TYPE> getValue() const;
+    bool setValue(const std::string& value);
+    bool setValue(const IniEncodableTrait auto& value);
 
     bool isValid() const;
 
@@ -41,7 +45,7 @@ class ConfigItem final
     const std::string m_key;
     const ConfigItemUserData m_userData;
     const ConfigItemValidatorFunc m_validator;
-    const ini::IniFile& m_iniStorage;
+    ini::IniFile& m_iniStorage;
 };
 
 template<typename NATIVE_TYPE>
@@ -59,6 +63,19 @@ std::optional<NATIVE_TYPE> ConfigItem::getValue() const
     }
 
     return section.at(m_key).as<NATIVE_TYPE>();
+}
+
+bool ConfigItem::setValue(const IniEncodableTrait auto& value)
+{
+    if(not m_iniStorage.contains(m_section))
+    {
+        return false;
+    }
+
+    std::string str_value;
+    ini::Convert<decltype(value)>{}.encode(value, str_value);
+    m_iniStorage.at(m_section).at(m_key) = str_value;
+    return true;
 }
 
 }  // namespace mono::config

@@ -11,6 +11,7 @@ target_sources(mono_module_config
     PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/src/Config.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/src/ConfigItem.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/ConfigStorage.cpp"
 )
 
 target_include_directories(mono_module_config
@@ -21,4 +22,5 @@ target_include_directories(mono_module_config
 target_link_libraries(mono_module_config
     PUBLIC inifile::inifile
            spdlog::spdlog
+           glm::glm
 )
