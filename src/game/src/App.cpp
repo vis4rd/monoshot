@@ -19,9 +19,8 @@ App::App(const std::string& window_title)
 {
     mono::log::info("App version: {}", MONOSHOT_VERSION);
 
-    const auto resolution =
-        mono::config::data::configStorage.get<glm::ivec2>("engine.window", "Resolution")
-            .value_or(glm::ivec2{1920, 1080});
+    const auto resolution = mono::config::runtime.get<glm::ivec2>("engine.window", "Resolution")
+                                .value_or(glm::ivec2{1920, 1080});
 
     m_window = std::make_shared<mono::gl::RenderWindow>(resolution.x, resolution.y, window_title);
     ResourceManager::window = m_window;
@@ -51,8 +50,7 @@ App::App(const std::string& window_title)
     }
 
     const auto window_mode =
-        mono::config::data::configStorage.get<std::string>("engine.window", "Mode")
-            .value_or("borderless");
+        mono::config::runtime.get<std::string>("engine.window", "Mode").value_or("borderless");
 
     if(window_mode.compare("borderless") == 0)
     {
@@ -68,7 +66,7 @@ App::App(const std::string& window_title)
     }
 
     m_window->setVerticalSync(
-        mono::config::data::configStorage.get<bool>("engine.window", "UseVSync").value_or(true));
+        mono::config::runtime.get<bool>("engine.window", "UseVSync").value_or(true));
 
     m_timer = std::make_shared<Timer>();
     ResourceManager::timer = m_timer;

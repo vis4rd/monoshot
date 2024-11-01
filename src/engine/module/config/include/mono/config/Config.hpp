@@ -10,13 +10,8 @@
 namespace mono::config
 {
 
-namespace data
-{
-
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
-inline ConfigStorage configStorage{"../config/config.ini"};
-
-}  // namespace data
+inline ConfigStorage runtime{"../config/config.ini"};
 
 void initialize();
 
