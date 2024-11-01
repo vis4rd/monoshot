@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <iterator>
 #include <numeric>
 
@@ -47,7 +48,7 @@ class OptionStringConfigItem final : public ConfigItem
         return result;
     }
 
-    std::string getType() const override { return "OptionStringConfigItem"; };
+    std::string getType() const override { return "OptionStringConfigItem"; }
 
     const std::vector<std::string>& getOptions() const { return m_options; }
 

@@ -10,6 +10,7 @@
 #include "types/BasicConfigItem.hpp"  // IWYU pragma: keep
 #include "types/MultiNumberConfigItem.hpp"  // IWYU pragma: keep
 #include "types/OptionStringConfigItem.hpp"  // IWYU pragma: keep
+#include "types/RangeNumberConfigItem.hpp"  // IWYU pragma: keep
 
 namespace mono::config
 {
