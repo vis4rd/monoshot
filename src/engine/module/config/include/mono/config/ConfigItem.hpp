@@ -5,6 +5,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <type_traits>
 
 #include <inicpp.h>
 
@@ -73,7 +74,7 @@ bool ConfigItem::setValue(const IniEncodableTrait auto& value)
     }
 
     std::string str_value;
-    ini::Convert<decltype(value)>{}.encode(value, str_value);
+    ini::Convert<std::remove_cvref_t<decltype(value)>>{}.encode(value, str_value);
     m_iniStorage.at(m_section).at(m_key) = str_value;
     return true;
 }
