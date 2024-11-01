@@ -64,25 +64,16 @@ void render()
                 ImGui::SeparatorText("Engine");
 
                 {
-                    if(ImGui::BeginCombo(
-                           "LogLevel",
-                           mono::config::runtime.get<std::string>("engine", "LogLevel")
-                               .value()
-                               .data()))
+                    auto loglevel_config = mono::config::runtime.get("engine", "LogLevel").value();
+                    const auto current_loglevel = loglevel_config.getValue<std::string>().value();
+                    if(ImGui::BeginCombo("LogLevel", current_loglevel.data()))
                     {
                         for(const auto& level : spdlog::level_string_views)
                         {
-                            bool is_selected =
-                                (std::string{level}.compare(
-                                     mono::config::runtime.get<std::string>("engine", "LogLevel")
-                                         .value())
-                                 == 0);
+                            bool is_selected = (current_loglevel.compare(level) == 0);
                             if(ImGui::Selectable(level.data(), is_selected))
                             {
-                                bool success = mono::config::runtime.set(
-                                    "engine",
-                                    "LogLevel",
-                                    std::string{level});
+                                bool success = loglevel_config.setValue(std::string{level});
                                 if(success)
                                 {
                                     spdlog::set_level(spdlog::level_from_str(std::string{level}));
@@ -102,20 +93,20 @@ void render()
                 ImGui::SeparatorText("Window");
                 {
                     {
+                        auto window_mode_config =
+                            mono::config::runtime.get("engine.window", "Mode").value();
                         const auto current_window_mode =
-                            mono::config::runtime.get<std::string>("engine.window", "Mode").value();
-                        if(ImGui::BeginCombo(
-                               "Mode",
-                               mono::config::runtime.get<std::string>("engine.window", "Mode")
-                                   .value()
-                                   .data()))
+                            window_mode_config.getValue<std::string>().value();
+                        if(ImGui::BeginCombo("Mode", current_window_mode.data()))
                         {
+                            // TODO(vis4rd): Replace inline array with user data from
+                            //               window_mode_config
                             for(const auto mode : {"windowed", "borderless", "fullscreen"})
                             {
                                 const bool is_selected = (current_window_mode.compare(mode) == 0);
                                 if(ImGui::Selectable(mode, is_selected))
                                 {
-                                    mono::config::runtime.set("engine.window", "Mode", mode);
+                                    window_mode_config.setValue(std::string{mode});
                                 }
                                 if(is_selected)
                                 {
@@ -126,14 +117,12 @@ void render()
                         }
                     }
                     {
-                        auto current_vsync_state =
-                            mono::config::runtime.get<bool>("engine.window", "UseVSync").value();
-                        if(ImGui::Checkbox("UseVSync", &current_vsync_state))
+                        auto vsync_config =
+                            mono::config::runtime.get("engine.window", "UseVSync").value();
+                        bool current_vsync = vsync_config.getValue<bool>().value();
+                        if(ImGui::Checkbox("UseVSync", &current_vsync))
                         {
-                            mono::config::runtime.set(
-                                "engine.window",
-                                "UseVSync",
-                                current_vsync_state);
+                            vsync_config.setValue(current_vsync);
                         }
                     }
                 }

@@ -19,8 +19,16 @@ App::App(const std::string& window_title)
 {
     mono::log::info("App version: {}", MONOSHOT_VERSION);
 
-    const auto resolution = mono::config::runtime.get<glm::ivec2>("engine.window", "Resolution")
-                                .value_or(glm::ivec2{1920, 1080});
+
+    const auto resolution = []() -> glm::ivec2 {
+        const auto resolution_config = mono::config::runtime.get("engine.window", "Resolution");
+        if(resolution_config.has_value())
+        {
+            const auto& res = resolution_config.value();
+            return res.getValue<glm::ivec2>().value_or(glm::ivec2{1920, 1080});
+        }
+        return {1920, 1080};
+    }();
 
     m_window = std::make_shared<mono::gl::RenderWindow>(resolution.x, resolution.y, window_title);
     ResourceManager::window = m_window;
@@ -49,8 +57,14 @@ App::App(const std::string& window_title)
         mono::renderer::addPipeline(std::move(pipeline));
     }
 
-    const auto window_mode =
-        mono::config::runtime.get<std::string>("engine.window", "Mode").value_or("borderless");
+    const auto window_mode = []() -> std::string {
+        const auto conf = mono::config::runtime.get("engine.window", "Mode");
+        if(conf.has_value())
+        {
+            return conf->getValue<std::string>().value_or("borderless");
+        }
+        return "borderless";
+    }();
 
     if(window_mode.compare("borderless") == 0)
     {
@@ -65,8 +79,15 @@ App::App(const std::string& window_title)
         m_window->setFullscreen(false);
     }
 
-    m_window->setVerticalSync(
-        mono::config::runtime.get<bool>("engine.window", "UseVSync").value_or(true));
+    const auto vsync_enabled = []() {
+        const auto conf = mono::config::runtime.get("engine.window", "UseVSync");
+        if(conf.has_value())
+        {
+            return conf->getValue<bool>().value_or(true);
+        }
+        return true;
+    }();
+    m_window->setVerticalSync(vsync_enabled);
 
     m_timer = std::make_shared<Timer>();
     ResourceManager::timer = m_timer;
