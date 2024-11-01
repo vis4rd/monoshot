@@ -1,5 +1,7 @@
 #include "dev_ui/DevUI.hpp"
 
+#include <ranges>
+
 #include <imgui/imgui.h>
 #include <spdlog/common.h>
 #include <spdlog/spdlog.h>
@@ -99,12 +101,12 @@ void render()
                             window_mode_config.getValue<std::string>().value();
                         if(ImGui::BeginCombo("Mode", current_window_mode.data()))
                         {
-                            // TODO(vis4rd): Replace inline array with user data from
-                            //               window_mode_config
-                            for(const auto mode : {"windowed", "borderless", "fullscreen"})
+                            ;
+                            for(const auto& mode :
+                                window_mode_config.getUserData().value() | std::views::keys)
                             {
                                 const bool is_selected = (current_window_mode.compare(mode) == 0);
-                                if(ImGui::Selectable(mode, is_selected))
+                                if(ImGui::Selectable(mode.c_str(), is_selected))
                                 {
                                     window_mode_config.setValue(std::string{mode});
                                 }

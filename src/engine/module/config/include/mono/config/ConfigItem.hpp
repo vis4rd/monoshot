@@ -36,6 +36,7 @@ class ConfigItem final
     std::string_view getKey() const;
     template<typename NATIVE_TYPE>
     std::optional<NATIVE_TYPE> getValue() const;
+    const ConfigItemUserData& getUserData() const;
     bool setValue(const std::string& value);
     bool setValue(const IniEncodableTrait auto& value);
 
