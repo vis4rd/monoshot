@@ -1,5 +1,7 @@
 #include "config/ConfigItem.hpp"
 
+#include <spdlog/spdlog.h>
+
 namespace mono::config
 {
 
@@ -33,13 +35,41 @@ bool ConfigItem::setValue(const std::string& value)
         return false;
     }
 
-    m_iniStorage.at(m_section).at(m_key) = value;
+    auto& field = m_iniStorage.at(m_section).at(m_key);
+    const auto old_value = field.as<std::string>();
+
+    spdlog::info(
+        "Setting ConfigItem[{}][{}] to '{}' (was '{}')",
+        m_section,
+        m_key,
+        value,
+        old_value);
+    field = value;
+
+    if(m_setCallback.has_value())
+    {
+        spdlog::debug("Invoking callback for ConfigItem[{}][{}]", m_section, m_key);
+        std::invoke(m_setCallback.value(), old_value, value);
+    }
     return true;
 }
 
 const ConfigItemUserData& ConfigItem::getUserData() const
 {
     return m_userData;
+}
+
+CallbackGuard ConfigItem::setOnSetCallback(ConfigItemSetCallback&& callback)
+{
+    spdlog::debug("Setting OnSet callback for ConfigItem[{}][{}]", m_section, m_key);
+    m_setCallback = std::move(callback);
+    return CallbackGuard{*this};
+}
+
+void ConfigItem::removeOnSetCallback()
+{
+    spdlog::debug("Removing OnSet callback for ConfigItem[{}][{}]", m_section, m_key);
+    m_setCallback.reset();
 }
 
 bool ConfigItem::isValid() const
