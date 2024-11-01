@@ -38,6 +38,8 @@ App::App(const std::string& window_title)
     m_window = std::make_shared<mono::gl::RenderWindow>(resolution.x, resolution.y, window_title);
     ResourceManager::window = m_window;
 
+    mono::dev_ui::initialize();
+
     {
         // custom pipeline
         auto& shader_manager = mono::gl::ShaderManager::get();
