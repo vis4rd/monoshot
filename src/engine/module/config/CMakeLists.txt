@@ -12,6 +12,7 @@ target_sources(mono_module_config
         "${CMAKE_CURRENT_SOURCE_DIR}/src/Config.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/src/ConfigItem.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/src/ConfigStorage.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/CallbackGuard.cpp"
 )
 
 target_include_directories(mono_module_config

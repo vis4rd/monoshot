@@ -9,6 +9,7 @@
 
 #include <inicpp.h>
 
+#include "CallbackGuard.hpp"
 #include "priv/IniCompliantTrait.hpp"
 
 namespace mono::config
@@ -16,6 +17,8 @@ namespace mono::config
 
 using ConfigItemUserData = std::optional<std::map<std::string, std::string>>;
 using ConfigItemValidatorFunc = std::function<bool(const std::string&, const ConfigItemUserData&)>;
+using ConfigItemSetCallback =
+    std::function<void(std::string_view old_value, std::string_view new_value)>;
 
 inline bool defaultValidatorFunc(const std::string& value, const ConfigItemUserData& user_data)
 {
@@ -40,6 +43,9 @@ class ConfigItem final
     bool setValue(const std::string& value);
     bool setValue(const IniEncodableTrait auto& value);
 
+    [[nodiscard]] CallbackGuard setOnSetCallback(ConfigItemSetCallback&& callback);
+    void removeOnSetCallback();
+
     bool isValid() const;
 
     private:
@@ -47,6 +53,7 @@ class ConfigItem final
     const std::string m_key;
     const ConfigItemUserData m_userData;
     const ConfigItemValidatorFunc m_validator;
+    std::optional<ConfigItemSetCallback> m_setCallback;
     ini::IniFile& m_iniStorage;
 };
 
@@ -69,15 +76,10 @@ std::optional<NATIVE_TYPE> ConfigItem::getValue() const
 
 bool ConfigItem::setValue(const IniEncodableTrait auto& value)
 {
-    if(not m_iniStorage.contains(m_section))
-    {
-        return false;
-    }
+    std::string new_value;
+    ini::Convert<std::remove_cvref_t<decltype(value)>>{}.encode(value, new_value);
 
-    std::string str_value;
-    ini::Convert<std::remove_cvref_t<decltype(value)>>{}.encode(value, str_value);
-    m_iniStorage.at(m_section).at(m_key) = str_value;
-    return true;
+    return this->setValue(new_value);
 }
 
 }  // namespace mono::config
