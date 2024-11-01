@@ -1,6 +1,7 @@
 #include "log/Logging.hpp"
 
 #include <chrono>
+#include <ctime>
 #include <filesystem>
 #include <fstream>
 
@@ -114,14 +115,13 @@ static std::chrono::system_clock::time_point getLocalTime()
     {
         const std::time_t now =
             std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-        std::tm local_tm{};
-        ::localtime_s(&local_tm, &now);
+        std::tm *local_tm = std::localtime(&now);
 
         return std::chrono::sys_days{
-                   std::chrono::year{local_tm.tm_year + 1900} / (local_tm.tm_mon + 1)
-                   / (local_tm.tm_mday)}
-               + std::chrono::hours{local_tm.tm_hour} + std::chrono::minutes{local_tm.tm_min}
-               + std::chrono::seconds{local_tm.tm_sec};
+                   std::chrono::year{local_tm->tm_year + 1900} / (local_tm->tm_mon + 1)
+                   / (local_tm->tm_mday)}
+               + std::chrono::hours{local_tm->tm_hour} + std::chrono::minutes{local_tm->tm_min}
+               + std::chrono::seconds{local_tm->tm_sec};
     }
     else
     {
