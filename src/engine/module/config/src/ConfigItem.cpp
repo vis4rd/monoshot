@@ -37,6 +37,11 @@ bool ConfigItem::setValue(const std::string& value)
     return true;
 }
 
+const ConfigItemUserData& ConfigItem::getUserData() const
+{
+    return m_userData;
+}
+
 bool ConfigItem::isValid() const
 {
     return std::invoke(m_validator, this->getValue<std::string>().value_or(""), m_userData);
