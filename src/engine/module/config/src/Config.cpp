@@ -7,8 +7,8 @@ namespace mono::config
 
 void initialize()
 {
-    data::configStorage.addConfigItem("engine", "UseOpenGL");
-    data::configStorage.addConfigItem(
+    runtime.addConfigItem("engine", "UseOpenGL");
+    runtime.addConfigItem(
         "engine",
         "LogLevel",
         ConfigItemUserData{
@@ -20,14 +20,14 @@ void initialize()
              {"o6", "critical"}}
     });
 
-    data::configStorage.addConfigItem(
+    runtime.addConfigItem(
         "engine.window",
         "Mode",
         ConfigItemUserData{
             {{"o1", "windowed"}, {"o2", "fullscreen"}, {"o3", "borderless"}}
     });
-    data::configStorage.addConfigItem("engine.window", "UseVSync");
-    data::configStorage.addConfigItem("engine.window", "Resolution");
+    runtime.addConfigItem("engine.window", "UseVSync");
+    runtime.addConfigItem("engine.window", "Resolution");
 }
 
 }  // namespace mono::config

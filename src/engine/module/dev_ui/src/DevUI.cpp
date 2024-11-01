@@ -66,7 +66,7 @@ void render()
                 {
                     if(ImGui::BeginCombo(
                            "LogLevel",
-                           mono::config::data::configStorage.get<std::string>("engine", "LogLevel")
+                           mono::config::runtime.get<std::string>("engine", "LogLevel")
                                .value()
                                .data()))
                     {
@@ -74,13 +74,12 @@ void render()
                         {
                             bool is_selected =
                                 (std::string{level}.compare(
-                                     mono::config::data::configStorage
-                                         .get<std::string>("engine", "LogLevel")
+                                     mono::config::runtime.get<std::string>("engine", "LogLevel")
                                          .value())
                                  == 0);
                             if(ImGui::Selectable(level.data(), is_selected))
                             {
-                                bool success = mono::config::data::configStorage.set(
+                                bool success = mono::config::runtime.set(
                                     "engine",
                                     "LogLevel",
                                     std::string{level});
@@ -104,13 +103,10 @@ void render()
                 {
                     {
                         const auto current_window_mode =
-                            mono::config::data::configStorage
-                                .get<std::string>("engine.window", "Mode")
-                                .value();
+                            mono::config::runtime.get<std::string>("engine.window", "Mode").value();
                         if(ImGui::BeginCombo(
                                "Mode",
-                               mono::config::data::configStorage
-                                   .get<std::string>("engine.window", "Mode")
+                               mono::config::runtime.get<std::string>("engine.window", "Mode")
                                    .value()
                                    .data()))
                         {
@@ -119,10 +115,7 @@ void render()
                                 const bool is_selected = (current_window_mode.compare(mode) == 0);
                                 if(ImGui::Selectable(mode, is_selected))
                                 {
-                                    mono::config::data::configStorage.set(
-                                        "engine.window",
-                                        "Mode",
-                                        mode);
+                                    mono::config::runtime.set("engine.window", "Mode", mode);
                                 }
                                 if(is_selected)
                                 {
@@ -134,11 +127,10 @@ void render()
                     }
                     {
                         auto current_vsync_state =
-                            mono::config::data::configStorage.get<bool>("engine.window", "UseVSync")
-                                .value();
+                            mono::config::runtime.get<bool>("engine.window", "UseVSync").value();
                         if(ImGui::Checkbox("UseVSync", &current_vsync_state))
                         {
-                            mono::config::data::configStorage.set(
+                            mono::config::runtime.set(
                                 "engine.window",
                                 "UseVSync",
                                 current_vsync_state);
