@@ -1,7 +1,4 @@
 {
-    //! Executing tasks on Windows requires Git Bash (or other unix-like shell) to be installed.
-    // Default shell on Windows is either Powershell or CMD, which do not support grep or xargs.
-    // Basically it is easier to require specific shell than to maintain multiplatform tasks.
     "version": "2.0.0",
     "tasks": [
         {
@@ -17,17 +14,17 @@
                 "clear": true,
                 "panel": "dedicated",
                 "reveal": "silent",
-                "showReuseMessage": false,
-            },
+                "showReuseMessage": false
+            }
         },
         {
-            "label": "Run clang-tidy",
+            "label": "Run clang-tidy (all files)",
             "detail": "Run clang-tidy on all C++ files in src/ directory.",
             "type": "shell",
             "command": "cmake -P ./cmake/clang-tidy.cmake",
             "icon": {
                 "color": "terminal.ansiCyan",
-                "id": "sparkle",
+                "id": "sparkle"
             },
             "problemMatcher": {
                 "source": "clang-tidy",
@@ -42,26 +39,60 @@
                         "column": 3,
                         "severity": 4,
                         "message": 5,
-                        "code": 6,
+                        "code": 6
                     }
-                ],
+                ]
             },
             "presentation": {
                 "clear": true,
                 "panel": "dedicated",
                 "reveal": "silent",
-                "showReuseMessage": false,
+                "showReuseMessage": false
+            }
+        },
+        {
+            "label": "Run clang-tidy (current file)",
+            "detail": "Run clang-tidy on the currently active open file.",
+            "type": "shell",
+            "command": "clang-tidy --quiet --config-file=.clang-tidy -p=build/ ${file}",
+            "icon": {
+                "color": "terminal.ansiWhite",
+                "id": "sparkle"
             },
+            "problemMatcher": {
+                "source": "clang-tidy",
+                "owner": "clang-tidy",
+                "applyTo": "openDocuments",
+                "fileLocation": "absolute",
+                "pattern": [
+                    {
+                        "regexp": "^(.*):([0-9]{1,6}):([0-9]{1,6}):\\s([a-z]+):\\s(.*)\\[(.*)\\]$",
+                        "file": 1,
+                        "line": 2,
+                        "column": 3,
+                        "severity": 4,
+                        "message": 5,
+                        "code": 6
+                    }
+                ]
+            },
+            "presentation": {
+                "clear": true,
+                "echo": true,
+                "panel": "dedicated",
+                "reveal": "silent",
+                "showReuseMessage": false
+            }
         },
         {
             "label": "Setup hooks",
             "detail": "Copy git hooks to .git/hooks/ directory.",
             "type": "shell",
             "linux": {
-                "command": "cp -r .githooks/* .git/hooks/",
+                "command": "cp -r .githooks/* .git/hooks/"
             },
             "windows": {
-                "command": "Copy-Item -Path '.githooks/*' -Destination '.git/hooks/' -Exclude '.*'",
+                "command": "Copy-Item -Path '.githooks/*' -Destination '.git/hooks/' -Exclude '.*'"
             },
             "icon": {
                 "color": "terminal.ansiYellow",
@@ -70,7 +101,7 @@
             "presentation": {
                 "clear": true,
                 "reveal": "silent",
-                "showReuseMessage": false,
+                "showReuseMessage": false
             },
             "hide": true,
             "runOptions": {
@@ -95,7 +126,7 @@
                 "clear": true,
                 "panel": "dedicated",
                 "reveal": "silent",
-                "showReuseMessage": false,
+                "showReuseMessage": false
             }
         },
         {
@@ -116,7 +147,7 @@
                 "clear": true,
                 "panel": "dedicated",
                 "reveal": "silent",
-                "showReuseMessage": false,
+                "showReuseMessage": false
             }
         }
     ]
