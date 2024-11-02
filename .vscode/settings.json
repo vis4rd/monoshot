@@ -5,7 +5,7 @@
     "C_Cpp.loggingLevel": "Debug",
     //
     "clangd.arguments": [
-        "-log=verbose",
+        "--log=verbose",
         "--clang-tidy",
     ],
     //
