@@ -150,7 +150,7 @@ jobs:
         continue-on-error: true
 
       - name: Run clang-tidy
-        if: ${{ steps.check-compile-commands.outcome == 'success' }} && ${{ steps.list-files.outcome == 'success' }}
+        if: ${{ steps.check-compile-commands.outcome == 'success' && steps.list-files.outcome == 'success' }}
         shell: bash
         run: |
           cat files.txt | xargs clang-tidy --quiet --config-file=.clang-tidy -p=${{ github.workspace }}/build
