@@ -21,10 +21,11 @@ void ConfigStorage::addConfigItem(
     m_items.emplace_back(std::move(item));
 }
 
-std::optional<ConfigItem> ConfigStorage::get(const std::string& section, const std::string& key)
-    const
+std::optional<std::reference_wrapper<ConfigItem>> ConfigStorage::get(
+    const std::string& section,
+    const std::string& key)
 {
-    const auto result = std::ranges::find_if(m_items, [&](const ConfigItem& item) {
+    auto result = std::ranges::find_if(m_items, [&](const ConfigItem& item) {
         return (item.getSection().compare(section) == 0) and (item.getKey().compare(key) == 0);
     });
     if(result == m_items.end())

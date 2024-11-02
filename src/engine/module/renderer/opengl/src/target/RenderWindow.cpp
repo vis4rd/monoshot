@@ -434,6 +434,7 @@ void RenderWindow::initGl() const
     // logging
     if(mono::config::runtime.get("engine", "LogLevel")
            .value()
+           .get()
            .getValue<spdlog::level>()
            .value_or(spdlog::level::info)
        <= spdlog::level::debug)

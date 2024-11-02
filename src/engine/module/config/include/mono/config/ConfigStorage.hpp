@@ -17,7 +17,9 @@ class ConfigStorage final
         const std::string& section,
         const std::string& key,
         const ConfigItemUserData& user_data = std::nullopt);
-    std::optional<ConfigItem> get(const std::string& section, const std::string& key) const;
+    std::optional<std::reference_wrapper<ConfigItem>> get(
+        const std::string& section,
+        const std::string& key);
     bool validate() const;
 
     private:
