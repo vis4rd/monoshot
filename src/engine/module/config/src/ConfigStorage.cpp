@@ -15,9 +15,10 @@ ConfigStorage::ConfigStorage(const std::filesystem::path& path)
 void ConfigStorage::addConfigItem(
     const std::string& section,
     const std::string& key,
-    const ConfigItemUserData& user_data)
+    const ConfigItemUserData& user_data,
+    ConfigItemValidatorFunc validator)
 {
-    ConfigItem item{m_iniFile, section, key, user_data};
+    ConfigItem item{m_iniFile, section, key, user_data, std::move(validator)};
     m_items.emplace_back(std::move(item));
 }
 

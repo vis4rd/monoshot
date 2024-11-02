@@ -25,6 +25,17 @@ inline bool defaultValidatorFunc(const std::string& value, const ConfigItemUserD
     return true;
 }
 
+// TODO(vis4rd): Make it a base class
+//               1. Require isValid() to be defined
+//               2. Require specifying section and key in constructor (through const members I
+//                    guess?)
+//               3. Require specifying ini storage in constructor
+//               4. Remove custom user data storage if possible (all should be accessible in derived
+//                  class with normal member fields)
+//               5. Figure out how to downcast it in storage safely.
+//                  - virtual member function returning unique id
+//                    - require derived class to implement it
+//                    - probably string would be best
 class ConfigItem final
 {
     public:
