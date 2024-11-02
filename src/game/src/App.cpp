@@ -24,7 +24,7 @@ App::App(const std::string& window_title)
         const auto resolution_config = mono::config::runtime.get("engine.window", "Resolution");
         if(resolution_config.has_value())
         {
-            const auto& res = resolution_config.value();
+            const auto& res = resolution_config.value().get();
             return res.getValue<glm::ivec2>().value_or(glm::ivec2{1920, 1080});
         }
         return {1920, 1080};
@@ -61,7 +61,7 @@ App::App(const std::string& window_title)
         const auto conf = mono::config::runtime.get("engine.window", "Mode");
         if(conf.has_value())
         {
-            return conf->getValue<std::string>().value_or("borderless");
+            return conf.value().get().getValue<std::string>().value_or("borderless");
         }
         return "borderless";
     }();
@@ -83,7 +83,7 @@ App::App(const std::string& window_title)
         const auto conf = mono::config::runtime.get("engine.window", "UseVSync");
         if(conf.has_value())
         {
-            return conf->getValue<bool>().value_or(true);
+            return conf.value().get().getValue<bool>().value_or(true);
         }
         return true;
     }();

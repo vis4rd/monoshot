@@ -66,7 +66,8 @@ void render()
                 ImGui::SeparatorText("Engine");
 
                 {
-                    auto loglevel_config = mono::config::runtime.get("engine", "LogLevel").value();
+                    auto loglevel_config =
+                        mono::config::runtime.get("engine", "LogLevel").value().get();
                     const auto current_loglevel = loglevel_config.getValue<std::string>().value();
                     if(ImGui::BeginCombo("LogLevel", current_loglevel.data()))
                     {
@@ -96,7 +97,7 @@ void render()
                 {
                     {
                         auto window_mode_config =
-                            mono::config::runtime.get("engine.window", "Mode").value();
+                            mono::config::runtime.get("engine.window", "Mode").value().get();
                         const auto current_window_mode =
                             window_mode_config.getValue<std::string>().value();
                         if(ImGui::BeginCombo("Mode", current_window_mode.data()))
@@ -120,7 +121,7 @@ void render()
                     }
                     {
                         auto vsync_config =
-                            mono::config::runtime.get("engine.window", "UseVSync").value();
+                            mono::config::runtime.get("engine.window", "UseVSync").value().get();
                         bool current_vsync = vsync_config.getValue<bool>().value();
                         if(ImGui::Checkbox("UseVSync", &current_vsync))
                         {
