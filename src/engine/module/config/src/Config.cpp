@@ -2,12 +2,15 @@
 
 #include <spdlog/spdlog.h>
 
+#include "config/validators/BooleanValidator.hpp"
+#include "config/validators/OptionStringValidator.hpp"
+
 namespace mono::config
 {
 
 void initialize()
 {
-    runtime.addConfigItem("engine", "UseOpenGL");
+    runtime.addConfigItem("engine", "UseOpenGL", std::nullopt, booleanValidator);
     runtime.addConfigItem(
         "engine",
         "LogLevel",
@@ -18,15 +21,17 @@ void initialize()
              {"o4", "warn"},
              {"o5", "error"},
              {"o6", "critical"}}
-    });
+    },
+        optionStringValidator);
 
     runtime.addConfigItem(
         "engine.window",
         "Mode",
         ConfigItemUserData{
             {{"o1", "windowed"}, {"o2", "fullscreen"}, {"o3", "borderless"}}
-    });
-    runtime.addConfigItem("engine.window", "UseVSync");
+    },
+        optionStringValidator);
+    runtime.addConfigItem("engine.window", "UseVSync", std::nullopt, booleanValidator);
     runtime.addConfigItem("engine.window", "Resolution");
 }
 
