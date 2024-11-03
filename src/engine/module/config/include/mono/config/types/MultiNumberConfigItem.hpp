@@ -33,8 +33,14 @@ class MultiNumberConfigItem : public ConfigItem
                                 return std::string{subrange.begin(), subrange.end()};
                             });
 
-        if(std::ranges::distance(split_view) != NUM)
+        if(const auto dims = std::ranges::distance(split_view); dims != NUM)
         {
+            spdlog::error(
+                "Config field [{}][{}] has {} dimensions, but expected {} dimensions",
+                this->getSection(),
+                this->getKey(),
+                dims,
+                NUM);
             return false;
         }
 
@@ -47,8 +53,12 @@ class MultiNumberConfigItem : public ConfigItem
                 converter.decode(dim, temp);
             }
         }
-        catch(const std::exception& err)
+        catch(const std::exception&)
         {
+            spdlog::error(
+                "Config field [{}][{}] has at least one element of unsupported type",
+                this->getSection(),
+                this->getKey());
             return false;
         }
         return true;
