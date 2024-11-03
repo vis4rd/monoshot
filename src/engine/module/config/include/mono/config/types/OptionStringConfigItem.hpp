@@ -27,7 +27,7 @@ class OptionStringConfigItem final : public ConfigItem
         });
     }
 
-    constexpr std::string_view getType() const override { return "OptionStringConfigItem"; };
+    std::string getType() const override { return "OptionStringConfigItem"; };
 
     const std::vector<std::string>& getOptions() const { return m_options; }
 

@@ -29,7 +29,7 @@ class ConfigItem
     ConfigItem& operator=(ConfigItem&& move) noexcept;
 
     virtual bool isValid() const = 0;
-    virtual constexpr std::string_view getType() const = 0;
+    virtual std::string getType() const = 0;
 
     std::string_view getSection() const;
     std::string_view getKey() const;
@@ -50,11 +50,6 @@ class ConfigItem
     ini::IniFile& m_iniStorage;
     std::optional<ConfigItemSetCallback> m_setCallback;
 };
-
-constexpr std::string_view ConfigItem::getType() const
-{
-    return "ConfigItem";
-}
 
 template<typename NATIVE_TYPE>
 std::optional<NATIVE_TYPE> ConfigItem::getValue() const
