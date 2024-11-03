@@ -3,7 +3,9 @@
 #include <concepts>
 #include <cstddef>
 #include <exception>
+#include <format>
 #include <ranges>
+#include <typeinfo>
 
 #include <inicpp.h>
 #include <spdlog/spdlog.h>
@@ -58,7 +60,10 @@ class MultiNumberConfigItem : public ConfigItem
         return true;
     }
 
-    constexpr std::string_view getType() const override { return "MultiNumberConfigItem"; };
+    std::string getType() const override
+    {
+        return std::format("MultiNumberConfigItem<{},{},'{}'>", NUM, typeid(T).name(), SEP);
+    };
 };
 
 }  // namespace mono::config

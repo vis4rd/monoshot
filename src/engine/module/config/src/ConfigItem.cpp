@@ -38,6 +38,11 @@ bool ConfigItem::isValid() const
     return true;
 }
 
+std::string ConfigItem::getType() const
+{
+    return "ConfigItem";
+}
+
 std::string_view ConfigItem::getSection() const
 {
     return m_section;

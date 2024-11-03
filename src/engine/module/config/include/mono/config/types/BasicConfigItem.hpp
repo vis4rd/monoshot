@@ -1,5 +1,8 @@
 #pragma once
 
+#include <format>
+#include <typeinfo>
+
 #include <spdlog/spdlog.h>
 
 #include "../ConfigItem.hpp"
@@ -36,7 +39,10 @@ class BasicConfigItem : public ConfigItem
         return true;
     }
 
-    constexpr std::string_view getType() const override { return "BasicConfigItem"; };
+    std::string getType() const override
+    {
+        return std::format("BasicConfigType<{}>", typeid(T).name());
+    }
 };
 
 }  // namespace mono::config
