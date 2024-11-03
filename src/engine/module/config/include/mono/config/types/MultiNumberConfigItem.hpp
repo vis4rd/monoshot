@@ -1,6 +1,5 @@
 #pragma once
 
-#include <concepts>
 #include <cstddef>
 #include <exception>
 #include <format>
@@ -11,17 +10,12 @@
 #include <spdlog/spdlog.h>
 
 #include "../ConfigItem.hpp"
+#include "traits/Arithmetic.hpp"
 
 namespace mono::config
 {
 
-namespace priv
-{
-template<typename T>
-concept ArithmeticTrait = std::integral<T> or std::floating_point<T>;
-}
-
-template<std::size_t NUM, priv::ArithmeticTrait T, char SEP = ','>
+template<std::size_t NUM, ArithmeticTrait T, char SEP = ','>
 class MultiNumberConfigItem : public ConfigItem
 {
     public:

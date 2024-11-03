@@ -41,7 +41,7 @@ class BasicConfigItem : public ConfigItem
 
     std::string getType() const override
     {
-        return std::format("BasicConfigType<{}>", typeid(T).name());
+        return std::format("BasicConfigItem<{}>", typeid(T).name());
     }
 };
 
