@@ -24,4 +24,5 @@ target_link_libraries(mono_module_config
     PUBLIC inifile::inifile
            spdlog::spdlog
            glm::glm
+           mono::traits
 )
