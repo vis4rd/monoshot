@@ -1,5 +1,8 @@
 #pragma once
 
+#include <iterator>
+#include <numeric>
+
 #include <spdlog/spdlog.h>
 
 #include "../ConfigItem.hpp"
@@ -22,9 +25,26 @@ class OptionStringConfigItem final : public ConfigItem
     bool isValid() const override
     {
         const std::string value = this->getNativeValue();
-        return std::ranges::any_of(m_options, [&value](const std::string& option) {
+        const bool result = std::ranges::any_of(m_options, [&value](const std::string& option) {
             return value.compare(option) == 0;
         });
+        if(not result)
+        {
+            const std::string options_list = std::accumulate(
+                std::next(m_options.begin()),
+                m_options.end(),
+                m_options[0],
+                [](const std::string& a, const std::string& b) {
+                    return a + ", " + b;
+                });
+            spdlog::error(
+                "Config field [{}][{}] has value '{}' which is not among valid options: [{}]",
+                this->getSection(),
+                this->getKey(),
+                value,
+                options_list);
+        }
+        return result;
     }
 
     std::string getType() const override { return "OptionStringConfigItem"; };
