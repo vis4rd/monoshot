@@ -12,36 +12,11 @@ ConfigStorage::ConfigStorage(const std::filesystem::path& path)
     this->loadFromFile(path);
 }
 
-void ConfigStorage::addConfigItem(
-    const std::string& section,
-    const std::string& key,
-    const ConfigItemUserData& user_data,
-    ConfigItemValidatorFunc validator)
-{
-    ConfigItem item{m_iniFile, section, key, user_data, std::move(validator)};
-    m_items.emplace_back(std::move(item));
-}
-
-std::optional<std::reference_wrapper<ConfigItem>> ConfigStorage::get(
-    const std::string& section,
-    const std::string& key)
-{
-    auto result = std::ranges::find_if(m_items, [&](const ConfigItem& item) {
-        return (item.getSection().compare(section) == 0) and (item.getKey().compare(key) == 0);
-    });
-    if(result == m_items.end())
-    {
-        return std::nullopt;
-    }
-
-    return *result;
-}
-
 bool ConfigStorage::validate() const
 {
     for(const auto& item : m_items)
     {
-        if(not item.isValid())
+        if(not item->isValid())
         {
             return false;
         }

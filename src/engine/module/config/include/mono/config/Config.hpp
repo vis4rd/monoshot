@@ -3,9 +3,9 @@
 #include <inicpp.h>
 
 #include "ConfigStorage.hpp"
-#include "priv/StaticConfiguration.hpp"
-#include "priv/converters/GlmVec2Converter.hpp"
-#include "priv/converters/SpdlogLevelConverter.hpp"
+#include "priv/StaticConfiguration.hpp"  // IWYU pragma: export
+#include "priv/converters/GlmVec2Converter.hpp"  // IWYU pragma: export
+#include "priv/converters/SpdlogLevelConverter.hpp"  // IWYU pragma: export
 
 namespace mono::config
 {

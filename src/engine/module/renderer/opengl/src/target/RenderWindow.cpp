@@ -432,7 +432,7 @@ void RenderWindow::initGl() const
     spdlog::debug("Initializing GL");
 
     // logging
-    if(mono::config::runtime.get("engine", "LogLevel")
+    if(mono::config::runtime.get<config::OptionStringConfigItem>("engine", "LogLevel")
            .value()
            .get()
            .getValue<spdlog::level>()

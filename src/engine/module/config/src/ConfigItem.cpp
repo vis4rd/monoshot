@@ -8,15 +8,35 @@ namespace mono::config
 ConfigItem::ConfigItem(
     ini::IniFile& ini_storage,
     const std::string& section,
-    const std::string& key,
-    const ConfigItemUserData& user_data,
-    ConfigItemValidatorFunc validator)
+    const std::string& key)
     : m_section(section)
     , m_key(key)
-    , m_userData(user_data)
-    , m_validator(std::move(validator))
     , m_iniStorage(ini_storage)
 { }
+
+// NOLINTNEXTLINE(modernize-use-equals-default)
+ConfigItem& ConfigItem::operator=(const ConfigItem& copy)
+{
+    m_section = copy.m_section;
+    m_key = copy.m_key;
+    m_iniStorage = copy.m_iniStorage;
+    m_setCallback = copy.m_setCallback;
+    return *this;
+}
+
+ConfigItem& ConfigItem::operator=(ConfigItem&& move) noexcept
+{
+    m_section = std::move(move.m_section);
+    m_key = std::move(move.m_key);
+    m_iniStorage = move.m_iniStorage;
+    m_setCallback = std::move(move.m_setCallback);
+    return *this;
+}
+
+bool ConfigItem::isValid() const
+{
+    return true;
+}
 
 std::string_view ConfigItem::getSection() const
 {
@@ -54,11 +74,6 @@ bool ConfigItem::setValue(const std::string& value)
     return true;
 }
 
-const ConfigItemUserData& ConfigItem::getUserData() const
-{
-    return m_userData;
-}
-
 CallbackGuard ConfigItem::setOnSetCallback(ConfigItemSetCallback&& callback)
 {
     spdlog::debug("Setting OnSet callback for ConfigItem[{}][{}]", m_section, m_key);
@@ -72,9 +87,9 @@ void ConfigItem::removeOnSetCallback()
     m_setCallback.reset();
 }
 
-bool ConfigItem::isValid() const
+std::string ConfigItem::getNativeValue() const
 {
-    return std::invoke(m_validator, this->getValue<std::string>().value_or(""), m_userData);
+    return m_iniStorage.at(m_section).at(m_key).as<std::string>();
 }
 
 }  // namespace mono::config

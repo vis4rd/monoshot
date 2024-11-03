@@ -1,38 +1,30 @@
 #include "config/Config.hpp"
 
+#include <inicpp.h>
 #include <spdlog/spdlog.h>
 
-#include "config/validators/BooleanValidator.hpp"
-#include "config/validators/OptionStringValidator.hpp"
+#include "config/types/BasicConfigItem.hpp"
+#include "config/types/OptionStringConfigItem.hpp"
 
 namespace mono::config
 {
 
 void initialize()
 {
-    runtime.addConfigItem("engine", "UseOpenGL", std::nullopt, booleanValidator);
-    runtime.addConfigItem(
-        "engine",
-        "LogLevel",
-        ConfigItemUserData{
-            {{"o1", "trace"},
-             {"o2", "debug"},
-             {"o3", "info"},
-             {"o4", "warn"},
-             {"o5", "error"},
-             {"o6", "critical"}}
-    },
-        optionStringValidator);
+    runtime.addConfigItem<BasicConfigItem<bool>>(std::string{"engine"}, std::string{"UseOpenGL"});
+    runtime.addConfigItem<OptionStringConfigItem>(
+        std::string{"engine"},
+        std::string{"LogLevel"},
+        std::vector<std::string>{"trace", "debug", "info", "warn", "error", "critical"});
 
-    runtime.addConfigItem(
+    runtime.addConfigItem<OptionStringConfigItem>(
+        std::string{"engine.window"},
+        std::string{"Mode"},
+        std::vector<std::string>{"windowed", "fullscreen", "borderless"});
+    runtime.addConfigItem<BasicConfigItem<bool>>("engine.window", "UseVSync");
+    runtime.addConfigItem<MultiNumberConfigItem<2, std::int32_t, 'x'>>(
         "engine.window",
-        "Mode",
-        ConfigItemUserData{
-            {{"o1", "windowed"}, {"o2", "fullscreen"}, {"o3", "borderless"}}
-    },
-        optionStringValidator);
-    runtime.addConfigItem("engine.window", "UseVSync", std::nullopt, booleanValidator);
-    runtime.addConfigItem("engine.window", "Resolution");
+        "Resolution");
 }
 
 }  // namespace mono::config

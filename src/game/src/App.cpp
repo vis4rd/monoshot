@@ -13,6 +13,8 @@
 #include <ui/Font.hpp>
 
 #include "../include/section/MainMenuSection.hpp"
+#include "mono/config/types/BasicConfigItem.hpp"
+#include "mono/config/types/OptionStringConfigItem.hpp"
 
 App::App(const std::string& window_title)
     : m_sectionManager(SectionManager::get())
@@ -21,7 +23,10 @@ App::App(const std::string& window_title)
 
 
     const auto resolution = []() -> glm::ivec2 {
-        const auto resolution_config = mono::config::runtime.get("engine.window", "Resolution");
+        const auto resolution_config =
+            mono::config::runtime.get<mono::config::MultiNumberConfigItem<2, std::int32_t, 'x'>>(
+                "engine.window",
+                "Resolution");
         if(resolution_config.has_value())
         {
             const auto& res = resolution_config.value().get();
@@ -58,7 +63,9 @@ App::App(const std::string& window_title)
     }
 
     const auto window_mode = []() -> std::string {
-        const auto conf = mono::config::runtime.get("engine.window", "Mode");
+        const auto conf = mono::config::runtime.get<mono::config::OptionStringConfigItem>(
+            "engine.window",
+            "Mode");
         if(conf.has_value())
         {
             return conf.value().get().getValue<std::string>().value_or("borderless");
@@ -80,7 +87,9 @@ App::App(const std::string& window_title)
     }
 
     const auto vsync_enabled = []() {
-        const auto conf = mono::config::runtime.get("engine.window", "UseVSync");
+        const auto conf = mono::config::runtime.get<mono::config::BasicConfigItem<bool>>(
+            "engine.window",
+            "UseVSync");
         if(conf.has_value())
         {
             return conf.value().get().getValue<bool>().value_or(true);

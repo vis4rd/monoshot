@@ -1,7 +1,5 @@
 #include "dev_ui/DevUI.hpp"
 
-#include <ranges>
-
 #include <imgui/imgui.h>
 #include <spdlog/common.h>
 #include <spdlog/spdlog.h>
@@ -67,7 +65,10 @@ void render()
 
                 {
                     auto loglevel_config =
-                        mono::config::runtime.get("engine", "LogLevel").value().get();
+                        mono::config::runtime
+                            .get<config::OptionStringConfigItem>("engine", "LogLevel")
+                            .value()
+                            .get();
                     const auto current_loglevel = loglevel_config.getValue<std::string>().value();
                     if(ImGui::BeginCombo("LogLevel", current_loglevel.data()))
                     {
@@ -97,19 +98,21 @@ void render()
                 {
                     {
                         auto window_mode_config =
-                            mono::config::runtime.get("engine.window", "Mode").value().get();
+                            mono::config::runtime
+                                .get<config::OptionStringConfigItem>("engine.window", "Mode")
+                                .value()
+                                .get();
                         const auto current_window_mode =
                             window_mode_config.getValue<std::string>().value();
                         if(ImGui::BeginCombo("Mode", current_window_mode.data()))
                         {
                             ;
-                            for(const auto& mode :
-                                window_mode_config.getUserData().value() | std::views::keys)
+                            for(const auto& mode : window_mode_config.getOptions())
                             {
                                 const bool is_selected = (current_window_mode.compare(mode) == 0);
                                 if(ImGui::Selectable(mode.c_str(), is_selected))
                                 {
-                                    window_mode_config.setValue(std::string{mode});
+                                    window_mode_config.setValue(mode);
                                 }
                                 if(is_selected)
                                 {
@@ -121,7 +124,10 @@ void render()
                     }
                     {
                         auto vsync_config =
-                            mono::config::runtime.get("engine.window", "UseVSync").value().get();
+                            mono::config::runtime
+                                .get<config::BasicConfigItem<bool>>("engine.window", "UseVSync")
+                                .value()
+                                .get();
                         bool current_vsync = vsync_config.getValue<bool>().value();
                         if(ImGui::Checkbox("UseVSync", &current_vsync))
                         {
