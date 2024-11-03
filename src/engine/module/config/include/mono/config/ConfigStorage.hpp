@@ -28,6 +28,10 @@ class ConfigStorage final
         const std::string& section,
         const std::string& key);
     bool validate() const;
+    auto begin();
+    auto end();
+    auto begin() const;
+    auto end() const;
 
     private:
     bool loadFromFile(const std::filesystem::path& path);
@@ -66,6 +70,26 @@ std::optional<std::reference_wrapper<T>> ConfigStorage::get(
     }
 
     return static_cast<T&>(**result);
+}
+
+inline auto ConfigStorage::begin()
+{
+    return m_items.begin();
+}
+
+inline auto ConfigStorage::end()
+{
+    return m_items.end();
+}
+
+inline auto ConfigStorage::begin() const
+{
+    return m_items.begin();
+}
+
+inline auto ConfigStorage::end() const
+{
+    return m_items.end();
 }
 
 }  // namespace mono::config
