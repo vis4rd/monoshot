@@ -139,7 +139,7 @@ static std::string buildPattern()
             .value()
             .get()
             .getValue<spdlog::level>()
-            .value()
+            .value_or(spdlog::level::info)
         == spdlog::level::debug;
     const std::string_view debug_thread_file = is_debug ? "[t:%=5!t][%s:%#]" : "";
     const std::string_view debug_time_precision = is_debug ? "%f" : "%e";
@@ -182,7 +182,10 @@ void initialize()
     const auto app_sinks = buildSinks(local_time);
 
     spdlog::init_thread_pool(8192, 1, []() {
-        spdlog::info("Starting logging thread");
+        if(spdlog::default_logger())
+        {
+            spdlog::info("Starting logging thread");
+        }
     });
     data::app_logger = std::make_shared<spdlog::async_logger>(
         "app",
@@ -195,7 +198,7 @@ void initialize()
             .value()
             .get()
             .getValue<spdlog::level>()
-            .value();
+            .value_or(spdlog::level::info);
     data::app_logger->set_level(log_level);
     data::app_logger->set_pattern(app_pattern);
     spdlog::register_logger(data::app_logger);
@@ -209,6 +212,15 @@ void initialize()
     data::engine_logger->set_level(log_level);
     data::engine_logger->set_pattern(engine_pattern);
     spdlog::register_logger(data::engine_logger);
+
+    if(config::priv::buffered_sink)
+    {
+        // flush everything that was logged before logging was initialized
+        for(const auto &msg : config::priv::buffered_sink->buffer())
+        {
+            data::engine_logger->log(msg.time, msg.source, msg.log_level, msg.payload);
+        }
+    }
 
     spdlog::set_default_logger(data::engine_logger);
     spdlog::debug("Logging initialized");

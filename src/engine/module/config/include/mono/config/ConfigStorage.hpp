@@ -18,6 +18,7 @@ namespace mono::config
 class ConfigStorage final
 {
     public:
+    ConfigStorage() = default;
     explicit ConfigStorage(const std::filesystem::path& path);
 
     template<std::derived_from<ConfigItem> T>
@@ -34,7 +35,6 @@ class ConfigStorage final
     auto begin() const;
     auto end() const;
 
-    private:
     bool loadFromFile(const std::filesystem::path& path);
 
     private:
