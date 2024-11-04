@@ -25,4 +25,5 @@ target_link_libraries(mono_module_config
            spdlog::spdlog
            glm::glm
            mono::traits
+           mono::log
 )
