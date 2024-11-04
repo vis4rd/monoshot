@@ -38,7 +38,6 @@ class ConfigStorage final
     bool loadFromFile(const std::filesystem::path& path);
 
     private:
-    // TODO(vis4rd): Replace with map that takes section and key as a key
     std::vector<std::unique_ptr<ConfigItem>> m_items{};
     ini::IniFile m_iniFile;
 };
