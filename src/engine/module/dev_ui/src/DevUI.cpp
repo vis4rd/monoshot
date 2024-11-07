@@ -1,11 +1,8 @@
 #include "dev_ui/DevUI.hpp"
 
-#include <imgui/imgui.h>
-#include <imgui/imgui_internal.h>
 #include <spdlog/common.h>
 #include <spdlog/spdlog.h>
 
-#include "dev_ui/priv/StateData.hpp"
 #include "mono/config/Config.hpp"
 
 namespace mono::dev_ui
@@ -13,24 +10,14 @@ namespace mono::dev_ui
 
 namespace data
 {
-
 // NOLINTBEGIN(cppcoreguidelines-avoid-non-const-global-variables)
-float previous_pos_y{};
-float previous_size_y{};
-constexpr ImGuiWindowFlags window_flags =
-    ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings;
+
 float right_window_edge;
 const ImVec2 right_align_pivot = {1.0f, 0.0f};
 ImVec2 dev_ui_menu_size;
+
 // NOLINTEND(cppcoreguidelines-avoid-non-const-global-variables)
-
 }  // namespace data
-
-static void updatePrevWindow()
-{
-    data::previous_pos_y = ImGui::GetWindowPos().y;
-    data::previous_size_y = ImGui::GetWindowSize().y;
-}
 
 static float nextWindowPosY(float offset)
 {
@@ -57,7 +44,7 @@ static void renderDevUiMenu()
     ImGui::SetNextWindowSize(data::dev_ui_menu_size);
     ImGui::Begin("Dev UI", nullptr, data::window_flags);
     {
-        updatePrevWindow();
+        priv::updatePrevWindow();
         for(auto& [window_name, flag] : priv::state::window_visibility_flags)
         {
             ImGui::Selectable(window_name.c_str(), &flag);
@@ -66,8 +53,7 @@ static void renderDevUiMenu()
     ImGui::End();
 }
 
-template<typename FUNC, typename... ARGS>
-void renderDevUiWindow(const std::string& window_name, FUNC&& func, ARGS&&... args)
+static void prepareRegisteredWindowForDraw(const std::string& window_name)
 {
     if(not priv::state::window_visibility_flags.contains(window_name))
     {
@@ -84,8 +70,7 @@ void renderDevUiWindow(const std::string& window_name, FUNC&& func, ARGS&&... ar
             &priv::state::window_visibility_flags[window_name],
             data::window_flags);
         {
-            updatePrevWindow();
-            std::invoke(std::forward<FUNC>(func), std::forward<ARGS>(args)...);
+            priv::updatePrevWindow();
         }
         ImGui::End();
     }
@@ -107,7 +92,7 @@ void initialize()
         updateData();
 
         // register default windows
-        priv::state::window_visibility_flags["Settings"] = false;
+        registerWindow("Test123");
     }
 }
 
@@ -119,80 +104,20 @@ void render()
 
         renderDevUiMenu();
 
-        renderDevUiWindow("Settings", []() {
-            ImGui::SeparatorText("Engine");
-            {
-                auto loglevel_config =
-                    mono::config::runtime.get<config::OptionStringConfigItem>("engine", "LogLevel")
-                        .value()
-                        .get();
-                const auto current_loglevel = loglevel_config.getValue<std::string>().value();
-                if(ImGui::BeginCombo("LogLevel", current_loglevel.data()))
-                {
-                    for(const auto& level : spdlog::level_string_views)
-                    {
-                        bool is_selected = (current_loglevel.compare(level) == 0);
-                        if(ImGui::Selectable(level.data(), is_selected))
-                        {
-                            bool success = loglevel_config.setValue(std::string{level});
-                            if(success)
-                            {
-                                spdlog::set_level(spdlog::level_from_str(std::string{level}));
-                            }
-                        }
-                        if(is_selected)
-                        {
-                            ImGui::SetItemDefaultFocus();
-                        }
-                    }
-                    ImGui::EndCombo();
-                }
-                ImGui::SameLine();
-                ImGui::Dummy({150.0f, 0.0f});
-            }
+        for(const auto& [window_name, flag] : priv::state::window_visibility_flags)
+        {
+            prepareRegisteredWindowForDraw(window_name);
+        }
 
-            ImGui::SeparatorText("Engine.Window");
-            {
-                {
-                    auto window_mode_config =
-                        mono::config::runtime
-                            .get<config::OptionStringConfigItem>("engine.window", "Mode")
-                            .value()
-                            .get();
-                    const auto current_window_mode =
-                        window_mode_config.getValue<std::string>().value();
-                    if(ImGui::BeginCombo("Mode", current_window_mode.data()))
-                    {
-                        for(const auto& mode : window_mode_config.getOptions())
-                        {
-                            const bool is_selected = (current_window_mode.compare(mode) == 0);
-                            if(ImGui::Selectable(mode.c_str(), is_selected))
-                            {
-                                window_mode_config.setValue(mode);
-                            }
-                            if(is_selected)
-                            {
-                                ImGui::SetItemDefaultFocus();
-                            }
-                        }
-                        ImGui::EndCombo();
-                    }
-                }
-                {
-                    auto vsync_config =
-                        mono::config::runtime
-                            .get<config::BasicConfigItem<bool>>("engine.window", "UseVSync")
-                            .value()
-                            .get();
-                    bool current_vsync = vsync_config.getValue<bool>().value();
-                    if(ImGui::Checkbox("UseVSync", &current_vsync))
-                    {
-                        vsync_config.setValue(current_vsync);
-                    }
-                }
-            }
+        drawToWindow("Test123", []() {
+            ImGui::Text("Test123");
         });
     }
+}
+
+void registerWindow(const std::string& name)
+{
+    priv::state::window_visibility_flags[name] = false;
 }
 
 }  // namespace mono::dev_ui

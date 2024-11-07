@@ -4,6 +4,7 @@
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
 #include <input/Input.hpp>
+#include <mono/config/Config.hpp>
 #include <mono/dev_ui/DevUI.hpp>
 #include <opengl/shader/ShaderManager.hpp>
 #include <opengl/target/RenderWindow.hpp>
@@ -96,7 +97,12 @@ void App::render(RenderableTrait auto&&... renderables) noexcept
         (renderables.render(), ...);
     }
 
+    // TODO(vis4rd): hide dev_ui extensions rendering in mono::dev_ui::render()
+    //               - it will require to register draw function once and call it in dev_ui
+    //               - registering side should ensure function is valid (no dangling references) for
+    //                 whole lifetime of calls
     mono::dev_ui::render();
+    mono::config::dev_ui::render();
 
     mono::renderer::render();
 
