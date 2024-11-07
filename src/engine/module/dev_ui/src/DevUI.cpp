@@ -1,66 +1,86 @@
 #include "dev_ui/DevUI.hpp"
 
 #include <imgui/imgui.h>
+#include <imgui/imgui_internal.h>
 #include <spdlog/common.h>
 #include <spdlog/spdlog.h>
 
+#include "dev_ui/priv/StateData.hpp"
 #include "mono/config/Config.hpp"
 
 namespace mono::dev_ui
 {
 
-namespace state
+namespace data
 {
+
 // NOLINTBEGIN(cppcoreguidelines-avoid-non-const-global-variables)
-
-static bool settings_window = false;
-// static bool demo_window = false;
-
+float previous_pos_y{};
+float previous_size_y{};
+constexpr ImGuiWindowFlags window_flags =
+    ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings;
+const float right_window_edge = ImGui::GetIO().DisplaySize.x - 10.0f;
+const ImVec2 right_align_pivot = {1.0f, 0.0f};
+const ImVec2 dev_ui_menu_size = []() {
+    const auto& io = ImGui::GetIO();
+    return ImVec2{
+        150.f,
+        50.f
+            + static_cast<float>(priv::state::window_visibility_flags.size()) * io.FontGlobalScale
+                  * (ImGui::GetCurrentContext()->FontSize
+                     + ImGui::GetCurrentContext()->Style.ItemSpacing.y)};
+}();
 // NOLINTEND(cppcoreguidelines-avoid-non-const-global-variables)
-}  // namespace state
 
-void initialize() { }
+}  // namespace data
+
+static void updatePrevWindow()
+{
+    data::previous_pos_y = ImGui::GetWindowPos().y;
+    data::previous_size_y = ImGui::GetWindowSize().y;
+}
+
+static float nextWindowPosY(float offset)
+{
+    return data::previous_pos_y + data::previous_size_y + offset;
+}
+
+void initialize()
+{
+    priv::state::window_visibility_flags["Settings"] = false;
+}
 
 void render()
 {
     if constexpr(mono::config::constant::debugBuild)
     {
-        constexpr ImGuiWindowFlags window_flags =
-            ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings;
-
-        float previous_pos_y{};
-        float previous_size_y{};
-        const auto update_prev_window = [&previous_pos_y, &previous_size_y]() {
-            previous_pos_y = ImGui::GetWindowPos().y;
-            previous_size_y = ImGui::GetWindowSize().y;
-        };
-        const auto y_after_previous = [&previous_pos_y, &previous_size_y](float offset) {
-            return previous_pos_y + previous_size_y + offset;
-        };
-        const float right_window_edge = ImGui::GetIO().DisplaySize.x - 10.0f;
-        const ImVec2 right_align_pivot = {1.0f, 0.0f};
-
         ImGui::SetNextWindowPos(
-            ImVec2(right_window_edge, 10.0f),
+            ImVec2(data::right_window_edge, nextWindowPosY(10.0f)),
             ImGuiCond_Always,
-            ImVec2(1.0f, 0.0f));
-        ImGui::Begin("Dev UI", nullptr, window_flags);
+            data::right_align_pivot);
+        ImGui::SetNextWindowSize(data::dev_ui_menu_size);
+        ImGui::Begin("Dev UI", nullptr, data::window_flags);
         {
-            update_prev_window();
-            ImGui::Selectable("Settings", &state::settings_window);
-            // ImGui::Selectable("Demo", &state::demo_window);
+            updatePrevWindow();
+            for(auto& [window_name, flag] : priv::state::window_visibility_flags)
+            {
+                ImGui::Selectable(window_name.c_str(), &flag);
+            }
         }
         ImGui::End();
 
-        if(state::settings_window)
+        if(priv::state::window_visibility_flags["Settings"])
         {
             ImGui::SetNextWindowPos(
-                {right_window_edge, y_after_previous(10.0f)},
+                {data::right_window_edge, nextWindowPosY(10.0f)},
                 ImGuiCond_Always,
-                right_align_pivot);
-            ImGui::Begin("Settings", &state::settings_window, window_flags);
+                data::right_align_pivot);
+            ImGui::Begin(
+                "Settings",
+                &priv::state::window_visibility_flags["Settings"],
+                data::window_flags);
             {
-                update_prev_window();
+                updatePrevWindow();
                 ImGui::SeparatorText("Engine");
 
                 {
@@ -106,7 +126,6 @@ void render()
                             window_mode_config.getValue<std::string>().value();
                         if(ImGui::BeginCombo("Mode", current_window_mode.data()))
                         {
-                            ;
                             for(const auto& mode : window_mode_config.getOptions())
                             {
                                 const bool is_selected = (current_window_mode.compare(mode) == 0);
@@ -138,20 +157,6 @@ void render()
             }
             ImGui::End();
         }
-
-        // if(state::demo_window)
-        // {
-        //     ImGui::SetNextWindowPos(
-        //         {right_window_edge, y_after_previous(10.0f)},
-        //         ImGuiCond_Always,
-        //         right_align_pivot);
-        //     ImGui::Begin("Test123", &state::demo_window, window_flags);
-        //     {
-        //         update_prev_window();
-        //         ImGui::Text("Hello, world!");
-        //     }
-        //     ImGui::End();
-        // }
     }
 }
 
