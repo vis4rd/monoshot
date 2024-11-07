@@ -13,6 +13,7 @@ target_sources(mono_module_config
         "${CMAKE_CURRENT_SOURCE_DIR}/src/ConfigItem.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/src/ConfigStorage.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/src/CallbackGuard.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/dev_ui/DevUIConfigWindow.cpp"
 )
 
 target_include_directories(mono_module_config
@@ -24,6 +25,8 @@ target_link_libraries(mono_module_config
     PUBLIC inifile::inifile
            spdlog::spdlog
            glm::glm
+           imgui::imgui
            mono::traits
            mono::log
+           mono::dev_ui
 )

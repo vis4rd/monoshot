@@ -7,6 +7,7 @@
 
 #include "config/types/BasicConfigItem.hpp"
 #include "config/types/OptionStringConfigItem.hpp"
+#include "mono/dev_ui/DevUI.hpp"
 #include "mono/log/Logging.hpp"
 
 namespace mono::config
@@ -55,6 +56,8 @@ void initialize()
         spdlog::shutdown();  // prevents crashes on exit - shuts down thread pool
         std::exit(EXIT_FAILURE);
     }
+
+    mono::dev_ui::registerWindow("Settings");
 }
 
 }  // namespace mono::config
