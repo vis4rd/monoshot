@@ -4,6 +4,7 @@
 
 #include <spdlog/spdlog.h>
 
+#include "mono/dev_ui/DevUI.hpp"
 #include "opengl/shader/ShaderManager.hpp"
 #include "renderer/pass/InstancedQuadRenderPass.hpp"
 
@@ -85,6 +86,8 @@ void render()
         auto& pass = pipeline.getRenderPassAsAny(pass_name);
         pass->submitDraws();
     }
+
+    mono::dev_ui::render();
 }
 
 }  // namespace mono::renderer

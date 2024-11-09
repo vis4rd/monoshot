@@ -5,7 +5,6 @@
 #include <imgui/backends/imgui_impl_opengl3.h>
 #include <input/Input.hpp>
 #include <mono/config/Config.hpp>
-#include <mono/dev_ui/DevUI.hpp>
 #include <opengl/shader/ShaderManager.hpp>
 #include <opengl/target/RenderWindow.hpp>
 #include <renderer/Renderer.hpp>
@@ -96,8 +95,6 @@ void App::render(RenderableTrait auto&&... renderables) noexcept
     {
         (renderables.render(), ...);
     }
-
-    mono::dev_ui::render();
 
     mono::renderer::render();
 

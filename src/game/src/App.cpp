@@ -3,6 +3,9 @@
 #include <filesystem>
 
 #include <cstring/cstring.hpp>
+#include <mono/config/types/BasicConfigItem.hpp>
+#include <mono/config/types/OptionStringConfigItem.hpp>
+#include <mono/dev_ui/DevUI.hpp>
 #include <mono/log/Logging.hpp>
 #include <opengl/texture/Texture.hpp>
 #include <renderer/pass/ImmediateLineRenderPass.hpp>
@@ -12,8 +15,6 @@
 #include <ui/Font.hpp>
 
 #include "../include/section/MainMenuSection.hpp"
-#include "mono/config/types/BasicConfigItem.hpp"
-#include "mono/config/types/OptionStringConfigItem.hpp"
 
 App::App(const std::string& window_title)
     : m_sectionManager(SectionManager::get())
