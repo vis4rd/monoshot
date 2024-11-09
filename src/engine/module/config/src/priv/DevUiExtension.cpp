@@ -34,8 +34,6 @@ void devUiExtension()
             }
             ImGui::EndCombo();
         }
-        ImGui::SameLine();
-        ImGui::Dummy({150.0f, 0.0f});
     }
 
     ImGui::SeparatorText("Engine.Window");
