@@ -3,7 +3,6 @@
 #include <inicpp.h>
 
 #include "ConfigStorage.hpp"
-#include "dev_ui/DevUIConfigWindow.hpp"  // IWYU pragma: export
 #include "mono/log/priv/BufferedSink.hpp"
 #include "priv/StaticConfiguration.hpp"  // IWYU pragma: export
 #include "priv/converters/GlmVec2Converter.hpp"  // IWYU pragma: export

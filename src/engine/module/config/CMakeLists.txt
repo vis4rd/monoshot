@@ -13,7 +13,7 @@ target_sources(mono_module_config
         "${CMAKE_CURRENT_SOURCE_DIR}/src/ConfigItem.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/src/ConfigStorage.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/src/CallbackGuard.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/dev_ui/DevUIConfigWindow.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/priv/DevUiExtension.cpp"
 )
 
 target_include_directories(mono_module_config

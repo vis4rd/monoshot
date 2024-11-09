@@ -5,6 +5,7 @@
 #include <spdlog/sinks/base_sink.h>
 #include <spdlog/spdlog.h>
 
+#include "config/priv/DevUiExtension.hpp"
 #include "config/types/BasicConfigItem.hpp"
 #include "config/types/OptionStringConfigItem.hpp"
 #include "mono/dev_ui/DevUI.hpp"
@@ -57,7 +58,7 @@ void initialize()
         std::exit(EXIT_FAILURE);
     }
 
-    mono::dev_ui::registerWindow("Settings");
+    mono::dev_ui::registerExtension("Settings", mono::config::priv::devUiExtension);
 }
 
 }  // namespace mono::config

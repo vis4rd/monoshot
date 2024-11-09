@@ -3,25 +3,15 @@
 #include <spdlog/common.h>
 #include <spdlog/spdlog.h>
 
+#include "dev_ui/priv/Context.hpp"
 #include "mono/config/Config.hpp"
 
 namespace mono::dev_ui
 {
 
-namespace data
-{
-// NOLINTBEGIN(cppcoreguidelines-avoid-non-const-global-variables)
-
-float right_window_edge;
-const ImVec2 right_align_pivot = {1.0f, 0.0f};
-ImVec2 dev_ui_menu_size;
-
-// NOLINTEND(cppcoreguidelines-avoid-non-const-global-variables)
-}  // namespace data
-
 static float nextWindowPosY(float offset)
 {
-    return data::previous_pos_y + data::previous_size_y + offset;
+    return priv::context.previousPosY + priv::context.previousSizeY + offset;
 }
 
 static ImVec2 getDevUiMenuSize()
@@ -30,22 +20,28 @@ static ImVec2 getDevUiMenuSize()
     return ImVec2{
         150.f,
         50.f
-            + static_cast<float>(priv::state::window_visibility_flags.size()) * io.FontGlobalScale
+            + static_cast<float>(priv::context.extensionVisibilityFlags.size()) * io.FontGlobalScale
                   * (ImGui::GetCurrentContext()->FontSize
                      + ImGui::GetCurrentContext()->Style.ItemSpacing.y)};
+}
+
+static void updatePrevWindow()
+{
+    priv::context.previousPosY = ImGui::GetWindowPos().y;
+    priv::context.previousSizeY = ImGui::GetWindowSize().y;
 }
 
 static void renderDevUiMenu()
 {
     ImGui::SetNextWindowPos(
-        ImVec2(data::right_window_edge, nextWindowPosY(10.0f)),
+        ImVec2(priv::context.rightWindowEdge, nextWindowPosY(10.0f)),
         ImGuiCond_Always,
-        data::right_align_pivot);
-    ImGui::SetNextWindowSize(data::dev_ui_menu_size);
-    ImGui::Begin("Dev UI", nullptr, data::window_flags);
+        priv::context.rightAlignPivot);
+    ImGui::SetNextWindowSize(priv::context.devUiMenuSize);
+    ImGui::Begin("Dev UI", nullptr, priv::context.windowFlags);
     {
-        priv::updatePrevWindow();
-        for(auto& [window_name, flag] : priv::state::window_visibility_flags)
+        updatePrevWindow();
+        for(auto& [window_name, flag] : priv::context.extensionVisibilityFlags)
         {
             ImGui::Selectable(window_name.c_str(), &flag);
         }
@@ -53,35 +49,34 @@ static void renderDevUiMenu()
     ImGui::End();
 }
 
-static void prepareRegisteredWindowForDraw(const std::string& window_name)
+static void updateContext()
 {
-    if(not priv::state::window_visibility_flags.contains(window_name))
+    priv::context.previousPosY = 0.f;
+    priv::context.previousSizeY = 0.f;
+    priv::context.rightWindowEdge = ImGui::GetIO().DisplaySize.x - 10.0f;
+    priv::context.devUiMenuSize = getDevUiMenuSize();
+}
+
+static void drawToWindow(const std::string& window_name, const priv::Extension& func)
+{
+    if(not priv::context.extensionVisibilityFlags.contains(window_name))
     {
         return;
     }
-    if(priv::state::window_visibility_flags[window_name])
+    auto& is_visible = priv::context.extensionVisibilityFlags[window_name];
+    if(is_visible)
     {
         ImGui::SetNextWindowPos(
-            {data::right_window_edge, nextWindowPosY(10.0f)},
+            {priv::context.rightWindowEdge, nextWindowPosY(10.0f)},
             ImGuiCond_Always,
-            data::right_align_pivot);
-        ImGui::Begin(
-            window_name.c_str(),
-            &priv::state::window_visibility_flags[window_name],
-            data::window_flags);
+            priv::context.rightAlignPivot);
+        ImGui::Begin(window_name.c_str(), &is_visible, priv::context.windowFlags);
         {
-            priv::updatePrevWindow();
+            updatePrevWindow();
+            std::invoke(func);
         }
         ImGui::End();
     }
-}
-
-static void updateData()
-{
-    data::previous_pos_y = 0.f;
-    data::previous_size_y = 0.f;
-    data::right_window_edge = ImGui::GetIO().DisplaySize.x - 10.0f;
-    data::dev_ui_menu_size = getDevUiMenuSize();
 }
 
 void initialize()
@@ -89,10 +84,12 @@ void initialize()
     if constexpr(mono::config::constant::debugBuild)
     {
         // prepare data for the first frame
-        updateData();
+        updateContext();
 
         // register default windows
-        registerWindow("Test123");
+        registerExtension("DevUI Debug", []() {
+            ImGui::Text("Registered extensions: %zu", priv::context.registeredExtensions.size());
+        });
     }
 }
 
@@ -100,24 +97,21 @@ void render()
 {
     if constexpr(mono::config::constant::debugBuild)
     {
-        updateData();
+        updateContext();
 
         renderDevUiMenu();
 
-        for(const auto& [window_name, flag] : priv::state::window_visibility_flags)
+        for(const auto& [window_name, func] : priv::context.registeredExtensions)
         {
-            prepareRegisteredWindowForDraw(window_name);
+            drawToWindow(window_name, func);
         }
-
-        drawToWindow("Test123", []() {
-            ImGui::Text("Test123");
-        });
     }
 }
 
-void registerWindow(const std::string& name)
+void registerExtension(const std::string& name, priv::Extension&& func)
 {
-    priv::state::window_visibility_flags[name] = false;
+    priv::context.extensionVisibilityFlags[name] = false;
+    priv::context.registeredExtensions[name] = std::move(func);
 }
 
 }  // namespace mono::dev_ui

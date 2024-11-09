@@ -97,12 +97,7 @@ void App::render(RenderableTrait auto&&... renderables) noexcept
         (renderables.render(), ...);
     }
 
-    // TODO(vis4rd): hide dev_ui extensions rendering in mono::dev_ui::render()
-    //               - it will require to register draw function once and call it in dev_ui
-    //               - registering side should ensure function is valid (no dangling references) for
-    //                 whole lifetime of calls
     mono::dev_ui::render();
-    mono::config::dev_ui::render();
 
     mono::renderer::render();
 
