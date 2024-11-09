@@ -1,5 +1,7 @@
 #include "dev_ui/DevUI.hpp"
 
+#include <imgui/imgui.h>
+#include <imgui/imgui_internal.h>
 #include <spdlog/common.h>
 #include <spdlog/spdlog.h>
 
@@ -14,17 +16,6 @@ static float nextWindowPosY(float offset)
     return priv::context.previousPosY + priv::context.previousSizeY + offset;
 }
 
-static ImVec2 getDevUiMenuSize()
-{
-    const auto& io = ImGui::GetIO();
-    return ImVec2{
-        150.f,
-        50.f
-            + static_cast<float>(priv::context.extensionVisibilityFlags.size()) * io.FontGlobalScale
-                  * (ImGui::GetCurrentContext()->FontSize
-                     + ImGui::GetCurrentContext()->Style.ItemSpacing.y)};
-}
-
 static void updatePrevWindow()
 {
     priv::context.previousPosY = ImGui::GetWindowPos().y;
@@ -37,7 +28,6 @@ static void renderDevUiMenu()
         ImVec2(priv::context.rightWindowEdge, nextWindowPosY(10.0f)),
         ImGuiCond_Always,
         priv::context.rightAlignPivot);
-    ImGui::SetNextWindowSize(priv::context.devUiMenuSize);
     ImGui::Begin("Dev UI", nullptr, priv::context.windowFlags);
     {
         updatePrevWindow();
@@ -54,7 +44,6 @@ static void updateContext()
     priv::context.previousPosY = 0.f;
     priv::context.previousSizeY = 0.f;
     priv::context.rightWindowEdge = ImGui::GetIO().DisplaySize.x - 10.0f;
-    priv::context.devUiMenuSize = getDevUiMenuSize();
 }
 
 static void drawToWindow(const std::string& window_name, const priv::Extension& func)
