@@ -46,23 +46,36 @@ static void updateContext()
     priv::context.rightWindowEdge = ImGui::GetIO().DisplaySize.x - 10.0f;
 }
 
-static void drawToWindow(const std::string& window_name, const priv::Extension& func)
+static void renderExtensions()
 {
-    if(not priv::context.extensionVisibilityFlags.contains(window_name))
-    {
-        return;
-    }
-    auto& is_visible = priv::context.extensionVisibilityFlags[window_name];
-    if(is_visible)
+    const bool any_visible =
+        std::ranges::any_of(priv::context.extensionVisibilityFlags, [](const auto& pair) {
+            return pair.second;
+        });
+    if(any_visible)
     {
         ImGui::SetNextWindowPos(
             {priv::context.rightWindowEdge, nextWindowPosY(10.0f)},
             ImGuiCond_Always,
             priv::context.rightAlignPivot);
-        ImGui::Begin(window_name.c_str(), &is_visible, priv::context.windowFlags);
+        ImGui::Begin(
+            "DevUI Extensions",
+            nullptr,
+            priv::context.windowFlags | ImGuiWindowFlags_NoTitleBar);
         {
-            updatePrevWindow();
-            std::invoke(func);
+            if(ImGui::BeginTabBar("DevUI Extensions Tab Bar"))
+            {
+                for(auto& [name, opened] : priv::context.extensionVisibilityFlags)
+                {
+                    if(opened and ImGui::BeginTabItem(name.c_str(), &opened))
+                    {
+                        const auto& func = priv::context.registeredExtensions[name];
+                        std::invoke(func);
+                        ImGui::EndTabItem();
+                    }
+                }
+                ImGui::EndTabBar();
+            }
         }
         ImGui::End();
     }
@@ -87,13 +100,8 @@ void render()
     if constexpr(mono::config::constant::debugBuild)
     {
         updateContext();
-
         renderDevUiMenu();
-
-        for(const auto& [window_name, func] : priv::context.registeredExtensions)
-        {
-            drawToWindow(window_name, func);
-        }
+        renderExtensions();
     }
 }
 
