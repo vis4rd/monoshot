@@ -2,9 +2,6 @@
 
 #include <string>
 
-#include <imgui/imgui.h>
-#include <imgui/imgui_internal.h>
-
 #include "priv/Extension.hpp"
 
 namespace mono::dev_ui

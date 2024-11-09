@@ -14,13 +14,13 @@ namespace mono::dev_ui::priv
 struct Context
 {
     const ImGuiWindowFlags windowFlags{
-        ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings};
+        ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings
+        | ImGuiWindowFlags_AlwaysAutoResize};
     const ImVec2 rightAlignPivot{1.0f, 0.0f};
 
     float previousPosY{};
     float previousSizeY{};
     float rightWindowEdge{};
-    ImVec2 devUiMenuSize{};
     std::unordered_map<std::string, bool> extensionVisibilityFlags{};
     std::unordered_map<std::string, Extension> registeredExtensions{};
 };
