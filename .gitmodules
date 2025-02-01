@@ -1,25 +1,25 @@
 [submodule "GLFW"]
-	path = src/engine/lib/glfw
+	path = lib/glfw
 	url = https://github.com/glfw/glfw.git
 [submodule "GLAD"]
-	path = src/engine/lib/glad
+	path = lib/glad
 	url = https://github.com/Dav1dde/glad.git
 [submodule "GLM"]
-	path = src/engine/lib/glm
+	path = lib/glm
 	url = https://github.com/g-truc/glm.git
 [submodule "IMGUI"]
-	path = src/engine/lib/imgui/imgui
+	path = lib/imgui/imgui
 	url = https://github.com/ocornut/imgui.git
 	branch = docking
 [submodule "SPDLOG"]
-	path = src/engine/lib/spdlog
+	path = lib/spdlog
 	url = https://github.com/gabime/spdlog.git
 [submodule "ENTT"]
-	path = src/engine/lib/entt
+	path = lib/entt
 	url = https://github.com/skypjack/entt.git
 [submodule "TINYFILEDIALOGS"]
-	path = src/engine/lib/tinyfiledialogs/tinyfiledialogs
+	path = lib/tinyfiledialogs/tinyfiledialogs
 	url = https://git.code.sf.net/p/tinyfiledialogs/code
 [submodule "INIFILE-CPP"]
-	path = src/engine/lib/inifile-cpp/inifile-cpp
+	path = lib/inifile-cpp/inifile-cpp
 	url = https://github.com/Rookfighter/inifile-cpp.git
