@@ -30,6 +30,7 @@ class ConfigItem
 
     virtual bool isValid() const = 0;
     virtual std::string getType() const = 0;
+    virtual void drawForDevUi();
 
     std::string_view getSection() const;
     std::string_view getKey() const;

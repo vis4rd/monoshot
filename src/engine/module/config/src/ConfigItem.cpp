@@ -1,5 +1,6 @@
 #include "config/ConfigItem.hpp"
 
+#include <imgui/imgui.h>
 #include <spdlog/spdlog.h>
 
 namespace mono::config
@@ -41,6 +42,11 @@ bool ConfigItem::isValid() const
 std::string ConfigItem::getType() const
 {
     return "ConfigItem";
+}
+
+void ConfigItem::drawForDevUi()
+{
+    ImGui::Text("%s - <draw func not specified>", m_key.c_str());
 }
 
 std::string_view ConfigItem::getSection() const
