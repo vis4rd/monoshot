@@ -4,6 +4,7 @@
 #include <iterator>
 #include <numeric>
 
+#include <imgui/imgui.h>
 #include <spdlog/spdlog.h>
 
 #include "../ConfigItem.hpp"
@@ -49,6 +50,27 @@ class OptionStringConfigItem final : public ConfigItem
     }
 
     std::string getType() const override { return "OptionStringConfigItem"; }
+
+    void drawForDevUi() override
+    {
+        const std::string current_value = this->getValue<std::string>().value_or("<missing value>");
+        if(ImGui::BeginCombo(this->getKey().data(), current_value.c_str()))
+        {
+            for(const auto& option : m_options)
+            {
+                bool is_selected = (current_value == option);
+                if(ImGui::Selectable(option.c_str(), is_selected))
+                {
+                    this->setValue(option);
+                    if(is_selected)
+                    {
+                        ImGui::SetItemDefaultFocus();
+                    }
+                }
+            }
+            ImGui::EndCombo();
+        }
+    }
 
     const std::vector<std::string>& getOptions() const { return m_options; }
 
