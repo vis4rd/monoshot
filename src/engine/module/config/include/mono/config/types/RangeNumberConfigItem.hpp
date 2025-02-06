@@ -1,6 +1,9 @@
 #pragma once
 
+#include <algorithm>
+
 #include "BasicConfigItem.hpp"
+#include "mono/util/custom_imgui/InputScalar.hpp"
 #include "traits/Arithmetic.hpp"
 
 namespace mono::config
@@ -47,6 +50,48 @@ class RangeNumberConfigItem : public BasicConfigItem<T>
     std::string getType() const override
     {
         return std::format("RangeNumberConfigItem<{}>", typeid(T).name());
+    }
+
+    void drawForDevUi() override
+    {
+        std::optional<T> value = this->template getValue<T>();
+        if(not value.has_value())
+        {
+            const std::string label = std::format("{} <missing value>", this->getKey().data());
+            ImGui::BeginDisabled();
+            mono::util::Custom::ImGui::InputScalar<T>(label, &value.value());
+            ImGui::EndDisabled();
+            // ImGui::SameLine();
+            // if(ImGui::Button("Set Min"))
+            // {
+            //     value = m_min;
+            // }
+            // ImGui::SameLine();
+            // if(ImGui::Button("Set Max"))
+            // {
+            //     value = m_max;
+            // }
+            return;
+        }
+
+        if(mono::util::Custom::ImGui::InputScalar<T>(
+               this->getKey().data(),
+               &value.value(),
+               nullptr,
+               nullptr,
+               nullptr,
+               ImGuiInputTextFlags_EnterReturnsTrue))
+        {
+            value.value() = std::clamp(value.value(), m_min, m_max);
+            this->setValue(value.value());
+        }
+
+        if(ImGui::IsItemHovered())
+        {
+            ImGui::BeginTooltip();
+            ImGui::Text("Range: [%d, %d]", m_min, m_max);
+            ImGui::EndTooltip();
+        }
     }
 
     const T& getMin() const { return m_min; }

@@ -6,10 +6,13 @@
 #include <ranges>
 #include <typeinfo>
 
+#include <glm/glm.hpp>
+#include <imgui/imgui.h>
 #include <inicpp.h>
 #include <spdlog/spdlog.h>
 
 #include "../ConfigItem.hpp"
+#include "mono/util/custom_imgui/InputScalarN.hpp"
 #include "traits/Arithmetic.hpp"
 
 namespace mono::config
@@ -68,6 +71,33 @@ class MultiNumberConfigItem : public ConfigItem
     {
         return std::format("MultiNumberConfigItem<{},{},'{}'>", NUM, typeid(T).name(), SEP);
     };
+
+    void drawForDevUi() override
+    {
+        if(not this->getValue<std::string>().has_value())
+        {
+            ImGui::Text("%s - <missing value>", this->getKey().data());
+            ImGui::SameLine();
+            if(ImGui::Button("Set Default"))
+            {
+                this->setValue(glm::vec<NUM, T>{});
+            }
+            return;
+        }
+
+        glm::vec<NUM, T> values = this->getValue<glm::vec<NUM, T>>().value();
+        if(mono::util::Custom::ImGui::InputScalarN<T>(
+               this->getKey().data(),
+               &values,
+               NUM,
+               nullptr,
+               nullptr,
+               nullptr,
+               ImGuiInputTextFlags_EnterReturnsTrue))
+        {
+            this->setValue(values);
+        }
+    }
 };
 
 }  // namespace mono::config

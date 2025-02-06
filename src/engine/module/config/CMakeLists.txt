@@ -29,4 +29,5 @@ target_link_libraries(mono_module_config
            mono::traits
            mono::log
            mono::dev_ui
+           mono::util
 )
