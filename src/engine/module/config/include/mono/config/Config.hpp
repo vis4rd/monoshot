@@ -5,7 +5,7 @@
 #include "ConfigStorage.hpp"
 #include "mono/log/priv/BufferedSink.hpp"
 #include "priv/StaticConfiguration.hpp"  // IWYU pragma: export
-#include "priv/converters/GlmVec2Converter.hpp"  // IWYU pragma: export
+#include "priv/converters/GlmVecConverter.hpp"  // IWYU pragma: export
 #include "priv/converters/SpdlogLevelConverter.hpp"  // IWYU pragma: export
 
 namespace mono::config
