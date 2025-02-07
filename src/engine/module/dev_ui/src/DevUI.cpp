@@ -90,7 +90,16 @@ void initialize()
 
         // register default windows
         registerExtension("DevUI Debug", []() {
+            static bool show_demo_window = true;
             ImGui::Text("Registered extensions: %zu", priv::context.registeredExtensions.size());
+            if(ImGui::Button("Toggle demo window"))
+            {
+                show_demo_window = not show_demo_window;
+            }
+            if(show_demo_window)
+            {
+                ImGui::ShowDemoWindow();
+            }
         });
     }
 }
