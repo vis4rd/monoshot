@@ -6,6 +6,7 @@
 #include <fstream>
 
 #include <spdlog/async_logger.h>
+#include <spdlog/common.h>
 #include <spdlog/spdlog.h>
 
 #include "mono/config/Config.hpp"
@@ -225,6 +226,16 @@ void initialize()
     spdlog::set_default_logger(data::engine_logger);
     spdlog::debug("Logging initialized");
     spdlog::info("Start timestamp: {:%F %T}", local_time);
+
+    // add OnSet callback for DevUI
+    if(auto log_level_config_optref =
+           mono::config::runtime.get<config::OptionStringConfigItem>("engine", "LogLevel"))
+    {
+        data::log_level_cb_guard = log_level_config_optref.value().get().setOnSetCallback(
+            [](std::string_view, std::string_view new_value) {
+                spdlog::set_level(spdlog::level_from_str(std::string{new_value}));
+            });
+    }
 }
 
 }  // namespace mono::log

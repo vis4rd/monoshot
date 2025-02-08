@@ -41,6 +41,8 @@ class App final
     std::shared_ptr<mono::gl::RenderWindow> m_window;
     std::shared_ptr<Timer> m_timer;
     SectionManager& m_sectionManager;
+
+    std::vector<mono::config::CallbackGuard> m_callbacks;
 };
 
 void App::update(UpdateableTrait auto&&... updateables) noexcept
