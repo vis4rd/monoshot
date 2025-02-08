@@ -11,13 +11,15 @@ class CallbackGuard
     explicit CallbackGuard(ConfigItem& config_item);
     ~CallbackGuard() noexcept;
 
-    CallbackGuard(const CallbackGuard& other) = delete;
-    CallbackGuard(CallbackGuard&& other) noexcept = delete;
-    CallbackGuard& operator=(const CallbackGuard& other) = delete;
-    CallbackGuard& operator=(CallbackGuard&& other) noexcept = delete;
+    CallbackGuard(CallbackGuard& other);
+    CallbackGuard(CallbackGuard&& other) noexcept;
+    // NOLINTNEXTLINE(cppcoreguidelines-c-copy-assignment-signature)
+    CallbackGuard& operator=(CallbackGuard& other);
+    CallbackGuard& operator=(CallbackGuard&& other) noexcept;
 
     private:
     ConfigItem& m_configItem;
+    bool m_shouldRemove = true;
 };
 
 }  // namespace mono::config

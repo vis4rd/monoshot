@@ -40,15 +40,6 @@ void initialize()
         std::string{"LogLevel"},
         std::vector<std::string>{"trace", "debug", "info", "warn", "error", "critical"});
 
-    runtime.addConfigItem<OptionStringConfigItem>(
-        std::string{"engine.window"},
-        std::string{"Mode"},
-        std::vector<std::string>{"windowed", "fullscreen", "borderless"});
-    runtime.addConfigItem<BasicConfigItem<bool>>("engine.window", "UseVSync");
-    runtime.addConfigItem<MultiNumberConfigItem<2, std::int32_t, 'x'>>(
-        "engine.window",
-        "Resolution");
-
     const auto success = runtime.validate();
     if(not success)
     {

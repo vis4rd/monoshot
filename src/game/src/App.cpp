@@ -21,19 +21,30 @@ App::App(const std::string& window_title)
 {
     mono::log::info("App version: {}", MONOSHOT_VERSION);
 
-
-    const auto resolution = []() -> glm::ivec2 {
-        const auto resolution_config =
-            mono::config::runtime.get<mono::config::MultiNumberConfigItem<2, std::int32_t, 'x'>>(
-                "engine.window",
+    auto& window_mode_config =
+        mono::config::runtime.addConfigItem<mono::config::OptionStringConfigItem>(
+            std::string{"app.window"},
+            std::string{"Mode"},
+            std::vector<std::string>{"windowed", "fullscreen", "borderless"});
+    auto& vsync_config = mono::config::runtime.addConfigItem<mono::config::BasicConfigItem<bool>>(
+        "app.window",
+        "UseVSync");
+    auto& resolution_config =
+        mono::config::runtime
+            .addConfigItem<mono::config::MultiNumberConfigItem<2, std::int32_t, 'x'>>(
+                "app.window",
                 "Resolution");
-        if(resolution_config.has_value())
-        {
-            const auto& res = resolution_config.value().get();
-            return res.getValue<glm::ivec2>().value_or(glm::ivec2{1920, 1080});
-        }
-        return {1920, 1080};
-    }();
+
+    if(not mono::config::runtime.validate())
+    {
+        mono::log::error("Config validation failed");
+        m_window->requestClose();
+        this->terminate();
+        return;
+    }
+
+    const auto resolution =
+        resolution_config.getValue<glm::ivec2>().value_or(glm::ivec2{1920, 1080});
 
     m_window = std::make_shared<mono::gl::RenderWindow>(resolution.x, resolution.y, window_title);
     ResourceManager::window = m_window;
@@ -64,16 +75,7 @@ App::App(const std::string& window_title)
         mono::renderer::addPipeline(std::move(pipeline));
     }
 
-    const auto window_mode = []() -> std::string {
-        const auto conf = mono::config::runtime.get<mono::config::OptionStringConfigItem>(
-            "engine.window",
-            "Mode");
-        if(conf.has_value())
-        {
-            return conf.value().get().getValue<std::string>().value_or("borderless");
-        }
-        return "borderless";
-    }();
+    const auto window_mode = window_mode_config.getValue<std::string>().value_or("borderless");
 
     if(window_mode.compare("borderless") == 0)
     {
@@ -88,17 +90,38 @@ App::App(const std::string& window_title)
         m_window->setFullscreen(false);
     }
 
-    const auto vsync_enabled = []() {
-        const auto conf = mono::config::runtime.get<mono::config::BasicConfigItem<bool>>(
-            "engine.window",
-            "UseVSync");
-        if(conf.has_value())
-        {
-            return conf.value().get().getValue<bool>().value_or(true);
-        }
-        return true;
-    }();
+    const auto vsync_enabled = vsync_config.getValue<bool>().value_or(true);
     m_window->setVerticalSync(vsync_enabled);
+
+    m_callbacks.push_back(window_mode_config.setOnSetCallback(
+        [this](std::string_view old_value, std::string_view new_value) {
+            if(new_value.compare("borderless") == 0)
+            {
+                m_window->setBorderlessFullscreen();
+            }
+            else if(new_value.compare("fullscreen") == 0)
+            {
+                m_window->setFullscreen();
+            }
+            else
+            {
+                m_window->setFullscreen(false);
+            }
+        }));
+
+    m_callbacks.push_back(vsync_config.setOnSetCallback(
+        [this](std::string_view old_value, std::string_view new_value) {
+            bool new_value_boolean{};
+            ini::Convert<bool>{}.decode(std::string{new_value}, new_value_boolean);
+            m_window->setVerticalSync(new_value_boolean);
+        }));
+
+    m_callbacks.push_back(resolution_config.setOnSetCallback(
+        [this](std::string_view old_value, std::string_view new_value) {
+            glm::ivec2 new_resolution{};
+            ini::Convert<glm::ivec2>{}.decode(std::string{new_value}, new_resolution);
+            m_window->setSize(new_resolution.x, new_resolution.y);
+        }));
 
     m_timer = std::make_shared<Timer>();
     ResourceManager::timer = m_timer;
@@ -113,6 +136,7 @@ App::App(const std::string& window_title)
 
 App::~App() noexcept
 {
+    m_callbacks.clear();
     mono::renderer::terminate();
     this->destroyFonts();
     this->destroyTextures();
