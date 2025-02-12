@@ -18,7 +18,7 @@ void devUiExtension()
         [](std::unique_ptr<ConfigItem>& item) -> std::string {
             return std::string{item->getSection()};
         });
-    for(auto section : sections)
+    for(const auto& section : sections)
     {
         if(ImGui::CollapsingHeader(section.data(), ImGuiTreeNodeFlags_CollapsingHeader))
         {

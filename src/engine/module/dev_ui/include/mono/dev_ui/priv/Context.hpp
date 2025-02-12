@@ -14,15 +14,16 @@ namespace mono::dev_ui::priv
 struct Context
 {
     const ImGuiWindowFlags windowFlags{
-        ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings
-        | ImGuiWindowFlags_AlwaysAutoResize};
+        ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_AlwaysAutoResize};
     const ImVec2 rightAlignPivot{1.0f, 0.0f};
+    const float extensionWindowMinWidth{200.f};
 
     float previousPosY{};
     float previousSizeY{};
     float rightWindowEdge{};
     std::unordered_map<std::string, bool> extensionVisibilityFlags{};
     std::unordered_map<std::string, Extension> registeredExtensions{};
+    float commonExtensionWindowWidth{extensionWindowMinWidth};
 };
 
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
