@@ -16,10 +16,16 @@ static float nextWindowPosY(float offset)
     return priv::context.previousPosY + priv::context.previousSizeY + offset;
 }
 
-static void updatePrevWindow()
+static void updateExtensionWindowContext()
 {
     priv::context.previousPosY = ImGui::GetWindowPos().y;
     priv::context.previousSizeY = ImGui::GetWindowSize().y;
+
+    if(float current_width = ImGui::GetWindowWidth();
+       current_width > priv::context.commonExtensionWindowWidth)
+    {
+        priv::context.commonExtensionWindowWidth = current_width;
+    }
 }
 
 static void renderDevUiMenu()
@@ -28,18 +34,21 @@ static void renderDevUiMenu()
         ImVec2(priv::context.rightWindowEdge, nextWindowPosY(10.0f)),
         ImGuiCond_Always,
         priv::context.rightAlignPivot);
-    ImGui::Begin("Dev UI", nullptr, priv::context.windowFlags);
+    ImGui::Begin("Dev UI", nullptr, priv::context.windowFlags | ImGuiWindowFlags_NoCollapse);
     {
-        updatePrevWindow();
+        updateExtensionWindowContext();
         for(auto& [window_name, flag] : priv::context.extensionVisibilityFlags)
         {
-            ImGui::Selectable(window_name.c_str(), &flag);
+            if(ImGui::Checkbox(window_name.c_str(), &flag))
+            {
+                priv::context.commonExtensionWindowWidth = priv::context.extensionWindowMinWidth;
+            }
         }
     }
     ImGui::End();
 }
 
-static void updateContext()
+static void resetContext()
 {
     priv::context.previousPosY = 0.f;
     priv::context.previousSizeY = 0.f;
@@ -54,30 +63,27 @@ static void renderExtensions()
         });
     if(any_visible)
     {
-        ImGui::SetNextWindowPos(
-            {priv::context.rightWindowEdge, nextWindowPosY(10.0f)},
-            ImGuiCond_Always,
-            priv::context.rightAlignPivot);
-        ImGui::Begin(
-            "DevUI Extensions",
-            nullptr,
-            priv::context.windowFlags | ImGuiWindowFlags_NoTitleBar);
+        for(auto& [name, opened] : priv::context.extensionVisibilityFlags)
         {
-            if(ImGui::BeginTabBar("DevUI Extensions Tab Bar"))
+            if(opened)
             {
-                for(auto& [name, opened] : priv::context.extensionVisibilityFlags)
+                ImGui::SetNextWindowPos(
+                    {priv::context.rightWindowEdge, nextWindowPosY(0.f)},
+                    ImGuiCond_Always,
+                    priv::context.rightAlignPivot);
+                ImGui::SetNextWindowSizeConstraints(
+                    {priv::context.commonExtensionWindowWidth, 0},
+                    {800, 640});
+                ImGui::Begin(name.c_str(), &opened, priv::context.windowFlags);
                 {
-                    if(opened and ImGui::BeginTabItem(name.c_str(), &opened))
-                    {
-                        const auto& func = priv::context.registeredExtensions[name];
-                        std::invoke(func);
-                        ImGui::EndTabItem();
-                    }
+                    updateExtensionWindowContext();
+
+                    const auto& func = priv::context.registeredExtensions[name];
+                    std::invoke(func);
                 }
-                ImGui::EndTabBar();
+                ImGui::End();
             }
         }
-        ImGui::End();
     }
 }
 
@@ -86,7 +92,7 @@ void initialize()
     if constexpr(mono::config::constant::debugBuild)
     {
         // prepare data for the first frame
-        updateContext();
+        resetContext();
 
         // register default windows
         registerExtension("DevUI Debug", []() {
@@ -108,7 +114,7 @@ void render()
 {
     if constexpr(mono::config::constant::debugBuild)
     {
-        updateContext();
+        resetContext();
         renderDevUiMenu();
         renderExtensions();
     }
