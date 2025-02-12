@@ -31,7 +31,7 @@ jobs:
       if: ${{ steps.update-license-year.outcome == 'success' }}
       uses: peter-evans/create-pull-request@v5
       with:
-        commit-message: "Update license year to ${{ steps.update-license-year.outputs.year }}"
+        commit-message: "📄 Update license year to ${{ steps.update-license-year.outputs.year }}"
         branch: update-license-year-${{ steps.update-license-year.outputs.year }}
         title: "Update license year to ${{ steps.update-license-year.outputs.year }}"
         labels: automated
