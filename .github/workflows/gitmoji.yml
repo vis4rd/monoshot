@@ -20,7 +20,7 @@ jobs:
       run: |
         curl -s -H "Authorization: token $GITHUB_TOKEN" \
           "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/commits" \
-          | jq -r '.[].commit.message' | head -n 1 > commit_messages.txt
+          | jq -r '.[].commit.message | split("\n") | .[0]' > commit_messages.txt
 
     - name: Get all gitmoji's
       shell: bash
