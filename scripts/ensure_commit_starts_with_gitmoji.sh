@@ -3,6 +3,9 @@
 # Usage:
 # ensure_commit_starts_with_gitmoji.sh <commit_message> <gitmoji_list_file>
 
+# Example:
+# ensure_commit_starts_with_gitmoji.sh < dev/commit_msg dev/gitmojis.txt
+
 commit_msg="$1"
 gitmoji_list_file="$2"
 
