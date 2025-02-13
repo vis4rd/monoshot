@@ -27,18 +27,12 @@ target_compile_definitions(monoshot
         >
 )
 
-# Game sources
-file(GLOB_RECURSE GAME_SOURCES
-    "${PROJECT_SOURCE_DIR}/src/*.cpp"
-)
-
 target_compile_features(monoshot
     PRIVATE "cxx_std_20"
 )
 
 target_sources(monoshot
-    PRIVATE ${GAME_SOURCES}
-            "${PROJECT_SOURCE_DIR}/main.cpp"
+    PRIVATE "${PROJECT_SOURCE_DIR}/main.cpp"
 )
 
 target_link_libraries(monoshot
