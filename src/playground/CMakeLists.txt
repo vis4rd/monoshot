@@ -18,7 +18,7 @@ file(GLOB_RECURSE PLAYGROUND_SOURCES
     "${PROJECT_SOURCE_DIR}/src/*.cpp"
 )
 target_sources(playground
-    PRIVATE ${GAME_SOURCES}
+    PRIVATE ${PLAYGROUND_SOURCES}
             "${PROJECT_SOURCE_DIR}/main.cpp"
 )
 

@@ -121,5 +121,3 @@ add_subdirectory("${PROJECT_SOURCE_DIR}/module/dev_ui")
 
 #     endforeach()
 # endfunction()
-
-# target_group_source_files(${GAME_NAME})
