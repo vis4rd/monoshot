@@ -24,5 +24,4 @@ target_include_directories(mono_module_section
 
 target_link_libraries(mono_module_section
     PUBLIC spdlog::spdlog
-           mono::resource
 )
