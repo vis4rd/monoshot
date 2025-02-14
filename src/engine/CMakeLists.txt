@@ -62,7 +62,6 @@ add_subdirectory("${PROJECT_SOURCE_DIR}/module/cstring")
 # add_subdirectory("${PROJECT_SOURCE_DIR}/module/audio") # currently not supported
 add_subdirectory("${PROJECT_SOURCE_DIR}/module/renderer")
 add_subdirectory("${PROJECT_SOURCE_DIR}/module/camera")
-add_subdirectory("${PROJECT_SOURCE_DIR}/module/section")
 add_subdirectory("${PROJECT_SOURCE_DIR}/module/traits")
 add_subdirectory("${PROJECT_SOURCE_DIR}/module/log")
 add_subdirectory("${PROJECT_SOURCE_DIR}/module/ui")

@@ -30,7 +30,6 @@ target_link_libraries(playground
     PRIVATE mono::input
            mono::renderer
            mono::camera
-           mono::section
            mono::traits
            mono::log
            mono::ui
