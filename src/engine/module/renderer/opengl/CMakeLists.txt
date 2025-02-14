@@ -47,7 +47,6 @@ target_link_libraries(mono_module_renderer_opengl_backend
            stb::image
            mono::traits
            mono::config
-           mono::section
            mono::time
            mono::log
            mono::input
