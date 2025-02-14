@@ -64,7 +64,7 @@ jobs:
         id: restore-cache
         with:
           path: ${{ github.workspace }}/build
-          key: ubuntu-24.04-build-gcc-g++-Release-${{ hashFiles('src/engine/module/**/*', 'src/game/**/*') }}
+          key: ubuntu-24.04-build-gcc-g++-Release-${{ hashFiles('src/engine/module/**/*') }}
           restore-keys: ubuntu-24.04-build-gcc-g++-Release-
 
       - name: Check if compile_commands.json file exists (after cache load)

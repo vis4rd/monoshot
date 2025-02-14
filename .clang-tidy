@@ -3,7 +3,7 @@
 ---
 WarningsAsErrors: "true"
 UseColor: true
-HeaderFilterRegex: '.*\/?src\/(engine\/module\/|game\/include\/).*'
+HeaderFilterRegex: '.*\/?src\/engine\/module\/.*'
 HeaderFileExtensions: # clang-tidy > 18
   - "hpp"
   - "inl"
@@ -12,27 +12,33 @@ ImplementationFileExtensions: # clang-tidy > 18
 ExtraArgsBefore:
   - --std=c++20
 
-# Do not use any whitespaces in comments
-Checks: |
-  -*,
+Checks:
+  # enabled checks
+  - bugprone-*
+  - cert-*
+  - clang-analyzer-*
+  - concurrency-*
+  - cppcoreguidelines-*
+  - google-*
+  - misc-*
+  - modernize-*
+  - performance-*
+  - readability-*
 
-  #enabled
-  clang-analyzer-*,
-  cppcoreguidelines-*,
-  google-*,
-  modernize-*,
-  performance-*,
-  readability-identifier-naming,
-
-  #disabled
-  -cppcoreguidelines-avoid-const-or-ref-data-members,
-  -cppcoreguidelines-avoid-magic-numbers,
-  -cppcoreguidelines-non-private-member-variables-in-classes,
-  -cppcoreguidelines-pro-type-union-access,
-  -cppcoreguidelines-pro-type-vararg,
-  -modernize-pass-by-value,
-  -modernize-use-nodiscard,
-  -modernize-use-trailing-return-type
+  # disabled checks
+  - -cppcoreguidelines-avoid-const-or-ref-data-members
+  - -cppcoreguidelines-avoid-magic-numbers
+  - -cppcoreguidelines-non-private-member-variables-in-classes
+  - -cppcoreguidelines-pro-type-union-access
+  - -cppcoreguidelines-pro-type-vararg
+  - -misc-include-cleaner
+  - -misc-non-private-member-variables-in-classes
+  - -modernize-pass-by-value
+  - -modernize-use-nodiscard
+  - -modernize-use-trailing-return-type
+  - -readability-identifier-length
+  - -readability-redundant-access-specifiers
+  - -readability-uppercase-literal-suffix
 
 CheckOptions:
   readability-identifier-naming.AbstractClassCase: CamelCase

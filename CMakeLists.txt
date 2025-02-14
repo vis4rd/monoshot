@@ -10,7 +10,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${MONOSHOT_OUTPUT_DIR}")
 project(
     MONOSHOT
     VERSION 0.0.4
-    DESCRIPTION "A simple 2D top-down shooter game."
+    DESCRIPTION "A simple engine/framework for experimenting with graphics."
     HOMEPAGE_URL "https://github.com/vis4rd/monoshot"
     LANGUAGES C CXX
 )

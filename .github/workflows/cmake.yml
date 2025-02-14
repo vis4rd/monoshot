@@ -40,7 +40,7 @@ jobs:
       id: restore-cache
       with:
         path: ${{ steps.env.outputs.build-output-dir }}
-        key: ${{ runner.os }}-build-${{ matrix.c_compiler }}-${{ matrix.cpp_compiler }}-${{ matrix.build_type }}-${{ hashFiles('src/engine/module/**/*', 'src/game/**/*') }}
+        key: ${{ runner.os }}-build-${{ matrix.c_compiler }}-${{ matrix.cpp_compiler }}-${{ matrix.build_type }}-${{ hashFiles('src/engine/module/**/*') }}
         restore-keys: ${{ runner.os }}-build-${{ matrix.c_compiler }}-${{ matrix.cpp_compiler }}-${{ matrix.build_type }}-
 
     - name: Configure ccache
