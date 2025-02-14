@@ -18,5 +18,4 @@ target_include_directories(mono_module_time
 target_link_libraries(mono_module_time
     PUBLIC glfw
            spdlog::spdlog
-           mono::resource
 )

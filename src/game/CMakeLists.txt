@@ -43,7 +43,6 @@ target_link_libraries(monoshot
            mono::traits
            mono::log
            mono::ui
-           mono::resource
            mono::time
            mono::config
            mono::cstring
