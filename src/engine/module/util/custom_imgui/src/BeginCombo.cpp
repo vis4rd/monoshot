@@ -1,6 +1,6 @@
-#include "../../include/ui/external/BeginCombo.hpp"
+#include "BeginCombo.hpp"
 
-namespace Custom
+namespace mono::util::Custom
 {
 
 namespace helpers
@@ -158,4 +158,4 @@ bool ImGui::BeginCombo(
     return ::ImGui::BeginComboPopup(popup_id, bounding_box, flags);
 }
 
-}  // namespace Custom
+}  // namespace mono::util::Custom
