@@ -15,7 +15,6 @@ target_compile_features(mono_module_ui
 
 target_sources(mono_module_ui
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/Font.cpp"
-            "${CMAKE_CURRENT_SOURCE_DIR}/src/external/BeginCombo.cpp"
 )
 
 target_include_directories(mono_module_ui
