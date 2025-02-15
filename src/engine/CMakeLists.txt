@@ -58,7 +58,6 @@ add_subdirectory("${PROJECT_SOURCE_DIR}/lib/inifile-cpp" SYSTEM)
 
 # Modules
 add_subdirectory("${PROJECT_SOURCE_DIR}/module/input")
-add_subdirectory("${PROJECT_SOURCE_DIR}/module/cstring")
 add_subdirectory("${PROJECT_SOURCE_DIR}/module/renderer")
 add_subdirectory("${PROJECT_SOURCE_DIR}/module/camera")
 add_subdirectory("${PROJECT_SOURCE_DIR}/module/traits")

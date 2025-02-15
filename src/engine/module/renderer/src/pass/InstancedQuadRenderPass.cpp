@@ -2,7 +2,6 @@
 
 #include <algorithm>
 
-#include "cstring/cstring.hpp"
 #include "mono/util/IndexOf.hpp"
 #include "opengl/shader/ShaderManager.hpp"
 
@@ -92,10 +91,10 @@ void InstancedQuadRenderPass::submitDraws()
                     }
                     if constexpr(std::is_same_v<OP, MakeAvailableMemoryOperation>)
                     {
-                        constexpr mono::cstring msg =
+                        constexpr std::string_view msg =
                             "Renderer: max memory limit reached, consider assigning more memory to the SSBO.";
                         spdlog::error(msg);
-                        throw std::runtime_error(msg.data().data());
+                        throw std::runtime_error(msg.data());
                     }
                 },
                 op);

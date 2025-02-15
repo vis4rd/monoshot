@@ -7,8 +7,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include <cstring/cstring.hpp>
-
 #include "RenderPassTrait.hpp"
 
 namespace mono::renderer
