@@ -32,7 +32,6 @@ target_link_libraries(playground
            mono::camera
            mono::traits
            mono::log
-           mono::ui
            mono::time
            mono::config
            mono::cstring
