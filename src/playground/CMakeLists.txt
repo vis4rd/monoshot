@@ -34,7 +34,6 @@ target_link_libraries(playground
            mono::log
            mono::time
            mono::config
-           mono::cstring
            mono::log
            glm::glm
            tinyfd::tinyfd
