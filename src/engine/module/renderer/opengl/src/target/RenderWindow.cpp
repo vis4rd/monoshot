@@ -7,6 +7,7 @@
 
 #include "mono/config/Config.hpp"
 #include "mono/log/Logging.hpp"
+#include "mono/util/custom_imgui/StyleColorsTransparent.hpp"
 #include "opengl/shader/ShaderManager.hpp"
 
 namespace mono::gl
@@ -464,6 +465,7 @@ void RenderWindow::initImGui() const
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
+    mono::util::Custom::ImGui::StyleColorsTransparent();
 
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(m_windowHandle.get(), true);

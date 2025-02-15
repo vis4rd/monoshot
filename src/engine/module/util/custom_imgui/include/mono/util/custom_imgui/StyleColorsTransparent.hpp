@@ -2,10 +2,14 @@
 
 #include <imgui/imgui.h>
 
-// NOLINTNEXTLINE(readability-identifier-naming)
-inline void MainMenuStyle()
+namespace mono::util::Custom::ImGui
 {
-    ImGuiStyle& style = ImGui::GetStyle();
+
+// NOLINTNEXTLINE(readability-identifier-naming)
+inline void StyleColorsTransparent()
+{
+    // NOLINTBEGIN(readability-magic-numbers)
+    ImGuiStyle& style = ::ImGui::GetStyle();
 
     style.Alpha = 1.0f;
     style.DisabledAlpha = 0.8f;
@@ -103,4 +107,7 @@ inline void MainMenuStyle()
     style.Colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
     style.Colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
     style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
+    // NOLINTEND(readability-magic-numbers)
 }
+
+}  // namespace mono::util::Custom::ImGui
