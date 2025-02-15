@@ -53,4 +53,5 @@ target_link_libraries(mono_module_renderer_opengl_backend
            mono::cstring
            mono::util::pv
            mono::util::index_of
+           mono::util::custom_imgui
 )
