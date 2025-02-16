@@ -58,6 +58,8 @@
         "files.insertFinalNewline": true,
     },
     "[cmake]": {
+        "editor.defaultFormatter": "josetr.cmake-language-support-vscode",
+        "editor.formatOnSave": true,
         "files.insertFinalNewline": true,
     },
     "[ini]": {
@@ -67,7 +69,9 @@
         "files.insertFinalNewline": true,
     },
     "[markdown]": {
+        "editor.defaultFormatter": "yzhang.markdown-all-in-one",
         "editor.formatOnSave": true,
+        "editor.wordWrap": "off",
         "files.insertFinalNewline": true,
     },
     "[yaml]": {
