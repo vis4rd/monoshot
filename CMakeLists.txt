@@ -31,5 +31,5 @@ string(COMPARE EQUAL "${CMAKE_BUILD_TYPE}" "Debug" DEBUG_BUILD)
 
 include(${PROJECT_SOURCE_DIR}/cmake/version.cmake)
 
-add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/src/game")
-# add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/src/playground")
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/examples/game")
+# add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/examples/playground")

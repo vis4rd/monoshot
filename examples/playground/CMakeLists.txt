@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.19 FATAL_ERROR)
 project(PLAYGROUND LANGUAGES C CXX)
 
 # Engine
-add_subdirectory("${PROJECT_SOURCE_DIR}/../engine" "${CMAKE_BINARY_DIR}/src/playground/engine")
+add_subdirectory("${PROJECT_SOURCE_DIR}/../../src/engine" "${CMAKE_BINARY_DIR}/src/engine")
 
 # Playground
 add_executable(playground)
