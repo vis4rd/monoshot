@@ -27,9 +27,16 @@ endif()
 if(CMAKE_BUILD_TYPE EQUAL "")
     set(CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)
 endif()
+
 string(COMPARE EQUAL "${CMAKE_BUILD_TYPE}" "Debug" DEBUG_BUILD)
 
 include(${PROJECT_SOURCE_DIR}/cmake/version.cmake)
 
-add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/examples/game")
-# add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/examples/playground")
+# External libraries
+add_subdirectory("${PROJECT_SOURCE_DIR}/lib")
+
+# Sources
+add_subdirectory("${PROJECT_SOURCE_DIR}/src")
+
+# Examples
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/examples" EXCLUDE_FROM_ALL)
