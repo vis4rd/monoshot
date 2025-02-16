@@ -21,7 +21,7 @@
             "label": "Run clang-tidy (all files)",
             "detail": "Run clang-tidy on all C++ files in src/ directory.",
             "type": "shell",
-            "command": "cmake -P ./cmake/clang-tidy.cmake",
+            "command": "cmake -P ./cmake/clang-tidy.cmake \"src/engine/module\"",
             "icon": {
                 "color": "terminal.ansiCyan",
                 "id": "sparkle"
