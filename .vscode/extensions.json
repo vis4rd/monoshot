@@ -1,12 +1,17 @@
 {
     "recommendations": [
         "aaron-bond.better-comments",
+        "bierner.markdown-preview-github-styles",
+        "cschlosser.doxdocgen",
+        "github.vscode-github-actions",
         "jeff-hykin.better-cpp-syntax",
         "josetr.cmake-language-support-vscode",
+        "llvm-vs-code-extensions.vscode-clangd",
         "ms-vscode.cmake-tools",
         "ms-vscode.cpptools",
         "redhat.vscode-yaml",
         "seatonjiang.gitmoji-vscode",
         "slevesque.shader",
+        "yzhang.markdown-all-in-one",
     ],
 }
