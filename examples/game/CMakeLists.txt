@@ -8,7 +8,7 @@ project(MONOSHOT_GAME
 )
 
 # Engine
-add_subdirectory("${PROJECT_SOURCE_DIR}/../../src/engine" "${CMAKE_BINARY_DIR}/src/engine")
+add_subdirectory("${PROJECT_SOURCE_DIR}/../../src" "${CMAKE_BINARY_DIR}/src")
 
 # Game
 add_executable(monoshot)

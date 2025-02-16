@@ -14,7 +14,7 @@ set(GLFW_CLIENT_LIBRARY "opengl" CACHE STRING "" FORCE)
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-add_subdirectory("${PROJECT_SOURCE_DIR}/../../lib/glfw" "${PROJECT_BINARY_DIR}/lib/glfw" SYSTEM)
+add_subdirectory("${PROJECT_SOURCE_DIR}/../lib/glfw" "${PROJECT_BINARY_DIR}/../lib/glfw" SYSTEM)
 target_compile_definitions(glfw  # prevent GLFW from including gl headers
     INTERFACE "GLFW_INCLUDE_NONE"
 )
@@ -23,17 +23,17 @@ target_compile_definitions(glfw  # prevent GLFW from including gl headers
 find_package(OpenGL 4.5 REQUIRED)
 
 # GLAD
-add_subdirectory("${PROJECT_SOURCE_DIR}/../../lib/glad/cmake" "${PROJECT_BINARY_DIR}/lib/glad" SYSTEM)
+add_subdirectory("${PROJECT_SOURCE_DIR}/../lib/glad/cmake" "${PROJECT_BINARY_DIR}/../lib/glad" SYSTEM)
 glad_add_library(glad STATIC REPRODUCIBLE
     LANGUAGE C
     API gl:core=4.5
 )
 
 # GLM
-add_subdirectory("${PROJECT_SOURCE_DIR}/../../lib/glm" "${PROJECT_BINARY_DIR}/lib/glm" SYSTEM)
+add_subdirectory("${PROJECT_SOURCE_DIR}/../lib/glm" "${PROJECT_BINARY_DIR}/../lib/glm" SYSTEM)
 
 # ImGUI
-add_subdirectory("${PROJECT_SOURCE_DIR}/../../lib/imgui" "${PROJECT_BINARY_DIR}/lib/imgui" SYSTEM)
+add_subdirectory("${PROJECT_SOURCE_DIR}/../lib/imgui" "${PROJECT_BINARY_DIR}/../lib/imgui" SYSTEM)
 
 # spdlog
 set(SPDLOG_BUILD_SHARED OFF CACHE BOOL "" FORCE)
@@ -41,31 +41,31 @@ set(SPDLOG_ENABLE_PCH ON CACHE BOOL "" FORCE)
 set(SPDLOG_SYSTEM_INCLUDES ON CACHE BOOL "" FORCE)
 set(SPDLOG_USE_STD_FORMAT ON CACHE BOOL "" FORCE)
 set(CMAKE_CXX_STANDARD 20)
-add_subdirectory("${PROJECT_SOURCE_DIR}/../../lib/spdlog" "${PROJECT_BINARY_DIR}/lib/spdlog" SYSTEM)
+add_subdirectory("${PROJECT_SOURCE_DIR}/../lib/spdlog" "${PROJECT_BINARY_DIR}/../lib/spdlog" SYSTEM)
 target_compile_definitions(spdlog PUBLIC SPDLOG_SOURCE_LOCATION)
 
 # stb_image
-add_subdirectory("${PROJECT_SOURCE_DIR}/../../lib/stb_image" "${PROJECT_BINARY_DIR}/lib/stb_image" SYSTEM)
+add_subdirectory("${PROJECT_SOURCE_DIR}/../lib/stb_image" "${PROJECT_BINARY_DIR}/../lib/stb_image" SYSTEM)
 
 # EnTT
-add_subdirectory("${PROJECT_SOURCE_DIR}/../../lib/entt" "${PROJECT_BINARY_DIR}/lib/entt" SYSTEM)
+add_subdirectory("${PROJECT_SOURCE_DIR}/../lib/entt" "${PROJECT_BINARY_DIR}/../lib/entt" SYSTEM)
 
 # tinyfiledialogs
-add_subdirectory("${PROJECT_SOURCE_DIR}/../../lib/tinyfiledialogs" "${PROJECT_BINARY_DIR}/lib/tinyfiledialogs" SYSTEM)
+add_subdirectory("${PROJECT_SOURCE_DIR}/../lib/tinyfiledialogs" "${PROJECT_BINARY_DIR}/../lib/tinyfiledialogs" SYSTEM)
 
 # inifile-cpp
-add_subdirectory("${PROJECT_SOURCE_DIR}/../../lib/inifile-cpp" "${PROJECT_BINARY_DIR}/lib/inifile-cpp" SYSTEM)
+add_subdirectory("${PROJECT_SOURCE_DIR}/../lib/inifile-cpp" "${PROJECT_BINARY_DIR}/../lib/inifile-cpp" SYSTEM)
 
 # Modules
-add_subdirectory("${PROJECT_SOURCE_DIR}/module/input")
-add_subdirectory("${PROJECT_SOURCE_DIR}/module/renderer")
-add_subdirectory("${PROJECT_SOURCE_DIR}/module/camera")
-add_subdirectory("${PROJECT_SOURCE_DIR}/module/traits")
-add_subdirectory("${PROJECT_SOURCE_DIR}/module/log")
-add_subdirectory("${PROJECT_SOURCE_DIR}/module/time")
-add_subdirectory("${PROJECT_SOURCE_DIR}/module/config")
-add_subdirectory("${PROJECT_SOURCE_DIR}/module/util")
-add_subdirectory("${PROJECT_SOURCE_DIR}/module/dev_ui")
+add_subdirectory("${PROJECT_SOURCE_DIR}/input")
+add_subdirectory("${PROJECT_SOURCE_DIR}/renderer")
+add_subdirectory("${PROJECT_SOURCE_DIR}/camera")
+add_subdirectory("${PROJECT_SOURCE_DIR}/traits")
+add_subdirectory("${PROJECT_SOURCE_DIR}/log")
+add_subdirectory("${PROJECT_SOURCE_DIR}/time")
+add_subdirectory("${PROJECT_SOURCE_DIR}/config")
+add_subdirectory("${PROJECT_SOURCE_DIR}/util")
+add_subdirectory("${PROJECT_SOURCE_DIR}/dev_ui")
 
 
 # Use mold linker if present in the system (to speed up linking time)
