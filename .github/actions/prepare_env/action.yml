@@ -1,11 +1,6 @@
 name: Prepare environment
 description: Install build dependencies
 
-outputs:
-  build-output-dir:
-    description: The directory where the build output will be stored
-    value: ${{ steps.constant.outputs.build-output-dir }}
-
 runs:
   using: "composite"
   steps:
@@ -17,22 +12,14 @@ runs:
         git submodule init
         git submodule update --recursive
 
-    - name: Set constant variables
-      # Set constant variables as step outputs. These step outputs can be used throughout the
-      # workflow file.
-      id: constant
-      shell: bash
-      run: |
-        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
-
     - name: Create build directory
       shell: bash
       run: |
-        mkdir ${{ steps.constant.outputs.build-output-dir }}
+        mkdir build
 
     - name: Configure CMake
       shell: bash
-      working-directory: ${{ steps.constant.outputs.build-output-dir }}
+      working-directory: build
       run: |
         cmake \
           -DCMAKE_CXX_COMPILER=g++ \
