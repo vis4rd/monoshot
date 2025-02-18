@@ -3,48 +3,62 @@ name: Code Quality
 on:
   pull_request:
     branches: [ "dev" ]
-    paths: [ "src/**/*.hpp", "src/**/*.cpp", "src/**/*.inl", "src/**/*.c", "src/**/*.h" ]
+    paths:
+      - src/**/*.hpp
+      - src/**/*.cpp
+      - src/**/*.inl
+      - src/**/*.c
+      - src/**/*.h
+      - .clang-tidy
+      - .clang-format
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
 
 jobs:
   clang-format:
     runs-on: ubuntu-24.04
+    container:
+      image: ghcr.io/vis4rd/monoshot:pr-${{ github.event.pull_request.number }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Get changed files (for triggering)
+        id: changed-files-trigger
+        uses: tj-actions/changed-files@v45
         with:
-          submodules: false
+          files: |
+            src/**.hpp
+            src/**.cpp
+            src/**.inl
+            src/**.c
+            src/**.h
+            .clang-format
 
-      - name: Install clang-format
-        shell: bash
-        run: |
-          sudo apt update
-          sudo apt install -y clang-format
-          clang-format --version
-
-      - name: Get files in pull request
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        shell: bash
-        run: |
-          curl -s -H "Authorization: token $GITHUB_TOKEN" \
-            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" \
-            | jq -r '.[] | select(.status != "removed") | .filename' > pr_files.txt
-
-      - name: List files to format
-        shell: bash
-        run: |
-          echo "All files changed in this pull request:"
-          cat pr_files.txt
-          grep -E '.+\.(hpp|cpp|inl|c|h)$' pr_files.txt > files.txt || true
-
-          echo "Files selected for formatting check:"
-          cat files.txt
+      - name: Get changed files (for formatting)
+        id: changed-files-format
+        uses: tj-actions/changed-files@v45
+        if: steps.changed-files-trigger.outputs.any_changed == 'true'
+        with:
+          files: |
+            src/**.hpp
+            src/**.cpp
+            src/**.inl
+            src/**.c
+            src/**.h
 
       - name: Check code formatting
+        if: steps.changed-files-trigger.outputs.any_changed == 'true'
         shell: bash
         run: |
-          cat files.txt | xargs clang-format --dry-run --Werror
+          echo "Files selected for formatting check:"
+          echo ${{ steps.changed-files-format.outputs.all_changed_files }}
+
+          clang-format --dry-run --Werror ${{ steps.changed-files-format.outputs.all_changed_files }}
 
           if [ $? -eq 0 ]; then echo "Code formatting check passed."; exit 0;
           else echo "Code formatting check failed."; exit 1;
@@ -52,6 +66,10 @@ jobs:
 
   clang-tidy:
     runs-on: ubuntu-24.04
+    container:
+      image: ghcr.io/vis4rd/monoshot:latest
+
+    if: ${{ github.event.pull_request.draft == false }}
 
     steps:
       - name: Checkout repository
@@ -59,85 +77,23 @@ jobs:
         with:
           submodules: false
 
-      - name: Load cache build directory
-        uses: actions/cache/restore@v4
-        id: restore-cache
-        with:
-          path: ${{ github.workspace }}/build
-          key: ubuntu-24.04-build-gcc-g++-Release-${{ hashFiles('src/engine/module/**/*') }}
-          restore-keys: ubuntu-24.04-build-gcc-g++-Release-
-
-      - name: Check if compile_commands.json file exists (after cache load)
-        id: check-compile-commands-after-cache
-        run: |
-          if [ -z "$(ls -A ${{ github.workspace }}/build/compile_commands.json 2> /dev/null)" ]; then
-            echo "compile_commands.json file does not exist."
-            exit 1
-          else
-            echo "compile_commands.json file exists!"
-            exit 0
-          fi
-        continue-on-error: true
-
-      - name: (Fallback) Prepare environment
-        if: ${{ steps.check-compile-commands-after-cache.outcome == 'failure' && github.event.pull_request.draft == false }}
-        uses: ./.github/actions/prepare_env
+      - name: Prepare environment
         id: env
-
-      - name: (Fallback) Configure CMake project for clang-tidy
-        if: steps.env.conclusion != 'skipped'
-        shell: bash
-        working-directory: ${{ steps.env.outputs.build-output-dir }}
-        run: |
-          cmake \
-            -DCMAKE_CXX_COMPILER=g++ \
-            -DCMAKE_C_COMPILER=gcc \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
-            ..
-
-          # Check if compile_commands.json was generated
-          ok=$([ -z "$(ls -A ${{ steps.env.outputs.build-output-dir }}/compile_commands.json 2> /dev/null)" ] && echo 1 || echo 0)
-          if [ $ok -eq 0 ]; then echo "compile_commands.json file has been generated.";
-          else echo "Could not generate compile_commands.json file.";
-          fi
-
-          exit $ok
-
-      - name: Check if compile_commands.json file exists (after CMake)
-        id: check-compile-commands
-        run: |
-          if [ -z "$(ls -A ${{ github.workspace }}/build/compile_commands.json 2> /dev/null)" ]; then
-            echo "compile_commands.json file does not exist. All subsequent steps will be skipped."
-            exit 1
-          else
-            echo "compile_commands.json file exists!"
-            exit 0
-          fi
-        continue-on-error: true
-
-      - name: Install clang-tidy
-        if: ${{ steps.check-compile-commands.outcome == 'success' }}
-        shell: bash
-        run: |
-          sudo apt update
-          sudo apt install -y python3-pip
-          pip3 install clang-tidy
-          clang-tidy --version
+        uses: ./.github/actions/prepare_env
 
       - name: Get files in pull request
-        if: ${{ steps.check-compile-commands.outcome == 'success' }}
         id: get-files
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
+        # TODO: replace api call with changed-files action
+        # TODO: remove curl and jq from Dockerfile installation after
         run: |
           curl -s -H "Authorization: token $GITHUB_TOKEN" \
             "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" \
             | jq -r '.[] | select(.status != "removed") | .filename' > pr_files.txt
 
       - name: List files to check with clang-tidy
-        if: ${{ steps.check-compile-commands.outcome == 'success' }}
         id: list-files
         shell: bash
         run: |
@@ -150,7 +106,7 @@ jobs:
         continue-on-error: true
 
       - name: Run clang-tidy
-        if: ${{ steps.check-compile-commands.outcome == 'success' && steps.list-files.outcome == 'success' }}
+        if: ${{ steps.list-files.outcome == 'success' }}
         shell: bash
         run: |
           cat files.txt | xargs clang-tidy --quiet --config-file=.clang-tidy -p=${{ github.workspace }}/build
