@@ -1,0 +1,80 @@
+name: Docker Image
+
+on:
+  pull_request:
+    branches: [ dev ]
+    paths:
+      - Dockerfile
+      - .dockerignore
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v45
+        with:
+          files: |
+            Dockerfile
+            .dockerignore
+          since_last_remote_commit: true
+
+      - name: Log in to the container registry
+        uses: docker/login-action@v2
+        if: steps.changed-files.outputs.any_changed == 'true'
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        uses: docker/metadata-action@v5
+        id: meta
+        if: steps.changed-files.outputs.any_changed == 'true'
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=pr
+            hash_${{ hashFiles('Dockerfile', '.dockerignore') }}
+
+      - name: Check if image with label exists
+        id: check-image
+        if: steps.changed-files.outputs.any_changed == 'true'
+        shell: bash
+        run: |
+          curl \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            --location "https://api.github.com/user/packages/container/${{ github.event.repository.name }}/versions" | \
+          jq -r '.[] | select(.metadata.container.tags[] == "pr-${{ github.event.pull_request.number }}") | .metadata.container.tags' \
+          > tags.txt || touch tags.txt
+
+          export IMAGE_EXISTS=$(grep -c hash_${{ hashFiles('Dockerfile', '.dockerignore') }} tags.txt)
+
+          echo "image_exists=$IMAGE_EXISTS" >> $GITHUB_OUTPUT
+          if [ $IMAGE_EXISTS -eq 1 ]; then
+            echo "Docker image with the exact same hash already exists. Skipping image build."
+          else
+            echo "A new docker image will be built."
+          fi
+
+      - name: Build and push docker image
+        uses: docker/build-push-action@v6
+        if: steps.changed-files.outputs.any_changed == 'true' && steps.check-image.outputs.image_exists == 0
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
