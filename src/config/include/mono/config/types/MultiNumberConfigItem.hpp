@@ -12,8 +12,8 @@
 #include <spdlog/spdlog.h>
 
 #include "../ConfigItem.hpp"
+#include "mono/traits/Arithmetic.hpp"
 #include "mono/util/custom_imgui/InputScalarN.hpp"
-#include "traits/Arithmetic.hpp"
 
 namespace mono::config
 {

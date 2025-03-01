@@ -3,8 +3,8 @@
 #include <algorithm>
 
 #include "BasicConfigItem.hpp"
+#include "mono/traits/Arithmetic.hpp"
 #include "mono/util/custom_imgui/InputScalar.hpp"
-#include "traits/Arithmetic.hpp"
 
 namespace mono::config
 {

@@ -6,7 +6,7 @@
 #include <glm/ext/matrix_float3x3.hpp>
 #include <glm/ext/matrix_float4x4.hpp>
 
-#include "traits/ContiguousContainer.hpp"
+#include "mono/traits/ContiguousContainer.hpp"
 
 namespace mono::gl
 {

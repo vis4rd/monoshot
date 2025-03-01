@@ -9,7 +9,7 @@
 #include <glad/gl.h>
 
 #include "mono/log/Logging.hpp"
-#include "traits/ContiguousContainer.hpp"
+#include "mono/traits/ContiguousContainer.hpp"
 
 namespace mono::gl
 {

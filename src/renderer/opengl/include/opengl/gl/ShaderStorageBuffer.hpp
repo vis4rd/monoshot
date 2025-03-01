@@ -3,7 +3,7 @@
 #include <glad/gl.h>
 
 #include "ShaderStorageBufferAny.hpp"
-#include "traits/ContiguousContainer.hpp"
+#include "mono/traits/ContiguousContainer.hpp"
 
 namespace mono::gl
 {

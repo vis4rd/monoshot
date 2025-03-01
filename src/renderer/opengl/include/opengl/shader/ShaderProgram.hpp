@@ -10,7 +10,7 @@
 #include <spdlog/spdlog.h>
 
 #include "ShaderUniformTraits.hpp"
-#include "traits/ContiguousContainer.hpp"
+#include "mono/traits/ContiguousContainer.hpp"
 
 namespace mono::gl
 {
