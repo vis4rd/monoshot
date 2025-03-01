@@ -2,6 +2,9 @@
 
 #include <GLFW/glfw3.h>
 
+namespace mono
+{
+
 double Timer::getTotalTime()
 {
     return glfwGetTime();
@@ -26,3 +29,5 @@ const double& Timer::deltaTime()
     std::unique_lock<std::mutex> lock(m_mutex);
     return m_deltaTime;
 }
+
+}  // namespace mono
