@@ -12,10 +12,12 @@ target_sources(mono_module_time
 )
 
 target_include_directories(mono_module_time
+    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/mono"
     INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 
 target_link_libraries(mono_module_time
-    PUBLIC glfw
-           spdlog::spdlog
+    PUBLIC
+    glfw
+    spdlog::spdlog
 )
