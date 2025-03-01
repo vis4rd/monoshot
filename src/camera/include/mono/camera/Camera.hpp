@@ -8,6 +8,9 @@
 // projection matrix: camera space -> clip space
 // glViewport: clip space -> viewport space
 
+namespace mono
+{
+
 class Camera
 {
     public:
@@ -52,3 +55,5 @@ class Camera
     bool m_viewMatrixNeedsUpdate = false;
     bool m_projectionMatrixNeedsUpdate = false;
 };
+
+}  // namespace mono

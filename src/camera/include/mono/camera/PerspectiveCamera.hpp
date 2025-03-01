@@ -2,6 +2,9 @@
 
 #include "Camera.hpp"
 
+namespace mono
+{
+
 class PerspectiveCamera : public Camera
 {
     public:
@@ -26,3 +29,5 @@ class PerspectiveCamera : public Camera
     protected:
     float m_fov = 45.f;
 };
+
+}  // namespace mono

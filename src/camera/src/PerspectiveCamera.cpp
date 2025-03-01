@@ -1,5 +1,8 @@
 #include "camera/PerspectiveCamera.hpp"
 
+namespace mono
+{
+
 PerspectiveCamera::PerspectiveCamera(const glm::vec3& position, const glm::vec2& resolution)
     : Camera(position, resolution)
 {
@@ -63,3 +66,5 @@ void PerspectiveCamera::updateProjectionMatrix()
         m_farPlane);
     m_inverseProjectionMatrix = glm::inverse(m_projectionMatrix);
 }
+
+}  // namespace mono
