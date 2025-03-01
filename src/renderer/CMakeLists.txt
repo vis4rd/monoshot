@@ -14,10 +14,13 @@ target_sources(mono_module_renderer
 )
 
 target_include_directories(mono_module_renderer
-    PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
+    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/mono"
+    INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include"
+)
 
 target_link_libraries(mono_module_renderer
-    PUBLIC glm::glm
-           mono::renderer_opengl
-           mono::dev_ui
+    PUBLIC
+    glm::glm
+    mono::renderer_opengl
+    mono::dev_ui
 )

@@ -1,4 +1,4 @@
-#include "../../include/renderer/pass/ImmediateLineRenderPass.hpp"
+#include "renderer/pass/ImmediateLineRenderPass.hpp"
 
 namespace mono::renderer
 {

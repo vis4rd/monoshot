@@ -1,4 +1,4 @@
-#include "../include/renderer/Renderer.hpp"
+#include "renderer/Renderer.hpp"
 
 #include <unordered_map>
 
