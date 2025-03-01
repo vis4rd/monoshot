@@ -1,4 +1,4 @@
-#include "../../include/renderer/pass/ImmediateQuadRenderPass.hpp"
+#include "renderer/pass/ImmediateQuadRenderPass.hpp"
 
 #include "mono/util/IndexOf.hpp"
 

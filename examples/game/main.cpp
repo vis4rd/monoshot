@@ -2,12 +2,12 @@
 #include <mono/dev_ui/DevUI.hpp>
 #include <mono/input/Input.hpp>
 #include <mono/log/Logging.hpp>
+#include <mono/renderer/RenderPipeline.hpp>
+#include <mono/renderer/Renderer.hpp>
+#include <mono/renderer/pass/ImmediateLineRenderPass.hpp>
+#include <mono/renderer/pass/ImmediateQuadRenderPass.hpp>
 #include <opengl/shader/ShaderManager.hpp>
 #include <opengl/target/RenderWindow.hpp>
-#include <renderer/RenderPipeline.hpp>
-#include <renderer/Renderer.hpp>
-#include <renderer/pass/ImmediateLineRenderPass.hpp>
-#include <renderer/pass/ImmediateQuadRenderPass.hpp>
 
 int main(int, char**)
 {

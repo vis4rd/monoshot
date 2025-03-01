@@ -1,4 +1,4 @@
-#include "../../include/renderer/pass/InstancedQuadRenderPass.hpp"
+#include "renderer/pass/InstancedQuadRenderPass.hpp"
 
 #include <algorithm>
 
