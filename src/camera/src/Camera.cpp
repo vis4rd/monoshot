@@ -1,4 +1,4 @@
-#include "../include/camera/Camera.hpp"
+#include "camera/Camera.hpp"
 
 Camera::Camera(const glm::vec3& position, const glm::vec2& resolution)
     : m_position(position)

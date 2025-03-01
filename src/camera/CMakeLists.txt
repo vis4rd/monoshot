@@ -14,11 +14,13 @@ target_compile_features(mono_module_camera
 )
 
 target_sources(mono_module_camera
-    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/Camera.cpp"
-            "${CMAKE_CURRENT_SOURCE_DIR}/src/PerspectiveCamera.cpp"
+    PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/Camera.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/PerspectiveCamera.cpp"
 )
 
 target_include_directories(mono_module_camera
+    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/mono"
     INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 

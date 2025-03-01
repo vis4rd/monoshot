@@ -1,4 +1,4 @@
-#include "../include/camera/PerspectiveCamera.hpp"
+#include "camera/PerspectiveCamera.hpp"
 
 PerspectiveCamera::PerspectiveCamera(const glm::vec3& position, const glm::vec2& resolution)
     : Camera(position, resolution)
