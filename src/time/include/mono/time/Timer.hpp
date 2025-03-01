@@ -2,6 +2,9 @@
 
 #include <mutex>
 
+namespace mono
+{
+
 class Timer
 {
     public:
@@ -16,3 +19,5 @@ class Timer
     double m_lastTotalTime = 0.0;
     std::mutex m_mutex{};
 };
+
+}  // namespace mono
