@@ -20,17 +20,6 @@ jobs:
       image: ghcr.io/vis4rd/monoshot:pr-${{ github.event.pull_request.number }}
       options: --user 1001 # required for init of submodules, workaround for: https://github.com/actions/runner/issues/2033
 
-    strategy:
-      fail-fast: false
-      matrix:
-        build_type: [Release]
-        c_compiler: [gcc, clang]
-        include:
-          - c_compiler: gcc
-            cpp_compiler: g++
-          - c_compiler: clang
-            cpp_compiler: clang++
-
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -44,36 +33,21 @@ jobs:
       id: restore-cache
       with:
         path: build/
-        key: build-${{ matrix.cpp_compiler }}-${{ matrix.build_type }}-${{ hashFiles('src/**/*') }}
-        restore-keys: build-${{ matrix.cpp_compiler }}-${{ matrix.build_type }}-
+        key: build-gcc-${{ hashFiles('src/**/*') }}
+        restore-keys: build-gcc-
 
     - name: Configure ccache
-      run: |
-        export CCACHE_DIR=build/
-        echo "CCACHE_DIR=$CCACHE_DIR" >> $GITHUB_ENV
-        ccache --max-size=10M --zero-stats
-
-    - name: Configure CMake
-      working-directory: build/
-      run: >
-        cmake
-        -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
-        -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
-        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-        -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
-        -DCMAKE_C_COMPILER_LAUNCHER=ccache
-        -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-        ..
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        key: gcc-${{ hashFiles('src/**/*') }}
+        restore-keys: gcc-
+        verbose: 1
+        append-timestamp: false
 
     - name: Build
       working-directory: build/
-      run: cmake --build . --config ${{ matrix.build_type }} --parallel
-
-    - name: Show ccache statistics
       run: |
-        ccache --show-stats --verbose
-        du -sh $CCACHE_DIR
-        ccache --zero-stats  # Statistics are not necessary in cache artifact
+        cmake --build . --config Release --parallel
 
     - name: Cache build directory
       uses: actions/cache/save@v3
