@@ -1,6 +1,6 @@
-#include <input/Input.hpp>
 #include <mono/config/Config.hpp>
 #include <mono/dev_ui/DevUI.hpp>
+#include <mono/input/Input.hpp>
 #include <mono/log/Logging.hpp>
 #include <opengl/shader/ShaderManager.hpp>
 #include <opengl/target/RenderWindow.hpp>

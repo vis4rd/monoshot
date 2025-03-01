@@ -34,4 +34,4 @@ void ensureGlfwIsInitialized();
 
 }  // namespace mono::input
 
-#include "../../src/Input.inl"
+#include "../../../src/Input.inl"
