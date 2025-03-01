@@ -1,4 +1,4 @@
-#include "../include/input/Input.hpp"
+#include "input/Input.hpp"
 
 #include <imgui/imgui.h>
 

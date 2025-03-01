@@ -1,6 +1,6 @@
-#include "../include/input/FakeInput.hpp"
+#include "input/FakeInput.hpp"
 
-#include "../include/input/priv/InputData.hpp"
+#include "input/priv/InputData.hpp"
 
 namespace mono::input
 {
