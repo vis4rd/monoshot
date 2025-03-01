@@ -1,5 +1,8 @@
 #include "camera/Camera.hpp"
 
+namespace mono
+{
+
 Camera::Camera(const glm::vec3& position, const glm::vec2& resolution)
     : m_position(position)
     , m_target(m_position.x, m_position.y, 0.0f)
@@ -132,3 +135,5 @@ void Camera::updateViewMatrix()
     m_viewMatrix = glm::lookAt(m_position, m_target, m_up);
     m_inverseViewMatrix = glm::inverse(m_viewMatrix);
 }
+
+}  // namespace mono
