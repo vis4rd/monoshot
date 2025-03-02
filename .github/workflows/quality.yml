@@ -21,7 +21,7 @@ jobs:
   clang-format:
     runs-on: ubuntu-24.04
     container:
-      image: ghcr.io/vis4rd/monoshot:pr-${{ github.event.pull_request.number }}
+      image: ghcr.io/vis4rd/monoshot:latest
 
     steps:
       - name: Checkout repository
@@ -67,7 +67,7 @@ jobs:
   clang-tidy:
     runs-on: ubuntu-24.04
     container:
-      image: ghcr.io/vis4rd/monoshot:pr-${{ github.event.pull_request.number }}
+      image: ghcr.io/vis4rd/monoshot:latest
       options: --user 1001 # required for init of submodules, workaround for: https://github.com/actions/runner/issues/2033
 
     if: ${{ github.event.pull_request.draft == false }}
