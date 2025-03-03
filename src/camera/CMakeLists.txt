@@ -3,12 +3,6 @@ include_guard()
 add_library(mono_module_camera)
 add_library(mono::camera ALIAS mono_module_camera)
 
-if(DEBUG_BUILD)
-    target_compile_definitions(mono_module_camera
-        PRIVATE "DEBUG_BUILD"
-    )
-endif()
-
 target_compile_features(mono_module_camera
     PRIVATE "cxx_std_20"
 )

@@ -3,12 +3,6 @@ include_guard()
 add_library(mono_module_dev_ui)
 add_library(mono::dev_ui ALIAS mono_module_dev_ui)
 
-if(DEBUG_BUILD)
-    target_compile_definitions(mono_module_dev_ui
-        PRIVATE "DEBUG_BUILD"
-    )
-endif()
-
 target_compile_features(mono_module_dev_ui
     PRIVATE "cxx_std_20"
 )

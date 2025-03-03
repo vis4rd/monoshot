@@ -32,3 +32,9 @@ target_link_libraries(mono_module_config
     mono::dev_ui
     mono::util
 )
+
+if(DEBUG_BUILD)
+    target_compile_definitions(mono_module_config
+        PUBLIC "DEBUG_BUILD"
+    )
+endif()

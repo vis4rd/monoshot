@@ -5,12 +5,6 @@ add_library(mono::renderer_opengl ALIAS mono_module_renderer_opengl_backend)
 
 message(STATUS "Renderer: using OpenGL backend")
 
-if(DEBUG_BUILD)
-    target_compile_definitions(mono_module_renderer_opengl_backend
-        PRIVATE "DEBUG_BUILD"
-    )
-endif()
-
 target_compile_features(mono_module_renderer_opengl_backend
     PRIVATE "cxx_std_20"
 )
