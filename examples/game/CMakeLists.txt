@@ -31,7 +31,7 @@ target_link_libraries(example_game
     mono::time
     mono::config
     mono::dev_ui
-    EnTT::EnTT
-    glm::glm
-    tinyfd::tinyfd
+    mono::external::entt
+    mono::external::glm
+    mono::external::tinyfd
 )

@@ -23,7 +23,8 @@ target_include_directories(mono_module_dev_ui
 )
 
 target_link_libraries(mono_module_dev_ui
-    PUBLIC imgui::imgui
-           spdlog::spdlog
-           mono::config
+    PUBLIC
+    mono::external::imgui
+    mono::external::spdlog
+    mono::config
 )

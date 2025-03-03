@@ -25,7 +25,7 @@ target_link_libraries(example_playground
     mono::time
     mono::config
     mono::log
-    glm::glm
-    tinyfd::tinyfd
-    spdlog::spdlog
+    mono::external::glm
+    mono::external::tinyfd
+    mono::external::spdlog
 )

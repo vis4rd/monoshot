@@ -25,5 +25,5 @@ target_include_directories(mono_module_camera
 )
 
 target_link_libraries(mono_module_camera
-    PUBLIC glm
+    PUBLIC mono::external::glm
 )
