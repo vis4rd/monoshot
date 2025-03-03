@@ -20,7 +20,7 @@ target_include_directories(mono_module_renderer
 
 target_link_libraries(mono_module_renderer
     PUBLIC
-    glm::glm
+    mono::external::glm
     mono::renderer_opengl
     mono::dev_ui
 )

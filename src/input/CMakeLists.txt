@@ -26,8 +26,8 @@ target_include_directories(mono_module_input
 
 target_link_libraries(mono_module_input
     PUBLIC
-    glfw
-    spdlog::spdlog
-    imgui::imgui
+    mono::external::glfw
+    mono::external::spdlog
+    mono::external::imgui
     mono::config
 )

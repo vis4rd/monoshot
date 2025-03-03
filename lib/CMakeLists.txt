@@ -44,3 +44,16 @@ add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/tinyfiledialogs" SYSTEM)
 
 # inifile-cpp
 add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/inifile-cpp" SYSTEM)
+
+# ##################################################################################################
+
+# Alias external libraries
+add_library(mono::external::glfw ALIAS glfw)
+add_library(mono::external::glad ALIAS glad)
+add_library(mono::external::glm ALIAS glm)
+add_library(mono::external::imgui ALIAS imgui)
+add_library(mono::external::spdlog ALIAS spdlog)
+add_library(mono::external::stb_image ALIAS stb_image)
+add_library(mono::external::entt ALIAS EnTT)
+add_library(mono::external::tinyfd ALIAS tinyfd)
+add_library(mono::external::inifile ALIAS inifile)
