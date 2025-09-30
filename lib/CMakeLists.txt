@@ -11,13 +11,6 @@ target_compile_definitions(glfw # prevent GLFW from including gl headers
 # OpenGL
 find_package(OpenGL 4.5 REQUIRED)
 
-# GLAD
-add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/glad/cmake" SYSTEM)
-glad_add_library(glad STATIC REPRODUCIBLE
-    LANGUAGE C
-    API gl:core=4.5
-)
-
 # glbindings
 set(OPTION_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/glbinding" SYSTEM)
@@ -53,7 +46,6 @@ add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/inifile-cpp" SYSTEM)
 
 # Alias external libraries
 add_library(mono::external::glfw ALIAS glfw)
-add_library(mono::external::glad ALIAS glad)
 add_library(mono::external::glbinding ALIAS glbinding)
 add_library(mono::external::glm ALIAS glm)
 add_library(mono::external::imgui ALIAS imgui)
