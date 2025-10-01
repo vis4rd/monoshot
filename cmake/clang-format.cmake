@@ -27,6 +27,7 @@ function(launch_clang_format)
     execute_process(
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMAND_ECHO STDOUT
+        COMMAND_ERROR_IS_FATAL ANY
         COMMAND ${CLANG_FORMAT_CMD} -i ${CF_SOURCES}
     )
 endfunction()

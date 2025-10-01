@@ -70,7 +70,7 @@ jobs:
       image: ghcr.io/vis4rd/monoshot:latest
       options: --user 1001 # required for init of submodules, workaround for: https://github.com/actions/runner/issues/2033
 
-    # if: ${{ github.event.pull_request.draft == false }}
+    if: ${{ github.event.pull_request.draft == false }}
 
     steps:
       - name: Checkout repository
