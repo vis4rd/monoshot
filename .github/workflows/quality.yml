@@ -98,3 +98,31 @@ jobs:
         shell: bash
         run: |
           cmake -P ./cmake/clang-tidy.cmake
+
+  cppcheck:
+    runs-on: ubuntu-24.04
+    container:
+      image: ghcr.io/vis4rd/monoshot:latest
+      options: --user 1001 # required for init of submodules, workaround for: https://github.com/actions/runner/issues/2033
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get changed files (for triggering)
+        id: changed-files-trigger
+        uses: tj-actions/changed-files@v45
+        with:
+          files: |
+            src/**/*.hpp
+            src/**/*.cpp
+            src/**/*.inl
+            src/**/*.c
+            src/**/*.h
+
+      - name: Run cppcheck
+        if: steps.changed-files-trigger.outputs.any_changed == 'true'
+        shell: bash
+        run: |
+          mkdir -p .cache/cppcheck/
+          cmake -P ./cmake/cppcheck.cmake

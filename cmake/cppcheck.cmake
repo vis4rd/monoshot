@@ -9,14 +9,13 @@ function(launch_cppcheck)
 
     find_program(CPPCHECK_CMD NAMES "cppcheck" REQUIRED)
     find_package(Python3 REQUIRED)
-    find_file(COMPILE_COMMANDS_JSON_FILE NAMES "compile_commands.json" PATHS "build/" REQUIRED)
 
     message(STATUS "Launching cppcheck...")
     execute_process(
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMAND_ECHO STDOUT
         COMMAND_ERROR_IS_FATAL ANY
-        COMMAND ${CPPCHECK_CMD} --cppcheck-build-dir=${CMAKE_CURRENT_SOURCE_DIR}/.cache/cppcheck --quiet --std=c++20 --project=${COMPILE_COMMANDS_JSON_FILE} -i ${CMAKE_CURRENT_SOURCE_DIR}/lib/ -i ${CMAKE_CURRENT_SOURCE_DIR}/build/ --enable=style --error-exitcode=2 --check-level=exhaustive
+        COMMAND ${CPPCHECK_CMD} --cppcheck-build-dir=${CMAKE_CURRENT_SOURCE_DIR}/.cache/cppcheck --quiet --std=c++20 --enable=style --error-exitcode=2 --check-level=exhaustive ${CMAKE_CURRENT_SOURCE_DIR}/src/ ${CMAKE_CURRENT_SOURCE_DIR}/examples/
     )
 endfunction()
 
