@@ -9,6 +9,7 @@ RUN apt-get -y install \
     clang-tidy \
     cmake \
     curl \
+    cppcheck \
     g++ \
     git \
     jq \
