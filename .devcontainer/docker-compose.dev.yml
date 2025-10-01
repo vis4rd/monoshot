@@ -1,0 +1,23 @@
+name: "monoshot"
+services:
+  devcontainer:
+    container_name: "developer-environment"
+    build:
+      dockerfile: Dockerfile
+      context: ..
+    network_mode: "host"
+    command: sleep\ infinity
+    volumes:
+      - ..:/workspace:cached
+    #   - //wsl.localhost/docker-desktop/tmp/.X11-unix:/tmp/.X11-unix:ro
+    #   - //wsl.localhost/docker-desktop/mnt/host/wslg:/mnt/wslg
+    #   - //wsl.localhost/docker-desktop/usr/lib/wsl:/usr/lib/wsl
+    # environment:
+    #   - DISPLAY=":0"
+    #   - WAYLAND_DISPLAY="wayland-0"
+    #   - XDG_RUNTIME_DIR="//wsl.localhost/docker-desktop/mnt/host/wslg/runtime-dir"
+    #   - PULSE_SERVER="//wsl.localhost/docker-desktop/mnt/host/wslg/PulseServer"
+    #   - LD_LIBRARY_PATH="/usr/lib/wsl/lib"
+    gpus: all
+    # devices:
+    #   - \\wsl.localhost\docker-desktop\dev\dxg:/dev/dxg

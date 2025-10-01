@@ -1,0 +1,39 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/docker-existing-dockerfile
+{
+	"name": "Monoshot Devcontainer",
+	"dockerComposeFile": [
+		"docker-compose.dev.yml"
+	],
+	"shutdownAction": "stopCompose",
+	"service": "devcontainer",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"bierner.markdown-preview-github-styles",
+				"cschlosser.doxdocgen",
+				"eamodio.gitlens",
+				"edwinhuish.better-comments-next",
+				"GitHub.copilot-chat",
+				"GitHub.copilot",
+				"Gruntfuggly.todo-tree",
+				"gurumukhi.selected-lines-count",
+				"jeff-hykin.better-cpp-syntax",
+				"josetr.cmake-language-support-vscode",
+				"llvm-vs-code-extensions.vscode-clangd",
+				"ms-vscode-remote.remote-containers",
+				"ms-vscode.cmake-tools",
+				"ms-vscode.cpptools",
+				"seatonjiang.gitmoji-vscode",
+				"slevesque.shader",
+				"Tyriar.sort-lines",
+				"yzhang.markdown-all-in-one"
+			],
+			"settings": {
+				"clangd.path": "/usr/lib/llvm19/bin",
+				"cmake.languageSupport.dotnetPath": "/usr/bin/dotnet"
+			}
+		}
+	},
+	"workspaceFolder": "/workspace"
+}
