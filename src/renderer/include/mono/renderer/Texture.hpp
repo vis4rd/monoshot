@@ -16,7 +16,7 @@ namespace mono
 class Texture
 {
     public:
-    Texture(
+    explicit Texture(
         const std::filesystem::path& file_path,
         std::int32_t expected_width = 0,
         std::int32_t expected_height = 0);

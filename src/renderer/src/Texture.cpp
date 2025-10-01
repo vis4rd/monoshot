@@ -1,4 +1,4 @@
-#include "../../include/opengl/texture/Texture.hpp"
+#include "renderer/Texture.hpp"
 
 #include <memory>
 #include <span>
