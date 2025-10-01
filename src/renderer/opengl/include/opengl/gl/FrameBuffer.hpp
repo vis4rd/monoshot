@@ -3,7 +3,7 @@
 #include <glbinding/gl/gl.h>
 #include <glm/glm.hpp>
 
-#include "opengl/texture/Texture.hpp"
+#include "mono/renderer/Texture.hpp"
 
 namespace mono::gl
 {

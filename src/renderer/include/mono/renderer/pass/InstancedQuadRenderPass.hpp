@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "../RenderPassTrait.hpp"
+#include "mono/renderer/Texture.hpp"
 #include "opengl/gl/ShaderStorageBuffer.hpp"
 #include "opengl/gl/ShaderStorageBufferAny.hpp"
 #include "opengl/gl/VertexArray.hpp"
@@ -17,7 +18,6 @@
 #include "opengl/renderer/QuadPrimitive.hpp"
 #include "opengl/shader/ShaderProgram.hpp"
 #include "opengl/target/RenderTarget.hpp"
-#include "opengl/texture/Texture.hpp"
 
 namespace mono::renderer
 {

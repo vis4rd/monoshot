@@ -24,7 +24,6 @@ target_sources(mono_module_renderer_opengl_backend
     "${CMAKE_CURRENT_SOURCE_DIR}/src/shader/ShaderProgram.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/target/RenderTarget.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/target/RenderWindow.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/texture/Texture.cpp"
 )
 
 target_include_directories(mono_module_renderer_opengl_backend
@@ -39,12 +38,13 @@ target_link_libraries(mono_module_renderer_opengl_backend
     mono::external::imgui
     mono::external::spdlog
     mono::external::stb_image
-    mono::traits
     mono::config
-    mono::time
-    mono::log
     mono::input
-    mono::util::pv
-    mono::util::index_of
+    mono::log
+    mono::renderer
+    mono::time
+    mono::traits
     mono::util::custom_imgui
+    mono::util::index_of
+    mono::util::pv
 )
