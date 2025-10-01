@@ -70,7 +70,7 @@ jobs:
       image: ghcr.io/vis4rd/monoshot:latest
       options: --user 1001 # required for init of submodules, workaround for: https://github.com/actions/runner/issues/2033
 
-    if: ${{ github.event.pull_request.draft == false }}
+    # if: ${{ github.event.pull_request.draft == false }}
 
     steps:
       - name: Checkout repository
@@ -88,18 +88,6 @@ jobs:
             src/**/*.h
             .clang-tidy
 
-      - name: Get changed files (for tidying)
-        id: changed-files-tidy
-        uses: tj-actions/changed-files@v45
-        if: steps.changed-files-trigger.outputs.any_changed == 'true'
-        with:
-          files: |
-            src/**/*.hpp
-            src/**/*.cpp
-            src/**/*.inl
-            src/**/*.c
-            src/**/*.h
-
       - name: Prepare environment
         id: prepare-env
         uses: ./.github/actions/prepare_env
@@ -109,7 +97,4 @@ jobs:
         if: steps.changed-files-trigger.outputs.any_changed == 'true'
         shell: bash
         run: |
-          echo "Files selected for clang-tidy check:"
-          echo ${{ steps.changed-files-tidy.outputs.all_changed_files }}
-
-          clang-tidy --quiet --config-file=.clang-tidy -p=build/ ${{ steps.changed-files-tidy.outputs.all_changed_files }}
+          cmake -P ./cmake/clang-tidy.cmake
