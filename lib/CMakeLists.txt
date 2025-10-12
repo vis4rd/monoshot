@@ -18,6 +18,10 @@ glad_add_library(glad STATIC REPRODUCIBLE
     API gl:core=4.5
 )
 
+# glbindings
+set(OPTION_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/glbinding" SYSTEM)
+
 # GLM
 add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/glm" SYSTEM)
 
@@ -50,6 +54,7 @@ add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/inifile-cpp" SYSTEM)
 # Alias external libraries
 add_library(mono::external::glfw ALIAS glfw)
 add_library(mono::external::glad ALIAS glad)
+add_library(mono::external::glbinding ALIAS glbinding)
 add_library(mono::external::glm ALIAS glm)
 add_library(mono::external::imgui ALIAS imgui)
 add_library(mono::external::spdlog ALIAS spdlog)
