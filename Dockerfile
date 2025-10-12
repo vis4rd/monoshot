@@ -16,8 +16,6 @@ RUN apt-get -y install \
     libxcursor-dev \
     libxi-dev \
     libxinerama-dev \
-    libxrandr-dev \
-    python3 \
-    python3-jinja2
+    libxrandr-dev
 
 ENTRYPOINT [ "/bin/sh", "-c" ]
