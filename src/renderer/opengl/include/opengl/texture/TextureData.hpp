@@ -3,7 +3,7 @@
 #include <utility>
 #include <vector>
 
-#include <glad/gl.h>
+#include <glbinding/gl/gl.h>
 
 namespace mono
 {
@@ -11,23 +11,23 @@ namespace mono
 struct TextureData
 {
     bool mipmapsEnabled = true;
-    GLsizei mipmapLevel = 1;
-    GLenum internalFormat = GL_RGBA8;
-    GLsizei widthTotal = 0;
-    GLsizei heightTotal = 0;
-    GLsizei widthSub = 0;
-    GLsizei heightSub = 0;
-    GLsizei numberOfSubs = 1;
-    GLsizei numberOfSubsInOneRow = numberOfSubs;
-    GLenum pixelDataFormat = GL_RGBA;
-    GLenum dataType = GL_UNSIGNED_BYTE;
-    std::vector<std::pair<GLenum, GLint>> parameters = {
-        {GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST},
-        {GL_TEXTURE_MAG_FILTER, GL_NEAREST               },
-        {GL_TEXTURE_WRAP_S,     GL_CLAMP_TO_EDGE         },
-        {GL_TEXTURE_WRAP_T,     GL_CLAMP_TO_EDGE         },
+    ::gl::GLsizei mipmapLevel = 1;
+    ::gl::GLenum internalFormat = ::gl::GL_RGBA8;
+    ::gl::GLsizei widthTotal = 0;
+    ::gl::GLsizei heightTotal = 0;
+    ::gl::GLsizei widthSub = 0;
+    ::gl::GLsizei heightSub = 0;
+    ::gl::GLsizei numberOfSubs = 1;
+    ::gl::GLsizei numberOfSubsInOneRow = numberOfSubs;
+    ::gl::GLenum pixelDataFormat = ::gl::GL_RGBA;
+    ::gl::GLenum dataType = ::gl::GL_UNSIGNED_BYTE;
+    std::vector<std::pair<::gl::GLenum, ::gl::GLenum>> parameters = {
+        {::gl::GL_TEXTURE_MIN_FILTER, ::gl::GL_NEAREST_MIPMAP_NEAREST},
+        {::gl::GL_TEXTURE_MAG_FILTER, ::gl::GL_NEAREST               },
+        {::gl::GL_TEXTURE_WRAP_S,     ::gl::GL_CLAMP_TO_EDGE         },
+        {::gl::GL_TEXTURE_WRAP_T,     ::gl::GL_CLAMP_TO_EDGE         },
     };
-    GLsizei currentSub = 0;
+    ::gl::GLsizei currentSub = 0;
 };
 
 }  // namespace mono

@@ -10,49 +10,49 @@ namespace mono::gl
 {
 
 ShaderProgram::ShaderProgram(const Shader& frag, const Shader& vert)
-    : m_id{glCreateProgram()}
+    : m_id{::gl::glCreateProgram()}
 {
-    log::setGlObjectLabel(GL_PROGRAM, m_id, "ShaderProgram::Frag+Vert#{}", m_id);
+    log::setGlObjectLabel(::gl::GL_PROGRAM, m_id, "ShaderProgram::Frag+Vert#{}", m_id);
     spdlog::debug(
         "Creating shader program with ID = {}, from shaders '{}' and '{}'",
         m_id,
         vert.getName(),
         frag.getName());
 
-    glAttachShader(m_id, vert.getID());
-    glAttachShader(m_id, frag.getID());
+    ::gl::glAttachShader(m_id, vert.getID());
+    ::gl::glAttachShader(m_id, frag.getID());
 
-    glLinkProgram(m_id);
-    GLint success{};
-    glGetProgramiv(m_id, GL_LINK_STATUS, &success);
+    ::gl::glLinkProgram(m_id);
+    ::gl::GLint success{};
+    ::gl::glGetProgramiv(m_id, ::gl::GL_LINK_STATUS, &success);
     if(!success)
     {
         constexpr std::size_t max_log_size = 512;
-        std::array<GLchar, max_log_size> log{};
-        glGetProgramInfoLog(m_id, max_log_size, nullptr, log.data());
+        std::array<::gl::GLchar, max_log_size> log{};
+        ::gl::glGetProgramInfoLog(m_id, max_log_size, nullptr, log.data());
         throw std::runtime_error(
             "Shader linking failure: " + std::string(log.data(), max_log_size));
     }
 }
 
 ShaderProgram::ShaderProgram(const Shader& compute)
-    : m_id{glCreateProgram()}
+    : m_id{::gl::glCreateProgram()}
 {
-    log::setGlObjectLabel(GL_PROGRAM, m_id, "ShaderProgram::Comp#{}", m_id);
+    log::setGlObjectLabel(::gl::GL_PROGRAM, m_id, "ShaderProgram::Comp#{}", m_id);
     spdlog::debug(
         "Creating shader program with ID = {}, from shader '{}'",
         m_id,
         compute.getName());
-    glAttachShader(m_id, compute.getID());
+    ::gl::glAttachShader(m_id, compute.getID());
 
-    glLinkProgram(m_id);
-    GLint success{};
-    glGetProgramiv(m_id, GL_LINK_STATUS, &success);
+    ::gl::glLinkProgram(m_id);
+    ::gl::GLint success{};
+    ::gl::glGetProgramiv(m_id, ::gl::GL_LINK_STATUS, &success);
     if(!success)
     {
         constexpr std::size_t max_log_size = 512;
-        std::array<GLchar, max_log_size> log{};
-        glGetProgramInfoLog(m_id, max_log_size, nullptr, log.data());
+        std::array<::gl::GLchar, max_log_size> log{};
+        ::gl::glGetProgramInfoLog(m_id, max_log_size, nullptr, log.data());
         throw std::runtime_error(
             "Shader linking failure: " + std::string(log.data(), max_log_size));
     }
@@ -75,7 +75,7 @@ GLuint ShaderProgram::getID() const
 
 void ShaderProgram::use() const
 {
-    glUseProgram(m_id);
+    ::gl::glUseProgram(m_id);
 }
 
 }  // namespace mono::gl

@@ -3,7 +3,7 @@
 #include <ranges>
 #include <type_traits>
 
-#include <glad/gl.h>
+#include <glbinding/gl/gl.h>
 #include <spdlog/spdlog.h>
 
 #include "ShaderAttributeLayout.hpp"
@@ -15,8 +15,8 @@ namespace mono::gl
 class VertexBuffer
 {
     public:
-    explicit VertexBuffer(GLsizeiptr size);
-    [[deprecated]] VertexBuffer(const float* vertices, GLsizeiptr size);
+    explicit VertexBuffer(::gl::GLsizeiptr size);
+    [[deprecated]] VertexBuffer(const float* vertices, ::gl::GLsizeiptr size);
     explicit constexpr VertexBuffer(const std::ranges::contiguous_range auto& data);
     VertexBuffer(const VertexBuffer& copy);
     VertexBuffer(VertexBuffer&& move) noexcept;
@@ -28,36 +28,36 @@ class VertexBuffer
     void bind() const;
     void unbind() const;
 
-    const GLuint& getID() const;
+    const ::gl::GLuint& getID() const;
     ShaderAttributeLayout& getLayout();
 
-    [[deprecated]] void setData(const void* data, GLsizeiptr size);
+    [[deprecated]] void setData(const void* data, ::gl::GLsizeiptr size);
     constexpr void setData(
         const std::ranges::contiguous_range auto& data,
-        GLintptr buffer_offset = 0);
+        ::gl::GLintptr buffer_offset = 0);
     void setLayout(const ShaderAttributeLayout& layout);
 
     // NOLINTNEXTLINE(google-explicit-constructor)
-    operator GLuint() const;
+    operator ::gl::GLuint() const;
 
     private:
-    void resize(GLsizeiptr new_byte_size);
+    void resize(::gl::GLsizeiptr new_byte_size);
 
     private:
-    GLuint m_id{};
+    ::gl::GLuint m_id{};
     ShaderAttributeLayout m_layout{};
-    GLsizeiptr m_maxBufferBytesize{};
+    ::gl::GLsizeiptr m_maxBufferBytesize{};
 };
 
 constexpr VertexBuffer::VertexBuffer(const std::ranges::contiguous_range auto& data)
 {
     using value_type = std::remove_cvref_t<decltype(data)>::value_type;
-    auto size = static_cast<GLsizeiptr>(data.size() * sizeof(value_type));
+    auto size = static_cast<::gl::GLsizeiptr>(data.size() * sizeof(value_type));
 
     spdlog::debug("Creating VertexBuffer...");
-    glCreateBuffers(1, &m_id);
-    glNamedBufferData(m_id, size, data.data(), GL_STATIC_DRAW);
-    log::setGlObjectLabel(GL_BUFFER, m_id, "VertexBuffer#{}", m_id);
+    ::gl::glCreateBuffers(1, &m_id);
+    ::gl::glNamedBufferData(m_id, size, data.data(), ::gl::GL_STATIC_DRAW);
+    log::setGlObjectLabel(::gl::GL_BUFFER, m_id, "VertexBuffer#{}", m_id);
     spdlog::debug(
         "Created VertexBuffer instance with ID = {}, size = {} and pre-computed vertices",
         m_id,
@@ -66,10 +66,10 @@ constexpr VertexBuffer::VertexBuffer(const std::ranges::contiguous_range auto& d
 
 constexpr void VertexBuffer::setData(
     const std::ranges::contiguous_range auto& data,
-    GLintptr buffer_offset)
+    ::gl::GLintptr buffer_offset)
 {
     using value_type = std::remove_cvref_t<decltype(data)>::value_type;
-    auto size = static_cast<GLsizeiptr>(data.size() * sizeof(value_type));
+    auto size = static_cast<::gl::GLsizeiptr>(data.size() * sizeof(value_type));
 
     if((size + buffer_offset) > m_maxBufferBytesize)
     {
@@ -81,7 +81,7 @@ constexpr void VertexBuffer::setData(
         this->resize(size + buffer_offset);
     }
 
-    glNamedBufferSubData(m_id, buffer_offset, size, data.data());
+    ::gl::glNamedBufferSubData(m_id, buffer_offset, size, data.data());
 }
 
 }  // namespace mono::gl

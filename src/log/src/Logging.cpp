@@ -16,55 +16,55 @@
 namespace mono::log
 {
 
-constexpr const char *glSourceToStr(GLenum source)
+constexpr const char *glSourceToStr(gl::GLenum source)
 {
     switch(source)
     {
-        case GL_DEBUG_SOURCE_API: return "API";
-        case GL_DEBUG_SOURCE_WINDOW_SYSTEM: return "Window System";
-        case GL_DEBUG_SOURCE_SHADER_COMPILER: return "Shader Compiler";
-        case GL_DEBUG_SOURCE_THIRD_PARTY: return "Third Party";
-        case GL_DEBUG_SOURCE_APPLICATION: return "Application";
-        case GL_DEBUG_SOURCE_OTHER: return "Other";
+        case gl::GL_DEBUG_SOURCE_API: return "API";
+        case gl::GL_DEBUG_SOURCE_WINDOW_SYSTEM: return "Window System";
+        case gl::GL_DEBUG_SOURCE_SHADER_COMPILER: return "Shader Compiler";
+        case gl::GL_DEBUG_SOURCE_THIRD_PARTY: return "Third Party";
+        case gl::GL_DEBUG_SOURCE_APPLICATION: return "Application";
+        case gl::GL_DEBUG_SOURCE_OTHER: return "Other";
         default: return "Unknown";
     }
 }
 
-constexpr const char *glTypeToStr(GLenum type)
+constexpr const char *glTypeToStr(gl::GLenum type)
 {
     switch(type)
     {
-        case GL_DEBUG_TYPE_ERROR: return "Error";
-        case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: return "Deprecated Behavior";
-        case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR: return "Undefined Behavior";
-        case GL_DEBUG_TYPE_PORTABILITY: return "Portability";
-        case GL_DEBUG_TYPE_PERFORMANCE: return "Performance";
-        case GL_DEBUG_TYPE_MARKER: return "Marker";
-        case GL_DEBUG_TYPE_PUSH_GROUP: return "Push Group";
-        case GL_DEBUG_TYPE_POP_GROUP: return "Pop Group";
-        case GL_DEBUG_TYPE_OTHER: return "Other";
+        case gl::GL_DEBUG_TYPE_ERROR: return "Error";
+        case gl::GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: return "Deprecated Behavior";
+        case gl::GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR: return "Undefined Behavior";
+        case gl::GL_DEBUG_TYPE_PORTABILITY: return "Portability";
+        case gl::GL_DEBUG_TYPE_PERFORMANCE: return "Performance";
+        case gl::GL_DEBUG_TYPE_MARKER: return "Marker";
+        case gl::GL_DEBUG_TYPE_PUSH_GROUP: return "Push Group";
+        case gl::GL_DEBUG_TYPE_POP_GROUP: return "Pop Group";
+        case gl::GL_DEBUG_TYPE_OTHER: return "Other";
         default: return "Unknown";
     }
 }
 
-constexpr spdlog::level glSeverityToSpdlogLevel(GLenum severity)
+constexpr spdlog::level glSeverityToSpdlogLevel(gl::GLenum severity)
 {
     switch(severity)
     {
-        case GL_DEBUG_SEVERITY_HIGH: return spdlog::level::critical;
-        case GL_DEBUG_SEVERITY_MEDIUM: return spdlog::level::err;
-        case GL_DEBUG_SEVERITY_LOW: return spdlog::level::warn;
-        case GL_DEBUG_SEVERITY_NOTIFICATION: return spdlog::level::trace;
+        case gl::GL_DEBUG_SEVERITY_HIGH: return spdlog::level::critical;
+        case gl::GL_DEBUG_SEVERITY_MEDIUM: return spdlog::level::err;
+        case gl::GL_DEBUG_SEVERITY_LOW: return spdlog::level::warn;
+        case gl::GL_DEBUG_SEVERITY_NOTIFICATION: return spdlog::level::trace;
         default: return spdlog::level::off;
     }
 }
 
 void openGlDebugMessageCallback(
-    GLenum source,
-    GLenum type,
-    GLuint id,
-    GLenum severity,
-    GLsizei length,
+    gl::GLenum source,
+    gl::GLenum type,
+    gl::GLuint id,
+    gl::GLenum severity,
+    gl::GLsizei length,
     const char *message,
     const void *user_param)
 {
@@ -87,27 +87,30 @@ void setGlLogLocation(const std::source_location &location)
 
 void enableOpenGlLogging()
 {
-    if(glad_glDebugMessageControl != nullptr)
-    {
-        // 131169 - ???
-        // 131185 - ???
-        // 131218 - ???
-        // 131204 - texture does not have a defined base level so not generating mipmaps
-        std::vector<std::uint32_t> useless_codes = {/*131169, 131185, 131218, */ 131204u};
-        useless_codes.shrink_to_fit();
+    // 131169 - ???
+    // 131185 - ???
+    // 131218 - ???
+    // 131204 - texture does not have a defined base level so not generating mipmaps
+    std::vector<std::uint32_t> useless_codes = {/*131169, 131185, 131218, */ 131204u};
+    useless_codes.shrink_to_fit();
 
-        glEnable(GL_DEBUG_OUTPUT);
-        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
-        glDebugMessageControl(
-            GL_DEBUG_SOURCE_API,
-            GL_DEBUG_TYPE_OTHER,
-            GL_DONT_CARE,
-            static_cast<std::int32_t>(useless_codes.size()),
-            useless_codes.data(),
-            GL_FALSE);
-        glDebugMessageCallback(static_cast<GLDEBUGPROC>(openGlDebugMessageCallback), nullptr);
-    }
+    gl::glEnable(gl::GL_DEBUG_OUTPUT);
+    gl::glEnable(gl::GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    gl::glDebugMessageControl(
+        gl::GL_DONT_CARE,
+        gl::GL_DONT_CARE,
+        gl::GL_DONT_CARE,
+        0,
+        nullptr,
+        gl::GL_TRUE);
+    gl::glDebugMessageControl(
+        gl::GL_DEBUG_SOURCE_API,
+        gl::GL_DEBUG_TYPE_OTHER,
+        gl::GL_DONT_CARE,
+        static_cast<std::int32_t>(useless_codes.size()),
+        useless_codes.data(),
+        gl::GL_FALSE);
+    gl::glDebugMessageCallback(static_cast<gl::GLDEBUGPROC>(openGlDebugMessageCallback), nullptr);
 }
 
 static std::chrono::system_clock::time_point getLocalTime()

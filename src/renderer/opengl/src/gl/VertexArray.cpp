@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-#include <glad/gl.h>
+#include <glbinding/gl/gl.h>
 #include <spdlog/spdlog.h>
 
 namespace mono::gl
@@ -10,8 +10,8 @@ namespace mono::gl
 
 VertexArray::VertexArray()
 {
-    glCreateVertexArrays(1, &m_id);
-    log::setGlObjectLabel(GL_VERTEX_ARRAY, m_id, "VertexArray#{}", m_id);
+    ::gl::glCreateVertexArrays(1, &m_id);
+    log::setGlObjectLabel(::gl::GL_VERTEX_ARRAY, m_id, "VertexArray#{}", m_id);
 
     spdlog::debug("Created VertexArray instance with ID = {}", m_id);
 }
@@ -28,15 +28,15 @@ VertexArray::~VertexArray()
     for(const auto& vb : m_vertexBuffers)
     {
         spdlog::debug("Deleting VertexBuffer object with ID = {}", vb.getID());
-        glDeleteBuffers(1, &vb.getID());
+        ::gl::glDeleteBuffers(1, &vb.getID());
     }
     m_vertexBuffers.clear();
 
     spdlog::debug("Deleting ElementBuffer object with ID = {}", m_elementBuffer.getID());
-    glDeleteBuffers(1, &m_elementBuffer.getID());
+    ::gl::glDeleteBuffers(1, &m_elementBuffer.getID());
 
     spdlog::debug("Deleting VertexArray instance with ID = {}", m_id);
-    glDeleteVertexArrays(1, &m_id);
+    ::gl::glDeleteVertexArrays(1, &m_id);
     this->unbind();
 }
 
@@ -52,12 +52,12 @@ VertexArray& VertexArray::operator=(VertexArray&& move) noexcept
 void VertexArray::bind() const
 {
     // spdlog::trace("Binding VertexArray with ID = {}", m_id);
-    glBindVertexArray(m_id);
+    ::gl::glBindVertexArray(m_id);
 }
 
 void VertexArray::unbind() const
 {
-    glBindVertexArray(0);
+    ::gl::glBindVertexArray(0);
 }
 
 void VertexArray::bindVertexBuffer(
@@ -79,7 +79,7 @@ void VertexArray::bindVertexBuffer(
     {
         sum_size += element.getBytesize();
     }
-    glVertexArrayVertexBuffer(
+    ::gl::glVertexArrayVertexBuffer(
         m_id,
         /*vbo index for this vao*/ m_vertexBuffers.size(),
         /*vbo id*/ vertex_buffer,
@@ -93,7 +93,10 @@ void VertexArray::bindVertexBuffer(
             static_cast<std::int32_t>(frequency),
             m_id,
             vertex_buffer.getID());
-        glVertexArrayBindingDivisor(m_id, m_vertexBuffers.size(), static_cast<GLuint>(frequency));
+        ::gl::glVertexArrayBindingDivisor(
+            m_id,
+            m_vertexBuffers.size(),
+            static_cast<::gl::GLuint>(frequency));
     }
     const auto& layout = vertex_buffer.getLayout();
     for(const auto& attribute : layout)
@@ -104,11 +107,11 @@ void VertexArray::bindVertexBuffer(
         {
             switch(type.glType)
             {
-                case GL_BOOL:
-                case GL_INT:
-                case GL_INT_2_10_10_10_REV:
-                case GL_UNSIGNED_INT:
-                case GL_UNSIGNED_INT_2_10_10_10_REV:
+                case ::gl::GL_BOOL:
+                case ::gl::GL_INT:
+                case ::gl::GL_INT_2_10_10_10_REV:
+                case ::gl::GL_UNSIGNED_INT:
+                case ::gl::GL_UNSIGNED_INT_2_10_10_10_REV:
                 {
                     glVertexArrayAttribIFormat(
                         m_id,
@@ -118,7 +121,7 @@ void VertexArray::bindVertexBuffer(
                         attribute.getOffset() + type.sizeofNativeType * count * i);
                     break;
                 }
-                case GL_DOUBLE:
+                case ::gl::GL_DOUBLE:
                 {
                     glVertexArrayAttribLFormat(
                         m_id,
@@ -128,17 +131,17 @@ void VertexArray::bindVertexBuffer(
                         attribute.getOffset() + type.sizeofNativeType * count * i);
                     break;
                 }
-                case GL_BYTE:
-                case GL_FIXED:
-                case GL_FLOAT:
-                case GL_HALF_FLOAT:
-                case GL_SHORT:
-                case GL_UNSIGNED_BYTE:
-                case GL_UNSIGNED_INT_10F_11F_11F_REV:
-                case GL_UNSIGNED_SHORT:
+                case ::gl::GL_BYTE:
+                case ::gl::GL_FIXED:
+                case ::gl::GL_FLOAT:
+                case ::gl::GL_HALF_FLOAT:
+                case ::gl::GL_SHORT:
+                case ::gl::GL_UNSIGNED_BYTE:
+                case ::gl::GL_UNSIGNED_INT_10F_11F_11F_REV:
+                case ::gl::GL_UNSIGNED_SHORT:
                 default:
                 {
-                    glVertexArrayAttribFormat(
+                    ::gl::glVertexArrayAttribFormat(
                         m_id,
                         m_attributeBindingCount,
                         type.valuesPerVertex,
@@ -148,8 +151,8 @@ void VertexArray::bindVertexBuffer(
                     break;
                 }
             }
-            glVertexArrayAttribBinding(m_id, m_attributeBindingCount, m_vertexBuffers.size());
-            glEnableVertexArrayAttrib(m_id, m_attributeBindingCount);
+            ::gl::glVertexArrayAttribBinding(m_id, m_attributeBindingCount, m_vertexBuffers.size());
+            ::gl::glEnableVertexArrayAttrib(m_id, m_attributeBindingCount);
             m_attributeBindingCount++;
         }
     }
@@ -162,7 +165,7 @@ void VertexArray::bindElementBuffer(const ElementBuffer& element_buffer)
         "Adding ElementBuffer with ID = {} to VertexArray with ID = {}",
         element_buffer.getID(),
         m_id);
-    glVertexArrayElementBuffer(m_id, element_buffer);
+    ::gl::glVertexArrayElementBuffer(m_id, element_buffer);
 
     m_elementBuffer = element_buffer;
 }

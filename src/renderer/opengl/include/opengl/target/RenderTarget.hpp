@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include <glad/gl.h>
+#include <glbinding/gl/gl.h>
 
 #include "../gl/FrameBuffer.hpp"
 #include "../gl/VertexArray.hpp"
@@ -19,7 +19,7 @@ class RenderTarget
      * object.
      */
     RenderTarget() = default;
-    RenderTarget(GLsizei width, GLsizei height);
+    RenderTarget(::gl::GLsizei width, ::gl::GLsizei height);
     RenderTarget(const RenderTarget& copy) = delete;
     RenderTarget(RenderTarget&& move) = default;
     virtual ~RenderTarget() = default;
@@ -27,9 +27,9 @@ class RenderTarget
     RenderTarget& operator=(const RenderTarget& copy) = delete;
     RenderTarget& operator=(RenderTarget&& move) = default;
 
-    void create(GLsizei width, GLsizei height);
+    void create(::gl::GLsizei width, ::gl::GLsizei height);
 
-    virtual void setSize(GLsizei width, GLsizei height);
+    virtual void setSize(::gl::GLsizei width, ::gl::GLsizei height);
     glm::ivec2 getSize() const;
 
     /**

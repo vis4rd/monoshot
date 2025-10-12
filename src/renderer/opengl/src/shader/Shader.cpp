@@ -3,7 +3,7 @@
 #include <array>
 #include <fstream>
 
-#include <glad/gl.h>
+#include <glbinding/gl/gl.h>
 
 #include "mono/log/Logging.hpp"
 #include "opengl/shader/ShaderType.hpp"
@@ -27,17 +27,17 @@ Shader::Shader(const std::filesystem::path& location, const std::string& name, S
     {
         case ShaderType::FRAGMENT:
         {
-            m_id = glCreateShader(GL_FRAGMENT_SHADER);
+            m_id = ::gl::glCreateShader(::gl::GL_FRAGMENT_SHADER);
             break;
         }
         case ShaderType::VERTEX:
         {
-            m_id = glCreateShader(GL_VERTEX_SHADER);
+            m_id = ::gl::glCreateShader(::gl::GL_VERTEX_SHADER);
             break;
         }
         case ShaderType::COMPUTE:
         {
-            m_id = glCreateShader(GL_COMPUTE_SHADER);
+            m_id = ::gl::glCreateShader(::gl::GL_COMPUTE_SHADER);
             break;
         }
         default:
@@ -47,7 +47,7 @@ Shader::Shader(const std::filesystem::path& location, const std::string& name, S
         }
     }
     log::setGlObjectLabel(
-        GL_SHADER,
+        ::gl::GL_SHADER,
         m_id,
         "Shader::{}::'{}'#{}",
         static_cast<std::int8_t>(type),
@@ -59,7 +59,7 @@ Shader::Shader(const std::filesystem::path& location, const std::string& name, S
 
 Shader::~Shader()
 {
-    glDeleteShader(m_id);
+    ::gl::glDeleteShader(m_id);
 }
 
 std::string_view Shader::getName() const
@@ -100,16 +100,16 @@ std::string Shader::readFromFile(const std::filesystem::path& location)
 void Shader::compile(const std::string& source) const
 {
     const char* ptr = source.data();
-    glShaderSource(m_id, 1, &ptr, nullptr);
-    glCompileShader(m_id);
+    ::gl::glShaderSource(m_id, 1, &ptr, nullptr);
+    ::gl::glCompileShader(m_id);
 
-    GLint success{};
-    glGetShaderiv(m_id, GL_COMPILE_STATUS, &success);
+    ::gl::GLint success{};
+    ::gl::glGetShaderiv(m_id, ::gl::GL_COMPILE_STATUS, &success);
     if(!success)
     {
         constexpr std::size_t max_log_size = 512;
-        std::array<GLchar, max_log_size> log{};
-        glGetShaderInfoLog(m_id, max_log_size, nullptr, log.data());
+        std::array<::gl::GLchar, max_log_size> log{};
+        ::gl::glGetShaderInfoLog(m_id, max_log_size, nullptr, log.data());
         throw std::runtime_error(
             "Shader compilation failure:\n" + std::string(log.data(), max_log_size));
     }

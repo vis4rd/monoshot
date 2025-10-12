@@ -1,6 +1,6 @@
 #pragma once
 
-#include <glad/gl.h>
+#include <glbinding/gl/gl.h>
 #include <glm/glm.hpp>
 
 namespace mono::gl
@@ -9,7 +9,7 @@ namespace mono::gl
 class FrameBuffer
 {
     public:
-    FrameBuffer(GLsizei width, GLsizei height);
+    FrameBuffer(::gl::GLsizei width, ::gl::GLsizei height);
     FrameBuffer(const FrameBuffer&) = delete;
     FrameBuffer(FrameBuffer&&) = default;
     ~FrameBuffer();
@@ -19,11 +19,11 @@ class FrameBuffer
 
     void bind() const;
     void unbind() const;
-    void resize(GLsizei width, GLsizei height);
+    void resize(::gl::GLsizei width, ::gl::GLsizei height);
 
-    GLuint getID() const;
-    GLuint getColorID() const;
-    GLuint getStencilID() const;
+    ::gl::GLuint getID() const;
+    ::gl::GLuint getColorID() const;
+    ::gl::GLuint getStencilID() const;
     glm::ivec2 getSize() const;
 
     private:
@@ -35,11 +35,11 @@ class FrameBuffer
     void bindAttachments();
 
     private:
-    GLuint m_id = 0u;
-    GLsizei m_width;
-    GLsizei m_height;
-    GLuint m_colorAttachment = 0u;
-    GLuint m_stencilAttachment = 0u;
+    ::gl::GLuint m_id = 0u;
+    ::gl::GLsizei m_width;
+    ::gl::GLsizei m_height;
+    ::gl::GLuint m_colorAttachment = 0u;
+    ::gl::GLuint m_stencilAttachment = 0u;
 };
 
 }  // namespace mono::gl

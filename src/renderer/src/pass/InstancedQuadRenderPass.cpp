@@ -101,7 +101,7 @@ void InstancedQuadRenderPass::submitDraws()
         }
 
         // submit new quads to ssbo
-        const auto offset = static_cast<GLintptr>(
+        const auto offset = static_cast<::gl::GLintptr>(
             (m_quadStateBufferSolver.getLastSetIndex()) * sizeof(gl::QuadInstanceData));
         // spdlog::trace(
         //     "Renderer: Submitting {} quads to ssbo with offset {}",
@@ -142,7 +142,7 @@ void InstancedQuadRenderPass::submitDraws()
         // BUG: CAN GO OUT OF BOUND IF MORE THAN 32 TEXTURES!
         const auto& texture = m_textures[slot];
         const auto& id = texture->getID();
-        glBindTextureUnit(slot, id);  // slot = unit
+        ::gl::glBindTextureUnit(slot, id);  // slot = unit
 
         const auto& tex_data = texture->getTextureData();
         frame_counts.at(slot) = tex_data.numberOfSubs;
@@ -150,8 +150,8 @@ void InstancedQuadRenderPass::submitDraws()
         frame_current_indices.at(slot) = tex_data.currentSub;
     }
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(::gl::GL_BLEND);
+    glBlendFunc(::gl::GL_SRC_ALPHA, ::gl::GL_ONE_MINUS_SRC_ALPHA);
 
     m_quadSsbo->bind(0);
 
@@ -170,19 +170,19 @@ void InstancedQuadRenderPass::submitDraws()
     //     "Renderer: drawing {} quads",
     //     m_quadStateBufferSolver.getLastSetIndex() + 1);
     glDrawElementsInstanced(
-        GL_TRIANGLES,
+        ::gl::GL_TRIANGLES,
         6,
-        GL_UNSIGNED_INT,
+        ::gl::GL_UNSIGNED_INT,
         nullptr,
-        static_cast<GLsizei>(m_quadStateBufferSolver.getLastSetIndex() + 1));
+        static_cast<::gl::GLsizei>(m_quadStateBufferSolver.getLastSetIndex() + 1));
     m_quadVao->unbind();
     m_quadSsbo->unbind();
 
-    glDisable(GL_BLEND);
+    glDisable(::gl::GL_BLEND);
 
     for(std::size_t slot = 0; slot < m_textures.size(); slot++)
     {
-        glBindTextureUnit(slot, 0);
+        ::gl::glBindTextureUnit(slot, 0);
     }
 
     this->clear();
@@ -389,9 +389,9 @@ void InstancedQuadRenderPass::applyMemoryOperationsToSsbo(
         m_quadStagingSsbo.bind(1);
 
         gl::ShaderManager::get().useShader("staging_operations");
-        glDispatchCompute(1, 1, 1);
+        ::gl::glDispatchCompute(1, 1, 1);
 
-        glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+        ::gl::glMemoryBarrier(::gl::GL_SHADER_STORAGE_BARRIER_BIT);
         ssbo->unbind();
         m_quadStagingSsbo.unbind();
     }

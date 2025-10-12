@@ -34,7 +34,7 @@ target_include_directories(mono_module_renderer_opengl_backend
 
 target_link_libraries(mono_module_renderer_opengl_backend
     PUBLIC
-    mono::external::glad
+    mono::external::glbinding
     mono::external::glfw
     mono::external::glm
     mono::external::imgui

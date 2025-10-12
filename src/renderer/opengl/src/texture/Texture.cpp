@@ -42,15 +42,15 @@ Texture::Texture(std::string_view file_path, const TextureData& texture_data)
         "Creating Texture with custom Data:\nmipmapsEnabled = {},\nmipmapLevel = {},\ninternalFormat = {:x},\nwidthTotal = {},\nheightTotal = {},\nwidthSub = {},\nheightSub = {},\nnumberOfSubs = {},\nnumberOfSubsInOneRow = {},\npixelDataFormat = {:x},\ndataType = {:x}",
         m_textureData.mipmapsEnabled,
         m_textureData.mipmapLevel,
-        m_textureData.internalFormat,
+        static_cast<std::size_t>(m_textureData.internalFormat),
         m_textureData.widthTotal,
         m_textureData.heightTotal,
         m_textureData.widthSub,
         m_textureData.heightSub,
         m_textureData.numberOfSubs,
         m_textureData.numberOfSubsInOneRow,
-        m_textureData.pixelDataFormat,
-        m_textureData.dataType);
+        static_cast<std::size_t>(m_textureData.pixelDataFormat),
+        static_cast<std::size_t>(m_textureData.dataType));
     this->load(file_path, m_textureData.widthTotal, m_textureData.heightTotal);
 }
 
@@ -114,21 +114,24 @@ void Texture::resetSub()
 void Texture::uploadToGpu(const std::byte* data)
 {
     spdlog::trace("Uploading Texture data to the GPU...");
-    glCreateTextures(GL_TEXTURE_2D, 1, &m_id);  // ... this is technically OpenGL 4.5+ DSA
-    glBindTexture(GL_TEXTURE_2D, m_id);  // but we have to bind the texture here anyway (glCreate*
-                                         // doesn't do that for some reason)
+    gl::glCreateTextures(::gl::GL_TEXTURE_2D, 1, &m_id);  // ... this is technically OpenGL 4.5+ DSA
+    gl::glBindTexture(::gl::GL_TEXTURE_2D, m_id);  // but we have to bind the texture here anyway
+                                                   // (glCreate* doesn't do that for some reason)
     for(const auto& [param, value] : m_textureData.parameters)
     {
-        glTextureParameteri(m_id, static_cast<GLenum>(param), static_cast<GLint>(value));
+        gl::glTextureParameteri(
+            m_id,
+            static_cast<gl::GLenum>(param),
+            static_cast<gl::GLint>(value));
     }
 
-    glTextureStorage2D(
+    gl::glTextureStorage2D(
         m_id,
         m_textureData.mipmapLevel,
         m_textureData.internalFormat,
         m_textureData.widthTotal,
         m_textureData.heightTotal);
-    glTextureSubImage2D(
+    gl::glTextureSubImage2D(
         m_id,
         0,
         0,
@@ -140,7 +143,7 @@ void Texture::uploadToGpu(const std::byte* data)
         data);
     if(m_textureData.mipmapsEnabled)
     {
-        glGenerateTextureMipmap(m_id);
+        gl::glGenerateTextureMipmap(m_id);
     }
     spdlog::trace("Uploading Texture data finished: ID = {}", m_id);
 }
@@ -158,7 +161,7 @@ void Texture::unloadFromGpu()
     //     m_textureData.pixelDataFormat,
     //     m_textureData.dataType,
     //     m_data);
-    glDeleteTextures(1, &m_id);
+    gl::glDeleteTextures(1, &m_id);
 }
 
 }  // namespace mono

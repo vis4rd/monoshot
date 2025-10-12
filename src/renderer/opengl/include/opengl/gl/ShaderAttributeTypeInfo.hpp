@@ -2,7 +2,7 @@
 
 #include <cstddef>
 
-#include <glad/gl.h>
+#include <glbinding/gl/gl.h>
 
 namespace mono::gl
 {
@@ -10,8 +10,8 @@ namespace mono::gl
 struct ShaderAttributeTypeInfo
 {
     std::size_t componentCount{};
-    std::size_t glType{};
-    GLint valuesPerVertex{};
+    ::gl::GLenum glType{};
+    ::gl::GLint valuesPerVertex{};
     std::size_t bytesize{};
     std::size_t sizeofNativeType{};
 };

@@ -3,12 +3,12 @@
 namespace mono::gl
 {
 
-VertexBuffer::VertexBuffer(GLsizeiptr size)
+VertexBuffer::VertexBuffer(::gl::GLsizeiptr size)
     : m_maxBufferBytesize(size)
 {
-    glCreateBuffers(1, &m_id);
-    glNamedBufferData(m_id, m_maxBufferBytesize, nullptr, GL_DYNAMIC_DRAW);
-    log::setGlObjectLabel(GL_BUFFER, m_id, "VertexBuffer#{}", m_id);
+    ::gl::glCreateBuffers(1, &m_id);
+    ::gl::glNamedBufferData(m_id, m_maxBufferBytesize, nullptr, ::gl::GL_DYNAMIC_DRAW);
+    log::setGlObjectLabel(::gl::GL_BUFFER, m_id, "VertexBuffer#{}", m_id);
     spdlog::debug(
         "Created VertexBuffer instance with ID = {} and size = {}",
         m_id,
@@ -32,12 +32,12 @@ VertexBuffer::VertexBuffer(VertexBuffer&& move) noexcept
     spdlog::debug("Moving VertexBuffer instance with ID = {}", m_id);
 }
 
-VertexBuffer::VertexBuffer(const float* vertices, GLsizeiptr size)
+VertexBuffer::VertexBuffer(const float* vertices, ::gl::GLsizeiptr size)
     : m_maxBufferBytesize(size)
 {
     spdlog::debug("Creating VertexBuffer...");
-    glCreateBuffers(1, &m_id);
-    glNamedBufferData(m_id, m_maxBufferBytesize, vertices, GL_STATIC_DRAW);
+    ::gl::glCreateBuffers(1, &m_id);
+    ::gl::glNamedBufferData(m_id, m_maxBufferBytesize, vertices, ::gl::GL_STATIC_DRAW);
     spdlog::debug(
         "Created VertexBuffer instance with ID = {}, size = {} and pre-computed vertices",
         m_id,
@@ -59,15 +59,15 @@ VertexBuffer& VertexBuffer::operator=(VertexBuffer&& move) noexcept
 void VertexBuffer::bind() const
 {
     // spdlog::trace("Binding VertexBuffer with ID = {}", m_id);
-    glBindBuffer(GL_ARRAY_BUFFER, m_id);
+    ::gl::glBindBuffer(::gl::GL_ARRAY_BUFFER, m_id);
 }
 
 void VertexBuffer::unbind() const
 {
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    ::gl::glBindBuffer(::gl::GL_ARRAY_BUFFER, 0);
 }
 
-const GLuint& VertexBuffer::getID() const
+const ::gl::GLuint& VertexBuffer::getID() const
 {
     return m_id;
 }
@@ -77,7 +77,7 @@ ShaderAttributeLayout& VertexBuffer::getLayout()
     return m_layout;
 }
 
-void VertexBuffer::setData(const void* data, GLsizeiptr size)
+void VertexBuffer::setData(const void* data, ::gl::GLsizeiptr size)
 {
     if(size > m_maxBufferBytesize)
     {
@@ -88,7 +88,7 @@ void VertexBuffer::setData(const void* data, GLsizeiptr size)
         this->resize(size);
     }
 
-    glNamedBufferSubData(m_id, 0, size, data);
+    ::gl::glNamedBufferSubData(m_id, 0, size, data);
 }
 
 void VertexBuffer::setLayout(const ShaderAttributeLayout& layout)
@@ -96,21 +96,21 @@ void VertexBuffer::setLayout(const ShaderAttributeLayout& layout)
     m_layout = layout;
 }
 
-VertexBuffer::operator GLuint() const
+VertexBuffer::operator ::gl::GLuint() const
 {
     return m_id;
 }
 
-void VertexBuffer::resize(GLsizeiptr new_byte_size)
+void VertexBuffer::resize(::gl::GLsizeiptr new_byte_size)
 {
     // create a new vbo with the new size
-    GLuint new_id{};
-    glCreateBuffers(1, &new_id);
-    glNamedBufferData(m_id, new_byte_size, nullptr, GL_DYNAMIC_DRAW);
+    ::gl::GLuint new_id{};
+    ::gl::glCreateBuffers(1, &new_id);
+    ::gl::glNamedBufferData(m_id, new_byte_size, nullptr, ::gl::GL_DYNAMIC_DRAW);
 
     // unbind and delete the old vbo
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glDeleteBuffers(1, &m_id);
+    ::gl::glBindBuffer(::gl::GL_ARRAY_BUFFER, 0);
+    ::gl::glDeleteBuffers(1, &m_id);
 
     // track the new vbo
     m_id = new_id;

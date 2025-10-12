@@ -5,12 +5,12 @@
 namespace mono::gl
 {
 
-RenderTarget::RenderTarget(GLsizei width, GLsizei height)
+RenderTarget::RenderTarget(::gl::GLsizei width, ::gl::GLsizei height)
 {
     this->create(width, height);
 }
 
-void RenderTarget::create(GLsizei width, GLsizei height)
+void RenderTarget::create(::gl::GLsizei width, ::gl::GLsizei height)
 {
     m_framebuffer = std::make_unique<FrameBuffer>(width, height);
     m_vao = std::make_unique<VertexArray>();
@@ -36,7 +36,7 @@ void RenderTarget::create(GLsizei width, GLsizei height)
         "../res/shaders/screen.frag");
 }
 
-void RenderTarget::setSize(GLsizei width, GLsizei height)
+void RenderTarget::setSize(::gl::GLsizei width, ::gl::GLsizei height)
 {
     // TODO(vis4rd): ensure resizing on active framebuffer is safe
     m_framebuffer->resize(width, height);
@@ -50,11 +50,11 @@ glm::ivec2 RenderTarget::getSize() const
 void RenderTarget::activate() const
 {
     m_framebuffer->bind();
-    glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    ::gl::glClear(::gl::GL_COLOR_BUFFER_BIT | ::gl::GL_STENCIL_BUFFER_BIT);
 
     // set viewport to framebuffer's size
     const auto size = m_framebuffer->getSize();
-    glViewport(0, 0, size.x, size.y);
+    ::gl::glViewport(0, 0, size.x, size.y);
 }
 
 void RenderTarget::deactivate() const
@@ -68,17 +68,17 @@ void RenderTarget::render() const
 
     m_vao->bind();
 
-    constexpr GLuint unit = 0;
+    constexpr ::gl::GLuint unit = 0;
 
-    glBindTextureUnit(unit, m_framebuffer->getColorID());
+    ::gl::glBindTextureUnit(unit, m_framebuffer->getColorID());
     //? if something breaks, this might be the possible cause (replace above call with below)
-    // glBindTexture(GL_TEXTURE_2D, m_framebuffer.getColorID());
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+    // ::gl::glBindTexture(::gl::GL_TEXTURE_2D, m_framebuffer.getColorID());
+    ::gl::glDrawElements(::gl::GL_TRIANGLES, 6, ::gl::GL_UNSIGNED_INT, nullptr);
 
-    // glBindTextureUnit(unit, 0);
+    // ::gl::glBindTextureUnit(unit, 0);
     //* Future me: something did break, the above line called activate on unbound texture, the below
     //* texture only unbinds it
-    glBindTexture(GL_TEXTURE_2D, 0);
+    ::gl::glBindTexture(::gl::GL_TEXTURE_2D, 0);
 }
 
 }  // namespace mono::gl

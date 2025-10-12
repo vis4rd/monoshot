@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <type_traits>
 
-#include <glad/gl.h>
+#include <glbinding/gl/gl.h>
 
 #include "mono/log/Logging.hpp"
 #include "mono/traits/ContiguousContainer.hpp"
@@ -59,16 +59,16 @@ class ElementBuffer
      */
     void unbind() const;
 
-    const GLuint& getID() const;
+    const ::gl::GLuint& getID() const;
     std::uint32_t getElementCount() const;
 
     /**
      * @brief Return object ID of the EBO.
      */
-    operator GLuint() const;  // NOLINT(google-explicit-constructor)
+    operator ::gl::GLuint() const;  // NOLINT(google-explicit-constructor)
 
     private:
-    GLuint m_id{};
+    ::gl::GLuint m_id{};
     std::uint32_t m_count{};
 };
 
@@ -77,13 +77,13 @@ constexpr ElementBuffer::ElementBuffer(const ContiguousContainerTrait<std::uint3
 {
     using value_type = std::remove_cvref_t<decltype(elements)>::value_type;
 
-    glCreateBuffers(1, &m_id);
-    glNamedBufferData(
+    ::gl::glCreateBuffers(1, &m_id);
+    ::gl::glNamedBufferData(
         m_id,
-        static_cast<GLsizeiptr>(m_count * sizeof(value_type)),
+        static_cast<::gl::GLsizeiptr>(m_count * sizeof(value_type)),
         elements.data(),
-        GL_STATIC_DRAW);
-    log::setGlObjectLabel(GL_BUFFER, m_id, "ElementBuffer#{}", m_id);
+        ::gl::GL_STATIC_DRAW);
+    log::setGlObjectLabel(::gl::GL_BUFFER, m_id, "ElementBuffer#{}", m_id);
     spdlog::debug("Created ElementBuffer instance with ID = {} and count = {}", m_id, m_count);
 }
 
