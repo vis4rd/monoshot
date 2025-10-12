@@ -55,7 +55,7 @@ void ImmediateQuadRenderPass::submitDraws()
             // BUG: CAN GO OUT OF BOUND IF MORE THAN 32 TEXTURES!
             const auto& texture = m_textures[slot];
             const auto& id = texture->getID();
-            glBindTextureUnit(slot, id);  // slot = unit
+            ::gl::glBindTextureUnit(slot, id);  // slot = unit
 
             const auto& tex_data = texture->getTextureData();
             frame_counts.at(slot) = tex_data.numberOfSubs;
@@ -63,8 +63,8 @@ void ImmediateQuadRenderPass::submitDraws()
             frame_current_indices.at(slot) = tex_data.currentSub;
         }
 
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        ::gl::glEnable(::gl::GL_BLEND);
+        ::gl::glBlendFunc(::gl::GL_SRC_ALPHA, ::gl::GL_ONE_MINUS_SRC_ALPHA);
 
         m_quadSsbo->bind(0);
 
@@ -79,20 +79,20 @@ void ImmediateQuadRenderPass::submitDraws()
         m_shader.uploadUniform("uFrameCurrentIndex", frame_current_indices, 98);
 
         m_quadVao->bind();
-        glDrawElementsInstanced(
-            GL_TRIANGLES,
+        ::gl::glDrawElementsInstanced(
+            ::gl::GL_TRIANGLES,
             6,
-            GL_UNSIGNED_INT,
+            ::gl::GL_UNSIGNED_INT,
             nullptr,
-            static_cast<GLsizei>(m_quads.size()));
+            static_cast<::gl::GLsizei>(m_quads.size()));
         m_quadVao->unbind();
         m_quadSsbo->unbind();
 
-        glDisable(GL_BLEND);
+        ::gl::glDisable(::gl::GL_BLEND);
 
         for(std::size_t slot = 0; slot < m_textures.size(); slot++)
         {
-            glBindTextureUnit(slot, 0);
+            ::gl::glBindTextureUnit(slot, 0);
         }
 
         this->clear();

@@ -4,7 +4,7 @@
 #include <source_location>
 #include <string>
 
-#include <glad/gl.h>
+#include <glbinding/gl/gl.h>
 #include <spdlog/spdlog.h>
 
 #include "priv/LoggingData.hpp"
@@ -14,8 +14,8 @@ namespace mono::log
 
 template<typename... ARGS>
 void setGlObjectLabel(
-    GLenum identifier,
-    GLuint object,
+    ::gl::GLenum identifier,
+    ::gl::GLuint object,
     const std::format_string<ARGS...>& label,
     ARGS&&... args);
 void setGlLogLocation(const std::source_location& location = std::source_location::current());
@@ -24,14 +24,18 @@ void initialize();
 
 template<typename... ARGS>
 void setGlObjectLabel(
-    GLenum identifier,
-    GLuint object,
+    ::gl::GLenum identifier,
+    ::gl::GLuint object,
     const std::format_string<ARGS...>& label,
     ARGS&&... args)
 {
     const std::string label_str = std::format(label, std::forward<ARGS>(args)...);
     setGlLogLocation();
-    glObjectLabel(identifier, object, static_cast<GLsizei>(label_str.size()), label_str.data());
+    glObjectLabel(
+        identifier,
+        object,
+        static_cast<::gl::GLsizei>(label_str.size()),
+        label_str.data());
 }
 
 void critical(spdlog::loc_with_fmt fmt, auto&&... args)

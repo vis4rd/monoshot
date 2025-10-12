@@ -1,5 +1,7 @@
 #include "../../include/opengl/target/RenderWindow.hpp"
 
+#include <glbinding/gl/gl.h>
+#include <glbinding/glbinding.h>
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
 #include <imgui/imgui.h>
@@ -17,7 +19,7 @@ RenderWindow::RenderWindow()
     : RenderTarget()
 { }
 
-RenderWindow::RenderWindow(GLsizei width, GLsizei height, std::string_view title)
+RenderWindow::RenderWindow(::gl::GLsizei width, ::gl::GLsizei height, std::string_view title)
     : RenderTarget()
 {
     this->create(width, height, title);
@@ -28,7 +30,7 @@ RenderWindow::~RenderWindow()
     this->destroyEventCallbacks();
 }
 
-void RenderWindow::create(GLsizei width, GLsizei height, std::string_view title)
+void RenderWindow::create(::gl::GLsizei width, ::gl::GLsizei height, std::string_view title)
 {
     spdlog::info("Creating RenderWindow '{}' with size {}x{}", title, width, height);
 
@@ -57,7 +59,7 @@ void RenderWindow::create(GLsizei width, GLsizei height, std::string_view title)
     const auto lr = valid_resolutions.back();  // largest_resolution
     glfwSetWindowSizeLimits(m_windowHandle.get(), sr.x, sr.y, lr.x, lr.y);
 
-    this->initGlad();
+    this->initGlbinding();
     this->RenderTarget::create(width, height);
     this->initGl();
     this->initImGui();
@@ -100,7 +102,7 @@ void RenderWindow::toggleBorderlessFullscreen()
     this->setBorderlessFullscreen(not m_flags[WindowFlag::BORDERLESS_FULLSCREEN]);
 }
 
-void RenderWindow::setSize(GLsizei width, GLsizei height)
+void RenderWindow::setSize(::gl::GLsizei width, ::gl::GLsizei height)
 {
     spdlog::debug("New window size = {}x{} in pixels", width, height);
     this->RenderTarget::setSize(width, height);
@@ -418,14 +420,11 @@ void RenderWindow::initGlfw() const
     }
 }
 
-void RenderWindow::initGlad() const
+void RenderWindow::initGlbinding() const
 {
-    spdlog::debug("Initializing GLAD");
+    spdlog::debug("Initializing GLBINDING");
 
-    if(int success = gladLoadGL(glfwGetProcAddress); not success)
-    {
-        spdlog::critical("Failed to initialize GLAD");
-    }
+    glbinding::initialize(glfwGetProcAddress);
 }
 
 void RenderWindow::initGl() const
@@ -445,7 +444,7 @@ void RenderWindow::initGl() const
 
     // viewport
     const auto size = m_framebuffer->getSize();
-    glViewport(0, 0, size.x, size.y);
+    ::gl::glViewport(0, 0, size.x, size.y);
 }
 
 void RenderWindow::initImGui() const

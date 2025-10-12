@@ -19,7 +19,7 @@ target_include_directories(mono_module_log
 target_link_libraries(mono_module_log
     PUBLIC
     mono::external::spdlog
-    mono::external::glad
+    mono::external::glbinding
     mono::config
     mono::util::compiler
 )

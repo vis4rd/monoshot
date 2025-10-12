@@ -45,7 +45,7 @@ void ImmediateLineRenderPass::submitDraws()
         m_shader.uploadUniform("uView", m_view, 1);
 
         m_lineVao->bind();
-        glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(m_lines.size()));
+        ::gl::glDrawArrays(::gl::GL_LINES, 0, static_cast<::gl::GLsizei>(m_lines.size()));
         m_lineVao->unbind();
 
         this->clear();
@@ -75,8 +75,8 @@ void ImmediateLineRenderPass::drawLine(
 
 void ImmediateLineRenderPass::prepareLineVao()
 {
-    auto line_vbo =
-        gl::VertexBuffer(static_cast<GLsizeiptr>(MAX_LINE_COUNT * 4 * sizeof(gl::LineVertex)));
+    auto line_vbo = gl::VertexBuffer(
+        static_cast<::gl::GLsizeiptr>(MAX_LINE_COUNT * 4 * sizeof(gl::LineVertex)));
 
     namespace dtype = gl::ShaderAttributeType;
     gl::ShaderAttributeLayout line_layout = {

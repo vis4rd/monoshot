@@ -2,6 +2,8 @@
 
 #include <cstddef>
 
+#include <glbinding/gl/gl.h>
+
 #include "ShaderAttributeTypeInfo.hpp"
 
 namespace mono::gl
@@ -13,11 +15,11 @@ namespace mono::gl
  * @tparam COMPONENT_COUNT Number of attributes this attribute should be split into.
  * @tparam OPENGL_TYPE Enum value of the OpenGL type of the attribute.
  */
-template<typename NATIVE_TYPE, std::size_t COMPONENT_COUNT, std::size_t OPENGL_TYPE>
+template<typename NATIVE_TYPE, std::size_t COMPONENT_COUNT, ::gl::GLenum OPENGL_TYPE>
 class ShaderAttributeTypeBuilder
 {
     public:
-    constexpr ShaderAttributeTypeInfo operator()(GLint values_per_vertex) const
+    constexpr ShaderAttributeTypeInfo operator()(::gl::GLint values_per_vertex) const
     {
         return {
             .componentCount = COMPONENT_COUNT,
@@ -30,24 +32,26 @@ class ShaderAttributeTypeBuilder
 
 namespace ShaderAttributeType
 {
-template<typename NATIVE_TYPE, std::size_t COMPONENT_COUNT, std::size_t OPENGL_TYPE>
+template<typename NATIVE_TYPE, std::size_t COMPONENT_COUNT, ::gl::GLenum OPENGL_TYPE>
 using builder = ShaderAttributeTypeBuilder<NATIVE_TYPE, COMPONENT_COUNT, OPENGL_TYPE>;
 
-constexpr builder<GLbyte, 1, GL_BYTE> BYTE{};
-constexpr builder<GLdouble, 1, GL_DOUBLE> DOUBLE{};
-constexpr builder<GLfixed, 1, GL_FIXED> FIXED{};
-constexpr builder<GLfloat, 1, GL_FLOAT> FLOAT{};
-constexpr builder<GLhalf, 1, GL_HALF_FLOAT> HALF_FLOAT{};
-constexpr builder<GLint, 1, GL_INT> INT{};
-constexpr builder<GLuint, 1, GL_INT_2_10_10_10_REV> INT_2_10_10_10_REV{};
-constexpr builder<GLshort, 1, GL_SHORT> SHORT{};
-constexpr builder<GLubyte, 1, GL_UNSIGNED_BYTE> UNSIGNED_BYTE{};
-constexpr builder<GLuint, 1, GL_UNSIGNED_INT> UNSIGNED_INT{};
-constexpr builder<GLuint, 1, GL_UNSIGNED_INT_10F_11F_11F_REV> UNSIGNED_INT_10F_11F_11F_REV{};
-constexpr builder<GLuint, 1, GL_UNSIGNED_INT_2_10_10_10_REV> UNSIGNED_INT_2_10_10_10_REV{};
-constexpr builder<GLushort, 1, GL_UNSIGNED_SHORT> UNSIGNED_SHORT{};
-constexpr ShaderAttributeTypeInfo MAT3 = builder<GLfloat, 3, GL_FLOAT>{}(3);
-constexpr ShaderAttributeTypeInfo MAT4 = builder<GLfloat, 4, GL_FLOAT>{}(4);
+constexpr builder<::gl::GLbyte, 1, ::gl::GL_BYTE> BYTE{};
+constexpr builder<::gl::GLdouble, 1, ::gl::GL_DOUBLE> DOUBLE{};
+constexpr builder<::gl::GLfixed, 1, ::gl::GL_FIXED> FIXED{};
+constexpr builder<::gl::GLfloat, 1, ::gl::GL_FLOAT> FLOAT{};
+constexpr builder<::gl::GLhalf, 1, ::gl::GL_HALF_FLOAT> HALF_FLOAT{};
+constexpr builder<::gl::GLint, 1, ::gl::GL_INT> INT{};
+constexpr builder<::gl::GLuint, 1, ::gl::GL_INT_2_10_10_10_REV> INT_2_10_10_10_REV{};
+constexpr builder<::gl::GLshort, 1, ::gl::GL_SHORT> SHORT{};
+constexpr builder<::gl::GLubyte, 1, ::gl::GL_UNSIGNED_BYTE> UNSIGNED_BYTE{};
+constexpr builder<::gl::GLuint, 1, ::gl::GL_UNSIGNED_INT> UNSIGNED_INT{};
+constexpr builder<::gl::GLuint, 1, ::gl::GL_UNSIGNED_INT_10F_11F_11F_REV>
+    UNSIGNED_INT_10F_11F_11F_REV{};
+constexpr builder<::gl::GLuint, 1, ::gl::GL_UNSIGNED_INT_2_10_10_10_REV>
+    UNSIGNED_INT_2_10_10_10_REV{};
+constexpr builder<::gl::GLushort, 1, ::gl::GL_UNSIGNED_SHORT> UNSIGNED_SHORT{};
+constexpr ShaderAttributeTypeInfo MAT3 = builder<::gl::GLfloat, 3, ::gl::GL_FLOAT>{}(3);
+constexpr ShaderAttributeTypeInfo MAT4 = builder<::gl::GLfloat, 4, ::gl::GL_FLOAT>{}(4);
 
 }  // namespace ShaderAttributeType
 }  // namespace mono::gl

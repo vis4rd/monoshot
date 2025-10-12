@@ -6,7 +6,7 @@
 #include <type_traits>
 #include <vector>
 
-#include <glad/gl.h>
+#include <glbinding/gl/gl.h>
 
 #include "mono/log/Logging.hpp"
 #include "mono/traits/ContiguousContainer.hpp"
@@ -18,7 +18,7 @@ namespace mono::gl
 class ShaderStorageBufferAny
 {
     public:
-    explicit ShaderStorageBufferAny(GLsizeiptr size);
+    explicit ShaderStorageBufferAny(::gl::GLsizeiptr size);
     ShaderStorageBufferAny(const ShaderStorageBufferAny& copy) = default;
     ShaderStorageBufferAny(ShaderStorageBufferAny&& move) noexcept = default;
     ~ShaderStorageBufferAny() = default;
@@ -26,28 +26,28 @@ class ShaderStorageBufferAny
     ShaderStorageBufferAny& operator=(const ShaderStorageBufferAny& copy) = default;
     ShaderStorageBufferAny& operator=(ShaderStorageBufferAny&& move) noexcept = default;
 
-    void bind(GLuint binding) const;
+    void bind(::gl::GLuint binding) const;
     void unbind() const;
 
-    const GLuint& getID() const;
+    const ::gl::GLuint& getID() const;
 
-    constexpr void setData(const auto& data, GLintptr buffer_offset = 0)
+    constexpr void setData(const auto& data, ::gl::GLintptr buffer_offset = 0)
     requires(
         not std::ranges::range<decltype(data)> and not std::is_pointer_v<decltype(data)>
         and not std::is_array_v<decltype(data)>);
 
     constexpr void setData(
         const std::ranges::contiguous_range auto& data,
-        GLintptr buffer_offset = 0);
-    void resize(GLsizeiptr new_byte_size);
+        ::gl::GLintptr buffer_offset = 0);
+    void resize(::gl::GLsizeiptr new_byte_size);
 
     // NOLINTNEXTLINE(google-explicit-constructor)
-    operator GLuint() const;
+    operator ::gl::GLuint() const;
 
 
     private:
-    GLuint m_id{};
-    GLsizeiptr m_maxBufferBytesize{};
+    ::gl::GLuint m_id{};
+    ::gl::GLsizeiptr m_maxBufferBytesize{};
 };
 
 }  // namespace mono::gl

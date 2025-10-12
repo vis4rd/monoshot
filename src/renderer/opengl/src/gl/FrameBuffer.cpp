@@ -5,15 +5,15 @@
 namespace mono::gl
 {
 
-FrameBuffer::FrameBuffer(GLsizei width, GLsizei height)
+FrameBuffer::FrameBuffer(::gl::GLsizei width, ::gl::GLsizei height)
     : m_width(width)
     , m_height(height)
 {
     spdlog::debug("Creating a framebuffer");
-    glCreateFramebuffers(1, &m_id);
-    glBindFramebuffer(GL_FRAMEBUFFER, m_id);
+    ::gl::glCreateFramebuffers(1, &m_id);
+    ::gl::glBindFramebuffer(::gl::GL_FRAMEBUFFER, m_id);
 
-    log::setGlObjectLabel(GL_FRAMEBUFFER, m_id, "FrameBuffer#{}", m_id);
+    log::setGlObjectLabel(::gl::GL_FRAMEBUFFER, m_id, "FrameBuffer#{}", m_id);
 
     // steps to ensure that the framebuffer is complete
     // 1) attach at least one buffer (color, depth or stencil)
@@ -23,35 +23,39 @@ FrameBuffer::FrameBuffer(GLsizei width, GLsizei height)
 
     // create a texture (color attachment)
     // spdlog::debug("Creating texture - a color attachment");
-    // glCreateTextures(GL_TEXTURE_2D, 1, &m_fbColor);
-    // glBindTexture(GL_TEXTURE_2D, m_fbColor);
+    // ::gl::glCreateTextures(::gl::GL_TEXTURE_2D, 1, &m_fbColor);
+    // ::gl::glBindTexture(::gl::GL_TEXTURE_2D, m_fbColor);
     // spdlog::debug("one");
-    // glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE,
-    // nullptr); spdlog::debug("two"); glTextureParameteri(m_fbColor, GL_TEXTURE_MIN_FILTER,
-    // GL_LINEAR); spdlog::debug("three"); glTextureParameteri(m_fbColor, GL_TEXTURE_MAG_FILTER,
-    // GL_LINEAR); spdlog::debug("four");
+    // ::gl::glTexImage2D(::gl::GL_TEXTURE_2D, 0, ::gl::GL_RGB, m_width, m_height, 0, ::gl::GL_RGB,
+    // ::gl::GL_UNSIGNED_BYTE, nullptr); spdlog::debug("two"); glTextureParameteri(m_fbColor,
+    // ::gl::GL_TEXTURE_MIN_FILTER,
+    // ::gl::GL_LINEAR); spdlog::debug("three"); glTextureParameteri(m_fbColor,
+    // ::gl::GL_TEXTURE_MAG_FILTER,
+    // ::gl::GL_LINEAR); spdlog::debug("four");
 
     // (stencil attachment)
     // spdlog::debug("Creating a renderbuffer");
     // std::uint32_t fb_stencil;
-    // glCreateRenderbuffers(1, &fb_stencil);
+    // ::gl::glCreateRenderbuffers(1, &fb_stencil);
     // spdlog::debug("Binding a renderbuffer");
-    // glBindRenderbuffer(GL_RENDERBUFFER, fb_stencil);
+    // ::gl::glBindRenderbuffer(::gl::GL_RENDERBUFFER, fb_stencil);
     // spdlog::debug("Uplaoding properties of a renderbuffer");
-    // glNamedRenderbufferStorage(fb_stencil, GL_STENCIL_INDEX, m_width, m_height);
+    // ::gl::glNamedRenderbufferStorage(fb_stencil, ::gl::GL_STENCIL_INDEX, m_width, m_height);
     // spdlog::debug("Unbinding a renderbuffer");
-    // glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    // ::gl::glBindRenderbuffer(::gl::GL_RENDERBUFFER, 0);
 
     // attach attachments to the framebuffer
     // spdlog::debug("Binding color and stencil attachments to the framebuffer");
-    // glNamedFramebufferTexture(m_id, GL_COLOR_ATTACHMENT0, m_fbColor, 0);
-    // glNamedFramebufferRenderbuffer(m_id, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, fb_stencil);
+    // ::gl::glNamedFramebufferTexture(m_id, ::gl::GL_COLOR_ATTACHMENT0, m_fbColor, 0);
+    // ::gl::glNamedFramebufferRenderbuffer(m_id, ::gl::GL_STENCIL_ATTACHMENT,
+    // ::gl::GL_RENDERBUFFER, fb_stencil);
 
     this->initTexture();
     this->initStencil();
     this->bindAttachments();
 
-    if(glCheckNamedFramebufferStatus(m_id, GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    if(::gl::glCheckNamedFramebufferStatus(m_id, ::gl::GL_FRAMEBUFFER)
+       != ::gl::GL_FRAMEBUFFER_COMPLETE)
     {
         spdlog::critical("Framebuffer creation is not complete");
         throw std::runtime_error("Framebuffer creation is not complete");
@@ -64,20 +68,20 @@ FrameBuffer::~FrameBuffer()
 {
     this->destroyTexture();
     this->destroyStencil();
-    glDeleteFramebuffers(1, &m_id);
+    ::gl::glDeleteFramebuffers(1, &m_id);
 }
 
 void FrameBuffer::bind() const
 {
-    glBindFramebuffer(GL_FRAMEBUFFER, m_id);
+    ::gl::glBindFramebuffer(::gl::GL_FRAMEBUFFER, m_id);
 }
 
 void FrameBuffer::unbind() const
 {
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    ::gl::glBindFramebuffer(::gl::GL_FRAMEBUFFER, 0);
 }
 
-void FrameBuffer::resize(GLsizei width, GLsizei height)
+void FrameBuffer::resize(::gl::GLsizei width, ::gl::GLsizei height)
 {
     // destory old attachments
     this->destroyTexture();
@@ -92,20 +96,20 @@ void FrameBuffer::resize(GLsizei width, GLsizei height)
     this->initStencil();
     this->bindAttachments();
 
-    glViewport(0, 0, m_width, m_height);
+    ::gl::glViewport(0, 0, m_width, m_height);
 }
 
-GLuint FrameBuffer::getID() const
+::gl::GLuint FrameBuffer::getID() const
 {
     return m_id;
 }
 
-GLuint FrameBuffer::getColorID() const
+::gl::GLuint FrameBuffer::getColorID() const
 {
     return m_colorAttachment;
 }
 
-GLuint FrameBuffer::getStencilID() const
+::gl::GLuint FrameBuffer::getStencilID() const
 {
     return m_stencilAttachment;
 }
@@ -118,44 +122,57 @@ glm::ivec2 FrameBuffer::getSize() const
 void FrameBuffer::initTexture()
 {
     spdlog::debug("Creating a color attachment");
-    glCreateTextures(GL_TEXTURE_2D, 1, &m_colorAttachment);
-    glBindTexture(GL_TEXTURE_2D, m_colorAttachment);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
-    glTextureParameteri(m_colorAttachment, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTextureParameteri(m_colorAttachment, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    ::gl::glCreateTextures(::gl::GL_TEXTURE_2D, 1, &m_colorAttachment);
+    ::gl::glBindTexture(::gl::GL_TEXTURE_2D, m_colorAttachment);
+    ::gl::glTexImage2D(
+        ::gl::GL_TEXTURE_2D,
+        0,
+        ::gl::GL_RGB,
+        m_width,
+        m_height,
+        0,
+        ::gl::GL_RGB,
+        ::gl::GL_UNSIGNED_BYTE,
+        nullptr);
+    ::gl::glTextureParameteri(m_colorAttachment, ::gl::GL_TEXTURE_MIN_FILTER, ::gl::GL_LINEAR);
+    ::gl::glTextureParameteri(m_colorAttachment, ::gl::GL_TEXTURE_MAG_FILTER, ::gl::GL_LINEAR);
 }
 
 void FrameBuffer::initStencil()
 {
     spdlog::debug("Creating a stencil attachment");
-    glCreateRenderbuffers(1, &m_stencilAttachment);
-    glBindRenderbuffer(
-        GL_RENDERBUFFER,
+    ::gl::glCreateRenderbuffers(1, &m_stencilAttachment);
+    ::gl::glBindRenderbuffer(
+        ::gl::GL_RENDERBUFFER,
         m_stencilAttachment);  // TODO(vis4rd): try not to call this when everything works
-    log::setGlObjectLabel(GL_RENDERBUFFER, m_id, "FrameBuffer::Renderbuffer#{}", m_id);
+    log::setGlObjectLabel(::gl::GL_RENDERBUFFER, m_id, "FrameBuffer::Renderbuffer#{}", m_id);
 
-    glNamedRenderbufferStorage(m_stencilAttachment, GL_STENCIL_INDEX, m_width, m_height);
-    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    ::gl::glNamedRenderbufferStorage(
+        m_stencilAttachment,
+        ::gl::GL_STENCIL_INDEX,
+        m_width,
+        m_height);
+    ::gl::glBindRenderbuffer(::gl::GL_RENDERBUFFER, 0);
 }
 
 void FrameBuffer::destroyTexture()
 {
-    glDeleteTextures(1, &m_colorAttachment);
+    ::gl::glDeleteTextures(1, &m_colorAttachment);
 }
 
 void FrameBuffer::destroyStencil()
 {
-    glDeleteRenderbuffers(1, &m_stencilAttachment);
+    ::gl::glDeleteRenderbuffers(1, &m_stencilAttachment);
 }
 
 void FrameBuffer::bindAttachments()
 {
     spdlog::debug("Binding color and stencil attachments to the framebuffer");
-    glNamedFramebufferTexture(m_id, GL_COLOR_ATTACHMENT0, m_colorAttachment, 0);
-    glNamedFramebufferRenderbuffer(
+    ::gl::glNamedFramebufferTexture(m_id, ::gl::GL_COLOR_ATTACHMENT0, m_colorAttachment, 0);
+    ::gl::glNamedFramebufferRenderbuffer(
         m_id,
-        GL_STENCIL_ATTACHMENT,
-        GL_RENDERBUFFER,
+        ::gl::GL_STENCIL_ATTACHMENT,
+        ::gl::GL_RENDERBUFFER,
         m_stencilAttachment);
 }
 

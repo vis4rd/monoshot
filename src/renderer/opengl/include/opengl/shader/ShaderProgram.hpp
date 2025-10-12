@@ -5,7 +5,7 @@
 #include <string_view>
 #include <type_traits>
 
-#include <glad/gl.h>
+#include <glbinding/gl/gl.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <spdlog/spdlog.h>
 
@@ -30,13 +30,13 @@ class ShaderProgram
     ShaderProgram& operator=(const ShaderProgram& copy) = default;
     ShaderProgram& operator=(ShaderProgram&& move) noexcept;
 
-    GLuint getID() const;
+    ::gl::GLuint getID() const;
     void use() const;
     void uploadUniform(
         const std::string& var_name,
         const ValidUniformVariableTrait auto& var,
-        GLint location = -1);
-    static void uploadUniform(const ValidUniformVariableTrait auto& var, GLint location);
+        ::gl::GLint location = -1);
+    static void uploadUniform(const ValidUniformVariableTrait auto& var, ::gl::GLint location);
     static void uploadUniform(
         const ValidUniformVariableTrait auto& var,
         std::string_view var_name,
@@ -48,23 +48,23 @@ class ShaderProgram
 
 namespace helper
 {
-void uploadUniform(const ValidUniformVariableTrait auto& var, GLint location);
+void uploadUniform(const ValidUniformVariableTrait auto& var, ::gl::GLint location);
 }
 
 void ShaderProgram::uploadUniform(
     const std::string& var_name,
     const ValidUniformVariableTrait auto& var,
-    GLint location)
+    ::gl::GLint location)
 {
     if(location < 0)
     {
-        location = glGetUniformLocation(m_id, var_name.c_str());
+        location = ::gl::glGetUniformLocation(m_id, var_name.c_str());
     }
 
     helper::uploadUniform(var, location);
 }
 
-void ShaderProgram::uploadUniform(const ValidUniformVariableTrait auto& var, GLint location)
+void ShaderProgram::uploadUniform(const ValidUniformVariableTrait auto& var, ::gl::GLint location)
 {
     helper::uploadUniform(var, location);
 }
@@ -74,67 +74,67 @@ void uploadUniform(
     std::string_view var_name,
     std::uint32_t shader_id)
 {
-    helper::uploadUniform(var, glGetUniformLocation(shader_id, var_name.data()));
+    helper::uploadUniform(var, ::gl::glGetUniformLocation(shader_id, var_name.data()));
 }
 
-void helper::uploadUniform(const ValidUniformVariableTrait auto& var, GLint location)
+void helper::uploadUniform(const ValidUniformVariableTrait auto& var, ::gl::GLint location)
 {
     using T = std::remove_cvref_t<decltype(var)>;
     if constexpr(TwoElementVariableTrait<T, float>)
     {
-        glUniform2f(location, var.x, var.y);
+        ::gl::glUniform2f(location, var.x, var.y);
     }
     else if constexpr(ThreeElementVariableTrait<T, float>)
     {
-        glUniform3f(location, var.x, var.y, var.z);
+        ::gl::glUniform3f(location, var.x, var.y, var.z);
     }
     else if constexpr(FourElementVariableTrait<T, float>)
     {
-        glUniform4f(location, var.x, var.y, var.z, var.w);
+        ::gl::glUniform4f(location, var.x, var.y, var.z, var.w);
     }
     else if constexpr(TwoElementVariableTrait<T, std::int32_t>)
     {
-        glUniform2i(location, var.x, var.y);
+        ::gl::glUniform2i(location, var.x, var.y);
     }
     else if constexpr(ThreeElementVariableTrait<T, std::int32_t>)
     {
-        glUniform3i(location, var.x, var.y, var.z);
+        ::gl::glUniform3i(location, var.x, var.y, var.z);
     }
     else if constexpr(FourElementVariableTrait<T, std::int32_t>)
     {
-        glUniform4i(location, var.x, var.y, var.z, var.w);
+        ::gl::glUniform4i(location, var.x, var.y, var.z, var.w);
     }
     else if constexpr(std::is_same_v<T, float>)
     {
-        glUniform1f(location, var);
+        ::gl::glUniform1f(location, var);
     }
     else if constexpr(std::is_same_v<T, std::int32_t>)
     {
-        glUniform1i(location, var);
+        ::gl::glUniform1i(location, var);
     }
     else if constexpr(std::is_same_v<T, std::uint32_t>)
     {
-        glUniform1ui(location, var);
+        ::gl::glUniform1ui(location, var);
     }
     else if constexpr(std::is_same_v<T, bool>)
     {
-        glUniform1i(location, var);
+        ::gl::glUniform1i(location, var);
     }
     else if constexpr(std::is_same_v<T, glm::mat3>)
     {
-        glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(var));
+        ::gl::glUniformMatrix3fv(location, 1, ::gl::GL_FALSE, glm::value_ptr(var));
     }
     else if constexpr(std::is_same_v<T, glm::mat4>)
     {
-        glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(var));
+        ::gl::glUniformMatrix4fv(location, 1, ::gl::GL_FALSE, glm::value_ptr(var));
     }
     else if constexpr(ContiguousContainerTrait<T, std::int32_t>)
     {
-        glUniform1iv(location, var.size(), var.data());
+        ::gl::glUniform1iv(location, var.size(), var.data());
     }
     else if constexpr(ContiguousContainerTrait<T, std::uint32_t>)
     {
-        glUniform1uiv(location, var.size(), var.data());
+        ::gl::glUniform1uiv(location, var.size(), var.data());
     }
     else
     {

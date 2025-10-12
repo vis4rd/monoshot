@@ -7,8 +7,8 @@
 #include <string_view>
 #include <vector>
 
-#include <glad/gl.h>
 #include <GLFW/glfw3.h>
+#include <glbinding/gl/gl.h>
 
 #include "../glfw/RenderWindowUserStorage.hpp"
 #include "RenderTarget.hpp"
@@ -26,7 +26,7 @@ class RenderWindow final : public RenderTarget
      * object.
      */
     RenderWindow();
-    RenderWindow(GLsizei width, GLsizei height, std::string_view title);
+    RenderWindow(::gl::GLsizei width, ::gl::GLsizei height, std::string_view title);
     RenderWindow(const RenderWindow& copy) = delete;
     RenderWindow(RenderWindow&& move) = default;
     ~RenderWindow() override;
@@ -34,7 +34,7 @@ class RenderWindow final : public RenderTarget
     RenderWindow& operator=(const RenderWindow& copy) = delete;
     RenderWindow& operator=(RenderWindow&& move) = default;
 
-    void create(GLsizei width, GLsizei height, std::string_view title);
+    void create(::gl::GLsizei width, ::gl::GLsizei height, std::string_view title);
 
     [[nodiscard]] bool isFullscreen() const;
     [[nodiscard]] bool isBorderlessFullscreen() const;
@@ -45,7 +45,7 @@ class RenderWindow final : public RenderTarget
     void toggleFullscreen();
     void toggleBorderlessFullscreen();
 
-    void setSize(GLsizei width, GLsizei height) override;
+    void setSize(::gl::GLsizei width, ::gl::GLsizei height) override;
     void setFullscreen(bool fullscreen = true);
     void setBorderlessFullscreen(bool borderless = true);
     void setMaximized(bool maximized = true);
@@ -115,7 +115,7 @@ class RenderWindow final : public RenderTarget
 
     private:
     void initGlfw() const;
-    void initGlad() const;
+    void initGlbinding() const;
     void initGl() const;
     void initImGui() const;
     void initFlags();
