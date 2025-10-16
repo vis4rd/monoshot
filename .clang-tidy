@@ -1,5 +1,5 @@
 # RUN EXAMPLE:
-# find src/engine -type f | grep -vi lib/* | grep -E ".*\.(cpp|hpp|c|h|inl)$" | xargs clang-tidy --use-color --config-file=.clang-tidy -p build > dev/clang-tidy-output.txt
+# find src/ -type f | grep -vi lib/* | grep -E ".*\.(cpp|hpp|c|h|inl)$" | xargs clang-tidy --use-color --config-file=.clang-tidy -p build > dev/clang-tidy-output.txt
 ---
 WarningsAsErrors: "true"
 UseColor: true
