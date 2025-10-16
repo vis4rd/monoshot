@@ -64,4 +64,4 @@ function(launch_clang_tidy)
     )
 endfunction()
 
-launch_clang_tidy(" ${EXTRA_ARGS} ")
+launch_clang_tidy()
