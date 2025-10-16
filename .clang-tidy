@@ -3,7 +3,7 @@
 ---
 WarningsAsErrors: "true"
 UseColor: true
-HeaderFilterRegex: '.*\/?src\/engine\/module\/.*'
+HeaderFilterRegex: 'src\/.*'
 HeaderFileExtensions: # clang-tidy > 18
   - "hpp"
   - "inl"
