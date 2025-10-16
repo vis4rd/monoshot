@@ -274,13 +274,15 @@ constexpr std::vector<MemoryOperation> MemoryPackingSolver::computePackingOperat
         if(unset_range_size > last_set_range_size)
         {
             // move the last set range to the unset range
-            operations.emplace_back(CopyRangeOperation{
-                .startIndex = static_cast<std::uint32_t>(last_set_range.start),
-                .endIndex = static_cast<std::uint32_t>(last_set_range.end),
-                .destinationIndex = static_cast<std::uint32_t>(unset_range.start)});
-            operations.emplace_back(InvalidateRangeOperation{
-                .startIndex = static_cast<std::uint32_t>(last_set_range.start),
-                .endIndex = static_cast<std::uint32_t>(last_set_range.end)});
+            operations.emplace_back(
+                CopyRangeOperation{
+                    .startIndex = static_cast<std::uint32_t>(last_set_range.start),
+                    .endIndex = static_cast<std::uint32_t>(last_set_range.end),
+                    .destinationIndex = static_cast<std::uint32_t>(unset_range.start)});
+            operations.emplace_back(
+                InvalidateRangeOperation{
+                    .startIndex = static_cast<std::uint32_t>(last_set_range.start),
+                    .endIndex = static_cast<std::uint32_t>(last_set_range.end)});
             set_ranges_copy.pop_back();
 
             if(set_ranges_copy.front().start > 0u)
@@ -297,13 +299,17 @@ constexpr std::vector<MemoryOperation> MemoryPackingSolver::computePackingOperat
         else
         {
             // move only a part of the last set range to the unset range
-            operations.emplace_back(CopyRangeOperation{
-                .startIndex = static_cast<std::uint32_t>(last_set_range.end - unset_range_size + 1),
-                .endIndex = static_cast<std::uint32_t>(last_set_range.end),
-                .destinationIndex = static_cast<std::uint32_t>(unset_range.start)});
-            operations.emplace_back(InvalidateRangeOperation{
-                .startIndex = static_cast<std::uint32_t>(last_set_range.end - unset_range_size + 1),
-                .endIndex = static_cast<std::uint32_t>(last_set_range.end)});
+            operations.emplace_back(
+                CopyRangeOperation{
+                    .startIndex =
+                        static_cast<std::uint32_t>(last_set_range.end - unset_range_size + 1),
+                    .endIndex = static_cast<std::uint32_t>(last_set_range.end),
+                    .destinationIndex = static_cast<std::uint32_t>(unset_range.start)});
+            operations.emplace_back(
+                InvalidateRangeOperation{
+                    .startIndex =
+                        static_cast<std::uint32_t>(last_set_range.end - unset_range_size + 1),
+                    .endIndex = static_cast<std::uint32_t>(last_set_range.end)});
             last_set_range.end -= unset_range_size;
 
             if(set_ranges_copy.front().start > 0u)
