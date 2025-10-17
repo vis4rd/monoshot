@@ -8,7 +8,7 @@
             "command": "cmake -P ./cmake/clang-format.cmake",
             "icon": {
                 "color": "terminal.ansiCyan",
-                "id": "edit"
+                "id": "eye"
             },
         },
         {
@@ -34,6 +34,33 @@
                         "severity": 4,
                         "message": 5,
                         "code": 6
+                    }
+                ]
+            }
+        },
+        {
+            "label": "Run cppcheck",
+            "detail": "Run cppcheck on all C++ files.",
+            "type": "shell",
+            "command": "cmake -P ./cmake/cppcheck.cmake",
+            "icon": {
+                "color": "terminal.ansiCyan",
+                "id": "bug"
+            },
+            "problemMatcher": {
+                "source": "cppcheck",
+                "owner": "cppcheck",
+                "applyTo": "allDocuments",
+                "fileLocation": "absolute",
+                "pattern": [
+                    {
+                        "regexp": "^(.*):([0-9]{1,6}):([0-9]{1,6}):\\s([a-z]+):\\s(.*)\\[(.*)\\]$",
+                        "file": 1,
+                        "line": 2,
+                        "column": 3,
+                        "severity": 4,
+                        "message": 5,
+                        "code": 6,
                     }
                 ]
             }
