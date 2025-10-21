@@ -68,6 +68,7 @@ Checks:
   - -misc-unused-parameters
   - -misc-use-anonymous-namespace
   - -misc-use-internal-linkage
+  - -modernize-use-integer-sign-comparison
   - -modernize-use-ranges
   - -performance-enum-size
   - -readability-avoid-return-with-void-value
