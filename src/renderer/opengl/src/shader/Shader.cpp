@@ -43,7 +43,6 @@ Shader::Shader(const std::filesystem::path& location, const std::string& name, S
         default:
         {
             throw std::runtime_error("Unknown shader type.");
-            break;
         }
     }
     log::setGlObjectLabel(

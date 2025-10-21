@@ -1,5 +1,6 @@
 #include "../../include/opengl/gl/VertexArray.hpp"
 
+#include <numeric>
 #include <stdexcept>
 
 #include <glbinding/gl/gl.h>
@@ -74,11 +75,13 @@ void VertexArray::bindVertexBuffer(
         throw std::runtime_error("Given VertexBuffer does not have a specified layout");
     }
 
-    std::uint32_t sum_size = 0;
-    for(const auto& element : vertex_buffer.getLayout())
-    {
-        sum_size += element.getBytesize();
-    }
+    const auto layout_element_bytesizes =
+        vertex_buffer.getLayout() | std::views::transform([](const ShaderAttribute& attr) {
+            return attr.getBytesize();
+        });
+    const std::uint32_t sum_size =
+        std::accumulate(layout_element_bytesizes.begin(), layout_element_bytesizes.end(), 0u);
+
     ::gl::glVertexArrayVertexBuffer(
         m_id,
         /*vbo index for this vao*/ m_vertexBuffers.size(),
