@@ -20,7 +20,7 @@ class Animation : public mono::Texture
     Animation(Animation&& move) noexcept;
     ~Animation() override = default;
 
-    Animation& operator=(const Animation& copy);
+    Animation& operator=(const Animation& copy) = default;
     Animation& operator=(Animation&& move) noexcept;
 
     void setFrameDuration(const double& frame_duration);

@@ -386,12 +386,11 @@ std::span<const GLFWvidmode> RenderWindow::queryVideoModes()
 std::vector<glm::ivec2> RenderWindow::queryMonitorResolutions()
 {
     const auto video_modes = RenderWindow::queryVideoModes();
-    std::vector<glm::ivec2> result;
-    for(const auto &vm : video_modes)
-    {
-        result.emplace_back(vm.width, vm.height);
-    }
-    return result;
+    std::vector<glm::ivec2> retval;
+    std::ranges::transform(video_modes, std::back_inserter(retval), [](const GLFWvidmode &vm) {
+        return glm::ivec2{vm.width, vm.height};
+    });
+    return retval;
 }
 
 std::int32_t RenderWindow::getRefreshRate()

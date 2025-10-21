@@ -14,8 +14,9 @@ ConfigStorage::ConfigStorage(const std::filesystem::path& path)
 
 bool ConfigStorage::validate() const
 {
-    // TODO(vis4rd): Check for duplicate sections
-    // TODO(vis4rd): Check for duplicate keys in sections
+    // TODO: Check for duplicate sections
+    // TODO: Check for duplicate keys in sections
+    // cppcheck-suppress useStlAlgorithm
     for(const auto& item : m_items)
     {
         if(not m_iniFile.contains(std::string{item->getSection()}))

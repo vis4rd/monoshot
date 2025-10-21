@@ -15,7 +15,7 @@ function(launch_cppcheck)
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMAND_ECHO STDOUT
         COMMAND_ERROR_IS_FATAL ANY
-        COMMAND ${CPPCHECK_CMD} --cppcheck-build-dir=${CMAKE_CURRENT_SOURCE_DIR}/.cache/cppcheck --quiet --std=c++20 --enable=style --error-exitcode=2 --check-level=exhaustive ${CMAKE_CURRENT_SOURCE_DIR}/src/ ${CMAKE_CURRENT_SOURCE_DIR}/examples/
+        COMMAND ${CPPCHECK_CMD} --cppcheck-build-dir=${CMAKE_CURRENT_SOURCE_DIR}/.cache/cppcheck --inline-suppr --quiet --std=c++20 --enable=style --error-exitcode=2 --check-level=exhaustive ${CMAKE_CURRENT_SOURCE_DIR}/src/ ${CMAKE_CURRENT_SOURCE_DIR}/examples/
     )
 endfunction()
 

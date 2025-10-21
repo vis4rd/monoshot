@@ -25,12 +25,6 @@ Animation::Animation(Animation&& move) noexcept
     : Texture(std::move(move))
 { }
 
-Animation& Animation::operator=(const Animation& copy)
-{
-    this->Texture::operator=(copy);
-    return *this;
-}
-
 Animation& Animation::operator=(Animation&& move) noexcept
 {
     this->Texture::operator=(std::move(move));
