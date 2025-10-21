@@ -39,26 +39,11 @@ jobs:
             src/**/*.h
             .clang-format
 
-      - name: Get changed files (for formatting)
-        id: changed-files-format
-        uses: tj-actions/changed-files@v45
-        if: steps.changed-files-trigger.outputs.any_changed == 'true'
-        with:
-          files: |
-            src/**/*.hpp
-            src/**/*.cpp
-            src/**/*.inl
-            src/**/*.c
-            src/**/*.h
-
       - name: Check code formatting
         if: steps.changed-files-trigger.outputs.any_changed == 'true'
         shell: bash
         run: |
-          echo "Files selected for formatting check:"
-          echo ${{ steps.changed-files-format.outputs.all_changed_files }}
-
-          clang-format --dry-run --Werror ${{ steps.changed-files-format.outputs.all_changed_files }}
+          cmake -P ./cmake/clang-format.cmake
 
           if [ $? -eq 0 ]; then echo "Code formatting check passed."; exit 0;
           else echo "Code formatting check failed."; exit 1;
