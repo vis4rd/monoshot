@@ -42,25 +42,12 @@ void ImmediateQuadRenderPass::submitDraws()
     {
         m_quadSsbo->setData(m_quads);
 
-        // prepare uniform data
-        constexpr std::array<std::int32_t, 32> samplers{0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10,
-                                                        11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
-                                                        22, 23, 24, 25, 26, 27, 28, 29, 30, 31};
-        std::array<std::uint32_t, 32> frame_counts{};
-        std::array<std::uint32_t, 32> frame_row_lengths{};
-        std::array<std::uint32_t, 32> frame_current_indices{};
-
         for(std::size_t slot = 0; slot < m_textures.size(); slot++)
         {
             // BUG: CAN GO OUT OF BOUND IF MORE THAN 32 TEXTURES!
             const auto& texture = m_textures[slot];
             const auto& id = texture->getID();
             ::gl::glBindTextureUnit(slot, id);  // slot = unit
-
-            const auto& tex_data = texture->getTextureData();
-            frame_counts.at(slot) = tex_data.numberOfSubs;
-            frame_row_lengths.at(slot) = tex_data.numberOfSubsInOneRow;
-            frame_current_indices.at(slot) = tex_data.currentSub;
         }
 
         ::gl::glEnable(::gl::GL_BLEND);
@@ -73,10 +60,10 @@ void ImmediateQuadRenderPass::submitDraws()
         m_shader.uploadUniform("uProjection", m_projection, 0);
         m_shader.uploadUniform("uView", m_view, 1);
 
+        constexpr std::array<std::int32_t, 32> samplers{0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10,
+                                                        11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+                                                        22, 23, 24, 25, 26, 27, 28, 29, 30, 31};
         m_shader.uploadUniform("uTextures", samplers, 2);
-        m_shader.uploadUniform("uFrameCount", frame_counts, 34);
-        m_shader.uploadUniform("uFrameRowLength", frame_row_lengths, 66);
-        m_shader.uploadUniform("uFrameCurrentIndex", frame_current_indices, 98);
 
         m_quadVao->bind();
         ::gl::glDrawElementsInstanced(
@@ -147,8 +134,11 @@ void ImmediateQuadRenderPass::drawQuad(
     const glm::vec4& color)
 {
     static std::shared_ptr<Texture> white_texture = std::make_shared<Texture>(
-        std::array<std::byte, 4>{std::byte{0xff}, std::byte{0xff}, std::byte{0xff}, std::byte{0xff}}
-            .data(),
+        std::array<std::byte, 4>{
+            std::byte{0xff},
+            std::byte{0xff},
+            std::byte{0xff},
+            std::byte{0xff}},
         1,
         1);
     return this->drawQuad(position, size, rotation, white_texture, color);

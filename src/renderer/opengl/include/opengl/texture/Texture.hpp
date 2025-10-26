@@ -4,7 +4,10 @@
 #include <cstdint>
 #include <filesystem>
 
-#include "TextureData.hpp"
+#include <glbinding/gl/types.h>
+#include <spdlog/spdlog.h>
+
+#include "mono/traits/ContiguousContainer.hpp"
 
 namespace mono
 {
@@ -12,33 +15,47 @@ namespace mono
 class Texture
 {
     public:
-    Texture() = default;
-    Texture(const std::filesystem::path& file_path, std::int32_t width, std::int32_t height);
-    // TODO: use range concept or std::span instead of raw pointer
-    Texture(const std::byte* data, std::int32_t width, std::int32_t height);
-    explicit Texture(
+    Texture(
         const std::filesystem::path& file_path,
-        const TextureData& texture_data = TextureData());
+        std::int32_t expected_width = 0,
+        std::int32_t expected_height = 0);
+    Texture(
+        const ContiguousContainerTrait<std::byte> auto& data,
+        std::int32_t width,
+        std::int32_t height);
 
     Texture(const Texture& copy) = default;
     Texture(Texture&& move) noexcept = default;
     virtual ~Texture();
 
-    Texture& operator=(const Texture& copy) = default;
-    Texture& operator=(Texture&& move) noexcept = default;
+    Texture& operator=(const Texture& copy) = delete;
+    Texture& operator=(Texture&& move) noexcept = delete;
 
-    const std::uint32_t& getID() const;
-    const TextureData& getTextureData() const;
+    ::gl::GLuint getID() const;
+    ::gl::GLsizei getWidth() const;
+    ::gl::GLsizei getHeight() const;
 
     private:
-    void load(const std::filesystem::path& source_path, std::int32_t width, std::int32_t height);
-    void load(const std::byte* data, std::int32_t width, std::int32_t height);
+    void load(const std::filesystem::path& source_path);
+    void load(const std::byte* data);
     void uploadToGpu(const std::byte* data);
     void unloadFromGpu();
 
     private:
-    std::uint32_t m_id = 0;
-    TextureData m_textureData;
+    ::gl::GLuint m_id = 0;
+    const ::gl::GLsizei m_width;
+    const ::gl::GLsizei m_height;
 };
+
+Texture::Texture(
+    const ContiguousContainerTrait<std::byte> auto& data,
+    std::int32_t width,
+    std::int32_t height)
+    : m_width{width}
+    , m_height{height}
+{
+    spdlog::trace("Creating Texture with width = {}, height = {}", m_width, m_height);
+    this->load(data.data());
+}
 
 }  // namespace mono

@@ -8,12 +8,17 @@ struct VertexInput
 };
 
 layout (location = 0) in VertexInput inVertex;
+layout (location = 2) in flat float inTexIndex;
+
+layout (location = 2) uniform sampler2D uTextures[32];
 
 out vec4 FragColor;
 
 void main()
 {
-    vec4 texColor = inVertex.Color;
+    const int tex_index = int(inTexIndex);
+
+    vec4 texColor = inVertex.Color * texture(uTextures[tex_index], inVertex.Uv);
 
     if(texColor.a == 0.0) { discard; }
 
