@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <filesystem>
+#include <span>
 
 #include <glbinding/gl/types.h>
 #include <spdlog/spdlog.h>
@@ -37,8 +38,8 @@ class Texture
 
     private:
     void load(const std::filesystem::path& source_path);
-    void load(const std::byte* data);
-    void uploadToGpu(const std::byte* data);
+    void load(std::span<const std::byte> data);
+    void uploadToGpu(std::span<const std::byte> data);
     void unloadFromGpu();
 
     private:
@@ -55,7 +56,7 @@ Texture::Texture(
     , m_height{height}
 {
     spdlog::trace("Creating Texture with width = {}, height = {}", m_width, m_height);
-    this->load(data.data());
+    this->load(data);
 }
 
 }  // namespace mono
