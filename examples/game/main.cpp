@@ -42,6 +42,7 @@ int main(int, char**)
 
     mono::dev_ui::initialize();
 
+    constexpr std::int32_t pipeline_id = 0;
     {
         // custom pipeline
         auto& shader_manager = mono::gl::ShaderManager::get();
@@ -54,7 +55,7 @@ int main(int, char**)
             "../res/shaders/line.vert",
             "../res/shaders/line.frag");
 
-        auto pipeline = mono::renderer::RenderPipeline(0);
+        auto pipeline = mono::renderer::RenderPipeline(pipeline_id);
         pipeline.addRenderPass<mono::renderer::ImmediateQuadRenderPass>(
             "quad",
             window,
@@ -84,6 +85,27 @@ int main(int, char**)
     const auto vsync_enabled = vsync_config.getValue<bool>().value_or(true);
     window->setVerticalSync(vsync_enabled);
 
+
+    auto& quad_pass = mono::renderer::getPipeline(pipeline_id)
+                          .getRenderPass<mono::renderer::ImmediateQuadRenderPass>("quad");
+    auto& line_pass = mono::renderer::getPipeline(pipeline_id)
+                          .getRenderPass<mono::renderer::ImmediateLineRenderPass>("line");
+
+    const auto projection = glm::ortho(
+        0.f,
+        static_cast<float>(resolution.x),
+        static_cast<float>(resolution.y),
+        0.f,
+        -2000.f,
+        2000.f);
+
+    const auto view =
+        glm::lookAt(glm::vec3{0.f, 0.f, 1.f}, glm::vec3{0.f, 0.f, 0.f}, glm::vec3{0.f, 1.f, 0.f});
+    quad_pass.setProjection(projection);
+    quad_pass.setView(view);
+    line_pass.setProjection(projection);
+    line_pass.setView(view);
+
     while(true)
     {
         mono::input::pollEvents();
@@ -109,6 +131,13 @@ int main(int, char**)
         {
             continue;
         }
+
+        quad_pass.drawQuad(window->getMousePosition(), {15.f, 15.f}, 0.f, {1.f, 0.f, 0.f, 1.f});
+        line_pass.drawLine(
+            {200.f, 200.f},
+            window->getMousePosition(),
+            {0.f, 1.f, 0.f, 1.f},
+            {0.f, 1.f, 0.f, 1.f});
 
         window->prepareRender();
 
