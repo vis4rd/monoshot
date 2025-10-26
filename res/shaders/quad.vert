@@ -26,7 +26,6 @@ struct VertexOutput
 };
 
 layout (location = 0) out VertexOutput outVertex;
-layout (location = 2) out flat float outTexIndex;
 
 vec4 createColor(uint color)
 {
@@ -67,14 +66,12 @@ void main()
     const vec2 position = vec2(instance.position[0], instance.position[1]);
     const vec2 scale = vec2(instance.scale[0], instance.scale[1]);
     const float rotation = radians(instance.rotation_texIndex >> 23);
-    const float tex_index = ((instance.rotation_texIndex << 9) >> 27);
 
     const vec4 instance_color = createColor(instance.color);
     const mat4 instance_model = createModelMatrix(position, scale, rotation);
 
     outVertex.Color = instance_color;
     outVertex.Uv = acUv;
-    outTexIndex = tex_index;
 
     gl_Position = uProjection * uView * instance_model * vec4(acPos, 0.0, 1.0);
 }
