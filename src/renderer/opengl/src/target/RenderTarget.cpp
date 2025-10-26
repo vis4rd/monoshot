@@ -32,8 +32,8 @@ void RenderTarget::create(::gl::GLsizei width, ::gl::GLsizei height)
 
     mono::gl::ShaderManager::get().addShaderProgram(
         "render_target",
-        "../res/shaders/screen.vert",
-        "../res/shaders/screen.frag");
+        "../res/shaders/render_target.vert",
+        "../res/shaders/render_target.frag");
 }
 
 void RenderTarget::setSize(::gl::GLsizei width, ::gl::GLsizei height)
