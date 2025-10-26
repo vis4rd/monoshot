@@ -1,5 +1,8 @@
 #include "../../include/opengl/texture/Texture.hpp"
 
+#include <memory>
+#include <span>
+
 #include <glbinding/gl/enum.h>
 #include <glbinding/gl/functions.h>
 #include <glbinding/gl/types.h>
@@ -28,19 +31,26 @@ Texture::~Texture()
 void Texture::load(const std::filesystem::path& source_path)
 {
     spdlog::trace("Loading Texture data from a file '{}'", source_path.string());
-    std::int32_t channels_in_file{};
     constexpr std::int32_t expected_channels = STBI_rgb_alpha;
+    std::int32_t channels_in_file{};
     std::int32_t actual_width{};
     std::int32_t actual_height{};
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-    const auto data = reinterpret_cast<std::byte*>(stbi_load(
-        source_path.string().c_str(),
-        &actual_width,
-        &actual_height,
-        &channels_in_file,
-        expected_channels));
 
-    if(data == nullptr)
+    auto raw = std::shared_ptr<stbi_uc>(
+        stbi_load(
+            source_path.string().c_str(),
+            &actual_width,
+            &actual_height,
+            &channels_in_file,
+            expected_channels),
+        stbi_image_free);
+
+    const std::size_t byte_count = static_cast<std::size_t>(actual_width)
+                                   * static_cast<std::size_t>(actual_height)
+                                   * static_cast<std::size_t>(expected_channels);
+    const std::span<const std::byte> data_bytes = std::as_bytes(std::span(raw.get(), byte_count));
+
+    if(nullptr == raw or data_bytes.empty())
     {
         spdlog::error(
             "Failed to load texture from file '{}': {}",
@@ -69,18 +79,18 @@ void Texture::load(const std::filesystem::path& source_path)
             expected_channels);
     }
 
-    this->uploadToGpu(data);
-    stbi_image_free(data);
+    this->uploadToGpu(data_bytes);
 }
 
-void Texture::load(const std::byte* data)
+void Texture::load(std::span<const std::byte> data)
 {
-    if(data == nullptr)
+    if(data.empty())
     {
-        spdlog::error("Texture data cannot be a nullptr");
+        spdlog::error("Texture data cannot be empty");
         return;
     }
     spdlog::trace("Loading Texture from memory");
+
     this->uploadToGpu(data);
 }
 
@@ -99,9 +109,22 @@ gl::GLsizei Texture::getHeight() const
     return m_height;
 }
 
-void Texture::uploadToGpu(const std::byte* data)
+void Texture::uploadToGpu(std::span<const std::byte> data)
 {
     spdlog::trace("Uploading Texture data to the GPU...");
+
+    constexpr std::size_t channels = 4;  // GL_RGBA8
+    const std::size_t expected_size =
+        static_cast<std::size_t>(m_width) * static_cast<std::size_t>(m_height) * channels;
+
+    if(data.size() < expected_size)
+    {
+        spdlog::error(
+            "Texture upload aborted: provided buffer too small ({} bytes, expected {} bytes).",
+            data.size(),
+            expected_size);
+        return;
+    }
 
     gl::glCreateTextures(::gl::GL_TEXTURE_2D, 1, &m_id);
 
@@ -132,7 +155,7 @@ void Texture::uploadToGpu(const std::byte* data)
         m_height,
         gl::GL_RGBA,
         gl::GL_UNSIGNED_BYTE,
-        data);
+        data.data());
     spdlog::trace("Uploaded Texture data: ID = {}", m_id);
 
     spdlog::trace("Generating mipmaps for Texture ID = {}", m_id);
