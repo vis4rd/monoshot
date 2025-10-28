@@ -3,6 +3,8 @@
 #include <glbinding/gl/gl.h>
 #include <glm/glm.hpp>
 
+#include "opengl/texture/Texture.hpp"
+
 namespace mono::gl
 {
 
@@ -38,8 +40,8 @@ class FrameBuffer
     ::gl::GLuint m_id = 0u;
     ::gl::GLsizei m_width;
     ::gl::GLsizei m_height;
-    ::gl::GLuint m_colorAttachment = 0u;
     ::gl::GLuint m_stencilAttachment = 0u;
+    std::shared_ptr<::mono::Texture> m_texture;
 };
 
 }  // namespace mono::gl
