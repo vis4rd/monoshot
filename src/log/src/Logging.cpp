@@ -138,13 +138,15 @@ static std::chrono::system_clock::time_point getLocalTime()
 static std::string buildPattern()
 {
     // formatting spec: https://github.com/gabime/spdlog/wiki/3.-Custom-formatting
-    const bool is_debug =
-        mono::config::runtime.get<config::OptionStringConfigItem>("engine", "LogLevel")
-            .value()
-            .get()
-            .getValue<spdlog::level>()
-            .value_or(spdlog::level::info)
-        == spdlog::level::debug;
+    const auto config_log_level =
+        mono::config::runtime.get<config::OptionStringConfigItem>("engine", "LogLevel");
+    bool is_debug = false;
+    if(config_log_level.has_value())
+    {
+        is_debug = config_log_level->get().getValue<spdlog::level>().value_or(spdlog::level::info)
+                   == spdlog::level::debug;
+    }
+
     const std::string_view debug_thread_file = is_debug ? "[t:%=5!t][%s:%#]" : "";
     const std::string_view debug_time_precision = is_debug ? "%f" : "%e";
     return std::format(
@@ -197,24 +199,27 @@ void initialize()
         app_sinks.end(),
         spdlog::thread_pool(),
         spdlog::async_overflow_policy::overrun_oldest);
-    const auto log_level =
-        mono::config::runtime.get<config::OptionStringConfigItem>("engine", "LogLevel")
-            .value()
-            .get()
-            .getValue<spdlog::level>()
-            .value_or(spdlog::level::info);
-    data::app_logger->set_level(log_level);
-    data::app_logger->set_pattern(app_pattern);
-    spdlog::register_logger(data::app_logger);
-
     data::engine_logger = std::make_shared<spdlog::async_logger>(
         "engine",
         engine_sinks.begin(),
         engine_sinks.end(),
         spdlog::thread_pool(),
         spdlog::async_overflow_policy::overrun_oldest);
-    data::engine_logger->set_level(log_level);
+
+    data::app_logger->set_pattern(app_pattern);
     data::engine_logger->set_pattern(engine_pattern);
+
+    if(const auto log_level =
+           mono::config::runtime.get<config::OptionStringConfigItem>("engine", "LogLevel");
+       log_level.has_value())
+    {
+        const spdlog::level config_level =
+            log_level->get().getValue<spdlog::level>().value_or(spdlog::level::info);
+        data::app_logger->set_level(config_level);
+        data::engine_logger->set_level(config_level);
+    }
+
+    spdlog::register_logger(data::app_logger);
     spdlog::register_logger(data::engine_logger);
 
     if(config::priv::buffered_sink)
@@ -229,16 +234,6 @@ void initialize()
     spdlog::set_default_logger(data::engine_logger);
     spdlog::debug("Logging initialized");
     spdlog::info("Start timestamp: {:%F %T}", local_time);
-
-    // add OnSet callback for DevUI
-    if(auto log_level_config_optref =
-           mono::config::runtime.get<config::OptionStringConfigItem>("engine", "LogLevel"))
-    {
-        data::log_level_cb_guard = log_level_config_optref.value().get().setOnSetCallback(
-            [](std::string_view, std::string_view new_value) {
-                spdlog::set_level(spdlog::level_from_str(std::string{new_value}));
-            });
-    }
 }
 
 }  // namespace mono::log

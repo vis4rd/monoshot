@@ -431,16 +431,17 @@ void RenderWindow::initGl() const
     spdlog::debug("Initializing GL");
 
     // logging
-    if(mono::config::runtime.get<config::OptionStringConfigItem>("engine", "LogLevel")
-           .value()
-           .get()
-           .getValue<spdlog::level>()
-           .value_or(spdlog::level::info)
-       <= spdlog::level::debug)
+    if(const auto config_log_level =
+           mono::config::runtime.get<config::OptionStringConfigItem>("engine", "LogLevel");
+       config_log_level.has_value())
     {
-        log::enableOpenGlLogging();
+        const spdlog::level config_level =
+            config_log_level->get().getValue<spdlog::level>().value_or(spdlog::level::info);
+        if(config_level <= spdlog::level::debug)
+        {
+            log::enableOpenGlLogging();
+        }
     }
-
     // viewport
     const auto size = m_framebuffer->getSize();
     ::gl::glViewport(0, 0, size.x, size.y);

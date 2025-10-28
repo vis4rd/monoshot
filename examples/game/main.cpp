@@ -11,9 +11,19 @@
 
 int main(int, char**)
 {
-    mono::config::initialize();
+    mono::config::initialize("../examples/game/config.ini");
     mono::log::initialize();
 
+    auto& log_level_config =
+        mono::config::runtime.addConfigItem<mono::config::OptionStringConfigItem>(
+            std::string{"engine"},
+            std::string{"LogLevel"},
+            std::vector<std::string>{"trace", "debug", "info", "warn", "error", "critical"});
+    log_level_config.setValue("info");
+    const auto log_level_cb_guard =
+        log_level_config.setOnSetCallback([](std::string_view, std::string_view new_value) {
+            spdlog::set_level(spdlog::level_from_str(std::string{new_value}));
+        });
     auto& window_mode_config =
         mono::config::runtime.addConfigItem<mono::config::OptionStringConfigItem>(
             std::string{"app.window"},
