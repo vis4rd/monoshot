@@ -54,11 +54,11 @@ constexpr VertexBuffer::VertexBuffer(const std::ranges::contiguous_range auto& d
     using value_type = std::remove_cvref_t<decltype(data)>::value_type;
     auto size = static_cast<::gl::GLsizeiptr>(data.size() * sizeof(value_type));
 
-    spdlog::debug("Creating VertexBuffer...");
+    spdlog::trace("Creating VertexBuffer...");
     ::gl::glCreateBuffers(1, &m_id);
     ::gl::glNamedBufferData(m_id, size, data.data(), ::gl::GL_STATIC_DRAW);
     log::setGlObjectLabel(::gl::GL_BUFFER, m_id, "VertexBuffer#{}", m_id);
-    spdlog::debug(
+    spdlog::trace(
         "Created VertexBuffer instance with ID = {}, size = {} and pre-computed vertices",
         m_id,
         size);

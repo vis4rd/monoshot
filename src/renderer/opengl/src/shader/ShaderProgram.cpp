@@ -13,7 +13,7 @@ ShaderProgram::ShaderProgram(const Shader& frag, const Shader& vert)
     : m_id{::gl::glCreateProgram()}
 {
     log::setGlObjectLabel(::gl::GL_PROGRAM, m_id, "ShaderProgram::Frag+Vert#{}", m_id);
-    spdlog::debug(
+    spdlog::trace(
         "Creating shader program with ID = {}, from shaders '{}' and '{}'",
         m_id,
         vert.getName(),
@@ -39,7 +39,7 @@ ShaderProgram::ShaderProgram(const Shader& compute)
     : m_id{::gl::glCreateProgram()}
 {
     log::setGlObjectLabel(::gl::GL_PROGRAM, m_id, "ShaderProgram::Comp#{}", m_id);
-    spdlog::debug(
+    spdlog::trace(
         "Creating shader program with ID = {}, from shader '{}'",
         m_id,
         compute.getName());

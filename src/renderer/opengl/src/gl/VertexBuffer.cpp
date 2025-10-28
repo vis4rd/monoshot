@@ -9,7 +9,7 @@ VertexBuffer::VertexBuffer(::gl::GLsizeiptr size)
     ::gl::glCreateBuffers(1, &m_id);
     ::gl::glNamedBufferData(m_id, m_maxBufferBytesize, nullptr, ::gl::GL_DYNAMIC_DRAW);
     log::setGlObjectLabel(::gl::GL_BUFFER, m_id, "VertexBuffer#{}", m_id);
-    spdlog::debug(
+    spdlog::trace(
         "Created VertexBuffer instance with ID = {} and size = {}",
         m_id,
         m_maxBufferBytesize);
@@ -20,7 +20,7 @@ VertexBuffer::VertexBuffer(const VertexBuffer& copy)
     , m_layout(copy.m_layout)
     , m_maxBufferBytesize(copy.m_maxBufferBytesize)
 {
-    spdlog::debug("Copying VertexBuffer instance with ID = {}", copy.m_id);
+    spdlog::trace("Copying VertexBuffer instance with ID = {}", copy.m_id);
 }
 
 VertexBuffer::VertexBuffer(VertexBuffer&& move) noexcept
@@ -29,16 +29,16 @@ VertexBuffer::VertexBuffer(VertexBuffer&& move) noexcept
     , m_maxBufferBytesize(move.m_maxBufferBytesize)
 
 {
-    spdlog::debug("Moving VertexBuffer instance with ID = {}", m_id);
+    spdlog::trace("Moving VertexBuffer instance with ID = {}", m_id);
 }
 
 VertexBuffer::VertexBuffer(const float* vertices, ::gl::GLsizeiptr size)
     : m_maxBufferBytesize(size)
 {
-    spdlog::debug("Creating VertexBuffer...");
+    spdlog::trace("Creating VertexBuffer...");
     ::gl::glCreateBuffers(1, &m_id);
     ::gl::glNamedBufferData(m_id, m_maxBufferBytesize, vertices, ::gl::GL_STATIC_DRAW);
-    spdlog::debug(
+    spdlog::trace(
         "Created VertexBuffer instance with ID = {}, size = {} and pre-computed vertices",
         m_id,
         m_maxBufferBytesize);
@@ -46,7 +46,7 @@ VertexBuffer::VertexBuffer(const float* vertices, ::gl::GLsizeiptr size)
 
 VertexBuffer::~VertexBuffer()
 {
-    spdlog::debug("Calling destructor of VertexBuffer with ID = {} (no destroy)", m_id);
+    spdlog::trace("Calling destructor of VertexBuffer with ID = {} (no destroy)", m_id);
 }
 
 VertexBuffer& VertexBuffer::operator=(VertexBuffer&& move) noexcept

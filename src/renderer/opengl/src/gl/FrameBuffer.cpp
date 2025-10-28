@@ -11,7 +11,7 @@ FrameBuffer::FrameBuffer(::gl::GLsizei width, ::gl::GLsizei height)
     : m_width(width)
     , m_height(height)
 {
-    spdlog::debug("Creating a framebuffer");
+    spdlog::trace("Creating a framebuffer");
     ::gl::glCreateFramebuffers(1, &m_id);
     ::gl::glBindFramebuffer(::gl::GL_FRAMEBUFFER, m_id);
 
@@ -34,7 +34,7 @@ FrameBuffer::FrameBuffer(::gl::GLsizei width, ::gl::GLsizei height)
         throw std::runtime_error("Framebuffer creation is not complete");
     }
 
-    spdlog::debug("Framebuffer creation is complete");
+    spdlog::trace("Framebuffer creation is complete");
 }
 
 FrameBuffer::~FrameBuffer()
@@ -94,14 +94,14 @@ glm::ivec2 FrameBuffer::getSize() const
 
 void FrameBuffer::initTexture()
 {
-    spdlog::debug("Creating a color attachment");
+    spdlog::trace("Creating a color attachment");
     const std::vector<std::byte> empty_data(static_cast<std::size_t>(m_width * m_height * 4));
     m_texture = std::make_shared<mono::Texture>(empty_data, m_width, m_height);
 }
 
 void FrameBuffer::initStencil()
 {
-    spdlog::debug("Creating a stencil attachment");
+    spdlog::trace("Creating a stencil attachment");
     ::gl::glCreateRenderbuffers(1, &m_stencilAttachment);
     ::gl::glBindRenderbuffer(
         ::gl::GL_RENDERBUFFER,
@@ -128,7 +128,7 @@ void FrameBuffer::destroyStencil()
 
 void FrameBuffer::bindAttachments()
 {
-    spdlog::debug("Binding color and stencil attachments to the framebuffer");
+    spdlog::trace("Binding color and stencil attachments to the framebuffer");
     ::gl::glNamedFramebufferTexture(m_id, ::gl::GL_COLOR_ATTACHMENT0, m_texture->getID(), 0);
     ::gl::glNamedFramebufferRenderbuffer(
         m_id,

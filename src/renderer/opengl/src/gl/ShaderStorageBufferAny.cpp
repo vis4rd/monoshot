@@ -8,7 +8,7 @@ ShaderStorageBufferAny::ShaderStorageBufferAny(::gl::GLsizeiptr size)
     ::gl::glCreateBuffers(1, &m_id);
     ::gl::glNamedBufferStorage(m_id, m_maxBufferBytesize, nullptr, ::gl::GL_DYNAMIC_STORAGE_BIT);
     log::setGlObjectLabel(::gl::GL_BUFFER, m_id, "ShaderStorageBufferAny#{}", m_id);
-    spdlog::debug(
+    spdlog::trace(
         "Created ShaderStorageBuffer instance with ID = {} and size = {}",
         m_id,
         m_maxBufferBytesize);

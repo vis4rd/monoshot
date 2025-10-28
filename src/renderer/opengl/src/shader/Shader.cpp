@@ -16,7 +16,7 @@ Shader::Shader(const std::filesystem::path& location, const std::string& name, S
     , m_name(name)
     , m_type(type)
 {
-    spdlog::debug(
+    spdlog::trace(
         "Creating {} shader '{}' from file '{}'",
         static_cast<std::int8_t>(type),
         name,
