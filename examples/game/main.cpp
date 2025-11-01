@@ -156,6 +156,7 @@ int main(int, char**)
             {0.f, 1.f, 0.f, 1.f},
             {0.f, 1.f, 0.f, 1.f});
 
+        refresh_projection_view();
         window->prepareRender();
 
         ImGui::Begin("Debug info");
