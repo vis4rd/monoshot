@@ -68,8 +68,23 @@ void FrameBuffer::resize(::gl::GLsizei width, ::gl::GLsizei height)
     this->initTexture();
     this->initStencil();
     this->bindAttachments();
+}
 
-    ::gl::glViewport(0, 0, m_width, m_height);
+void FrameBuffer::blitTo(::gl::GLuint target_fbo) const
+{
+    glBlitNamedFramebuffer(
+        m_id,
+        target_fbo,
+        0,
+        0,
+        m_width,
+        m_height,
+        0,
+        0,
+        m_width,
+        m_height,
+        ::gl::GL_COLOR_BUFFER_BIT | ::gl::GL_STENCIL_BUFFER_BIT,
+        ::gl::GL_NEAREST);
 }
 
 ::gl::GLuint FrameBuffer::getID() const

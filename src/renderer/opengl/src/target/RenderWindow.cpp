@@ -332,8 +332,6 @@ void RenderWindow::render() const
 
     this->prerender();
 
-    // This is the trivial shader that renders the framebuffer without any special effects
-    ShaderManager::get().useShader("render_target");
 
     this->RenderTarget::render();
     glfwSwapBuffers(m_windowHandle.get());

@@ -5,7 +5,6 @@
 #include <glbinding/gl/gl.h>
 
 #include "../gl/FrameBuffer.hpp"
-#include "../gl/VertexArray.hpp"
 
 namespace mono::gl
 {
@@ -57,7 +56,6 @@ class RenderTarget
 
     protected:
     std::unique_ptr<FrameBuffer> m_framebuffer{nullptr};
-    std::unique_ptr<VertexArray> m_vao{nullptr};
 };
 
 }  // namespace mono::gl

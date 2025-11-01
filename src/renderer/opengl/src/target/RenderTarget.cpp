@@ -13,27 +13,6 @@ RenderTarget::RenderTarget(::gl::GLsizei width, ::gl::GLsizei height)
 void RenderTarget::create(::gl::GLsizei width, ::gl::GLsizei height)
 {
     m_framebuffer = std::make_unique<FrameBuffer>(width, height);
-    m_vao = std::make_unique<VertexArray>();
-
-    constexpr std::array<float, 16> vertex_buffer =
-        {-1.f, -1.f, 0.f, 0.f, 1.f, -1.f, 1.f, 0.f, 1.f, 1.f, 1.f, 1.f, -1.f, 1.f, 0.f, 1.f};
-    constexpr std::array<std::uint32_t, 6> element_buffer = {0, 1, 2, 2, 3, 0};
-
-    mono::gl::VertexBuffer vbo{vertex_buffer};
-    mono::gl::ShaderAttributeLayout layout = {
-        {mono::gl::ShaderAttributeType::FLOAT(2), "aPos"      },
-        {mono::gl::ShaderAttributeType::FLOAT(2), "aTexCoords"},
-    };
-    vbo.setLayout(layout);
-
-    mono::gl::ElementBuffer ebo(element_buffer);
-    m_vao->bindVertexBuffer(std::move(vbo));
-    m_vao->bindElementBuffer(ebo);
-
-    mono::gl::ShaderManager::get().addShaderProgram(
-        "render_target",
-        "../res/shaders/render_target.vert",
-        "../res/shaders/render_target.frag");
 }
 
 void RenderTarget::setSize(::gl::GLsizei width, ::gl::GLsizei height)
@@ -64,21 +43,8 @@ void RenderTarget::deactivate() const
 
 void RenderTarget::render() const
 {
-    ShaderProgram::uploadUniform(0, 0);
-
-    m_vao->bind();
-
-    constexpr ::gl::GLuint unit = 0;
-
-    ::gl::glBindTextureUnit(unit, m_framebuffer->getColorID());
-    //? if something breaks, this might be the possible cause (replace above call with below)
-    // ::gl::glBindTexture(::gl::GL_TEXTURE_2D, m_framebuffer.getColorID());
-    ::gl::glDrawElements(::gl::GL_TRIANGLES, 6, ::gl::GL_UNSIGNED_INT, nullptr);
-
-    // ::gl::glBindTextureUnit(unit, 0);
-    //* Future me: something did break, the above line called activate on unbound texture, the below
-    //* texture only unbinds it
-    ::gl::glBindTexture(::gl::GL_TEXTURE_2D, 0);
+    constexpr ::gl::GLuint swapchain = 0;
+    m_framebuffer->blitTo(swapchain);
 }
 
 }  // namespace mono::gl

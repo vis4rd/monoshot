@@ -11,15 +11,11 @@
 
 int main(int, char**)
 {
-    mono::config::initialize("../examples/game/config.ini");
-    mono::log::initialize();
-
     auto& log_level_config =
         mono::config::runtime.addConfigItem<mono::config::OptionStringConfigItem>(
             std::string{"engine"},
             std::string{"LogLevel"},
             std::vector<std::string>{"trace", "debug", "info", "warn", "error", "critical"});
-    log_level_config.setValue("info");
     const auto log_level_cb_guard =
         log_level_config.setOnSetCallback([](std::string_view, std::string_view new_value) {
             spdlog::set_level(spdlog::level_from_str(std::string{new_value}));
@@ -37,6 +33,10 @@ int main(int, char**)
             .addConfigItem<mono::config::MultiNumberConfigItem<2, std::int32_t, 'x'>>(
                 "app.window",
                 "Resolution");
+
+    mono::config::initialize("../examples/game/config.ini");
+    mono::log::initialize();
+
 
     if(not mono::config::runtime.validate())
     {
@@ -101,20 +101,27 @@ int main(int, char**)
     auto& line_pass = mono::renderer::getPipeline(pipeline_id)
                           .getRenderPass<mono::renderer::ImmediateLineRenderPass>("line");
 
-    const auto projection = glm::ortho(
-        0.f,
-        static_cast<float>(resolution.x),
-        static_cast<float>(resolution.y),
-        0.f,
-        -2000.f,
-        2000.f);
+    const auto refresh_projection_view = [&window, &quad_pass, &line_pass]() {
+        const auto resolution = window->getSize();
+        const auto projection = glm::ortho(
+            0.f,
+            static_cast<float>(resolution.x),
+            static_cast<float>(resolution.y),
+            0.f,
+            -2000.f,
+            2000.f);
 
-    const auto view =
-        glm::lookAt(glm::vec3{0.f, 0.f, 1.f}, glm::vec3{0.f, 0.f, 0.f}, glm::vec3{0.f, 1.f, 0.f});
-    quad_pass.setProjection(projection);
-    quad_pass.setView(view);
-    line_pass.setProjection(projection);
-    line_pass.setView(view);
+        const auto view = glm::lookAt(
+            glm::vec3{0.f, 0.f, 1.f},
+            glm::vec3{0.f, 0.f, 0.f},
+            glm::vec3{0.f, 1.f, 0.f});
+        quad_pass.setProjection(projection);
+        quad_pass.setView(view);
+        line_pass.setProjection(projection);
+        line_pass.setView(view);
+    };
+
+    refresh_projection_view();
 
     while(true)
     {
@@ -150,6 +157,15 @@ int main(int, char**)
             {0.f, 1.f, 0.f, 1.f});
 
         window->prepareRender();
+
+        ImGui::Begin("Debug info");
+        ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
+        ImGui::Text(
+            "Mouse Position: (%.1f, %.1f)",
+            window->getMousePosition().x,
+            window->getMousePosition().y);
+        ImGui::Text("Window Size: (%d, %d)", window->getSize().x, window->getSize().y);
+        ImGui::End();
 
         mono::renderer::render();
 
