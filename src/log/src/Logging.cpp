@@ -87,11 +87,11 @@ void setGlLogLocation(const std::source_location &location)
 
 void enableOpenGlLogging()
 {
-    // 131169 - ???
-    // 131185 - ???
+    // 131169 - framebuffer detailed info -> the driver allocated storage for renderbuffer x
+    // 131185 - buffer detailed info -> will use x memory as source for buffer object operations
     // 131218 - ???
     // 131204 - texture does not have a defined base level so not generating mipmaps
-    std::vector<std::uint32_t> useless_codes = {/*131169, 131185, 131218, */ 131204u};
+    std::vector<std::uint32_t> useless_codes = {/*131218, */ 131169u, 131185u, 131204u};
     useless_codes.shrink_to_fit();
 
     gl::glEnable(gl::GL_DEBUG_OUTPUT);
