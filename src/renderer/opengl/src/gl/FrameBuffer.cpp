@@ -107,6 +107,11 @@ glm::ivec2 FrameBuffer::getSize() const
     return {m_width, m_height};
 }
 
+const std::shared_ptr<::mono::Texture>& FrameBuffer::getColorTexture() const
+{
+    return m_texture;
+}
+
 void FrameBuffer::initTexture()
 {
     spdlog::trace("Creating a color attachment");

@@ -5,12 +5,12 @@
 #include <vector>
 
 #include "../RenderPassTrait.hpp"
+#include "../RenderTargetTrait.hpp"
 #include "mono/renderer/Texture.hpp"
 #include "opengl/gl/ShaderStorageBuffer.hpp"
 #include "opengl/gl/VertexArray.hpp"
 #include "opengl/renderer/QuadPrimitive.hpp"
 #include "opengl/shader/ShaderProgram.hpp"
-#include "opengl/target/RenderTarget.hpp"
 
 namespace mono::renderer
 {
@@ -19,14 +19,13 @@ class ImmediateQuadRenderPass final : public mono::renderer::RenderPassInterface
 {
     public:
     ImmediateQuadRenderPass(
-        std::shared_ptr<mono::gl::RenderTarget> render_target,
+        std::shared_ptr<mono::RenderTarget> render_target,
         mono::gl::ShaderProgram& shader);
 
     // RenderPass required interface
     void clear();
     std::shared_ptr<mono::gl::VertexArray> getVao();
     std::shared_ptr<mono::gl::ShaderProgram> getShader();
-    std::shared_ptr<mono::gl::RenderTarget> getRenderTarget();
     void submitDraws() override;
     //
 
@@ -50,7 +49,7 @@ class ImmediateQuadRenderPass final : public mono::renderer::RenderPassInterface
     private:
     static constexpr std::size_t MAX_QUAD_COUNT = 100000;
 
-    std::shared_ptr<mono::gl::RenderTarget> m_renderTarget;
+    std::shared_ptr<mono::RenderTarget> m_renderTarget;
     mono::gl::ShaderProgram& m_shader;
 
     std::vector<gl::QuadInstanceData> m_quads{};

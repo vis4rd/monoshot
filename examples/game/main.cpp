@@ -3,11 +3,13 @@
 #include <mono/input/Input.hpp>
 #include <mono/log/Logging.hpp>
 #include <mono/renderer/RenderPipeline.hpp>
+#include <mono/renderer/RenderTexture.hpp>
+#include <mono/renderer/RenderWindow.hpp>
 #include <mono/renderer/Renderer.hpp>
 #include <mono/renderer/pass/ImmediateLineRenderPass.hpp>
 #include <mono/renderer/pass/ImmediateQuadRenderPass.hpp>
+#include <mono/renderer/pass/PostProcessPass.hpp>
 #include <opengl/shader/ShaderManager.hpp>
-#include <opengl/target/RenderWindow.hpp>
 
 int main(int, char**)
 {
@@ -47,8 +49,9 @@ int main(int, char**)
     const auto resolution =
         resolution_config.getValue<glm::ivec2>().value_or(glm::ivec2{1920, 1080});
 
-    auto window =
-        std::make_shared<mono::gl::RenderWindow>(resolution.x, resolution.y, "Monoshot app");
+    auto window = std::make_shared<mono::RenderWindow>(resolution.x, resolution.y, "Monoshot app");
+    // BUG: window resizing does not resize the RenderTexture
+    auto render_texture = std::make_shared<mono::RenderTexture>(resolution.x, resolution.y);
 
     mono::dev_ui::initialize();
 
@@ -64,16 +67,24 @@ int main(int, char**)
             "line",
             "../res/shaders/line.vert",
             "../res/shaders/line.frag");
+        auto& all_white_shader = shader_manager.addShaderProgram(
+            "all_white",
+            "../res/shaders/post_process.vert",
+            "../res/shaders/all_white.frag");
 
         auto pipeline = mono::renderer::RenderPipeline(pipeline_id);
         pipeline.addRenderPass<mono::renderer::ImmediateQuadRenderPass>(
             "quad",
-            window,
+            render_texture,
             quad_shader);
         pipeline.addRenderPass<mono::renderer::ImmediateLineRenderPass>(
             "line",
-            window,
+            render_texture,
             line_shader);
+        pipeline.addRenderPass<mono::renderer::test::PostProcessPass>(
+            "all_white",
+            window,
+            all_white_shader);
         mono::renderer::addPipeline(std::move(pipeline));
     }
 
@@ -100,6 +111,8 @@ int main(int, char**)
                           .getRenderPass<mono::renderer::ImmediateQuadRenderPass>("quad");
     auto& line_pass = mono::renderer::getPipeline(pipeline_id)
                           .getRenderPass<mono::renderer::ImmediateLineRenderPass>("line");
+    auto& all_white_pass = mono::renderer::getPipeline(pipeline_id)
+                               .getRenderPass<mono::renderer::test::PostProcessPass>("all_white");
 
     const auto refresh_projection_view = [&window, &quad_pass, &line_pass]() {
         const auto resolution = window->getSize();
@@ -156,6 +169,11 @@ int main(int, char**)
             {0.f, 1.f, 0.f, 1.f},
             {0.f, 1.f, 0.f, 1.f});
 
+        all_white_pass.drawTexture(
+            render_texture->getID(),
+            render_texture->getSize().x,
+            render_texture->getSize().y);
+
         refresh_projection_view();
         window->prepareRender();
 
@@ -167,6 +185,14 @@ int main(int, char**)
             window->getMousePosition().y);
         ImGui::Text("Window Size: (%d, %d)", window->getSize().x, window->getSize().y);
         ImGui::End();
+
+        // workaround for accumulating draws in RenderTexture
+        // it is happening, because two RenderPasses draw to the same RenderTexture without clearing
+        // fix: merge the two RenderPasses into one or use two RenderTextures
+        render_texture->activate();
+        ::gl::glClear(::gl::GL_COLOR_BUFFER_BIT | ::gl::GL_STENCIL_BUFFER_BIT);
+        render_texture->deactivate();
+        // end of workaround
 
         mono::renderer::render();
 

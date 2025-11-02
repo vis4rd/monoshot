@@ -2,6 +2,9 @@
 
 #include <unordered_map>
 
+#include <glbinding/gl/bitfield.h>
+#include <glbinding/gl/enum.h>
+#include <glbinding/gl/functions.h>
 #include <spdlog/spdlog.h>
 
 #include "mono/dev_ui/DevUI.hpp"
@@ -11,7 +14,7 @@
 namespace mono::renderer
 {
 
-void initialize(std::shared_ptr<gl::RenderTarget> default_target)
+void initialize(std::shared_ptr<mono::RenderTarget> default_target)
 {
     // TODO(vis4rd): differentiate automatic setup from advanced customized one
     spdlog::debug("Renderer: creating OpenGL backend");
@@ -81,9 +84,9 @@ RenderPipeline& getDefaultPipeline()
 void render()
 {
     auto& pipeline = data::pipelines.at(data::currentPipelineId);
-    for(const auto& pass_name : pipeline.getRenderOrder())
+    for(const auto& pass : pipeline.getRenderFlow())
     {
-        auto& pass = pipeline.getRenderPassAsAny(pass_name);
+        pass->getRenderTarget()->activate();
         pass->submitDraws();
     }
 

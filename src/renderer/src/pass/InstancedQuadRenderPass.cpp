@@ -9,9 +9,9 @@ namespace mono::renderer
 {
 
 InstancedQuadRenderPass::InstancedQuadRenderPass(
-    std::shared_ptr<gl::RenderTarget>&& render_target,
+    std::shared_ptr<mono::RenderTarget>&& render_target,
     gl::ShaderProgram& shader)
-    : m_renderTarget(std::move(render_target))
+    : RenderPassInterface(std::move(render_target))
     , m_shader(shader)
     , m_quadVao(std::make_shared<gl::VertexArray>())
 {
@@ -38,11 +38,6 @@ std::shared_ptr<gl::VertexArray> InstancedQuadRenderPass::getVao()
 std::shared_ptr<gl::ShaderProgram> InstancedQuadRenderPass::getShader()
 {
     return std::shared_ptr<gl::ShaderProgram>(&m_shader);
-}
-
-std::shared_ptr<gl::RenderTarget> InstancedQuadRenderPass::getRenderTarget()
-{
-    return m_renderTarget;
 }
 
 void InstancedQuadRenderPass::submitDraws()

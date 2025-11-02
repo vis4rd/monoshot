@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "../RenderPassTrait.hpp"
+#include "../RenderTargetTrait.hpp"
 #include "mono/renderer/Texture.hpp"
 #include "opengl/gl/ShaderStorageBuffer.hpp"
 #include "opengl/gl/ShaderStorageBufferAny.hpp"
@@ -17,7 +18,6 @@
 #include "opengl/memory_packing_solver/MemoryPackingSolver.hpp"
 #include "opengl/renderer/QuadPrimitive.hpp"
 #include "opengl/shader/ShaderProgram.hpp"
-#include "opengl/target/RenderTarget.hpp"
 
 namespace mono::renderer
 {
@@ -32,14 +32,13 @@ class InstancedQuadRenderPass : public RenderPassInterface
 {
     public:
     InstancedQuadRenderPass(
-        std::shared_ptr<gl::RenderTarget>&& render_target,
+        std::shared_ptr<mono::RenderTarget>&& render_target,
         gl::ShaderProgram& quad_shader);
 
     // RenderPass required interface
     void clear();
     std::shared_ptr<gl::VertexArray> getVao();
     std::shared_ptr<gl::ShaderProgram> getShader();
-    std::shared_ptr<gl::RenderTarget> getRenderTarget();
     void submitDraws() override;
     //
 
@@ -73,7 +72,6 @@ class InstancedQuadRenderPass : public RenderPassInterface
     static constexpr std::size_t STARTING_MAX_QUAD_COUNT{1000};
     static constexpr std::size_t TOTAL_MAX_QUAD_COUNT{10000000};
 
-    std::shared_ptr<gl::RenderTarget> m_renderTarget;
     gl::ShaderProgram& m_shader;
 
     std::shared_ptr<gl::VertexArray> m_quadVao;

@@ -1,4 +1,4 @@
-#include "../../include/opengl/target/RenderWindow.hpp"
+#include "renderer/RenderWindow.hpp"
 
 #include <glbinding/gl/gl.h>
 #include <glbinding/glbinding.h>
@@ -10,9 +10,8 @@
 #include "mono/config/Config.hpp"
 #include "mono/log/Logging.hpp"
 #include "mono/util/custom_imgui/StyleColorsTransparent.hpp"
-#include "opengl/shader/ShaderManager.hpp"
 
-namespace mono::gl
+namespace mono
 {
 
 RenderWindow::RenderWindow()
@@ -28,6 +27,16 @@ RenderWindow::RenderWindow(::gl::GLsizei width, ::gl::GLsizei height, std::strin
 RenderWindow::~RenderWindow()
 {
     this->destroyEventCallbacks();
+}
+
+void RenderWindow::activate() const
+{
+    ::gl::glBindFramebuffer(::gl::GL_FRAMEBUFFER, 0);
+}
+
+void RenderWindow::deactivate() const
+{
+    ::gl::glBindFramebuffer(::gl::GL_FRAMEBUFFER, 0);
 }
 
 void RenderWindow::create(::gl::GLsizei width, ::gl::GLsizei height, std::string_view title)
@@ -51,7 +60,7 @@ void RenderWindow::create(::gl::GLsizei width, ::gl::GLsizei height, std::string
         throw std::runtime_error("Failed to initialize RenderWindow native handle");
     }
 
-    m_userStorage = std::make_unique<RenderWindowUserStorage>(*this);
+    m_userStorage = std::make_unique<gl::RenderWindowUserStorage>(*this);
 
     glfwMakeContextCurrent(m_windowHandle.get());
     const auto valid_resolutions = RenderWindow::queryMonitorResolutions();
@@ -60,7 +69,6 @@ void RenderWindow::create(::gl::GLsizei width, ::gl::GLsizei height, std::string
     glfwSetWindowSizeLimits(m_windowHandle.get(), sr.x, sr.y, lr.x, lr.y);
 
     this->initGlbinding();
-    this->RenderTarget::create(width, height);
     this->initGl();
     this->initImGui();
     this->initFlags();
@@ -105,7 +113,7 @@ void RenderWindow::toggleBorderlessFullscreen()
 void RenderWindow::setSize(::gl::GLsizei width, ::gl::GLsizei height)
 {
     spdlog::debug("New window size = {}x{} in pixels", width, height);
-    this->RenderTarget::setSize(width, height);
+
     glfwSetWindowSize(m_windowHandle.get(), width, height);
 }
 
@@ -162,8 +170,6 @@ void RenderWindow::setFullscreen(bool fullscreen)
         new_width,
         new_height,
         new_refresh_rate);
-    this->RenderTarget::setSize(new_width, new_height);
-
 
     m_flags[WindowFlag::VSYNC].flip();  // override the guard of setVerticalSync() method
     this->setVerticalSync(not m_flags[WindowFlag::VSYNC]);
@@ -212,7 +218,6 @@ void RenderWindow::setBorderlessFullscreen(bool borderless)
         new_width,
         new_height,
         new_refresh_rate);
-    this->RenderTarget::setSize(new_width, new_height);
 }
 
 void RenderWindow::setMaximized(bool maximized)
@@ -288,6 +293,14 @@ void RenderWindow::setTitle(std::string_view title)
     glfwSetWindowTitle(m_windowHandle.get(), title.data());
 }
 
+glm::ivec2 RenderWindow::getSize() const
+{
+    int width{};
+    int height{};
+    glfwGetWindowSize(m_windowHandle.get(), &width, &height);
+    return glm::ivec2{width, height};
+}
+
 std::string_view RenderWindow::getTitle() const
 {
     // TODO(vis4rd): Implement when upgrading GLFW to 3.4
@@ -307,7 +320,7 @@ glm::vec2 RenderWindow::getMousePosition() const
     return mouse_pos;
 }
 
-RenderWindowUserStorage &RenderWindow::getUserStorage()
+gl::RenderWindowUserStorage &RenderWindow::getUserStorage()
 {
     return *m_userStorage;
 }
@@ -319,8 +332,8 @@ void RenderWindow::prepareRender()
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    // Set this RenderWindow as the current rendering target
     this->activate();
+    ::gl::glClear(::gl::GL_COLOR_BUFFER_BIT | ::gl::GL_STENCIL_BUFFER_BIT);
 }
 
 void RenderWindow::render() const
@@ -332,8 +345,6 @@ void RenderWindow::render() const
 
     this->prerender();
 
-
-    this->RenderTarget::render();
     glfwSwapBuffers(m_windowHandle.get());
 }
 
@@ -348,7 +359,6 @@ void RenderWindow::renderCustom() const
 
     // Note: no usage of shader here, the user has to take care of it themselves
 
-    this->RenderTarget::render();
     glfwSwapBuffers(m_windowHandle.get());
 }
 
@@ -441,7 +451,7 @@ void RenderWindow::initGl() const
         }
     }
     // viewport
-    const auto size = m_framebuffer->getSize();
+    const auto size = this->getSize();
     ::gl::glViewport(0, 0, size.x, size.y);
 }
 
@@ -560,9 +570,6 @@ void RenderWindow::prerender() const
         ImGui::RenderPlatformWindowsDefault();
         glfwMakeContextCurrent(backup_current_context);
     }
-
-    // Deactive this RenderTarget so that it won't render content to itself
-    this->deactivate();
 }
 
-}  // namespace mono::gl
+}  // namespace mono

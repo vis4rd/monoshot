@@ -109,6 +109,10 @@ void Shader::compile(const std::string& source) const
         constexpr std::size_t max_log_size = 512;
         std::array<::gl::GLchar, max_log_size> log{};
         ::gl::glGetShaderInfoLog(m_id, max_log_size, nullptr, log.data());
+        spdlog::critical(
+            "Shader compilation failure for shader '{}':\n{}",
+            m_name,
+            std::string(log.data(), max_log_size));
         throw std::runtime_error(
             "Shader compilation failure:\n" + std::string(log.data(), max_log_size));
     }

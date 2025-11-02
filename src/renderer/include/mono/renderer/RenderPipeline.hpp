@@ -2,10 +2,10 @@
 
 #include <concepts>
 #include <cstdint>
+#include <forward_list>
 #include <memory>
 #include <string>
 #include <unordered_map>
-#include <vector>
 
 #include "RenderPassTrait.hpp"
 
@@ -56,21 +56,78 @@ class RenderPipeline
     template<RenderPassTrait ACTUAL_TYPE>
     [[nodiscard]] ACTUAL_TYPE& getRenderPass(const std::string& pass_name);
 
-    [[nodiscard]] std::shared_ptr<RenderPassInterface>& getRenderPassAsAny(
-        const std::string& pass_name);
-
     /**
-     * @brief Get the order in which RenderPasses are rendered.
-     * @return Vector of RenderPass names in the order they are rendered.
+     * @brief Get the flow of RenderPasses in this RenderPipeline.
+     * @return List of RenderPasses in the order they are to be rendered.
      */
-    const std::vector<std::string>& getRenderOrder() const;
+    const std::forward_list<std::shared_ptr<RenderPassInterface>>& getRenderFlow() const;
 
     private:
     std::int32_t m_id{};
-    std::unordered_map<std::string, std::shared_ptr<RenderPassInterface>> m_renderPasses{};
-    std::vector<std::string> m_renderOrder{};
+    std::unordered_map<std::string, std::shared_ptr<RenderPassInterface>> m_renderPassLookup{};
+    std::forward_list<std::shared_ptr<RenderPassInterface>> m_renderPassFlow{};
 };
 
-}  // namespace mono::renderer
+inline RenderPipeline::RenderPipeline(std::int32_t id)
+    : m_id(id)
+{ }
 
-#include "../../../src/RenderPipeline.inl"
+inline RenderPipeline::RenderPipeline(RenderPipeline&& move) noexcept
+    : m_id(move.m_id)
+    , m_renderPassLookup(std::move(move.m_renderPassLookup))
+    , m_renderPassFlow(std::move(move.m_renderPassFlow))
+{ }
+
+inline RenderPipeline& RenderPipeline::operator=(RenderPipeline&& move) noexcept
+{
+    m_renderPassLookup = std::move(move.m_renderPassLookup);
+    m_renderPassFlow = std::move(move.m_renderPassFlow);
+    m_id = move.m_id;
+    return *this;
+}
+
+inline std::int32_t RenderPipeline::getId() const
+{
+    return m_id;
+}
+
+template<RenderPassTrait ACTUAL_TYPE>
+inline void RenderPipeline::addRenderPass(const std::string& name, auto&&... args)
+requires std::constructible_from<ACTUAL_TYPE, decltype(args)...>
+{
+    if(m_renderPassLookup.contains(name))
+    {
+        const auto msg = std::format(
+            "Render pass with name '{}' already exists in pipeline with ID = {}",
+            name,
+            m_id);
+        spdlog::critical(msg);
+        throw std::runtime_error(msg);
+    }
+
+    std::shared_ptr<RenderPassInterface> render_pass_ptr =
+        std::make_shared<ACTUAL_TYPE>(std::forward<decltype(args)>(args)...);
+
+    m_renderPassLookup.emplace(name, render_pass_ptr);
+    m_renderPassFlow.reverse();
+    m_renderPassFlow.push_front(std::move(render_pass_ptr));
+    m_renderPassFlow.reverse();
+    spdlog::debug("Successfully added render pass with name '{}'", name);
+}
+
+template<RenderPassTrait ACTUAL_TYPE>
+inline ACTUAL_TYPE& RenderPipeline::getRenderPass(const std::string& pass_name)
+{
+    // This cast should be safe, because RenderPassTrait concept ensures that ACTUAL_TYPE is derived
+    // from RenderPassInterface. In any case, if at some point there is a crash or undefined
+    // behavior, it would be better to change this to std::dynamic_pointer_cast.
+    return *std::static_pointer_cast<ACTUAL_TYPE>(m_renderPassLookup.at(pass_name));
+}
+
+inline const std::forward_list<std::shared_ptr<RenderPassInterface>>&
+    RenderPipeline::getRenderFlow() const
+{
+    return m_renderPassFlow;
+}
+
+}  // namespace mono::renderer

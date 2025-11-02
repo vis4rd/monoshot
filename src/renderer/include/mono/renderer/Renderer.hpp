@@ -7,7 +7,7 @@
 #include <glm/glm.hpp>
 
 #include "RenderPipeline.hpp"
-#include "opengl/target/RenderTarget.hpp"
+#include "RenderTargetTrait.hpp"
 
 namespace mono::renderer
 {
@@ -22,7 +22,7 @@ inline std::int32_t currentPipelineId{-1};
 
 }  // namespace data
 
-void initialize(std::shared_ptr<gl::RenderTarget> default_target);
+void initialize(std::shared_ptr<mono::RenderTarget> default_target);
 void addPipeline(RenderPipeline&& pipeline);
 void setPipeline(std::int32_t pipeline_id);
 void terminate();

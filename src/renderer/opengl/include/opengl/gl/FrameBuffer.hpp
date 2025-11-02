@@ -29,6 +29,8 @@ class FrameBuffer
     ::gl::GLuint getStencilID() const;
     glm::ivec2 getSize() const;
 
+    const std::shared_ptr<::mono::Texture>& getColorTexture() const;
+
     private:
     void initTexture();
     void initStencil();

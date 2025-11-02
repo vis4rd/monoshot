@@ -2,7 +2,7 @@
 
 #include <array>
 
-#include <glm/fwd.hpp>
+#include <glm/glm.hpp>
 
 #include "mono/util/PackedVariable.hpp"
 

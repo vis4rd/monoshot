@@ -4,9 +4,9 @@ namespace mono::renderer
 {
 
 ImmediateLineRenderPass::ImmediateLineRenderPass(
-    std::shared_ptr<mono::gl::RenderTarget> render_target,
+    std::shared_ptr<mono::RenderTarget> render_target,
     mono::gl::ShaderProgram& shader)
-    : m_renderTarget(std::move(render_target))
+    : RenderPassInterface(std::move(render_target))
     , m_shader(shader)
     , m_lineVao(std::make_shared<gl::VertexArray>())
 {
@@ -26,11 +26,6 @@ std::shared_ptr<mono::gl::VertexArray> ImmediateLineRenderPass::getVao()
 std::shared_ptr<mono::gl::ShaderProgram> ImmediateLineRenderPass::getShader()
 {
     return std::shared_ptr<gl::ShaderProgram>{&m_shader};
-}
-
-std::shared_ptr<mono::gl::RenderTarget> ImmediateLineRenderPass::getRenderTarget()
-{
-    return m_renderTarget;
 }
 
 void ImmediateLineRenderPass::submitDraws()

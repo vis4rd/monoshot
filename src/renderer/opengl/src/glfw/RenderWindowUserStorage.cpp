@@ -3,12 +3,12 @@
 #include <GLFW/glfw3.h>
 #include <spdlog/spdlog.h>
 
-#include "../../include/opengl/target/RenderWindow.hpp"
+#include "mono/renderer/RenderWindow.hpp"
 
 namespace mono::gl
 {
 
-RenderWindowUserStorage::RenderWindowUserStorage(RenderWindow& window)
+RenderWindowUserStorage::RenderWindowUserStorage(mono::RenderWindow& window)
     : window{window}
 {
     glfwSetWindowUserPointer(window.getNativeWindow(), static_cast<void*>(this));

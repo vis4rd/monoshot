@@ -5,10 +5,10 @@
 #include <vector>
 
 #include "../RenderPassTrait.hpp"
+#include "../RenderTargetTrait.hpp"
 #include "opengl/gl/VertexArray.hpp"
 #include "opengl/renderer/LinePrimitive.hpp"
 #include "opengl/shader/ShaderProgram.hpp"
-#include "opengl/target/RenderTarget.hpp"
 
 namespace mono::renderer
 {
@@ -17,14 +17,13 @@ class ImmediateLineRenderPass final : public mono::renderer::RenderPassInterface
 {
     public:
     ImmediateLineRenderPass(
-        std::shared_ptr<mono::gl::RenderTarget> render_target,
+        std::shared_ptr<mono::RenderTarget> render_target,
         mono::gl::ShaderProgram& shader);
 
     // RenderPass required interface
     void clear();
     std::shared_ptr<mono::gl::VertexArray> getVao();
     std::shared_ptr<mono::gl::ShaderProgram> getShader();
-    std::shared_ptr<mono::gl::RenderTarget> getRenderTarget();
     void submitDraws() override;
     //
 
@@ -41,7 +40,6 @@ class ImmediateLineRenderPass final : public mono::renderer::RenderPassInterface
     private:
     static constexpr std::size_t MAX_LINE_COUNT = 10000;
 
-    std::shared_ptr<mono::gl::RenderTarget> m_renderTarget;
     mono::gl::ShaderProgram& m_shader;
 
     std::vector<gl::LineVertex> m_lines{};
