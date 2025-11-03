@@ -123,9 +123,6 @@ void FrameBuffer::initStencil()
 {
     spdlog::trace("Creating a stencil attachment");
     ::gl::glCreateRenderbuffers(1, &m_stencilAttachment);
-    ::gl::glBindRenderbuffer(
-        ::gl::GL_RENDERBUFFER,
-        m_stencilAttachment);  // TODO(vis4rd): try not to call this when everything works
     log::setGlObjectLabel(::gl::GL_RENDERBUFFER, m_id, "FrameBuffer::Renderbuffer#{}", m_id);
 
     ::gl::glNamedRenderbufferStorage(
