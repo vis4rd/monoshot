@@ -9,7 +9,7 @@
 
 #include "mono/dev_ui/DevUI.hpp"
 #include "opengl/shader/ShaderManager.hpp"
-#include "renderer/pass/InstancedQuadRenderPass.hpp"
+#include "renderer/pass/ImmediateQuadRenderPass.hpp"
 
 namespace mono::renderer
 {
@@ -25,11 +25,10 @@ void initialize(std::shared_ptr<mono::RenderTarget> default_target)
         "../res/shaders/quad.vert",
         "../res/shaders/quad.frag");
     shader_manager.addShaderProgram("line", "../res/shaders/line.vert", "../res/shaders/line.frag");
-    shader_manager.addShaderProgram("staging_operations", "../res/shaders/staging_operations.comp");
 
     // Create default pipeline in case user doesn't want to set up any
     RenderPipeline default_pipeline{999999};
-    default_pipeline.addRenderPass<InstancedQuadRenderPass>(
+    default_pipeline.addRenderPass<ImmediateQuadRenderPass>(
         "quad",
         std::move(default_target),
         quad);
