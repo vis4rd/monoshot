@@ -308,9 +308,7 @@ glm::ivec2 RenderWindow::getSize() const
 
 std::string_view RenderWindow::getTitle() const
 {
-    // TODO(vis4rd): Implement when upgrading GLFW to 3.4
-    throw std::runtime_error("Not implemented");
-    // return glfwGetWindowTitle(m_windowHandle.get());
+    return glfwGetWindowTitle(m_windowHandle.get());
 }
 
 GLFWwindow *RenderWindow::getNativeWindow() const
