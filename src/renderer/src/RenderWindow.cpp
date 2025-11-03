@@ -16,10 +16,12 @@ namespace mono
 
 RenderWindow::RenderWindow()
     : RenderTarget()
+    , m_initialWindowSize{1280, 720}
 { }
 
 RenderWindow::RenderWindow(::gl::GLsizei width, ::gl::GLsizei height, std::string_view title)
     : RenderTarget()
+    , m_initialWindowSize{width, height}
 {
     this->create(width, height, title);
 }
@@ -134,8 +136,8 @@ void RenderWindow::setFullscreen(bool fullscreen)
     m_flags[WindowFlag::BORDERLESS_FULLSCREEN] = false;
 
     GLFWmonitor *current_monitor = nullptr;
-    std::int32_t new_width = 1280;  // TODO(vis4rd): Replace with pre-fullscreen value
-    std::int32_t new_height = 720;  // Replace with pre-fullscreen value
+    std::int32_t new_width = m_initialWindowSize.x;
+    std::int32_t new_height = m_initialWindowSize.y;
     std::int32_t new_pos_x = 100;
     std::int32_t new_pos_y = 100;
     std::int32_t new_refresh_rate = GLFW_DONT_CARE;
@@ -189,8 +191,8 @@ void RenderWindow::setBorderlessFullscreen(bool borderless)
     m_flags[WindowFlag::BORDERLESS_FULLSCREEN] = borderless;
     m_flags[WindowFlag::FULLSCREEN] = false;
 
-    std::int32_t new_width = 1280;  // TODO(vis4rd): Replace with pre-fullscreen value
-    std::int32_t new_height = 720;  // Replace with pre-fullscreen value
+    std::int32_t new_width = m_initialWindowSize.x;
+    std::int32_t new_height = m_initialWindowSize.y;
     std::int32_t new_pos_x = 100;
     std::int32_t new_pos_y = 100;
     std::int32_t new_refresh_rate = GLFW_DONT_CARE;
@@ -206,6 +208,9 @@ void RenderWindow::setBorderlessFullscreen(bool borderless)
         new_refresh_rate = mode->refreshRate;
         new_decorated_state = GLFW_FALSE;
 
+        // Update window size to match the new resolution in fullscreen, so that the switch is
+        // much faster. This should be set by glfwSetWindowMonitor, but for some reason it breaks on
+        // multiple switching back and forth.
         glfwSetWindowSize(m_windowHandle.get(), new_width, new_height);
     }
 

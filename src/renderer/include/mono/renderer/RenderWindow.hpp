@@ -157,6 +157,7 @@ class RenderWindow final : public RenderTarget
     std::bitset<5> m_flags{};
     bool m_shouldClose = false;
     std::unique_ptr<gl::RenderWindowUserStorage> m_userStorage{nullptr};
+    glm::ivec2 m_initialWindowSize;
 };
 
 static_assert(mono::RenderTargetTrait<mono::RenderWindow>);

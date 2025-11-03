@@ -144,7 +144,7 @@ int main(int, char**)
             auto size = window->getSize();
             mono::log::info("on F11: window size = {}x{}", size.x, size.y);
 
-            window->toggleFullscreen();
+            window->toggleBorderlessFullscreen();
             size = window->getSize();
             mono::log::info("after F11: window size = {}x{}", size.x, size.y);
         }
