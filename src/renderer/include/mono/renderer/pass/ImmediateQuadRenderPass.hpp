@@ -43,19 +43,30 @@ class ImmediateQuadRenderPass final : public mono::renderer::RenderPassInterface
         const glm::vec4& color);
 
     private:
-    void prepareQuadVao();
-    void prepareQuadSsbo();
+    void prepareQuadPass();
 
     private:
-    static constexpr std::size_t MAX_QUAD_COUNT = 100000;
 
     std::shared_ptr<mono::RenderTarget> m_renderTarget;
-    mono::gl::ShaderProgram& m_shader;
 
-    std::vector<gl::QuadInstanceData> m_quads{};
-    std::shared_ptr<gl::VertexArray> m_quadVao;
-    std::shared_ptr<gl::ShaderStorageBuffer<gl::QuadInstanceData>> m_quadSsbo;
-    std::vector<std::shared_ptr<mono::Texture>> m_textures{};  // indices are slots
+    struct QuadPass
+    {
+        static constexpr std::size_t MAX_QUAD_COUNT = 100000;
+        mono::gl::ShaderProgram& shader;
+
+        std::vector<gl::QuadInstanceData> instances{};
+        std::shared_ptr<gl::VertexArray> vao;
+        std::shared_ptr<gl::ShaderStorageBuffer<gl::QuadInstanceData>> ssbo;
+        std::vector<std::shared_ptr<mono::Texture>> textures{};  // indices are slots
+
+        void prepareVao();
+        void prepareSsbo();
+        void submitDraws(
+            const glm::mat4& projection,
+            const glm::mat4& view);
+    };
+
+    QuadPass m_quadPass;
 };
 
 }  // namespace mono::renderer

@@ -9,76 +9,26 @@ ImmediateQuadRenderPass::ImmediateQuadRenderPass(
     std::shared_ptr<mono::RenderTarget> render_target,
     mono::gl::ShaderProgram& shader)
     : RenderPassInterface(std::move(render_target))
-    , m_shader(shader)
-    , m_quadVao(std::make_shared<gl::VertexArray>())
+    , m_quadPass(shader)
 {
-    this->prepareQuadVao();
-    this->prepareQuadSsbo();
+    this->prepareQuadPass();
 }
 
-void ImmediateQuadRenderPass::clear()
-{
-    m_quads.clear();
-}
+void ImmediateQuadRenderPass::clear() { }
 
 std::shared_ptr<mono::gl::VertexArray> ImmediateQuadRenderPass::getVao()
 {
-    return m_quadVao;
+    return m_quadPass.vao;
 }
 
 std::shared_ptr<mono::gl::ShaderProgram> ImmediateQuadRenderPass::getShader()
 {
-    return std::shared_ptr<gl::ShaderProgram>{&m_shader};
+    return std::shared_ptr<gl::ShaderProgram>{&m_quadPass.shader};
 }
 
 void ImmediateQuadRenderPass::submitDraws()
 {
-    if(not m_quads.empty())
-    {
-        m_quadSsbo->setData(m_quads);
-
-        for(std::size_t slot = 0; slot < m_textures.size(); slot++)
-        {
-            // BUG: CAN GO OUT OF BOUND IF MORE THAN 32 TEXTURES!
-            const auto& texture = m_textures[slot];
-            const auto& id = texture->getID();
-            ::gl::glBindTextureUnit(slot, id);  // slot = unit
-        }
-
-        ::gl::glEnable(::gl::GL_BLEND);
-        ::gl::glBlendFunc(::gl::GL_SRC_ALPHA, ::gl::GL_ONE_MINUS_SRC_ALPHA);
-
-        m_quadSsbo->bind(0);
-
-        m_shader.use();
-
-        m_shader.uploadUniform("uProjection", m_projection, 0);
-        m_shader.uploadUniform("uView", m_view, 1);
-
-        constexpr std::array<std::int32_t, 32> samplers{0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10,
-                                                        11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
-                                                        22, 23, 24, 25, 26, 27, 28, 29, 30, 31};
-        m_shader.uploadUniform("uTextures", samplers, 2);
-
-        m_quadVao->bind();
-        ::gl::glDrawElementsInstanced(
-            ::gl::GL_TRIANGLES,
-            6,
-            ::gl::GL_UNSIGNED_INT,
-            nullptr,
-            static_cast<::gl::GLsizei>(m_quads.size()));
-        m_quadVao->unbind();
-        m_quadSsbo->unbind();
-
-        ::gl::glDisable(::gl::GL_BLEND);
-
-        for(std::size_t slot = 0; slot < m_textures.size(); slot++)
-        {
-            ::gl::glBindTextureUnit(slot, 0);
-        }
-
-        this->clear();
-    }
+    m_quadPass.submitDraws(m_projection, m_view);
 }
 
 void ImmediateQuadRenderPass::drawQuad(
@@ -96,13 +46,13 @@ void ImmediateQuadRenderPass::drawQuad(
 
     const auto texture_id = texture->getID();
     const std::size_t texture_slot = [this, &texture, texture_id]() -> std::size_t {
-        const auto slot = util::indexOf(m_textures, [texture_id](const auto& texture) {
+        const auto slot = util::indexOf(m_quadPass.textures, [texture_id](const auto& texture) {
             return texture->getID() == texture_id;
         });
         if(not slot)
         {
-            m_textures.push_back(std::move(texture));
-            return m_textures.size() - 1;
+            m_quadPass.textures.push_back(std::move(texture));
+            return m_quadPass.textures.size() - 1;
         }
         return slot.value();
     }();
@@ -119,7 +69,7 @@ void ImmediateQuadRenderPass::drawQuad(
             gl::detail::RtiPacked{static_cast<glm::uint32>(modulo(rotation, 360.f)), texture_slot}
     };
 
-    m_quads.push_back(quad_instance_data);
+    m_quadPass.instances.push_back(quad_instance_data);
 }
 
 void ImmediateQuadRenderPass::drawQuad(
@@ -139,8 +89,15 @@ void ImmediateQuadRenderPass::drawQuad(
     return this->drawQuad(position, size, rotation, white_texture, color);
 }
 
-void ImmediateQuadRenderPass::prepareQuadVao()
+void ImmediateQuadRenderPass::prepareQuadPass()
 {
+    m_quadPass.prepareVao();
+    m_quadPass.prepareSsbo();
+}
+
+void ImmediateQuadRenderPass::QuadPass::prepareVao()
+{
+    this->vao = std::make_shared<gl::VertexArray>();
     auto quad_constant_vbo = gl::VertexBuffer(gl::quadConstantVertexData);
 
     namespace dtype = gl::ShaderAttributeType;
@@ -150,14 +107,66 @@ void ImmediateQuadRenderPass::prepareQuadVao()
     };
     quad_constant_vbo.setLayout(quad_constant_layout);
 
-    m_quadVao->bindVertexBuffer(std::move(quad_constant_vbo));
-    m_quadVao->bindElementBuffer(gl::ElementBuffer(std::array<std::uint32_t, 6>{0, 1, 2, 2, 3, 0}));
+    this->vao->bindVertexBuffer(std::move(quad_constant_vbo));
+    this->vao->bindElementBuffer(gl::ElementBuffer(std::array<std::uint32_t, 6>{0, 1, 2, 2, 3, 0}));
 }
 
-void ImmediateQuadRenderPass::prepareQuadSsbo()
+void ImmediateQuadRenderPass::QuadPass::prepareSsbo()
 {
-    m_quadSsbo = std::make_shared<gl::ShaderStorageBuffer<gl::QuadInstanceData>>(
+    this->ssbo = std::make_shared<gl::ShaderStorageBuffer<gl::QuadInstanceData>>(
         MAX_QUAD_COUNT * sizeof(gl::QuadInstanceData));
+}
+
+void ImmediateQuadRenderPass::QuadPass::submitDraws(
+    const glm::mat4& projection,
+    const glm::mat4& view)
+{
+    if(not this->instances.empty())
+    {
+        this->ssbo->setData(this->instances);
+
+        for(std::size_t slot = 0; slot < this->textures.size(); slot++)
+        {
+            // BUG: CAN GO OUT OF BOUND IF MORE THAN 32 TEXTURES!
+            const auto& texture = this->textures[slot];
+            const auto& id = texture->getID();
+            ::gl::glBindTextureUnit(slot, id);  // slot = unit
+        }
+
+        ::gl::glEnable(::gl::GL_BLEND);
+        ::gl::glBlendFunc(::gl::GL_SRC_ALPHA, ::gl::GL_ONE_MINUS_SRC_ALPHA);
+
+        this->ssbo->bind(0);
+
+        this->shader.use();
+
+        this->shader.uploadUniform("uProjection", projection, 0);
+        this->shader.uploadUniform("uView", view, 1);
+
+        constexpr std::array<std::int32_t, 32> samplers{0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10,
+                                                        11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+                                                        22, 23, 24, 25, 26, 27, 28, 29, 30, 31};
+        this->shader.uploadUniform("uTextures", samplers, 2);
+
+        this->vao->bind();
+        ::gl::glDrawElementsInstanced(
+            ::gl::GL_TRIANGLES,
+            6,
+            ::gl::GL_UNSIGNED_INT,
+            nullptr,
+            static_cast<::gl::GLsizei>(this->instances.size()));
+        this->vao->unbind();
+        this->ssbo->unbind();
+
+        ::gl::glDisable(::gl::GL_BLEND);
+
+        for(std::size_t slot = 0; slot < this->textures.size(); slot++)
+        {
+            ::gl::glBindTextureUnit(slot, 0);
+        }
+
+        this->instances.clear();
+    }
 }
 
 }  // namespace mono::renderer
