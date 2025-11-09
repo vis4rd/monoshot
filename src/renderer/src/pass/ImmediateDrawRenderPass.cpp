@@ -1,11 +1,11 @@
-#include "renderer/pass/ImmediateQuadRenderPass.hpp"
+#include "renderer/pass/ImmediateDrawRenderPass.hpp"
 
 #include "mono/util/IndexOf.hpp"
 
 namespace mono::renderer
 {
 
-ImmediateQuadRenderPass::ImmediateQuadRenderPass(
+ImmediateDrawRenderPass::ImmediateDrawRenderPass(
     std::shared_ptr<mono::RenderTarget> render_target,
     mono::gl::ShaderProgram& quad_shader,
     mono::gl::ShaderProgram& line_shader)
@@ -17,25 +17,25 @@ ImmediateQuadRenderPass::ImmediateQuadRenderPass(
     this->prepareLinePass();
 }
 
-void ImmediateQuadRenderPass::clear() { }
+void ImmediateDrawRenderPass::clear() { }
 
-std::shared_ptr<mono::gl::VertexArray> ImmediateQuadRenderPass::getVao()
+std::shared_ptr<mono::gl::VertexArray> ImmediateDrawRenderPass::getVao()
 {
     return m_quadPass.vao;
 }
 
-std::shared_ptr<mono::gl::ShaderProgram> ImmediateQuadRenderPass::getShader()
+std::shared_ptr<mono::gl::ShaderProgram> ImmediateDrawRenderPass::getShader()
 {
     return std::shared_ptr<gl::ShaderProgram>{&m_quadPass.shader};
 }
 
-void ImmediateQuadRenderPass::submitDraws()
+void ImmediateDrawRenderPass::submitDraws()
 {
     m_quadPass.submitDraws(m_projection, m_view);
     m_linePass.submitDraws(m_projection, m_view);
 }
 
-void ImmediateQuadRenderPass::drawQuad(
+void ImmediateDrawRenderPass::drawQuad(
     const glm::vec2& position,
     const glm::vec2& size,
     float rotation,
@@ -76,7 +76,7 @@ void ImmediateQuadRenderPass::drawQuad(
     m_quadPass.instances.push_back(quad_instance_data);
 }
 
-void ImmediateQuadRenderPass::drawQuad(
+void ImmediateDrawRenderPass::drawQuad(
     const glm::vec2& position,
     const glm::vec2& size,
     float rotation,
@@ -93,7 +93,7 @@ void ImmediateQuadRenderPass::drawQuad(
     return this->drawQuad(position, size, rotation, white_texture, color);
 }
 
-void ImmediateQuadRenderPass::drawLine(
+void ImmediateDrawRenderPass::drawLine(
     const glm::vec2& pos1,
     const glm::vec2& pos2,
     const glm::vec4& color1,
@@ -106,7 +106,7 @@ void ImmediateQuadRenderPass::drawLine(
     m_linePass.lines.push_back(vrtx2);
 }
 
-void ImmediateQuadRenderPass::drawLine(
+void ImmediateDrawRenderPass::drawLine(
     const glm::vec2& pos1,
     const glm::vec2& pos2,
     const glm::vec4& color)
@@ -114,18 +114,18 @@ void ImmediateQuadRenderPass::drawLine(
     this->drawLine(pos1, pos2, color, color);
 }
 
-void ImmediateQuadRenderPass::prepareQuadPass()
+void ImmediateDrawRenderPass::prepareQuadPass()
 {
     m_quadPass.prepareVao();
     m_quadPass.prepareSsbo();
 }
 
-void ImmediateQuadRenderPass::prepareLinePass()
+void ImmediateDrawRenderPass::prepareLinePass()
 {
     m_linePass.prepareVao();
 }
 
-void ImmediateQuadRenderPass::QuadPass::prepareVao()
+void ImmediateDrawRenderPass::QuadPass::prepareVao()
 {
     this->vao = std::make_shared<gl::VertexArray>();
     auto vbo = gl::VertexBuffer(gl::quadConstantVertexData);
@@ -141,13 +141,13 @@ void ImmediateQuadRenderPass::QuadPass::prepareVao()
     this->vao->bindElementBuffer(gl::ElementBuffer(std::array<std::uint32_t, 6>{0, 1, 2, 2, 3, 0}));
 }
 
-void ImmediateQuadRenderPass::QuadPass::prepareSsbo()
+void ImmediateDrawRenderPass::QuadPass::prepareSsbo()
 {
     this->ssbo = std::make_shared<gl::ShaderStorageBuffer<gl::QuadInstanceData>>(
         MAX_QUAD_COUNT * sizeof(gl::QuadInstanceData));
 }
 
-void ImmediateQuadRenderPass::QuadPass::submitDraws(
+void ImmediateDrawRenderPass::QuadPass::submitDraws(
     const glm::mat4& projection,
     const glm::mat4& view)
 {
@@ -199,7 +199,7 @@ void ImmediateQuadRenderPass::QuadPass::submitDraws(
     }
 }
 
-void ImmediateQuadRenderPass::LinePass::prepareVao()
+void ImmediateDrawRenderPass::LinePass::prepareVao()
 {
     this->vao = std::make_shared<gl::VertexArray>();
 
@@ -216,7 +216,7 @@ void ImmediateQuadRenderPass::LinePass::prepareVao()
     this->vao->bindVertexBuffer(std::move(vbo));
 }
 
-void ImmediateQuadRenderPass::LinePass::submitDraws(
+void ImmediateDrawRenderPass::LinePass::submitDraws(
     const glm::mat4& projection,
     const glm::mat4& view)
 {

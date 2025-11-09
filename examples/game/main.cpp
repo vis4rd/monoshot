@@ -6,7 +6,7 @@
 #include <mono/renderer/RenderTexture.hpp>
 #include <mono/renderer/RenderWindow.hpp>
 #include <mono/renderer/Renderer.hpp>
-#include <mono/renderer/pass/ImmediateQuadRenderPass.hpp>
+#include <mono/renderer/pass/ImmediateDrawRenderPass.hpp>
 #include <mono/renderer/pass/PostProcessPass.hpp>
 #include <opengl/shader/ShaderManager.hpp>
 
@@ -72,7 +72,7 @@ int main(int, char**)
             "../res/shaders/all_white.frag");
 
         auto pipeline = mono::renderer::RenderPipeline(pipeline_id);
-        pipeline.addRenderPass<mono::renderer::ImmediateQuadRenderPass>(
+        pipeline.addRenderPass<mono::renderer::ImmediateDrawRenderPass>(
             "quad",
             render_texture,
             quad_shader,
@@ -103,12 +103,12 @@ int main(int, char**)
     window->setVerticalSync(vsync_enabled);
 
 
-    auto& quad_pass = mono::renderer::getPipeline(pipeline_id)
-                          .getRenderPass<mono::renderer::ImmediateQuadRenderPass>("quad");
+    auto& draw_pass = mono::renderer::getPipeline(pipeline_id)
+                          .getRenderPass<mono::renderer::ImmediateDrawRenderPass>("quad");
     auto& all_white_pass = mono::renderer::getPipeline(pipeline_id)
                                .getRenderPass<mono::renderer::test::PostProcessPass>("all_white");
 
-    const auto refresh_projection_view = [&window, &quad_pass]() {
+    const auto refresh_projection_view = [&window, &draw_pass]() {
         const auto resolution = window->getSize();
         const auto projection = glm::ortho(
             0.f,
@@ -122,8 +122,8 @@ int main(int, char**)
             glm::vec3{0.f, 0.f, 1.f},
             glm::vec3{0.f, 0.f, 0.f},
             glm::vec3{0.f, 1.f, 0.f});
-        quad_pass.setProjection(projection);
-        quad_pass.setView(view);
+        draw_pass.setProjection(projection);
+        draw_pass.setView(view);
     };
 
     refresh_projection_view();
@@ -154,8 +154,8 @@ int main(int, char**)
             continue;
         }
 
-        quad_pass.drawQuad(window->getMousePosition(), {15.f, 15.f}, 0.f, {1.f, 0.f, 0.f, 1.f});
-        quad_pass.drawLine(
+        draw_pass.drawQuad(window->getMousePosition(), {15.f, 15.f}, 0.f, {1.f, 0.f, 0.f, 1.f});
+        draw_pass.drawLine(
             {200.f, 200.f},
             window->getMousePosition(),
             {0.f, 1.f, 0.f, 1.f},

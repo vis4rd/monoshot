@@ -16,10 +16,10 @@
 namespace mono::renderer
 {
 
-class ImmediateQuadRenderPass final : public mono::renderer::RenderPassInterface
+class ImmediateDrawRenderPass final : public mono::renderer::RenderPassInterface
 {
     public:
-    ImmediateQuadRenderPass(
+    ImmediateDrawRenderPass(
         std::shared_ptr<mono::RenderTarget> render_target,
         mono::gl::ShaderProgram& quad_shader,
         mono::gl::ShaderProgram& line_shader);

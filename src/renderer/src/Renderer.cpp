@@ -9,7 +9,7 @@
 
 #include "mono/dev_ui/DevUI.hpp"
 #include "opengl/shader/ShaderManager.hpp"
-#include "renderer/pass/ImmediateQuadRenderPass.hpp"
+#include "renderer/pass/ImmediateDrawRenderPass.hpp"
 
 namespace mono::renderer
 {
@@ -28,7 +28,7 @@ void initialize(std::shared_ptr<mono::RenderTarget> default_target)
 
     // Create default pipeline in case user doesn't want to set up any
     RenderPipeline default_pipeline{999999};
-    default_pipeline.addRenderPass<ImmediateQuadRenderPass>(
+    default_pipeline.addRenderPass<ImmediateDrawRenderPass>(
         "quad",
         std::move(default_target),
         quad,
