@@ -24,6 +24,8 @@ class RenderTexture final : public RenderTarget
     void setSize(::gl::GLsizei width, ::gl::GLsizei height);
     glm::ivec2 getSize() const;
 
+    const gl::FrameBuffer& getFramebuffer() const;
+
     void activate() const override;
     void deactivate() const override;
 

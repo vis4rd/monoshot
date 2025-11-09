@@ -16,6 +16,11 @@ glm::ivec2 RenderTexture::getSize() const
     return m_framebuffer->getSize();
 }
 
+const gl::FrameBuffer& RenderTexture::getFramebuffer() const
+{
+    return *(m_framebuffer.get());
+}
+
 void RenderTexture::activate() const
 {
     m_framebuffer->bind();
