@@ -192,5 +192,9 @@ int main(int, char**)
     }
 
     mono::log::info("Closing the application");
+    mono::renderer::terminate();
+    render_texture.reset();
+    window.reset();
+
     return EXIT_SUCCESS;
 }
