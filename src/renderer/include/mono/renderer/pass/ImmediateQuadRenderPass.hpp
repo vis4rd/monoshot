@@ -9,6 +9,7 @@
 #include "mono/renderer/Texture.hpp"
 #include "opengl/gl/ShaderStorageBuffer.hpp"
 #include "opengl/gl/VertexArray.hpp"
+#include "opengl/renderer/LinePrimitive.hpp"
 #include "opengl/renderer/QuadPrimitive.hpp"
 #include "opengl/shader/ShaderProgram.hpp"
 
@@ -20,7 +21,8 @@ class ImmediateQuadRenderPass final : public mono::renderer::RenderPassInterface
     public:
     ImmediateQuadRenderPass(
         std::shared_ptr<mono::RenderTarget> render_target,
-        mono::gl::ShaderProgram& shader);
+        mono::gl::ShaderProgram& quad_shader,
+        mono::gl::ShaderProgram& line_shader);
 
     // RenderPass required interface
     void clear();
@@ -42,8 +44,17 @@ class ImmediateQuadRenderPass final : public mono::renderer::RenderPassInterface
         float rotation,
         const glm::vec4& color);
 
+    void drawLine(
+        const glm::vec2& pos1,
+        const glm::vec2& pos2,
+        const glm::vec4& color1,
+        const glm::vec4& color2);
+
+    void drawLine(const glm::vec2& pos1, const glm::vec2& pos2, const glm::vec4& color);
+
     private:
     void prepareQuadPass();
+    void prepareLinePass();
 
     private:
 
@@ -61,12 +72,23 @@ class ImmediateQuadRenderPass final : public mono::renderer::RenderPassInterface
 
         void prepareVao();
         void prepareSsbo();
-        void submitDraws(
-            const glm::mat4& projection,
-            const glm::mat4& view);
+        void submitDraws(const glm::mat4& projection, const glm::mat4& view);
+    };
+
+    struct LinePass
+    {
+        static constexpr std::size_t MAX_LINE_COUNT = 10000;
+        mono::gl::ShaderProgram& shader;
+
+        std::vector<gl::LineVertex> lines{};
+        std::shared_ptr<gl::VertexArray> vao;
+
+        void prepareVao();
+        void submitDraws(const glm::mat4& projection, const glm::mat4& view);
     };
 
     QuadPass m_quadPass;
+    LinePass m_linePass;
 };
 
 }  // namespace mono::renderer

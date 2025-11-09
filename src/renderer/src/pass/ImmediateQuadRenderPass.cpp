@@ -7,11 +7,14 @@ namespace mono::renderer
 
 ImmediateQuadRenderPass::ImmediateQuadRenderPass(
     std::shared_ptr<mono::RenderTarget> render_target,
-    mono::gl::ShaderProgram& shader)
+    mono::gl::ShaderProgram& quad_shader,
+    mono::gl::ShaderProgram& line_shader)
     : RenderPassInterface(std::move(render_target))
-    , m_quadPass(shader)
+    , m_quadPass(quad_shader)
+    , m_linePass(line_shader)
 {
     this->prepareQuadPass();
+    this->prepareLinePass();
 }
 
 void ImmediateQuadRenderPass::clear() { }
@@ -29,6 +32,7 @@ std::shared_ptr<mono::gl::ShaderProgram> ImmediateQuadRenderPass::getShader()
 void ImmediateQuadRenderPass::submitDraws()
 {
     m_quadPass.submitDraws(m_projection, m_view);
+    m_linePass.submitDraws(m_projection, m_view);
 }
 
 void ImmediateQuadRenderPass::drawQuad(
@@ -89,25 +93,51 @@ void ImmediateQuadRenderPass::drawQuad(
     return this->drawQuad(position, size, rotation, white_texture, color);
 }
 
+void ImmediateQuadRenderPass::drawLine(
+    const glm::vec2& pos1,
+    const glm::vec2& pos2,
+    const glm::vec4& color1,
+    const glm::vec4& color2)
+{
+    auto vrtx1 = gl::LineVertex{.position = glm::vec3(pos1, 0.f), .color = color1};
+    auto vrtx2 = gl::LineVertex{.position = glm::vec3(pos2, 0.f), .color = color2};
+
+    m_linePass.lines.push_back(vrtx1);
+    m_linePass.lines.push_back(vrtx2);
+}
+
+void ImmediateQuadRenderPass::drawLine(
+    const glm::vec2& pos1,
+    const glm::vec2& pos2,
+    const glm::vec4& color)
+{
+    this->drawLine(pos1, pos2, color, color);
+}
+
 void ImmediateQuadRenderPass::prepareQuadPass()
 {
     m_quadPass.prepareVao();
     m_quadPass.prepareSsbo();
 }
 
+void ImmediateQuadRenderPass::prepareLinePass()
+{
+    m_linePass.prepareVao();
+}
+
 void ImmediateQuadRenderPass::QuadPass::prepareVao()
 {
     this->vao = std::make_shared<gl::VertexArray>();
-    auto quad_constant_vbo = gl::VertexBuffer(gl::quadConstantVertexData);
+    auto vbo = gl::VertexBuffer(gl::quadConstantVertexData);
 
     namespace dtype = gl::ShaderAttributeType;
-    gl::ShaderAttributeLayout quad_constant_layout = {
+    gl::ShaderAttributeLayout layout = {
         {dtype::FLOAT(2), "acPos"},
         {dtype::FLOAT(2), "acUv" }
     };
-    quad_constant_vbo.setLayout(quad_constant_layout);
+    vbo.setLayout(layout);
 
-    this->vao->bindVertexBuffer(std::move(quad_constant_vbo));
+    this->vao->bindVertexBuffer(std::move(vbo));
     this->vao->bindElementBuffer(gl::ElementBuffer(std::array<std::uint32_t, 6>{0, 1, 2, 2, 3, 0}));
 }
 
@@ -167,6 +197,46 @@ void ImmediateQuadRenderPass::QuadPass::submitDraws(
 
         this->instances.clear();
     }
+}
+
+void ImmediateQuadRenderPass::LinePass::prepareVao()
+{
+    this->vao = std::make_shared<gl::VertexArray>();
+
+    auto vbo = gl::VertexBuffer(
+        static_cast<::gl::GLsizeiptr>(MAX_LINE_COUNT * 4 * sizeof(gl::LineVertex)));
+
+    namespace dtype = gl::ShaderAttributeType;
+    gl::ShaderAttributeLayout layout = {
+        {dtype::FLOAT(3), "aPos"  },
+        {dtype::FLOAT(4), "aColor"},
+    };
+    vbo.setLayout(layout);
+
+    this->vao->bindVertexBuffer(std::move(vbo));
+}
+
+void ImmediateQuadRenderPass::LinePass::submitDraws(
+    const glm::mat4& projection,
+    const glm::mat4& view)
+{
+    if(this->lines.empty())
+    {
+        return;
+    }
+
+    this->vao->getVertexBuffers().at(0).setData(this->lines);
+
+    this->shader.use();
+
+    this->shader.uploadUniform("uProjection", projection, 0);
+    this->shader.uploadUniform("uView", view, 1);
+
+    this->vao->bind();
+    ::gl::glDrawArrays(::gl::GL_LINES, 0, static_cast<::gl::GLsizei>(this->lines.size()));
+    this->vao->unbind();
+
+    this->lines.clear();
 }
 
 }  // namespace mono::renderer

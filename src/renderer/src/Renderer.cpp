@@ -24,14 +24,15 @@ void initialize(std::shared_ptr<mono::RenderTarget> default_target)
         "quad",
         "../res/shaders/quad.vert",
         "../res/shaders/quad.frag");
-    shader_manager.addShaderProgram("line", "../res/shaders/line.vert", "../res/shaders/line.frag");
+    auto& line = shader_manager.addShaderProgram("line", "../res/shaders/line.vert", "../res/shaders/line.frag");
 
     // Create default pipeline in case user doesn't want to set up any
     RenderPipeline default_pipeline{999999};
     default_pipeline.addRenderPass<ImmediateQuadRenderPass>(
         "quad",
         std::move(default_target),
-        quad);
+        quad,
+        line);
 
     mono::renderer::addPipeline(std::move(default_pipeline));
 }

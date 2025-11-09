@@ -76,10 +76,7 @@ int main(int, char**)
         pipeline.addRenderPass<mono::renderer::ImmediateQuadRenderPass>(
             "quad",
             render_texture,
-            quad_shader);
-        pipeline.addRenderPass<mono::renderer::ImmediateLineRenderPass>(
-            "line",
-            render_texture,
+            quad_shader,
             line_shader);
         pipeline.addRenderPass<mono::renderer::test::PostProcessPass>(
             "all_white",
@@ -109,12 +106,10 @@ int main(int, char**)
 
     auto& quad_pass = mono::renderer::getPipeline(pipeline_id)
                           .getRenderPass<mono::renderer::ImmediateQuadRenderPass>("quad");
-    auto& line_pass = mono::renderer::getPipeline(pipeline_id)
-                          .getRenderPass<mono::renderer::ImmediateLineRenderPass>("line");
     auto& all_white_pass = mono::renderer::getPipeline(pipeline_id)
                                .getRenderPass<mono::renderer::test::PostProcessPass>("all_white");
 
-    const auto refresh_projection_view = [&window, &quad_pass, &line_pass]() {
+    const auto refresh_projection_view = [&window, &quad_pass]() {
         const auto resolution = window->getSize();
         const auto projection = glm::ortho(
             0.f,
@@ -130,8 +125,6 @@ int main(int, char**)
             glm::vec3{0.f, 1.f, 0.f});
         quad_pass.setProjection(projection);
         quad_pass.setView(view);
-        line_pass.setProjection(projection);
-        line_pass.setView(view);
     };
 
     refresh_projection_view();
@@ -163,7 +156,7 @@ int main(int, char**)
         }
 
         quad_pass.drawQuad(window->getMousePosition(), {15.f, 15.f}, 0.f, {1.f, 0.f, 0.f, 1.f});
-        line_pass.drawLine(
+        quad_pass.drawLine(
             {200.f, 200.f},
             window->getMousePosition(),
             {0.f, 1.f, 0.f, 1.f},
