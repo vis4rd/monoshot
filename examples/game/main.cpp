@@ -6,7 +6,6 @@
 #include <mono/renderer/RenderTexture.hpp>
 #include <mono/renderer/RenderWindow.hpp>
 #include <mono/renderer/Renderer.hpp>
-#include <mono/renderer/pass/ImmediateLineRenderPass.hpp>
 #include <mono/renderer/pass/ImmediateQuadRenderPass.hpp>
 #include <mono/renderer/pass/PostProcessPass.hpp>
 #include <opengl/shader/ShaderManager.hpp>

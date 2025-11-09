@@ -11,7 +11,6 @@ target_sources(mono_module_renderer
     "${CMAKE_CURRENT_SOURCE_DIR}/src/RenderWindow.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/Texture.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/pass/ImmediateLineRenderPass.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/pass/ImmediateQuadRenderPass.cpp"
 )
 
