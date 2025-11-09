@@ -178,14 +178,6 @@ int main(int, char**)
         ImGui::Text("Window Size: (%d, %d)", window->getSize().x, window->getSize().y);
         ImGui::End();
 
-        // workaround for accumulating draws in RenderTexture
-        // it is happening, because two RenderPasses draw to the same RenderTexture without clearing
-        // fix: merge the two RenderPasses into one or use two RenderTextures
-        render_texture->activate();
-        ::gl::glClear(::gl::GL_COLOR_BUFFER_BIT | ::gl::GL_STENCIL_BUFFER_BIT);
-        render_texture->deactivate();
-        // end of workaround
-
         mono::renderer::render();
 
         window->render();

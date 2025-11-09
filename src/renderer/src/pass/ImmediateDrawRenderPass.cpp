@@ -31,6 +31,7 @@ std::shared_ptr<mono::gl::ShaderProgram> ImmediateDrawRenderPass::getShader()
 
 void ImmediateDrawRenderPass::submitDraws()
 {
+    ::gl::glClear(::gl::GL_COLOR_BUFFER_BIT | ::gl::GL_STENCIL_BUFFER_BIT);
     m_quadPass.submitDraws(m_projection, m_view);
     m_linePass.submitDraws(m_projection, m_view);
 }
