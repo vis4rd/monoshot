@@ -6,8 +6,6 @@
 #include <glm/glm.hpp>
 
 #include "RenderTargetTrait.hpp"
-#include "opengl/gl/VertexArray.hpp"
-#include "opengl/shader/ShaderProgram.hpp"
 
 namespace mono::renderer
 {
@@ -53,11 +51,6 @@ inline std::shared_ptr<mono::RenderTarget> RenderPassInterface::getRenderTarget(
 }
 
 template<typename T>
-concept RenderPassTrait = requires(T t) {
-    { t.clear() };
-    { t.getVao() } -> std::same_as<std::shared_ptr<mono::gl::VertexArray>>;
-    { t.getShader() } -> std::same_as<std::shared_ptr<mono::gl::ShaderProgram>>;
-    { t.getRenderTarget() } -> std::same_as<std::shared_ptr<mono::RenderTarget>>;
-} and std::derived_from<T, RenderPassInterface>;
+concept RenderPassTrait = std::derived_from<T, RenderPassInterface>;
 
 }  // namespace mono::renderer

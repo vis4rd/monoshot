@@ -17,18 +17,6 @@ ImmediateDrawRenderPass::ImmediateDrawRenderPass(
     this->prepareLinePass();
 }
 
-void ImmediateDrawRenderPass::clear() { }
-
-std::shared_ptr<mono::gl::VertexArray> ImmediateDrawRenderPass::getVao()
-{
-    return m_quadPass.vao;
-}
-
-std::shared_ptr<mono::gl::ShaderProgram> ImmediateDrawRenderPass::getShader()
-{
-    return std::shared_ptr<gl::ShaderProgram>{&m_quadPass.shader};
-}
-
 void ImmediateDrawRenderPass::submitDraws()
 {
     ::gl::glClear(::gl::GL_COLOR_BUFFER_BIT | ::gl::GL_STENCIL_BUFFER_BIT);

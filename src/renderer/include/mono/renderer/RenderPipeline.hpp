@@ -2,12 +2,15 @@
 
 #include <concepts>
 #include <cstdint>
+#include <format>
 #include <forward_list>
 #include <memory>
 #include <string>
 #include <unordered_map>
 
-#include "RenderPassTrait.hpp"
+#include <spdlog/spdlog.h>
+
+#include "RenderPassInterface.hpp"
 
 namespace mono::renderer
 {

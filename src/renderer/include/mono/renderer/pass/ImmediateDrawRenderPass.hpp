@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 
-#include "../RenderPassTrait.hpp"
+#include "../RenderPassInterface.hpp"
 #include "../RenderTargetTrait.hpp"
 #include "mono/renderer/Texture.hpp"
 #include "opengl/gl/ShaderStorageBuffer.hpp"
@@ -25,9 +25,6 @@ class ImmediateDrawRenderPass final : public mono::renderer::RenderPassInterface
         mono::gl::ShaderProgram& line_shader);
 
     // RenderPass required interface
-    void clear();
-    std::shared_ptr<mono::gl::VertexArray> getVao();
-    std::shared_ptr<mono::gl::ShaderProgram> getShader();
     void submitDraws() override;
     //
 

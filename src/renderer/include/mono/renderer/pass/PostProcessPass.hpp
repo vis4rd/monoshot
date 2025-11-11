@@ -1,7 +1,9 @@
 #pragma once
 
-#include "../RenderPassTrait.hpp"
+#include "../RenderPassInterface.hpp"
 #include "../Texture.hpp"
+#include "opengl/gl/VertexArray.hpp"
+#include "opengl/shader/ShaderProgram.hpp"
 
 namespace mono::renderer::test
 {
@@ -11,15 +13,6 @@ class PostProcessPass : public mono::renderer::RenderPassInterface
     PostProcessPass(
         std::shared_ptr<mono::RenderTarget> render_target,
         mono::gl::ShaderProgram& shader);
-
-    void clear() { };
-
-    std::shared_ptr<gl::VertexArray> getVao() { return m_vao; };
-
-    std::shared_ptr<gl::ShaderProgram> getShader()
-    {
-        return std::shared_ptr<gl::ShaderProgram>{&m_shader};
-    };
 
     void submitDraws() override;
     void drawTexture(const std::shared_ptr<mono::Texture>& texture);
