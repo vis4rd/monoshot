@@ -1,7 +1,7 @@
 The MIT License (MIT)
 =====================
 
-Copyright © `2025` [`Aleksander Kluczka`](https://github.com/vis4rd)
+Copyright © `2026` [`Aleksander Kluczka`](https://github.com/vis4rd)
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
