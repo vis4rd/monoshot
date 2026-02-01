@@ -61,7 +61,19 @@ inline void PostProcessPass::onInit()
     m_vao->bindElementBuffer(gl::ElementBuffer(std::array<std::uint32_t, 6>{0, 1, 2, 2, 3, 0}));
 }
 
-inline void PostProcessPass::onResize(uint32_t width, uint32_t height) { }
+inline void PostProcessPass::onResize(std::uint32_t width, std::uint32_t height)
+{
+    // TODO: in future, PostProcessPass might be called on non-screen RenderTexture,
+    //       that's why PostProcessPass::onResize should be abstract and more
+    //       specific implementation should be provided by a derived class.
+    spdlog::debug("PostProcessPass received onResize event with new size {}x{}", width, height);
+
+    if(auto render_texture = std::dynamic_pointer_cast<RenderTexture>(m_renderTarget))
+    {
+        spdlog::debug("PostProcessPass has RenderTexture as RenderTarget, resizing it");
+        render_texture->setSize(width, height);
+    }
+}
 
 inline void PostProcessPass::execute(const RenderPassContext& context)
 {

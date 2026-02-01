@@ -110,8 +110,17 @@ int main(int, char**)
     window->setVerticalSync(vsync_enabled);
 
 
-    auto& draw_pass = mono::renderer::getPipeline(pipeline_id)
-                          ->getRenderPass<mono::renderer::ImmediateDrawRenderPass>("quad");
+    auto render_pipeline = mono::renderer::getPipeline(pipeline_id);
+    window->setOnResizeCallback([render_pipeline](std::int32_t width, std::int32_t height) {
+        mono::log::info(
+            "Calling OnResize callback: Informing RenderPipeline about the resize {}x{}",
+            width,
+            height);
+        render_pipeline->onResize(width, height);
+    });
+
+    auto& draw_pass =
+        render_pipeline->getRenderPass<mono::renderer::ImmediateDrawRenderPass>("quad");
 
     const auto refresh_projection_view = [&window, &projection, &view]() {
         const auto resolution = window->getSize();

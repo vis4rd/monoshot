@@ -1,5 +1,8 @@
 #include "renderer/pass/ImmediateDrawRenderPass.hpp"
 
+#include <memory>
+
+#include "mono/renderer/RenderTexture.hpp"
 #include "mono/util/IndexOf.hpp"
 
 namespace mono::renderer
@@ -23,7 +26,22 @@ void ImmediateDrawRenderPass::onInit()
     this->prepareLinePass();
 }
 
-void ImmediateDrawRenderPass::onResize(uint32_t width, uint32_t height) { }
+void ImmediateDrawRenderPass::onResize(std::uint32_t width, std::uint32_t height)
+{
+    // TODO: in future, ImmediateDrawRenderPass might be called on non-screen RenderTexture,
+    //       that's why ImmediateDrawRenderPass::onResize should be abstract and more
+    //       specific implementation should be provided by a derived class.
+    spdlog::debug(
+        "ImmediateDrawRenderPass received onResize event with new size {}x{}",
+        width,
+        height);
+
+    if(auto render_texture = std::dynamic_pointer_cast<RenderTexture>(m_renderTarget))
+    {
+        spdlog::debug("ImmediateDrawRenderPass has RenderTexture as RenderTarget, resizing it");
+        render_texture->setSize(width, height);
+    }
+}
 
 void ImmediateDrawRenderPass::execute(const RenderPassContext& context)
 {

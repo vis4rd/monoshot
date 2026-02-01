@@ -129,6 +129,12 @@ void RenderWindow::setSize(::gl::GLsizei width, ::gl::GLsizei height)
 {
     spdlog::debug("New window size = {}x{} in pixels", width, height);
 
+    if(m_onResizeCallback)
+    {
+        m_onResizeCallback(width, height);
+    }
+
+    ::gl::glViewport(0, 0, width, height);
     glfwSetWindowSize(m_windowHandle.get(), width, height);
 }
 
@@ -309,6 +315,12 @@ void RenderWindow::setRefreshRate(std::int32_t hz)
 void RenderWindow::setTitle(std::string_view title)
 {
     glfwSetWindowTitle(m_windowHandle.get(), title.data());
+}
+
+void RenderWindow::setOnResizeCallback(OnResizeCallback &&callback) &
+{
+    spdlog::debug("Setting RenderWindow onResize callback");
+    m_onResizeCallback = std::move(callback);
 }
 
 std::string_view RenderWindow::getTitle() const

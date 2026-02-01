@@ -19,6 +19,9 @@ namespace mono
 class RenderWindow final : public mono::renderer::RenderTarget
 {
     public:
+    using OnResizeCallback = std::function<void(std::int32_t, std::int32_t)>;
+
+    public:
     /**
      * @brief Construct empty RenderWindow.
      *
@@ -59,6 +62,7 @@ class RenderWindow final : public mono::renderer::RenderTarget
     void setVerticalSync(bool vsync = true);
     void setRefreshRate(std::int32_t hz);
     void setTitle(std::string_view title);
+    void setOnResizeCallback(OnResizeCallback&& callback) &;
 
     [[nodiscard]] std::string_view getTitle() const;
     [[nodiscard]] GLFWwindow* getNativeWindow() const;
@@ -159,6 +163,7 @@ class RenderWindow final : public mono::renderer::RenderTarget
     bool m_shouldClose = false;
     std::unique_ptr<gl::RenderWindowUserStorage> m_userStorage{nullptr};
     glm::ivec2 m_initialWindowSize;
+    OnResizeCallback m_onResizeCallback;
 };
 
 static_assert(mono::renderer::RenderTargetTrait<mono::RenderWindow>);
