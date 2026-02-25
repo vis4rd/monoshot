@@ -4,8 +4,8 @@
 #include <memory>
 #include <vector>
 
-#include "../RenderPassInterface.hpp"
-#include "../RenderTargetTrait.hpp"
+#include "../RenderPass.hpp"
+#include "../RenderTarget.hpp"
 #include "mono/renderer/Texture.hpp"
 #include "opengl/gl/ShaderStorageBuffer.hpp"
 #include "opengl/gl/VertexArray.hpp"
@@ -16,16 +16,26 @@
 namespace mono::renderer
 {
 
-class ImmediateDrawRenderPass final : public mono::renderer::RenderPassInterface
+class ImmediateDrawRenderPass final : public mono::renderer::RenderPass
 {
     public:
+    struct Uniforms
+    {
+        std::shared_ptr<glm::mat4> projection;
+        std::shared_ptr<glm::mat4> view;
+    };
+
     ImmediateDrawRenderPass(
-        std::shared_ptr<mono::RenderTarget> render_target,
+        std::string name,
+        std::shared_ptr<mono::renderer::RenderTarget> render_target,
         mono::gl::ShaderProgram& quad_shader,
-        mono::gl::ShaderProgram& line_shader);
+        mono::gl::ShaderProgram& line_shader,
+        ImmediateDrawRenderPass::Uniforms uniforms);
 
     // RenderPass required interface
-    void submitDraws() override;
+    void onInit() override;
+    void onResize(uint32_t width, uint32_t height) override;
+    void execute(const RenderPassContext& context) override;
     //
 
     void drawQuad(
@@ -54,9 +64,6 @@ class ImmediateDrawRenderPass final : public mono::renderer::RenderPassInterface
     void prepareLinePass();
 
     private:
-
-    std::shared_ptr<mono::RenderTarget> m_renderTarget;
-
     struct QuadPass
     {
         static constexpr std::size_t MAX_QUAD_COUNT = 100000;
@@ -86,6 +93,7 @@ class ImmediateDrawRenderPass final : public mono::renderer::RenderPassInterface
 
     QuadPass m_quadPass;
     LinePass m_linePass;
+    Uniforms m_uniforms;
 };
 
 }  // namespace mono::renderer

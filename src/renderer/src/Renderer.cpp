@@ -14,7 +14,7 @@
 namespace mono::renderer
 {
 
-void initialize(std::shared_ptr<mono::RenderTarget> default_target)
+void initialize(std::shared_ptr<mono::renderer::RenderTarget> default_target)
 {
     // TODO(vis4rd): differentiate automatic setup from advanced customized one
     spdlog::debug("Renderer: creating OpenGL backend");
@@ -24,37 +24,47 @@ void initialize(std::shared_ptr<mono::RenderTarget> default_target)
         "quad",
         "../res/shaders/quad.vert",
         "../res/shaders/quad.frag");
-    auto& line = shader_manager.addShaderProgram("line", "../res/shaders/line.vert", "../res/shaders/line.frag");
+    auto& line = shader_manager.addShaderProgram(
+        "line",
+        "../res/shaders/line.vert",
+        "../res/shaders/line.frag");
 
     // Create default pipeline in case user doesn't want to set up any
-    RenderPipeline default_pipeline{999999};
-    default_pipeline.addRenderPass<ImmediateDrawRenderPass>(
+    std::shared_ptr<RenderPipeline> default_pipeline = std::make_shared<RenderPipeline>(999999);
+
+    ImmediateDrawRenderPass::Uniforms uniforms{
+        .projection = std::make_shared<glm::mat4>(1.f),
+        .view = std::make_shared<glm::mat4>(1.f)};
+    default_pipeline->addRenderPass<ImmediateDrawRenderPass>(
         "quad",
         std::move(default_target),
         quad,
-        line);
+        line,
+        uniforms);
 
     mono::renderer::addPipeline(std::move(default_pipeline));
 }
 
-void addPipeline(RenderPipeline&& pipeline)
+void addPipeline(std::shared_ptr<RenderPipeline> pipeline)
 {
-    const auto id = pipeline.getId();
+    const auto id = pipeline->getId();
     if(data::pipelines.contains(id))
     {
-        spdlog::error("Renderer: pipeline with id {} already exists", id);
+        spdlog::error("Renderer: pipeline with ID {} already exists", id);
         return;
     }
 
     if(data::pipelines.empty())
     {
-        data::currentPipelineId = id;
+        data::activePipeline = pipeline;
     }
+
+    pipeline->initialize();
 
     data::pipelines.emplace(id, std::move(pipeline));
 }
 
-void setPipeline(std::int32_t pipeline_id)
+void setActivePipeline(std::int32_t pipeline_id)
 {
     if(not data::pipelines.contains(pipeline_id))
     {
@@ -62,32 +72,30 @@ void setPipeline(std::int32_t pipeline_id)
         return;
     }
     spdlog::debug("Renderer: setting active pipeline with id {}", pipeline_id);
-    data::currentPipelineId = pipeline_id;
+    data::activePipeline = data::pipelines.at(pipeline_id);
 }
 
 void terminate()
 {
     data::pipelines.clear();
-    data::currentPipelineId = -1;
+    data::activePipeline = nullptr;
 }
 
-RenderPipeline& getPipeline(std::int32_t pipeline_id)
+std::shared_ptr<RenderPipeline> getPipeline(std::int32_t pipeline_id)
 {
     return data::pipelines.at(pipeline_id);
 }
 
-RenderPipeline& getDefaultPipeline()
+std::shared_ptr<RenderPipeline> getDefaultPipeline()
 {
     return data::pipelines.at(999999);
 }
 
 void render()
 {
-    auto& pipeline = data::pipelines.at(data::currentPipelineId);
-    for(const auto& pass : pipeline.getRenderFlow())
+    if(data::activePipeline)
     {
-        pass->getRenderTarget()->activate();
-        pass->submitDraws();
+        data::activePipeline->execute();
     }
 
     mono::dev_ui::render();

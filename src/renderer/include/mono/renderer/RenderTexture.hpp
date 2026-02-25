@@ -5,12 +5,12 @@
 #include <glbinding/gl/types.h>
 #include <glm/fwd.hpp>
 
-#include "RenderTargetTrait.hpp"
+#include "RenderTarget.hpp"
 #include "opengl/gl/FrameBuffer.hpp"
 
 namespace mono
 {
-class RenderTexture final : public RenderTarget
+class RenderTexture final : public mono::renderer::RenderTarget
 {
     public:
     RenderTexture(::gl::GLsizei width, ::gl::GLsizei height);
@@ -21,13 +21,14 @@ class RenderTexture final : public RenderTarget
     RenderTexture& operator=(const RenderTexture& copy) = delete;
     RenderTexture& operator=(RenderTexture&& move) = default;
 
-    void setSize(::gl::GLsizei width, ::gl::GLsizei height);
-    glm::ivec2 getSize() const;
-
-    const gl::FrameBuffer& getFramebuffer() const;
-
+    // RenderTarget interface
     void activate() const override;
     void deactivate() const override;
+    glm::ivec2 getSize() const override;
+    ::gl::GLuint getFramebufferHandle() const override;
+    //
+
+    void setSize(::gl::GLsizei width, ::gl::GLsizei height);
 
     ::gl::GLuint getID() const;
 
@@ -35,5 +36,5 @@ class RenderTexture final : public RenderTarget
     std::unique_ptr<gl::FrameBuffer> m_framebuffer{nullptr};
 };
 
-static_assert(mono::RenderTargetTrait<mono::RenderTexture>);
+static_assert(mono::renderer::RenderTargetTrait<mono::RenderTexture>);
 }  // namespace mono

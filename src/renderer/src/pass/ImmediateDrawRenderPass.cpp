@@ -6,22 +6,34 @@ namespace mono::renderer
 {
 
 ImmediateDrawRenderPass::ImmediateDrawRenderPass(
-    std::shared_ptr<mono::RenderTarget> render_target,
+    std::string name,
+    std::shared_ptr<mono::renderer::RenderTarget> render_target,
     mono::gl::ShaderProgram& quad_shader,
-    mono::gl::ShaderProgram& line_shader)
-    : RenderPassInterface(std::move(render_target))
+    mono::gl::ShaderProgram& line_shader,
+    ImmediateDrawRenderPass::Uniforms uniforms)
+    : RenderPass(std::move(name), std::move(render_target))
     , m_quadPass(quad_shader)
     , m_linePass(line_shader)
+    , m_uniforms(std::move(uniforms))
+{ }
+
+void ImmediateDrawRenderPass::onInit()
 {
     this->prepareQuadPass();
     this->prepareLinePass();
 }
 
-void ImmediateDrawRenderPass::submitDraws()
+void ImmediateDrawRenderPass::onResize(uint32_t width, uint32_t height) { }
+
+void ImmediateDrawRenderPass::execute(const RenderPassContext& context)
 {
+    m_renderTarget->activate();
+
     ::gl::glClear(::gl::GL_COLOR_BUFFER_BIT | ::gl::GL_STENCIL_BUFFER_BIT);
-    m_quadPass.submitDraws(m_projection, m_view);
-    m_linePass.submitDraws(m_projection, m_view);
+    m_quadPass.submitDraws(*m_uniforms.projection, *m_uniforms.view);
+    m_linePass.submitDraws(*m_uniforms.projection, *m_uniforms.view);
+
+    m_renderTarget->deactivate();
 }
 
 void ImmediateDrawRenderPass::drawQuad(

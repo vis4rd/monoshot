@@ -1,3 +1,4 @@
+#include <glm/fwd.hpp>
 #include <mono/config/Config.hpp>
 #include <mono/dev_ui/DevUI.hpp>
 #include <mono/input/Input.hpp>
@@ -54,6 +55,8 @@ int main(int, char**)
 
     mono::dev_ui::initialize();
 
+    std::shared_ptr<glm::mat4> projection = std::make_shared<glm::mat4>(1.f);
+    std::shared_ptr<glm::mat4> view = std::make_shared<glm::mat4>(1.f);
     constexpr std::int32_t pipeline_id = 0;
     {
         // custom pipeline
@@ -71,13 +74,17 @@ int main(int, char**)
             "../res/shaders/post_process.vert",
             "../res/shaders/all_white.frag");
 
-        auto pipeline = mono::renderer::RenderPipeline(pipeline_id);
-        pipeline.addRenderPass<mono::renderer::ImmediateDrawRenderPass>(
+        auto pipeline = std::make_shared<mono::renderer::RenderPipeline>(pipeline_id);
+        mono::renderer::ImmediateDrawRenderPass::Uniforms sceneUniforms{
+            .projection = projection,
+            .view = view};
+        pipeline->addRenderPass<mono::renderer::ImmediateDrawRenderPass>(
             "quad",
             render_texture,
             quad_shader,
-            line_shader);
-        pipeline.addRenderPass<mono::renderer::test::PostProcessPass>(
+            line_shader,
+            sceneUniforms);
+        pipeline->addRenderPass<mono::renderer::test::PostProcessPass>(
             "all_white",
             window,
             all_white_shader);
@@ -104,13 +111,11 @@ int main(int, char**)
 
 
     auto& draw_pass = mono::renderer::getPipeline(pipeline_id)
-                          .getRenderPass<mono::renderer::ImmediateDrawRenderPass>("quad");
-    auto& all_white_pass = mono::renderer::getPipeline(pipeline_id)
-                               .getRenderPass<mono::renderer::test::PostProcessPass>("all_white");
+                          ->getRenderPass<mono::renderer::ImmediateDrawRenderPass>("quad");
 
-    const auto refresh_projection_view = [&window, &draw_pass]() {
+    const auto refresh_projection_view = [&window, &projection, &view]() {
         const auto resolution = window->getSize();
-        const auto projection = glm::ortho(
+        *projection = glm::ortho(
             0.f,
             static_cast<float>(resolution.x),
             static_cast<float>(resolution.y),
@@ -118,12 +123,10 @@ int main(int, char**)
             -2000.f,
             2000.f);
 
-        const auto view = glm::lookAt(
+        *view = glm::lookAt(
             glm::vec3{0.f, 0.f, 1.f},
             glm::vec3{0.f, 0.f, 0.f},
             glm::vec3{0.f, 1.f, 0.f});
-        draw_pass.setProjection(projection);
-        draw_pass.setView(view);
     };
 
     refresh_projection_view();
@@ -161,10 +164,6 @@ int main(int, char**)
             {0.f, 1.f, 0.f, 1.f},
             {0.f, 1.f, 0.f, 1.f});
 
-        all_white_pass.drawTexture(
-            render_texture->getID(),
-            render_texture->getSize().x,
-            render_texture->getSize().y);
 
         refresh_projection_view();
         window->prepareRender();

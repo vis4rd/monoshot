@@ -10,13 +10,13 @@
 #include <glbinding/gl/gl.h>
 #include <glm/glm.hpp>
 
-#include "RenderTargetTrait.hpp"
+#include "RenderTarget.hpp"
 #include "opengl/glfw/RenderWindowUserStorage.hpp"
 
 namespace mono
 {
 
-class RenderWindow final : public RenderTarget
+class RenderWindow final : public mono::renderer::RenderTarget
 {
     public:
     /**
@@ -37,6 +37,8 @@ class RenderWindow final : public RenderTarget
     // RenderTarget interface
     void activate() const override;
     void deactivate() const override;
+    [[nodiscard]] glm::ivec2 getSize() const override;
+    [[nodiscard]] ::gl::GLuint getFramebufferHandle() const override;
 
     void create(::gl::GLsizei width, ::gl::GLsizei height, std::string_view title);
 
@@ -58,7 +60,6 @@ class RenderWindow final : public RenderTarget
     void setRefreshRate(std::int32_t hz);
     void setTitle(std::string_view title);
 
-    [[nodiscard]] glm::ivec2 getSize() const;
     [[nodiscard]] std::string_view getTitle() const;
     [[nodiscard]] GLFWwindow* getNativeWindow() const;
     [[nodiscard]] glm::vec2 getMousePosition() const;
@@ -160,5 +161,5 @@ class RenderWindow final : public RenderTarget
     glm::ivec2 m_initialWindowSize;
 };
 
-static_assert(mono::RenderTargetTrait<mono::RenderWindow>);
+static_assert(mono::renderer::RenderTargetTrait<mono::RenderWindow>);
 }  // namespace mono

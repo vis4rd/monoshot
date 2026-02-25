@@ -41,6 +41,19 @@ void RenderWindow::deactivate() const
     ::gl::glBindFramebuffer(::gl::GL_FRAMEBUFFER, 0);
 }
 
+glm::ivec2 RenderWindow::getSize() const
+{
+    int width{};
+    int height{};
+    glfwGetWindowSize(m_windowHandle.get(), &width, &height);
+    return glm::ivec2{width, height};
+}
+
+::gl::GLuint RenderWindow::getFramebufferHandle() const
+{
+    return 0;
+}
+
 void RenderWindow::create(::gl::GLsizei width, ::gl::GLsizei height, std::string_view title)
 {
     spdlog::info("Creating RenderWindow '{}' with size {}x{}", title, width, height);
@@ -296,14 +309,6 @@ void RenderWindow::setRefreshRate(std::int32_t hz)
 void RenderWindow::setTitle(std::string_view title)
 {
     glfwSetWindowTitle(m_windowHandle.get(), title.data());
-}
-
-glm::ivec2 RenderWindow::getSize() const
-{
-    int width{};
-    int height{};
-    glfwGetWindowSize(m_windowHandle.get(), &width, &height);
-    return glm::ivec2{width, height};
 }
 
 std::string_view RenderWindow::getTitle() const
