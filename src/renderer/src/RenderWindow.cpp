@@ -317,7 +317,7 @@ void RenderWindow::setTitle(std::string_view title)
     glfwSetWindowTitle(m_windowHandle.get(), title.data());
 }
 
-void RenderWindow::setOnResizeCallback(OnResizeCallback &&callback) &
+void RenderWindow::setOnResizeCallback(OnResizeCallback &&callback) MONO_DISALLOW_CALL_ON_TEMP
 {
     spdlog::debug("Setting RenderWindow onResize callback");
     m_onResizeCallback = std::move(callback);

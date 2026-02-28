@@ -62,7 +62,7 @@ class RenderWindow final : public mono::renderer::RenderTarget
     void setVerticalSync(bool vsync = true);
     void setRefreshRate(std::int32_t hz);
     void setTitle(std::string_view title);
-    void setOnResizeCallback(OnResizeCallback&& callback) &;
+    void setOnResizeCallback(OnResizeCallback&& callback) MONO_DISALLOW_CALL_ON_TEMP;
 
     [[nodiscard]] std::string_view getTitle() const;
     [[nodiscard]] GLFWwindow* getNativeWindow() const;
