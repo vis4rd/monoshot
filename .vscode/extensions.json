@@ -1,8 +1,9 @@
 {
     "recommendations": [
-        "edwinhuish.better-comments-next",
         "bierner.markdown-preview-github-styles",
         "cschlosser.doxdocgen",
+        "deepquantum.gl-macro-hints",
+        "edwinhuish.better-comments-next",
         "github.vscode-github-actions",
         "jeff-hykin.better-cpp-syntax",
         "josetr.cmake-language-support-vscode",
