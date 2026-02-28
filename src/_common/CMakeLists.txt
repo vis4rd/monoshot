@@ -10,13 +10,6 @@ target_compile_features(mono_module_common
 
 set(GLOBALS_HEADER_FILE "${CMAKE_CURRENT_SOURCE_DIR}/Globals.hpp")
 
-# Ensure 'Globals.hpp' is accessible via #include "Globals.hpp"
-# It is required for force-including to work correctly.
-target_include_directories(mono_module_common
-    INTERFACE
-    "${CMAKE_CURRENT_SOURCE_DIR}"
-)
-
 # Include the Globals.hpp header file in all translation units that link to mono::common.
 # This gives access to utilities defined here without explicitly including the header in each file.
 target_compile_options(mono_module_common
