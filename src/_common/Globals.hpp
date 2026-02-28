@@ -1,5 +1,6 @@
 /**
- * Definitions of global utilities, macros and constants that are accessible thoughout the codebase.
+ * Definitions of global utilities, macros and constants that are accessible throughout the
+ * codebase.
  */
 
 #pragma once

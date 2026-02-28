@@ -37,7 +37,7 @@ class RenderPipeline
     std::int32_t getId() const;
 
     /**
-     * @brief Called once when this RenderPipeline becomed active.
+     * @brief Called once when this RenderPipeline becomes active.
      */
     void initialize();
 
@@ -157,10 +157,12 @@ requires std::constructible_from<ACTUAL_TYPE, decltype(args)...>
         throw std::runtime_error(msg);
     }
 
+    const std::size_t current_render_pass_count = m_renderPassLookup.size();
     m_renderPassLookup.emplace(name, render_pass_ptr);
-    m_renderPassFlow.reverse();
-    m_renderPassFlow.push_front(std::move(render_pass_ptr));
-    m_renderPassFlow.reverse();
+    m_renderPassFlow.emplace_after(
+        std::next(m_renderPassFlow.before_begin(), current_render_pass_count),
+        std::move(render_pass_ptr));
+
     spdlog::debug("Successfully added render pass with name '{}'", name);
 }
 
