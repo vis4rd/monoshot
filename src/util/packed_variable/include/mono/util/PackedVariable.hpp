@@ -10,13 +10,21 @@
 #include <tuple>
 #include <utility>
 
+static_assert(true);
+// TODO: fix this instead of ignoring format warnings
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat"
+
 namespace mono::util
 {
 
 using PackedVariableSection = std::size_t;
 
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define PV_RUNTIME_ASSERT(expression, fmt, ...) \
-    (assert((expression) || !fprintf(stderr, ("Assertion message: " fmt "\n"), ##__VA_ARGS__)))
+    (assert(                                    \
+        (expression)                            \
+        || !fprintf(stderr, ("Assertion message: " fmt "\n")__VA_OPT__(, ) __VA_ARGS__)))
 
 namespace util
 {
@@ -223,3 +231,5 @@ constexpr void PackedVariable<T, SECTIONS...>::setSectionsOnConstruction(
 }
 
 }  // namespace mono::util
+
+#pragma GCC diagnostic pop
