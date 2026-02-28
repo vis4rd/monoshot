@@ -3,11 +3,7 @@ include_guard()
 add_library(mono_module_renderer_opengl_backend)
 add_library(mono::renderer_opengl ALIAS mono_module_renderer_opengl_backend)
 
-message(STATUS "Renderer: using OpenGL backend")
-
-target_compile_features(mono_module_renderer_opengl_backend
-    PRIVATE "cxx_std_20"
-)
+message(STATUS "Monoshot: Renderer will use OpenGL backend")
 
 target_sources(mono_module_renderer_opengl_backend
     PRIVATE
@@ -36,6 +32,7 @@ target_link_libraries(mono_module_renderer_opengl_backend
     mono::external::imgui
     mono::external::spdlog
     mono::external::stb_image
+    mono::common
     mono::config
     mono::input
     mono::log

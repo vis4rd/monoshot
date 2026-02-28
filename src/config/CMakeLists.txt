@@ -3,10 +3,6 @@ include_guard()
 add_library(mono_module_config)
 add_library(mono::config ALIAS mono_module_config)
 
-target_compile_features(mono_module_config
-    PRIVATE "cxx_std_20"
-)
-
 target_sources(mono_module_config
     PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/src/Config.cpp"
@@ -27,13 +23,15 @@ target_link_libraries(mono_module_config
     mono::external::spdlog
     mono::external::glm
     mono::external::imgui
+    mono::common
     mono::traits
     mono::log
     mono::dev_ui
     mono::util
 )
 
-if(DEBUG_BUILD)
+if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+    message(STATUS "Monoshot: DEBUG build")
     target_compile_definitions(mono_module_config
         PUBLIC "DEBUG_BUILD"
     )

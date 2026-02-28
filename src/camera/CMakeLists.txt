@@ -3,10 +3,6 @@ include_guard()
 add_library(mono_module_camera)
 add_library(mono::camera ALIAS mono_module_camera)
 
-target_compile_features(mono_module_camera
-    PRIVATE "cxx_std_20"
-)
-
 target_sources(mono_module_camera
     PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/src/Camera.cpp"
@@ -19,5 +15,7 @@ target_include_directories(mono_module_camera
 )
 
 target_link_libraries(mono_module_camera
-    PUBLIC mono::external::glm
+    PUBLIC
+    mono::common
+    mono::external::glm
 )
