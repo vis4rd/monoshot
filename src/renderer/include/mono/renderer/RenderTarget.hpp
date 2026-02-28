@@ -10,7 +10,14 @@ namespace mono::renderer
 class RenderTarget
 {
     public:
+    RenderTarget() = default;
+    RenderTarget(const RenderTarget&) = default;
+    RenderTarget(RenderTarget&&) = default;
     virtual ~RenderTarget() = default;
+
+    RenderTarget& operator=(const RenderTarget&) = default;
+    RenderTarget& operator=(RenderTarget&&) = default;
+
     virtual void activate() const = 0;
     virtual void deactivate() const = 0;
 

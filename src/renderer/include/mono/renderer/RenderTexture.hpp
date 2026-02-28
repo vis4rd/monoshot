@@ -16,7 +16,7 @@ class RenderTexture final : public mono::renderer::RenderTarget
     RenderTexture(::gl::GLsizei width, ::gl::GLsizei height);
     RenderTexture(const RenderTexture& copy) = delete;
     RenderTexture(RenderTexture&& move) = default;
-    ~RenderTexture() = default;
+    ~RenderTexture() override = default;
 
     RenderTexture& operator=(const RenderTexture& copy) = delete;
     RenderTexture& operator=(RenderTexture&& move) = default;

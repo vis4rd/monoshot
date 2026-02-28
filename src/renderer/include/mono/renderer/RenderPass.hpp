@@ -21,7 +21,12 @@ class RenderPass
 {
     public:
     RenderPass(std::string name, std::shared_ptr<mono::renderer::RenderTarget> target);
+    RenderPass(const RenderPass&) = default;
+    RenderPass(RenderPass&&) noexcept = default;
     virtual ~RenderPass() noexcept = default;
+
+    RenderPass& operator=(const RenderPass&) = delete;
+    RenderPass& operator=(RenderPass&&) noexcept = delete;
 
     virtual void onInit() = 0;
     virtual void onResize(std::uint32_t width, std::uint32_t height) = 0;

@@ -32,7 +32,7 @@ class RenderWindow final : public mono::renderer::RenderTarget
     RenderWindow(::gl::GLsizei width, ::gl::GLsizei height, std::string_view title);
     RenderWindow(const RenderWindow& copy) = delete;
     RenderWindow(RenderWindow&& move) = default;
-    ~RenderWindow();
+    ~RenderWindow() override;
 
     RenderWindow& operator=(const RenderWindow& copy) = delete;
     RenderWindow& operator=(RenderWindow&& move) = default;
