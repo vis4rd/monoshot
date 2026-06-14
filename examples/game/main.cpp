@@ -50,7 +50,6 @@ int main(int, char**)
         resolution_config.getValue<glm::ivec2>().value_or(glm::ivec2{1920, 1080});
 
     auto window = std::make_shared<mono::RenderWindow>(resolution.x, resolution.y, "Monoshot app");
-    // BUG: window resizing does not resize the RenderTexture
     auto render_texture = std::make_shared<mono::RenderTexture>(resolution.x, resolution.y);
 
     mono::dev_ui::initialize();
