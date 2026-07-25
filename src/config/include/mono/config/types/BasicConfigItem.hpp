@@ -41,36 +41,37 @@ class BasicConfigItem : public ConfigItem
     }
 
     std::string getType() const override
-    {
-        return std::format("BasicConfigItem<{}>", typeid(T).name());
-    }
+    { return std::format("BasicConfigItem<{}>", typeid(T).name()); }
 
     void drawForDevUi() override
     {
-        std::optional<bool> value = this->getValue<bool>();
-        if(not value.has_value())
-        {
-            ImGui::BeginDisabled();
-            ImGui::Checkbox(
-                std::format("{} <missing value>", this->getKey().data()).c_str(),
-                &value.value());
-            ImGui::EndDisabled();
-            ImGui::SameLine();
-            if(ImGui::Button("Set True"))
-            {
-                this->setValue(true);
-            }
-            ImGui::SameLine();
-            if(ImGui::Button("Set False"))
-            {
-                this->setValue(false);
-            }
-            return;
-        }
-        if(ImGui::Checkbox(this->getKey().data(), &value.value()))
-        {
-            this->setValue(value.value());
-        }
+        this->getValue<bool>()
+            .and_then([this](bool value) -> std::optional<bool> {
+                if(ImGui::Checkbox(this->getKey().data(), &value))
+                {
+                    this->setValue(value);
+                }
+                return value;
+            })
+            .or_else([this]() -> std::optional<bool> {
+                bool value = false;
+                ImGui::BeginDisabled();
+                ImGui::Checkbox(
+                    std::format("{} <missing value>", this->getKey().data()).c_str(),
+                    &value);
+                ImGui::EndDisabled();
+                ImGui::SameLine();
+                if(ImGui::Button("Set True"))
+                {
+                    this->setValue(true);
+                }
+                ImGui::SameLine();
+                if(ImGui::Button("Set False"))
+                {
+                    this->setValue(false);
+                }
+                return std::nullopt;
+            });
     }
 };
 

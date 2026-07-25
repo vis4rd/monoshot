@@ -14,7 +14,7 @@ VertexArray::VertexArray()
     ::gl::glCreateVertexArrays(1, &m_id);
     log::setGlObjectLabel(::gl::GL_VERTEX_ARRAY, m_id, "VertexArray#{}", m_id);
 
-    spdlog::debug("Created VertexArray instance with ID = {}", m_id);
+    spdlog::trace("Created VertexArray instance with ID = {}", m_id);
 }
 
 VertexArray::VertexArray(VertexArray&& move) noexcept
@@ -28,15 +28,15 @@ VertexArray::~VertexArray()
 {
     for(const auto& vb : m_vertexBuffers)
     {
-        spdlog::debug("Deleting VertexBuffer object with ID = {}", vb.getID());
+        spdlog::trace("Deleting VertexBuffer object with ID = {}", vb.getID());
         ::gl::glDeleteBuffers(1, &vb.getID());
     }
     m_vertexBuffers.clear();
 
-    spdlog::debug("Deleting ElementBuffer object with ID = {}", m_elementBuffer.getID());
+    spdlog::trace("Deleting ElementBuffer object with ID = {}", m_elementBuffer.getID());
     ::gl::glDeleteBuffers(1, &m_elementBuffer.getID());
 
-    spdlog::debug("Deleting VertexArray instance with ID = {}", m_id);
+    spdlog::trace("Deleting VertexArray instance with ID = {}", m_id);
     ::gl::glDeleteVertexArrays(1, &m_id);
     this->unbind();
 }
@@ -65,7 +65,7 @@ void VertexArray::bindVertexBuffer(
     VertexBuffer&& vertex_buffer,
     ShaderAttributeUpdateFrequency frequency)
 {
-    spdlog::debug(
+    spdlog::trace(
         "Adding a VertexBuffer with ID = {} to VertexArray with ID = {}",
         vertex_buffer.getID(),
         m_id);
@@ -164,7 +164,7 @@ void VertexArray::bindVertexBuffer(
 
 void VertexArray::bindElementBuffer(const ElementBuffer& element_buffer)
 {
-    spdlog::debug(
+    spdlog::trace(
         "Adding ElementBuffer with ID = {} to VertexArray with ID = {}",
         element_buffer.getID(),
         m_id);

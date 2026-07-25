@@ -13,12 +13,12 @@ ElementBuffer::ElementBuffer(const std::uint32_t* indices, std::uint32_t count)
         indices,
         ::gl::GL_STATIC_DRAW);
     log::setGlObjectLabel(::gl::GL_BUFFER, m_id, "ElementBuffer#{}", m_id);
-    spdlog::debug("Created ElementBuffer instance with ID = {} and count = {}", m_id, m_count);
+    spdlog::trace("Created ElementBuffer instance with ID = {} and count = {}", m_id, m_count);
 }
 
 ElementBuffer::~ElementBuffer()
 {
-    spdlog::debug("Calling destructor of ElementBuffer instance with ID = {} (no destroy)", m_id);
+    spdlog::trace("Calling destructor of ElementBuffer instance with ID = {} (no destroy)", m_id);
 }
 
 void ElementBuffer::bind() const

@@ -8,7 +8,8 @@ add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/custom_imgui")
 add_library(mono_module_util INTERFACE)
 add_library(mono::util ALIAS mono_module_util)
 
-target_link_libraries(mono_module_util INTERFACE
+target_link_libraries(mono_module_util
+    INTERFACE
     mono::util::pv
     mono::util::index_of
     mono::util::compiler

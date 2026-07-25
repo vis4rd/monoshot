@@ -1,3 +1,4 @@
+add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/_common")
 add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/input")
 add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/renderer")
 add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/camera")

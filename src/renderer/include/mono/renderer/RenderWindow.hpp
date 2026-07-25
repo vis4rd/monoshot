@@ -5,19 +5,22 @@
 #include <memory>
 #include <span>
 #include <string_view>
-#include <vector>
 
 #include <GLFW/glfw3.h>
 #include <glbinding/gl/gl.h>
+#include <glm/glm.hpp>
 
-#include "../glfw/RenderWindowUserStorage.hpp"
 #include "RenderTarget.hpp"
+#include "opengl/glfw/RenderWindowUserStorage.hpp"
 
-namespace mono::gl
+namespace mono
 {
 
-class RenderWindow final : public RenderTarget
+class RenderWindow final : public mono::renderer::RenderTarget
 {
+    public:
+    using OnResizeCallback = std::move_only_function<void(std::int32_t, std::int32_t)>;
+
     public:
     /**
      * @brief Construct empty RenderWindow.
@@ -34,6 +37,12 @@ class RenderWindow final : public RenderTarget
     RenderWindow& operator=(const RenderWindow& copy) = delete;
     RenderWindow& operator=(RenderWindow&& move) = default;
 
+    // RenderTarget interface
+    void activate() const override;
+    void deactivate() const override;
+    [[nodiscard]] glm::ivec2 getSize() const override;
+    [[nodiscard]] ::gl::GLuint getFramebufferHandle() const override;
+
     void create(::gl::GLsizei width, ::gl::GLsizei height, std::string_view title);
 
     [[nodiscard]] bool isFullscreen() const;
@@ -45,7 +54,7 @@ class RenderWindow final : public RenderTarget
     void toggleFullscreen();
     void toggleBorderlessFullscreen();
 
-    void setSize(::gl::GLsizei width, ::gl::GLsizei height) override;
+    void setSize(::gl::GLsizei width, ::gl::GLsizei height);
     void setFullscreen(bool fullscreen = true);
     void setBorderlessFullscreen(bool borderless = true);
     void setMaximized(bool maximized = true);
@@ -53,11 +62,12 @@ class RenderWindow final : public RenderTarget
     void setVerticalSync(bool vsync = true);
     void setRefreshRate(std::int32_t hz);
     void setTitle(std::string_view title);
+    void setOnResizeCallback(OnResizeCallback&& callback) MONO_DISALLOW_CALL_ON_TEMP;
 
     [[nodiscard]] std::string_view getTitle() const;
     [[nodiscard]] GLFWwindow* getNativeWindow() const;
     [[nodiscard]] glm::vec2 getMousePosition() const;
-    [[nodiscard]] RenderWindowUserStorage& getUserStorage();
+    [[nodiscard]] gl::RenderWindowUserStorage& getUserStorage();
 
     /**
      * @brief Prepare next frame for rendering.
@@ -78,7 +88,7 @@ class RenderWindow final : public RenderTarget
      *
      * @attention This function should be called after `prepareRender()`.
      */
-    void render() const final;
+    void render() const;
 
     /**
      * @brief Render the geometry to the screen using user-defined custom shader.
@@ -123,11 +133,6 @@ class RenderWindow final : public RenderTarget
     void destroyEventCallbacks() const;
     void prerender() const;
 
-    // hide some methods from the base class
-    using RenderTarget::create;
-    using RenderTarget::activate;
-    using RenderTarget::deactivate;
-
     private:
     enum WindowFlag : std::uint8_t
     {
@@ -156,7 +161,10 @@ class RenderWindow final : public RenderTarget
      */
     std::bitset<5> m_flags{};
     bool m_shouldClose = false;
-    std::unique_ptr<RenderWindowUserStorage> m_userStorage{nullptr};
+    std::unique_ptr<gl::RenderWindowUserStorage> m_userStorage{nullptr};
+    glm::ivec2 m_initialWindowSize;
+    OnResizeCallback m_onResizeCallback;
 };
 
-}  // namespace mono::gl
+static_assert(mono::renderer::RenderTargetTrait<mono::RenderWindow>);
+}  // namespace mono

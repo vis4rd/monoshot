@@ -6,47 +6,61 @@
 #include <spdlog/spdlog.h>
 
 #include "config/priv/DevUiExtension.hpp"
-#include "config/types/BasicConfigItem.hpp"
-#include "config/types/OptionStringConfigItem.hpp"
 #include "mono/dev_ui/DevUI.hpp"
 #include "mono/log/Logging.hpp"
 
-namespace mono::config
+namespace
 {
 
-static void initTemporaryLogger()
+void initTemporaryLogger()
 {
-    priv::buffered_sink = std::make_shared<log::priv::BufferedSink>();
-    spdlog::set_default_logger(std::make_shared<spdlog::logger>("buffer", priv::buffered_sink));
+    mono::config::priv::buffered_sink = std::make_shared<mono::log::priv::BufferedSink>();
+    spdlog::set_default_logger(
+        std::make_shared<spdlog::logger>("buffer", mono::config::priv::buffered_sink));
 }
 
-static void flushTemporaryLoggerOnFail()
+void flushTemporaryLoggerOnFail()
 {
     // This is terrible, when single point of initialization is introduced, config::initialize()
     // should return false.
     mono::log::initialize();  // flush happens inside log::initialize() now
-    priv::buffered_sink.reset();
-    priv::buffered_sink = nullptr;
+    mono::config::priv::buffered_sink.reset();
+    mono::config::priv::buffered_sink = nullptr;
 }
+
+void shutdownOnFail()
+{
+    flushTemporaryLoggerOnFail();
+    spdlog::shutdown();  // prevents crashes on exit - shuts down thread pool
+    std::exit(EXIT_FAILURE);
+}
+
+}  // namespace
+
+namespace mono::config
+{
 
 void initialize()
 {
-    initTemporaryLogger();
-    runtime.loadFromFile("../config/config.ini");
+    ::initTemporaryLogger();
 
-    runtime.addConfigItem<BasicConfigItem<bool>>(std::string{"engine"}, std::string{"UseOpenGL"});
-    runtime.addConfigItem<OptionStringConfigItem>(
-        std::string{"engine"},
-        std::string{"LogLevel"},
-        std::vector<std::string>{"trace", "debug", "info", "warn", "error", "critical"});
+    mono::dev_ui::registerExtension("Settings", mono::config::priv::devUiExtension);
+}
 
-    const auto success = runtime.validate();
-    if(not success)
+void initialize(const std::filesystem::path& path)
+{
+    ::initTemporaryLogger();
+
+    if(const bool success = runtime.loadFromFile(path); not success)
+    {
+        spdlog::error("Failed to load config from file: '{}'", path.string());
+        ::shutdownOnFail();
+    }
+
+    if(const bool success = runtime.validate(); not success)
     {
         spdlog::error("Config validation failed");
-        flushTemporaryLoggerOnFail();
-        spdlog::shutdown();  // prevents crashes on exit - shuts down thread pool
-        std::exit(EXIT_FAILURE);
+        ::shutdownOnFail();
     }
 
     mono::dev_ui::registerExtension("Settings", mono::config::priv::devUiExtension);

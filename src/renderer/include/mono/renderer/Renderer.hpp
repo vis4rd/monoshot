@@ -7,7 +7,7 @@
 #include <glm/glm.hpp>
 
 #include "RenderPipeline.hpp"
-#include "opengl/target/RenderTarget.hpp"
+#include "RenderTarget.hpp"
 
 namespace mono::renderer
 {
@@ -16,19 +16,19 @@ namespace data
 {
 
 // NOLINTBEGIN(cppcoreguidelines-avoid-non-const-global-variables)
-inline std::unordered_map<std::int32_t, RenderPipeline> pipelines{};
-inline std::int32_t currentPipelineId{-1};
+inline std::unordered_map<std::int32_t, std::shared_ptr<RenderPipeline>> pipelines{};
+inline std::shared_ptr<RenderPipeline> activePipeline{nullptr};
 // NOLINTEND(cppcoreguidelines-avoid-non-const-global-variables)
 
 }  // namespace data
 
-void initialize(std::shared_ptr<gl::RenderTarget> default_target);
-void addPipeline(RenderPipeline&& pipeline);
-void setPipeline(std::int32_t pipeline_id);
+void initialize(std::shared_ptr<mono::renderer::RenderTarget> default_target);
+void addPipeline(std::shared_ptr<mono::renderer::RenderPipeline> pipeline);
+void setActivePipeline(std::int32_t pipeline_id);
 void terminate();
 
-RenderPipeline& getPipeline(std::int32_t pipeline_id);
-RenderPipeline& getDefaultPipeline();
+std::shared_ptr<RenderPipeline> getPipeline(std::int32_t pipeline_id);
+std::shared_ptr<RenderPipeline> getDefaultPipeline();
 
 // renders the current frame with set pipeline
 void render();

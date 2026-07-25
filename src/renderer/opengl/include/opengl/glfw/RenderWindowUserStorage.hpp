@@ -6,10 +6,13 @@
 
 class PerspectiveCamera;
 
+namespace mono
+{
+class RenderWindow;
+}
+
 namespace mono::gl
 {
-
-class RenderWindow;
 
 class RenderWindowUserStorage final
 {

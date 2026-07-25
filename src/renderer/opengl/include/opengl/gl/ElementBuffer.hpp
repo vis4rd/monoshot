@@ -84,7 +84,7 @@ constexpr ElementBuffer::ElementBuffer(const ContiguousContainerTrait<std::uint3
         elements.data(),
         ::gl::GL_STATIC_DRAW);
     log::setGlObjectLabel(::gl::GL_BUFFER, m_id, "ElementBuffer#{}", m_id);
-    spdlog::debug("Created ElementBuffer instance with ID = {} and count = {}", m_id, m_count);
+    spdlog::trace("Created ElementBuffer instance with ID = {} and count = {}", m_id, m_count);
 }
 
 }  // namespace mono::gl

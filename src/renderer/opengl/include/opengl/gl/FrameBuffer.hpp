@@ -22,11 +22,14 @@ class FrameBuffer
     void bind() const;
     void unbind() const;
     void resize(::gl::GLsizei width, ::gl::GLsizei height);
+    void blitTo(::gl::GLuint target_fbo) const;
 
     ::gl::GLuint getID() const;
     ::gl::GLuint getColorID() const;
     ::gl::GLuint getStencilID() const;
     glm::ivec2 getSize() const;
+
+    const std::shared_ptr<::mono::Texture>& getColorTexture() const;
 
     private:
     void initTexture();

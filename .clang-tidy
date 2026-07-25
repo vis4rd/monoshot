@@ -10,7 +10,7 @@ HeaderFileExtensions: # clang-tidy > 18
 ImplementationFileExtensions: # clang-tidy > 18
   - "cpp"
 ExtraArgsBefore:
-  - --std=c++20
+  - --std=c++23
 
 Checks:
   # enabled checks

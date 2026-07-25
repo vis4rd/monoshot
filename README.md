@@ -21,7 +21,7 @@ After the configuration is complete, build the code with:
 cmake --build .
 ```
 
-C++20 capable compiler is required such as GCC 14.2+ or Clang 19.1+ (supporting `<format>` and `<concepts>`).
+C++23 capable compiler is required.
 
 ## Dependencies
 

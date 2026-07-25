@@ -1,19 +1,27 @@
+#include <glm/fwd.hpp>
 #include <mono/config/Config.hpp>
 #include <mono/dev_ui/DevUI.hpp>
 #include <mono/input/Input.hpp>
 #include <mono/log/Logging.hpp>
 #include <mono/renderer/RenderPipeline.hpp>
+#include <mono/renderer/RenderTexture.hpp>
+#include <mono/renderer/RenderWindow.hpp>
 #include <mono/renderer/Renderer.hpp>
-#include <mono/renderer/pass/ImmediateLineRenderPass.hpp>
-#include <mono/renderer/pass/ImmediateQuadRenderPass.hpp>
+#include <mono/renderer/pass/ImmediateDrawRenderPass.hpp>
+#include <mono/renderer/pass/PostProcessPass.hpp>
 #include <opengl/shader/ShaderManager.hpp>
-#include <opengl/target/RenderWindow.hpp>
 
 int main(int, char**)
 {
-    mono::config::initialize();
-    mono::log::initialize();
-
+    auto& log_level_config =
+        mono::config::runtime.addConfigItem<mono::config::OptionStringConfigItem>(
+            std::string{"engine"},
+            std::string{"LogLevel"},
+            std::vector<std::string>{"trace", "debug", "info", "warn", "error", "critical"});
+    const auto log_level_cb_guard =
+        log_level_config.setOnSetCallback([](std::string_view, std::string_view new_value) {
+            spdlog::set_level(spdlog::level_from_str(std::string{new_value}));
+        });
     auto& window_mode_config =
         mono::config::runtime.addConfigItem<mono::config::OptionStringConfigItem>(
             std::string{"app.window"},
@@ -28,6 +36,10 @@ int main(int, char**)
                 "app.window",
                 "Resolution");
 
+    mono::config::initialize("../examples/game/config.ini");
+    mono::log::initialize();
+
+
     if(not mono::config::runtime.validate())
     {
         mono::log::error("Config validation failed");
@@ -37,11 +49,13 @@ int main(int, char**)
     const auto resolution =
         resolution_config.getValue<glm::ivec2>().value_or(glm::ivec2{1920, 1080});
 
-    auto window =
-        std::make_shared<mono::gl::RenderWindow>(resolution.x, resolution.y, "Monoshot app");
+    auto window = std::make_shared<mono::RenderWindow>(resolution.x, resolution.y, "Monoshot app");
+    auto render_texture = std::make_shared<mono::RenderTexture>(resolution.x, resolution.y);
 
     mono::dev_ui::initialize();
 
+    std::shared_ptr<glm::mat4> projection = std::make_shared<glm::mat4>(1.f);
+    std::shared_ptr<glm::mat4> view = std::make_shared<glm::mat4>(1.f);
     constexpr std::int32_t pipeline_id = 0;
     {
         // custom pipeline
@@ -54,16 +68,25 @@ int main(int, char**)
             "line",
             "../res/shaders/line.vert",
             "../res/shaders/line.frag");
+        auto& all_white_shader = shader_manager.addShaderProgram(
+            "all_white",
+            "../res/shaders/post_process.vert",
+            "../res/shaders/all_white.frag");
 
-        auto pipeline = mono::renderer::RenderPipeline(pipeline_id);
-        pipeline.addRenderPass<mono::renderer::ImmediateQuadRenderPass>(
+        auto pipeline = std::make_shared<mono::renderer::RenderPipeline>(pipeline_id);
+        mono::renderer::ImmediateDrawRenderPass::Uniforms sceneUniforms{
+            .projection = projection,
+            .view = view};
+        pipeline->addRenderPass<mono::renderer::ImmediateDrawRenderPass>(
             "quad",
+            render_texture,
+            quad_shader,
+            line_shader,
+            sceneUniforms);
+        pipeline->addRenderPass<mono::renderer::test::PostProcessPass>(
+            "all_white",
             window,
-            quad_shader);
-        pipeline.addRenderPass<mono::renderer::ImmediateLineRenderPass>(
-            "line",
-            window,
-            line_shader);
+            all_white_shader);
         mono::renderer::addPipeline(std::move(pipeline));
     }
 
@@ -86,25 +109,35 @@ int main(int, char**)
     window->setVerticalSync(vsync_enabled);
 
 
-    auto& quad_pass = mono::renderer::getPipeline(pipeline_id)
-                          .getRenderPass<mono::renderer::ImmediateQuadRenderPass>("quad");
-    auto& line_pass = mono::renderer::getPipeline(pipeline_id)
-                          .getRenderPass<mono::renderer::ImmediateLineRenderPass>("line");
+    auto render_pipeline = mono::renderer::getPipeline(pipeline_id);
+    window->setOnResizeCallback([render_pipeline](std::int32_t width, std::int32_t height) {
+        mono::log::info(
+            "Calling OnResize callback: Informing RenderPipeline about the resize {}x{}",
+            width,
+            height);
+        render_pipeline->onResize(width, height);
+    });
 
-    const auto projection = glm::ortho(
-        0.f,
-        static_cast<float>(resolution.x),
-        static_cast<float>(resolution.y),
-        0.f,
-        -2000.f,
-        2000.f);
+    auto& draw_pass =
+        render_pipeline->getRenderPass<mono::renderer::ImmediateDrawRenderPass>("quad");
 
-    const auto view =
-        glm::lookAt(glm::vec3{0.f, 0.f, 1.f}, glm::vec3{0.f, 0.f, 0.f}, glm::vec3{0.f, 1.f, 0.f});
-    quad_pass.setProjection(projection);
-    quad_pass.setView(view);
-    line_pass.setProjection(projection);
-    line_pass.setView(view);
+    const auto refresh_projection_view = [&window, &projection, &view]() {
+        const auto resolution = window->getSize();
+        *projection = glm::ortho(
+            0.f,
+            static_cast<float>(resolution.x),
+            static_cast<float>(resolution.y),
+            0.f,
+            -2000.f,
+            2000.f);
+
+        *view = glm::lookAt(
+            glm::vec3{0.f, 0.f, 1.f},
+            glm::vec3{0.f, 0.f, 0.f},
+            glm::vec3{0.f, 1.f, 0.f});
+    };
+
+    refresh_projection_view();
 
     while(true)
     {
@@ -114,7 +147,7 @@ int main(int, char**)
             auto size = window->getSize();
             mono::log::info("on F11: window size = {}x{}", size.x, size.y);
 
-            window->toggleFullscreen();
+            window->toggleBorderlessFullscreen();
             size = window->getSize();
             mono::log::info("after F11: window size = {}x{}", size.x, size.y);
         }
@@ -132,14 +165,25 @@ int main(int, char**)
             continue;
         }
 
-        quad_pass.drawQuad(window->getMousePosition(), {15.f, 15.f}, 0.f, {1.f, 0.f, 0.f, 1.f});
-        line_pass.drawLine(
+        draw_pass.drawQuad(window->getMousePosition(), {15.f, 15.f}, 0.f, {1.f, 0.f, 0.f, 1.f});
+        draw_pass.drawLine(
             {200.f, 200.f},
             window->getMousePosition(),
             {0.f, 1.f, 0.f, 1.f},
             {0.f, 1.f, 0.f, 1.f});
 
+
+        refresh_projection_view();
         window->prepareRender();
+
+        ImGui::Begin("Debug info");
+        ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
+        ImGui::Text(
+            "Mouse Position: (%.1f, %.1f)",
+            window->getMousePosition().x,
+            window->getMousePosition().y);
+        ImGui::Text("Window Size: (%d, %d)", window->getSize().x, window->getSize().y);
+        ImGui::End();
 
         mono::renderer::render();
 
@@ -147,5 +191,9 @@ int main(int, char**)
     }
 
     mono::log::info("Closing the application");
+    mono::renderer::terminate();
+    render_texture.reset();
+    window.reset();
+
     return EXIT_SUCCESS;
 }
