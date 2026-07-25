@@ -68,35 +68,35 @@ class MultiNumberConfigItem : public ConfigItem
     }
 
     std::string getType() const override
-    {
-        return std::format("MultiNumberConfigItem<{},{},'{}'>", NUM, typeid(T).name(), SEP);
-    };
+    { return std::format("MultiNumberConfigItem<{},{},'{}'>", NUM, typeid(T).name(), SEP); };
 
     void drawForDevUi() override
     {
-        if(not this->getValue<std::string>().has_value())
-        {
-            ImGui::Text("%s - <missing value>", this->getKey().data());
-            ImGui::SameLine();
-            if(ImGui::Button("Set Default"))
-            {
-                this->setValue(glm::vec<NUM, T>{});
-            }
-            return;
-        }
-
-        glm::vec<NUM, T> values = this->getValue<glm::vec<NUM, T>>().value();
-        if(mono::util::Custom::ImGui::InputScalarN<T>(
-               this->getKey().data(),
-               &values,
-               NUM,
-               nullptr,
-               nullptr,
-               nullptr,
-               ImGuiInputTextFlags_EnterReturnsTrue))
-        {
-            this->setValue(values);
-        }
+        using VAL = glm::vec<NUM, T>;
+        this->getValue<VAL>()
+            .and_then([this](VAL values) -> std::optional<VAL> {
+                if(mono::util::Custom::ImGui::InputScalarN<T>(
+                       this->getKey().data(),
+                       &values,
+                       NUM,
+                       nullptr,
+                       nullptr,
+                       nullptr,
+                       ImGuiInputTextFlags_EnterReturnsTrue))
+                {
+                    this->setValue(values);
+                }
+                return values;
+            })
+            .or_else([this]() -> std::optional<VAL> {
+                ImGui::Text("%s - <missing value>", this->getKey().data());
+                ImGui::SameLine();
+                if(ImGui::Button("Set Default"))
+                {
+                    this->setValue(VAL{});
+                }
+                return std::nullopt;
+            });
     }
 };
 

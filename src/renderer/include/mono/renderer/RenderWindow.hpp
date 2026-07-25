@@ -19,7 +19,7 @@ namespace mono
 class RenderWindow final : public mono::renderer::RenderTarget
 {
     public:
-    using OnResizeCallback = std::function<void(std::int32_t, std::int32_t)>;
+    using OnResizeCallback = std::move_only_function<void(std::int32_t, std::int32_t)>;
 
     public:
     /**

@@ -5,7 +5,7 @@ add_library(mono::common ALIAS mono_module_common)
 
 # Below settings will be inherited by all modules that link to mono::common.
 target_compile_features(mono_module_common
-    INTERFACE "cxx_std_20"
+    INTERFACE "cxx_std_23"
 )
 
 set(GLOBALS_HEADER_FILE "${CMAKE_CURRENT_SOURCE_DIR}/Globals.hpp")
